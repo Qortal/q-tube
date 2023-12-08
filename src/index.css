@@ -1,0 +1,229 @@
+@font-face {
+  font-family: 'Cambon Light';
+  src: url("./styles/fonts/Cambon-Light.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: 'Merriweather Sans';
+  src: url("./styles/fonts/Merriweather Sans.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: 'Karla';
+  src: url("./styles/fonts/Karla.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: 'Proxima Nova';
+  src: url("./styles/fonts/ProximaNova.otf") format("opentype");
+}
+
+@font-face {
+  font-family: 'Raleway';
+  src: url("./styles/fonts/Raleway.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: 'Catamaran';
+  src: url("./styles/fonts/Catamaran.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: 'Oxygen';
+  src: url("./styles/fonts/Oxygen.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: 'Cairo';
+  src: url("./styles/fonts/Cairo.ttf") format("truetype");
+}
+
+:root {
+  padding: 0px;
+  margin: 0px;
+  box-sizing: border-box;
+}
+
+
+.line-clamp {
+  height: 100px;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 5; /* number of lines to show */
+  -webkit-box-orient: vertical;
+  text-overflow: ellipsis;
+}
+
+.edit-btn:hover {
+  opacity: .75;
+  transition: .2s all;
+
+}
+
+.post-image {
+  max-width: 100%;
+  border-radius: 5px;
+  width: 100%;
+  height: 100%;
+}
+
+
+
+.test-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  min-height: 25px;
+}
+
+.test-grid-item {
+  border:  1px solid powderblue;
+}
+
+
+body::-webkit-scrollbar-track {
+    background-color: transparent;
+
+   
+  }
+  body::-webkit-scrollbar-track:hover {
+    background-color: transparent;
+  }
+
+  body::-webkit-scrollbar {
+    width: 16px;
+    height: 10px;
+    background-color: white;
+  }
+
+  body::-webkit-scrollbar-thumb {
+    background-color: #838eee;
+    border-radius: 8px;
+    background-clip: content-box;
+    border: 4px solid transparent;
+    
+  }
+
+  body::-webkit-scrollbar-thumb:hover {
+    background-color: #6270f0;
+  }
+
+  
+  .MuiList-root::-webkit-scrollbar-track {
+    background-color: transparent;
+
+   
+  }
+  .MuiList-root::-webkit-scrollbar-track:hover {
+    background-color: transparent;
+  }
+
+  .MuiList-root::-webkit-scrollbar {
+    width: 14px;
+    height: 10px;
+    background-color: white;
+  }
+
+  .MuiList-root::-webkit-scrollbar-thumb {
+    background-color: lightgray;
+    border-radius: 8px;
+    background-clip: content-box;
+    border: 4px solid transparent;
+    
+  }
+
+  .MuiList-root::-webkit-scrollbar-thumb:hover {
+    background-color: lightslategray;
+  }
+
+  .my-masonry-grid {
+    display: -webkit-box; /* Not needed if autoprefixing */
+    display: -ms-flexbox; /* Not needed if autoprefixing */
+    display: flex;
+    margin-left: -20px; /* gutter size offset */
+    width: auto;
+    padding: 15px 20px;
+  }
+
+  .my-masonry-grid_column {
+    padding-left: 20px; /* gutter size */
+    background-clip: padding-box;
+  }
+  
+  /* Style your items */
+  .my-masonry-grid_column > li { /* change div to reference your elements you put in <Masonry> */
+    margin-bottom: 30px;
+  }
+
+  .my-svg path {
+    fill: red
+  }
+
+ .qortal-link {
+    text-decoration: none; /* Removes the underline */
+    color: inherit; /* Inherits the color of the parent element */
+  }
+  .qortal-link:hover, a:focus {
+    text-decoration: underline; /* Adds underline on hover and focus for accessibility */
+  }
+
+  .download-icon {
+    transition: all 0.5s ease-in-out;
+    animation: downloadIconAnimation 2s infinite;
+  }
+  
+  @keyframes downloadIconAnimation {
+    0% { transform: scale(1); fill: #fff; }
+    50% { transform: scale(1.2); fill: #3498db; }
+    100% { transform: scale(1); fill: #fff; }
+  }
+
+  .closePlayer {
+    position: absolute;
+    top: 0px;
+    width: 100%;
+    transition: all 0.3s;
+    display: flex;
+    justify-content: flex-end;
+    z-index: 8000;
+  }
+
+
+/* When the screen is 600px or less, display .myClassUnder600 and hide .myClassOver600 */
+@media screen and (max-width: 600px) {
+  .myClassUnder600 {
+    display: none !important;
+  }
+
+ 
+}
+
+@media screen and (min-width: 601px) {
+  .myClassOver600 {
+    display: none !important;
+  }
+}
+
+.ql-editor {
+  min-height: 100px;
+  width: 100%
+}
+
+.ql-editor img {
+  cursor: default;
+}
+
+.ql-container {
+  font-size: 16px
+}
+
+.hover-click {
+  transition: opacity 0.2s;
+}
+.hover-click:hover {
+  opacity: 0.7;
+}

@@ -137,6 +137,17 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
     }
   }
 
+  useEffect(()=> {
+    reDownload.current = false
+    setIsLoading(false)
+    setCanPlay(false)
+    setProgress(0)
+    setPlaying(false)
+    setStartPlay(false)
+    isFetchingProperties.current =false
+    status.current = null
+  }, [identifier])
+
   
 
   const refetch = React.useCallback(async () => {

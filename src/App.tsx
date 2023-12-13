@@ -11,6 +11,7 @@ import { Home } from "./pages/Home/Home";
 import { VideoContent } from "./pages/VideoContent/VideoContent";
 import DownloadWrapper from "./wrappers/DownloadWrapper";
 import { IndividualProfile } from "./pages/IndividualProfile/IndividualProfile";
+import { PlaylistContent } from "./pages/PlaylistContent/PlaylistContent";
 
 function App() {
   // const themeColor = window._qdnTheme
@@ -27,6 +28,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/video/:name/:id" element={<VideoContent />} />
+            <Route path="/playlist/:name/:id" element={<PlaylistContent />} />
             <Route path="/channel/:name" element={<IndividualProfile />} />
           </Routes>
         </GlobalWrapper>

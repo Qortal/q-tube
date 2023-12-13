@@ -306,7 +306,7 @@ export const EditPlaylist = () => {
         subcategory
       };
 
-      const codes = videoStructured.map((item) => `c:${item.code};`).join("");
+      const codes = videoStructured.map((item) => `c:${item.code};`).slice(0,10).join("");
       let metadescription =
         `**category:${category};subcategory:${subcategory};${codes}**` +
         stringDescription.slice(0, 120);
@@ -436,13 +436,6 @@ export const EditPlaylist = () => {
   };
 
   const addVideo = (data) => {
-    if(playlistData?.videos?.length > 9){
-      dispatch(setNotification({
-        msg: "Max 10 videos per playlist",
-        alertType: "error",
-      }));
-      return
-    }
     const copyData = structuredClone(playlistData);
     copyData.videos = [...copyData.videos, { ...data }];
     setPlaylistData(copyData);

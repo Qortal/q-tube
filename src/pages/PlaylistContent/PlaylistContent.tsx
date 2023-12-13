@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef, useEffect } from "react";
+import React, { useState, useMemo, useRef, useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { setIsLoadingGlobal } from "../../state/features/globalSlice";
@@ -20,7 +20,7 @@ import {
   VideoDescription,
   VideoPlayerContainer,
   VideoTitle,
-} from "./VideoContent-styles";
+} from "./PlaylistContent-styles";
 import { setUserAvatarHash } from "../../state/features/globalSlice";
 import {
   formatDate,
@@ -38,8 +38,9 @@ import { Playlists } from "../../components/Playlists/Playlists";
 import { DisplayHtml } from "../../components/common/TextEditor/DisplayHtml";
 import FileElement from "../../components/common/FileElement";
 
-export const VideoContent = () => {
+export const PlaylistContent = () => {
   const { name, id } = useParams();
+  const [doAutoPlay, setDoAutoPlay] = useState(false)
   const [isExpandedDescription, setIsExpandedDescription] =
     useState<boolean>(false);
     const [descriptionHeight, setDescriptionHeight] =
@@ -64,6 +65,7 @@ export const VideoContent = () => {
   const theme = useTheme();
 
   const [videoData, setVideoData] = useState<any>(null);
+  const [playlistData, setPlaylistData] = useState<any>(null);
 
   const hashMapVideos = useSelector(
     (state: RootState) => state.video.hashMapVideos
@@ -133,6 +135,7 @@ export const VideoContent = () => {
 
           setVideoData(combinedData);
           dispatch(addToHashMap(combinedData));
+          checkforPlaylist(name, id);
         }
       }
     } catch (error) {
@@ -141,16 +144,106 @@ export const VideoContent = () => {
     }
   }, []);
 
- 
+  const checkforPlaylist = React.useCallback(async (name, id) => {
+    try {
+      dispatch(setIsLoadingGlobal(true));
+
+      if (!name || !id) return;
+
+      const url = `/arbitrary/resources/search?mode=ALL&service=PLAYLIST&identifier=${id}&limit=1&includemetadata=true&reverse=true&excludeblocked=true&name=${name}&exactmatchnames=true&offset=0`;
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const responseDataSearch = await response.json();
+
+      if (responseDataSearch?.length > 0) {
+        let resourceData = responseDataSearch[0];
+        resourceData = {
+          title: resourceData?.metadata?.title,
+          category: resourceData?.metadata?.category,
+          categoryName: resourceData?.metadata?.categoryName,
+          tags: resourceData?.metadata?.tags || [],
+          description: resourceData?.metadata?.description,
+          created: resourceData?.created,
+          updated: resourceData?.updated,
+          name: resourceData.name,
+          videoImage: "",
+          identifier: resourceData.identifier,
+          service: resourceData.service,
+        };
+
+        const responseData = await qortalRequest({
+          action: "FETCH_QDN_RESOURCE",
+          name: resourceData.name,
+          service: resourceData.service,
+          identifier: resourceData.identifier,
+        });
+
+        if (responseData && !responseData.error) {
+          const combinedData = {
+            ...resourceData,
+            ...responseData,
+          };
+          const videos = [];
+          if (combinedData?.videos) {
+            for (const vid of combinedData.videos) {
+              const url = `/arbitrary/resources/search?mode=ALL&service=DOCUMENT&identifier=${vid.identifier}&limit=1&includemetadata=true&reverse=true&name=${vid.name}&exactmatchnames=true&offset=0`;
+              const response = await fetch(url, {
+                method: "GET",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+              });
+              const responseDataSearchVid = await response.json();
+
+              if (responseDataSearchVid?.length > 0) {
+                let resourceData2 = responseDataSearchVid[0];
+                videos.push(resourceData2);
+              }
+            }
+          }
+          combinedData.videos = videos;
+          setPlaylistData(combinedData);
+          if(combinedData?.videos?.length > 0){
+            const vid = combinedData?.videos[0]
+            const existingVideo = hashMapVideos[vid?.identifier];
+
+            if (existingVideo) {
+              setVideoData(existingVideo);
+            } else {
+              getVideoData(vid?.name, vid?.identifier);
+            }
+          }
+        }
+      }
+    } catch (error) {
+
+    } finally {
+      dispatch(setIsLoadingGlobal(false));
+
+    }
+  }, [hashMapVideos]);
+
+  // React.useEffect(() => {
+  //   if (name && id) {
+  //     const existingVideo = hashMapVideos[id];
+
+  //     if (existingVideo) {
+  //       setVideoData(existingVideo);
+  //       checkforPlaylist(name, id, existingVideo?.code);
+  //     } else {
+  //       getVideoData(name, id);
+  //     }
+  //   }
+  // }, [id, name]);
+
   React.useEffect(() => {
     if (name && id) {
-      const existingVideo = hashMapVideos[id];
-
-      if (existingVideo) {
-        setVideoData(existingVideo);
-      } else {
-        getVideoData(name, id);
-      }
+        checkforPlaylist(name, id);
+   
     }
   }, [id, name]);
 
@@ -192,8 +285,41 @@ export const VideoContent = () => {
         setDescriptionHeight(100)
       }
     }
-  }, [videoData]); 
+  }, [videoData]);
 
+
+  const nextVideo = useMemo(()=> {
+
+    const currentVideoIndex = playlistData?.videos?.findIndex((item)=> item?.identifier === videoData?.id)
+    if(currentVideoIndex !== -1){
+      const nextVideoIndex = currentVideoIndex + 1
+      const findVideo = playlistData?.videos[nextVideoIndex] || null
+      if(findVideo){
+        const id = findVideo?.identifier?.replace("_metadata", "");
+        return {
+          ...findVideo,
+          service: 'VIDEO',
+          identifier: id,
+          jsonId: findVideo?.identifier
+        }
+      }
+    }
+
+    return null
+  }, [playlistData, videoData])
+
+  const onEndVideo = useCallback(()=> {
+    const currentVideoIndex = playlistData?.videos?.findIndex((item)=> item?.identifier === videoData?.id)
+    if(currentVideoIndex !== -1){
+      const nextVideoIndex = currentVideoIndex + 1
+      const findVideo = playlistData?.videos[nextVideoIndex] || null
+      if(findVideo){
+        getVideoData(findVideo?.name, findVideo?.identifier)
+        setDoAutoPlay(true)
+      }
+    }
+
+  }, [videoData, playlistData])
 
   return (
     <Box
@@ -209,7 +335,19 @@ export const VideoContent = () => {
           marginBottom: "30px",
         }}
       >
-        {videoReference && (
+        {videoData && videoData?.videos?.length === 0 ? (
+          <>
+          <Box sx={{
+          width: '100%',
+          display: 'flex',
+          justifyContent: 'center'
+        }}>
+            <Typography>This playlist is empty</Typography>
+          </Box>
+          </>
+        ) : (
+          <>
+            {videoReference && (
           <VideoPlayer
             name={videoReference?.name}
             service={videoReference?.service}
@@ -217,6 +355,9 @@ export const VideoContent = () => {
             user={name}
             jsonId={id}
             poster={videoCover || ""}
+            nextVideo={nextVideo}
+            onEnd={onEndVideo}
+            autoPlay={doAutoPlay}
           />
         )}
 
@@ -367,7 +508,11 @@ export const VideoContent = () => {
           )}
          
         </Box>
+          </>
+        )}
+      
       </VideoPlayerContainer>
+
       <Box
         sx={{
           display: "flex",
@@ -377,6 +522,9 @@ export const VideoContent = () => {
         }}
       >
         <CommentSection postId={id || ""} postName={name || ""} />
+        {playlistData && (
+          <Playlists playlistData={playlistData} currentVideoIdentifier={videoData?.id} onClick={getVideoData} />
+        )}
       </Box>
     </Box>
   );

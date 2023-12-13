@@ -56,6 +56,7 @@ import {
 import { CardContentContainerComment } from "../common/Comments/Comments-styles";
 import { TextEditor } from "../common/TextEditor/TextEditor";
 import { extractTextFromHTML } from "../common/TextEditor/utils";
+import { FiltersCheckbox, FiltersRow, FiltersSubContainer } from "../../pages/Home/VideoList-styles";
 
 const uid = new ShortUniqueId();
 const shortuid = new ShortUniqueId({ length: 5 });
@@ -88,6 +89,8 @@ export const UploadVideo = ({ editId, editContent }: NewCrowdfundProps) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
+  const [coverImageForAll, setCoverImageForAll] = useState<null | string>("");
+
   const [step, setStep] = useState<string>("videos");
   const [playlistCoverImage, setPlaylistCoverImage] = useState<null | string>(
     null
@@ -108,17 +111,29 @@ export const UploadVideo = ({ editId, editContent }: NewCrowdfundProps) => {
 
   const [playlistSetting, setPlaylistSetting] = useState<null | string>(null);
   const [publishes, setPublishes] = useState<any[]>([]);
+  const [isCheckTitleByFile, setIsCheckTitleByFile] = useState(false)
+  const [isCheckSameCoverImage, setIsCheckSameCoverImage] = useState(false)
+  const [isCheckDescriptionIsTitle, setIsCheckDescriptionIsTitle] = useState(false)
+
   const { getRootProps, getInputProps } = useDropzone({
     accept: {
       "video/*": [],
     },
-    maxFiles: 10,
     maxSize: 419430400, // 400 MB in bytes
     onDrop: (acceptedFiles, rejectedFiles) => {
       const formatArray = acceptedFiles.map((item) => {
+
+        let formatTitle = ''
+        if(isCheckTitleByFile && item?.name){
+          const fileExtensionSplit = item?.name?.split(".");
+          if (fileExtensionSplit?.length > 1) {
+            formatTitle = fileExtensionSplit[0]
+          }
+          formatTitle = (formatTitle || "").replace(/[^a-zA-Z0-9\s-_!?]/g, "");
+        }
         return {
           file: item,
-          title: "",
+          title: formatTitle,
           description: "",
           coverImage: "",
         };
@@ -175,6 +190,8 @@ export const UploadVideo = ({ editId, editContent }: NewCrowdfundProps) => {
         if (!playlistCoverImage) throw new Error("Please select cover image");
         if (!selectedCategory) throw new Error("Please select a category");
       }
+      if(files?.length === 0) throw new Error("Please select at least one file");
+      if(isCheckSameCoverImage && !coverImageForAll) throw new Error("Please select cover image");
       if (!userAddress) throw new Error("Unable to locate user address");
       let errorMsg = "";
       let name = "";
@@ -204,10 +221,10 @@ export const UploadVideo = ({ editId, editContent }: NewCrowdfundProps) => {
 
       for (const publish of files) {
         const title = publish.title;
-        const description = publish.description;
+        const description = isCheckDescriptionIsTitle ? publish.title : publish.description;
         const category = selectedCategoryVideos.id;
         const subcategory = selectedSubCategoryVideos?.id || "";
-        const coverImage = publish.coverImage;
+        const coverImage = isCheckSameCoverImage ? coverImageForAll : publish.coverImage;
         const file = publish.file;
         const sanitizeTitle = title
           .replace(/[^a-zA-Z0-9\s-]/g, "")
@@ -345,7 +362,7 @@ export const UploadVideo = ({ editId, editContent }: NewCrowdfundProps) => {
           subcategory,
         };
 
-        const codes = videos.map((item) => `c:${item.code};`).join("");
+        const codes = videos.map((item) => `c:${item.code};`).slice(0,10).join("");
 
         let metadescription =
           `**category:${category};subcategory:${subcategory};${codes}**` +
@@ -398,7 +415,7 @@ export const UploadVideo = ({ editId, editContent }: NewCrowdfundProps) => {
             videos: videosInPlaylist,
           };
           const codes = videosInPlaylist
-            .map((item) => `c:${item.code};`)
+            .map((item) => `c:${item.code};`).slice(0,10)
             .join("");
 
           let metadescription =
@@ -502,11 +519,13 @@ export const UploadVideo = ({ editId, editContent }: NewCrowdfundProps) => {
 
   const next = () => {
     try {
+      if(isCheckSameCoverImage && !coverImageForAll) throw new Error("Please select cover image");
+      if(files?.length === 0) throw new Error("Please select at least one file");
       if (!selectedCategoryVideos) throw new Error("Please select a category");
       files.forEach((file) => {
         if (!file.title) throw new Error("Please enter a title");
-        if (!file.description) throw new Error("Please enter a description");
-        if (!file.coverImage) throw new Error("Please select cover image");
+        if (!isCheckTitleByFile && !file.description) throw new Error("Please enter a description");
+        if (!isCheckSameCoverImage && !file.coverImage) throw new Error("Please select cover image");
       });
 
       setStep("playlist");
@@ -560,6 +579,38 @@ export const UploadVideo = ({ editId, editContent }: NewCrowdfundProps) => {
 
           {step === "videos" && (
             <>
+            <FiltersSubContainer>
+            <FiltersRow>
+            Populate Titles by filename (when the files are picked)
+              <FiltersCheckbox
+                checked={isCheckTitleByFile}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  setIsCheckTitleByFile(e.target.checked);
+                }}
+                inputProps={{ "aria-label": "controlled" }}
+              />
+            </FiltersRow>
+            <FiltersRow>
+            All videos use the same Cover Image
+              <FiltersCheckbox
+                checked={isCheckSameCoverImage}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  setIsCheckSameCoverImage(e.target.checked);
+                }}
+                inputProps={{ "aria-label": "controlled" }}
+              />
+            </FiltersRow>
+            <FiltersRow>
+            Populate all descriptions by Title 
+              <FiltersCheckbox
+                checked={isCheckDescriptionIsTitle}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                  setIsCheckDescriptionIsTitle(e.target.checked);
+                }}
+                inputProps={{ "aria-label": "controlled" }}
+              />
+            </FiltersRow>
+          </FiltersSubContainer>
               <Box
                 {...getRootProps()}
                 sx={{
@@ -575,6 +626,7 @@ export const UploadVideo = ({ editId, editContent }: NewCrowdfundProps) => {
                   Drag and drop a video files here or click to select files
                 </Typography>
               </Box>
+              
               <Box
                 sx={{
                   display: "flex",
@@ -631,11 +683,46 @@ export const UploadVideo = ({ editId, editContent }: NewCrowdfundProps) => {
                   </>
                 )}
               </Box>
+              {files?.length > 0 && isCheckSameCoverImage && (
+                      <>
+                       {!coverImageForAll ? (
+                      <ImageUploader
+                        onPick={(img: string) =>
+                          setCoverImageForAll(img)
+                        }
+                      >
+                        <AddCoverImageButton variant="contained">
+                          Add Cover Image
+                          <AddLogoIcon
+                            sx={{
+                              height: "25px",
+                              width: "auto",
+                            }}
+                          ></AddLogoIcon>
+                        </AddCoverImageButton>
+                      </ImageUploader>
+                    ) : (
+                      <LogoPreviewRow>
+                        <CoverImagePreview src={coverImageForAll} alt="logo" />
+                        <TimesIcon
+                          color={theme.palette.text.primary}
+                          onClickFunc={() =>
+                            setCoverImageForAll(null)
+                          }
+                          height={"32"}
+                          width={"32"}
+                        ></TimesIcon>
+                      </LogoPreviewRow>
+                    )}
+                      </>
+                    )}
               {files.map((file, index) => {
                 return (
                   <React.Fragment key={index}>
                     <Typography>{file?.file?.name}</Typography>
-                    {!file?.coverImage ? (
+                    {!isCheckSameCoverImage && (
+                      <>
+                       {!file?.coverImage ? (
                       <ImageUploader
                         onPick={(img: string) =>
                           handleOnchange(index, "coverImage", img)
@@ -664,6 +751,9 @@ export const UploadVideo = ({ editId, editContent }: NewCrowdfundProps) => {
                         ></TimesIcon>
                       </LogoPreviewRow>
                     )}
+                      </>
+                    )}
+                   
                     <CustomInputField
                       name="title"
                       label="Title of video"
@@ -675,12 +765,17 @@ export const UploadVideo = ({ editId, editContent }: NewCrowdfundProps) => {
                       inputProps={{ maxLength: 180 }}
                       required
                     />
-                    <Typography sx={{
+                    {!isCheckDescriptionIsTitle && (
+                      <>
+                         <Typography sx={{
                       fontSize: '18px'
                     }}>Description of video</Typography>
                     <TextEditor inlineContent={file?.description} setInlineContent={(value)=> {
                       handleOnchange(index, "description", value)
                     }} />
+                      </>
+                    )}
+                   
                     {/* <CustomInputField
                       name="description"
                       label="Describe your video in a few words"
@@ -1055,6 +1150,7 @@ export const UploadVideo = ({ editId, editContent }: NewCrowdfundProps) => {
             setPlaylistTitle("");
             setPlaylistDescription("");
             setSelectedCategory(null);
+            setCoverImageForAll(null)
             setSelectedSubCategory(null);
             setSelectedCategoryVideos(null);
             setSelectedSubCategoryVideos(null);

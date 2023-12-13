@@ -4,7 +4,7 @@ import { CrowdfundSubTitle, CrowdfundSubTitleRow } from '../UploadVideo/Upload-s
 import { Box, Typography, useTheme } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
 
-export const Playlists = ({playlistData, currentVideoIdentifier}) => {
+export const Playlists = ({playlistData, currentVideoIdentifier, onClick}) => {
     const theme = useTheme();
     const navigate = useNavigate()
 
@@ -44,8 +44,8 @@ export const Playlists = ({playlistData, currentVideoIdentifier}) => {
                 }}
                 onClick={()=> {
                     if(isCurrentVidPlayling) return
-
-                    navigate(`/video/${vid.name}/${vid.identifier}`)
+                    onClick(vid.name, vid.identifier)
+                    // navigate(`/video/${vid.name}/${vid.identifier}`)
                 }}
                 >
                     <Typography sx={{

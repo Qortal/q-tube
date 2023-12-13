@@ -61,6 +61,9 @@ interface VideoPlayerProps {
   customStyle?: any
   user?: string
   jsonId?: string
+  nextVideo?: any
+  onEnd?: ()=> void
+  autoPlay?: boolean
 }
 
 export const VideoPlayer: React.FC<VideoPlayerProps> = ({
@@ -72,7 +75,10 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
   from = null,
   customStyle = {},
   user = '',
-  jsonId = ''
+  jsonId = '',
+  nextVideo,
+  onEnd,
+  autoPlay
 }) => {
   const dispatch = useDispatch()
   const videoRef = useRef<HTMLVideoElement | null>(null)
@@ -89,6 +95,8 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
   const [anchorEl, setAnchorEl] = useState(null)
   const videoPlaying = useSelector((state: RootState) => state.global.videoPlaying);
   const reDownload = useRef<boolean>(false)
+  const reDownloadNextVid = useRef<boolean>(false)
+
   const isFetchingProperties = useRef<boolean>(false)
 
   const status = useRef<null | string>(null)
@@ -131,6 +139,8 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
     }
   }
 
+
+
   const decreaseSpeed = () => {
     if (videoRef.current) {
       updatePlaybackRate(playbackRate - speedChange);
@@ -139,6 +149,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
   useEffect(()=> {
     reDownload.current = false
+    reDownloadNextVid.current = false
     setIsLoading(false)
     setCanPlay(false)
     setProgress(0)
@@ -147,6 +158,15 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
     isFetchingProperties.current =false
     status.current = null
   }, [identifier])
+
+  useEffect(()=> {
+    if(autoPlay && identifier){
+      setStartPlay(true)
+      setPlaying(true)
+      togglePlay(undefined, true)
+   
+    }
+  }, [autoPlay, startPlay, identifier])
 
   
 
@@ -172,7 +192,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
   const toggleRef = useRef<any>(null)
   const { downloadVideo } = useContext(MyContext)
-  const togglePlay = async () => {
+  const togglePlay = async (event?: any, isPlay?: boolean) => {
     if (!videoRef.current) return
     setStartPlay(true)
     if (!src || resourceStatus?.status !== 'READY') {
@@ -185,12 +205,17 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
       })
       getSrc()
     }
-    if (playing) {
+    if (playing && !isPlay) {
       videoRef.current.pause()
     } else {
       videoRef.current.play()
     }
-    setPlaying(!playing)
+    if(isPlay){
+      setPlaying(true)
+    } else {
+      setPlaying(!playing)
+    }
+    
   }
 
   const onVolumeChange = (_: any, value: number | number[]) => {
@@ -212,6 +237,9 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
   const handleEnded = () => {
     setPlaying(false)
+    if(onEnd){
+      onEnd()
+    }
   }
 
   const updateProgress = () => {
@@ -445,8 +473,36 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
     ) {
       refetchInInterval()
       reDownload.current = true
+
     }
   }, [getSrc, resourceStatus])
+
+  useEffect(() => {
+    if(resourceStatus?.status){
+      status.current = resourceStatus?.status
+    }
+    if (
+      resourceStatus?.status === 'READY' &&
+      reDownloadNextVid?.current === false
+    ) {
+      if(nextVideo){
+        downloadVideo({
+          name: nextVideo?.name,
+          service: nextVideo?.service,
+          identifier: nextVideo?.identifier,
+          properties: {
+            jsonId: nextVideo?.jsonId,
+            user
+          }
+        })
+      }
+      reDownloadNextVid.current = true
+
+    }
+  }, [getSrc, resourceStatus])
+
+
+
 
   const handleMenuOpen = (event: any) => {
     setAnchorEl(event.currentTarget)
@@ -579,6 +635,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
       case '9': setProgressAbsolute(90); break;
     }
   }
+
 
   return (
     <VideoContainer

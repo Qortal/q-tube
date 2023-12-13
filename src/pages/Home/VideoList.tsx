@@ -632,7 +632,7 @@ export const VideoList = ({ mode }: VideoListProps) => {
                       onClick={() => {
                         if(!hasHash) return
                         navigate(
-                          `/video/${videoObj?.videos?.[0]?.name}/${videoObj?.videos?.[0]?.identifier}`
+                          `/playlist/${videoObj?.user}/${videoObj?.id}`
                         );
                       }}
                     >

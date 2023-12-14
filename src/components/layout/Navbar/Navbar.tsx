@@ -37,6 +37,7 @@ import { RootState } from "../../../state/store";
 import { useWindowSize } from "../../../hooks/useWindowSize";
 import { UploadVideo } from "../../UploadVideo/UploadVideo";
 import { StyledButton } from "../../UploadVideo/Upload-styles";
+import { Notifications } from "../../common/Notifications/Notifications";
 interface Props {
   isAuthenticated: boolean;
   userName: string | null;
@@ -354,6 +355,9 @@ const NavBar: React.FC<Props> = ({
             />
           </Box>
         </Popover>
+        {isAuthenticated && userName && (
+          <Notifications />
+        )}
 
         <DownloadTaskManager />
         {isAuthenticated && userName && (

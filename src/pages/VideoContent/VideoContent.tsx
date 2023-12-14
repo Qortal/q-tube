@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef, useEffect } from "react";
+import React, { useState, useMemo, useRef, useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { setIsLoadingGlobal } from "../../state/features/globalSlice";
@@ -33,15 +33,94 @@ import {
   CrowdfundSubTitle,
   CrowdfundSubTitleRow,
 } from "../../components/UploadVideo/Upload-styles";
-import { QTUBE_VIDEO_BASE } from "../../constants";
+import { FOR_SUPER_LIKE, QTUBE_VIDEO_BASE, SUPER_LIKE_BASE, minPriceSuperlike } from "../../constants";
 import { Playlists } from "../../components/Playlists/Playlists";
 import { DisplayHtml } from "../../components/common/TextEditor/DisplayHtml";
 import FileElement from "../../components/common/FileElement";
+import { SuperLike } from "../../components/common/SuperLike/SuperLike";
+import { CommentContainer } from "../../components/common/Comments/Comments-styles";
+import { Comment } from "../../components/common/Comments/Comment";
+import { SuperLikesSection } from "../../components/common/SuperLikesList/SuperLikesSection";
+
+export function isTimestampWithinRange(resTimestamp, resCreated) {
+  // Calculate the absolute difference in milliseconds
+  var difference = Math.abs(resTimestamp - resCreated);
+
+  // 2 minutes in milliseconds
+  var twoMinutesInMilliseconds = 2 * 60 * 1000;
+
+  // Check if the difference is within 2 minutes
+  return difference <= twoMinutesInMilliseconds;
+}
+
+export function extractSigValue(metadescription) {
+  // Function to extract the substring within double asterisks
+  function extractSubstring(str) {
+      const match = str.match(/\*\*(.*?)\*\*/);
+      return match ? match[1] : null;
+  }
+
+  // Function to extract the 'sig' value
+  function extractSig(str) {
+      const regex = /sig:(.*?)(;|$)/;
+      const match = str.match(regex);
+      return match ? match[1] : null;
+  }
+
+  // Extracting the relevant substring
+  const relevantSubstring = extractSubstring(metadescription);
+
+  if (relevantSubstring) {
+      // Extracting the 'sig' value
+      return extractSig(relevantSubstring);
+  } else {
+      return null;
+  }
+}
+
+export const getPaymentInfo = async (signature: string) => {
+  try {
+    const url = `/transactions/signature/${signature}`;
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    // Coin payment info must be added to responseData so we can display it to the user
+    const responseData = await response.json();
+    if (responseData && !responseData.error) {
+     return responseData;
+    } else {
+      throw new Error('unable to get payment')
+    }
+  } catch (error) {
+    throw new Error('unable to get payment')
+  }
+};
+
 
 export const VideoContent = () => {
   const { name, id } = useParams();
   const [isExpandedDescription, setIsExpandedDescription] =
     useState<boolean>(false);
+  const [superlikeList, setSuperlikelist] = useState<any[]>([])
+  const [loadingSuperLikes, setLoadingSuperLikes] = useState<boolean>(false)
+
+
+  const calculateAmountSuperlike = useMemo(()=> {
+    const totalQort = superlikeList?.reduce((acc, curr)=> {
+      if(curr?.amount && !isNaN(parseFloat(curr.amount))) return acc + parseFloat(curr.amount)
+      else return acc
+    }, 0)
+    return totalQort?.toFixed(2)
+  }, [superlikeList])
+  const numberOfSuperlikes = useMemo(()=> {
+ 
+    return superlikeList?.length ?? 0
+  }, [superlikeList])
+  
+  const [nameAddress, setNameAddress] = useState<string>('')
     const [descriptionHeight, setDescriptionHeight] =
     useState<null | number>(null);
     
@@ -50,8 +129,24 @@ export const VideoContent = () => {
   );
   const contentRef = useRef(null);
   
-  
+  const getAddressName = async (name)=> {
+    const response = await qortalRequest({
+      action: "GET_NAME_DATA",
+      name: name
+    });
 
+    if(response?.owner){
+      setNameAddress(response.owner)
+    }
+  }
+
+  useEffect(()=> {
+    if(name){
+      
+
+        getAddressName(name)
+    }
+  }, [name])
   const avatarUrl = useMemo(() => {
     let url = "";
     if (name && userAvatarHash[name]) {
@@ -194,6 +289,79 @@ export const VideoContent = () => {
     }
   }, [videoData]); 
 
+  
+  const getComments = useCallback(
+    async (id, nameAddressParam) => {
+      if(!id) return
+      try {
+        setLoadingSuperLikes(true);
+      
+     
+        const url = `/arbitrary/resources/search?mode=ALL&service=BLOG_COMMENT&query=${SUPER_LIKE_BASE}${id.slice(
+          0,39
+        )}&limit=100&includemetadata=true&reverse=true&excludeblocked=true`;
+        const response = await fetch(url, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        const responseData = await response.json();
+        let comments: any[] = [];
+        for (const comment of responseData) {
+          if (comment.identifier && comment.name && comment?.metadata?.description) {
+            
+    
+              try {
+                const result = extractSigValue(comment?.metadata?.description)
+            if(!result) continue
+               const res = await getPaymentInfo(result);
+               if(+res?.amount >= minPriceSuperlike && res.recipient === nameAddressParam && isTimestampWithinRange(res?.timestamp, comment.created)){
+
+                const url = `/arbitrary/BLOG_COMMENT/${comment.name}/${comment.identifier}`;
+                const response = await fetch(url, {
+                  method: "GET",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                });
+                if(!response.ok) continue
+                const responseData2 = await response.text();
+                 comments = [...comments, {
+                   ...comment,
+                   message: responseData2,
+                   amount: res.amount
+                 }];
+ 
+               }
+ 
+              } catch (error) {
+               
+              }
+ 
+             
+
+       
+        
+          }
+        }
+    
+        setSuperlikelist(comments);
+      
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoadingSuperLikes(false);
+      }
+    },
+    []
+  );
+
+  useEffect(() => {
+    if(!nameAddress || !id) return
+    getComments(id, nameAddress);
+  }, [getComments, id, nameAddress]);
+
 
   return (
     <Box
@@ -248,15 +416,32 @@ export const VideoContent = () => {
                     </FileElement>
                   </FileAttachmentContainer>
                   </Box>
-        <VideoTitle
+                  
+          <Box sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            width: '100%',
+            marginTop: '20px',
+            gap: '10px'
+          }}>
+             <VideoTitle
           variant="h1"
           color="textPrimary"
           sx={{
-            textAlign: "center",
+            textAlign: "start",
           }}
         >
           {videoData?.title}
         </VideoTitle>
+        {videoData && (
+              <SuperLike numberOfSuperlikes={numberOfSuperlikes} totalAmount={calculateAmountSuperlike} name={videoData?.user} service={videoData?.service} identifier={videoData?.id} onSuccess={(val)=> {
+                setSuperlikelist((prev)=> [val, ...prev])
+              }} />
+        )}
+      
+          </Box>
+       
         {videoData?.created && (
           <Typography
             variant="h6"
@@ -368,6 +553,10 @@ export const VideoContent = () => {
          
         </Box>
       </VideoPlayerContainer>
+      <SuperLikesSection getMore={()=> {
+
+      }} loadingSuperLikes={loadingSuperLikes} superlikes={superlikeList} postId={id || ""} postName={name || ""} />
+     
       <Box
         sx={{
           display: "flex",

@@ -10,6 +10,8 @@ import {
   useTheme,
 } from "@mui/material";
 import React, { useCallback, useState, useEffect } from "react";
+import ThumbUpIcon from "@mui/icons-material/ThumbUp";
+
 import { CommentEditor } from "./CommentEditor";
 import {
   CardContentContainerComment,
@@ -34,12 +36,14 @@ interface CommentProps {
   postId: string;
   postName: string;
   onSubmit: (obj?: any, isEdit?: boolean) => void;
+  amount?: null | number
 }
 export const Comment = ({
   comment,
   postId,
   postName,
   onSubmit,
+  amount
 }: CommentProps) => {
   const [isReplying, setIsReplying] = useState<boolean>(false);
   const [isEditing, setIsEditing] = useState<boolean>(false);
@@ -102,6 +106,7 @@ export const Comment = ({
         message={comment?.message}
         replies={comment?.replies || []}
         setCurrentEdit={setCurrentEdit}
+        amount={amount}
       >
         <Box
           sx={{
@@ -186,6 +191,8 @@ export const CommentCard = ({
   replies,
   children,
   setCurrentEdit,
+  isReply,
+  amount
 }: any) => {
   const [avatarUrl, setAvatarUrl] = React.useState<string>("");
   const { user } = useSelector((state: RootState) => state.auth);
@@ -228,7 +235,31 @@ export const CommentCard = ({
           />
         </Box>
         <StyledCardColComment>
+          <Box sx={{
+            display: 'flex',
+            gap: '10px',
+            alignItems: 'center'
+          }}>
           <AuthorTextComment>{name}</AuthorTextComment>
+          {!isReply && (
+             <ThumbUpIcon
+             style={{
+               color: "gold",
+               cursor: "pointer",
+             }}
+           />
+          )}
+          {amount && (
+            <Typography sx={{
+              fontSize: '20px',
+              color: 'gold'
+            }}>
+              {parseFloat(amount)?.toFixed(2)} QORT
+            </Typography>
+          )}
+         
+          </Box>
+          
         </StyledCardColComment>
       </StyledCardHeaderComment>
       <StyledCardContentComment>
@@ -257,6 +288,7 @@ export const CommentCard = ({
                 name={reply?.name}
                 message={reply?.message}
                 setCurrentEdit={setCurrentEdit}
+                isReply
               >
                 <Box
                   sx={{

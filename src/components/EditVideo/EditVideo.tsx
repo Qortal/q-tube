@@ -43,7 +43,7 @@ import {
 } from "../../state/features/videoSlice";
 import ImageUploader from "../common/ImageUploader";
 import { QTUBE_VIDEO_BASE, categories, subCategories } from "../../constants";
-import { MultiplePublish } from "../common/MultiplePublish/MultiplePublish";
+import { MultiplePublish } from "../common/MultiplePublish/MultiplePublishAll";
 import { TextEditor } from "../common/TextEditor/TextEditor";
 import { extractTextFromHTML } from "../common/TextEditor/utils";
 
@@ -75,7 +75,7 @@ export const EditVideo = () => {
   const editVideoProperties = useSelector(
     (state: RootState) => state.video.editVideoProperties
   );
-  const [publishes, setPublishes] = useState<any[]>([]);
+  const [publishes, setPublishes] = useState<any>(null);
   const [isOpenMultiplePublish, setIsOpenMultiplePublish] = useState(false);
   const [videoPropertiesToSetToRedux, setVideoPropertiesToSetToRedux] =
     useState(null);
@@ -315,7 +315,11 @@ export const EditVideo = () => {
         listOfPublishes.push(requestBodyVideo);
       }
 
-      setPublishes(listOfPublishes);
+      const multiplePublish = {
+        action: "PUBLISH_MULTIPLE_QDN_RESOURCES",
+        resources: [...listOfPublishes],
+      };
+      setPublishes(multiplePublish);
       setIsOpenMultiplePublish(true);
       setVideoPropertiesToSetToRedux({
         ...editVideoProperties,

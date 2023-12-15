@@ -6,6 +6,7 @@ interface GlobalState {
   videos: Video[]
   filteredVideos: Video[]
   hashMapVideos: Record<string, Video>
+  hashMapSuperlikes: Record<string, any>
   countNewVideos: number
   isFiltering: boolean
   filterValue: string
@@ -21,6 +22,7 @@ const initialState: GlobalState = {
   videos: [],
   filteredVideos: [],
   hashMapVideos: {},
+  hashMapSuperlikes: {},
   countNewVideos: 0,
   isFiltering: false,
   filterValue: '',
@@ -113,6 +115,10 @@ export const videoSlice = createSlice({
       const video = action.payload
       state.hashMapVideos[video.id] = video
     },
+    addtoHashMapSuperlikes: (state, action) => {
+      const superlike = action.payload
+      state.hashMapSuperlikes[superlike.identifier] = superlike
+    }, 
     updateInHashMap: (state, action) => {
       const { id } = action.payload
       const video = action.payload
@@ -197,7 +203,8 @@ export const {
   changeSelectedSubCategoryVideos,
   blockUser,
   setEditVideo,
-  setEditPlaylist
+  setEditPlaylist,
+  addtoHashMapSuperlikes
 } = videoSlice.actions
 
 export default videoSlice.reducer

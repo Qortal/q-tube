@@ -366,7 +366,12 @@ export const EditPlaylist = () => {
         );
       }
       
-      
+      dispatch(
+        setNotification({
+          msg: "Playlist published",
+          alertType: "success",
+        })
+      );
 
       onClose();
     } catch (error: any) {
@@ -394,21 +399,7 @@ export const EditPlaylist = () => {
     }
   }
 
-  const handleOnchange = (index: number, type: string, value: string) => {
-    // setFiles((prev) => {
-    //   let formattedValue = value
-    //   console.log({type})
-    //   if(type === 'title'){
-    //     formattedValue = value.replace(/[^a-zA-Z0-9\s]/g, "")
-    //   }
-    //   const copyFiles = [...prev];
-    //   copyFiles[index] = {
-    //     ...copyFiles[index],
-    //     [type]: formattedValue,
-    //   };
-    //   return copyFiles;
-    // });
-  };
+
 
   const handleOptionCategoryChangeVideos = (
     event: SelectChangeEvent<string>

@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../state/store";
 import ShortUniqueId from "short-unique-id";
 import { setNotification } from "../../../state/features/notificationsSlice";
-import { toBase64 } from "../../../utils/toBase64";
+import { objectToBase64, toBase64 } from "../../../utils/toBase64";
 import localforage from "localforage";
 import {
   CommentInput,
@@ -12,6 +12,7 @@ import {
   SubmitCommentButton,
 } from "./Comments-styles";
 import { COMMENT_BASE } from "../../../constants";
+import { addtoHashMapSuperlikes } from "../../../state/features/videoSlice";
 const uid = new ShortUniqueId();
 
 const notification = localforage.createInstance({
@@ -83,6 +84,9 @@ interface CommentEditorProps {
   commentId?: string;
   isEdit?: boolean;
   commentMessage?: string;
+  isSuperLike?: boolean
+  comment?: any;
+  hasHash?: boolean
 }
 
 export function utf8ToBase64(inputString: string): string {
@@ -104,7 +108,10 @@ export const CommentEditor = ({
   isReply,
   commentId,
   isEdit,
-  commentMessage
+  commentMessage,
+  isSuperLike,
+  comment,
+  hasHash
 }: CommentEditorProps) => {
   const [value, setValue] = useState<string>("");
   const dispatch = useDispatch();
@@ -149,13 +156,34 @@ export const CommentEditor = ({
     }
 
     try {
+      let data64 = null
+      let description = ""
+      let tag1 = ""
+      let superObj =  {}
+      if(isSuperLike){
+        if(!comment?.metadata?.description || !comment?.metadata?.tags[0] || !comment?.transactionReference || !comment?.notificationInformation || !comment?.about) throw new Error('unable to edit Super like')
+        description = comment?.metadata?.description
+      tag1 = comment?.metadata?.tags[0]
+         superObj = {
+          comment: value,
+          transactionReference: comment.transactionReference,
+          notificationInformation: comment.notificationInformation,
+          about: comment.about
+        }
+        const superLikeToBase64 = await objectToBase64(superObj);
+        data64 = superLikeToBase64
+      }
+      if(isSuperLike && !data64) throw new Error('unable to edit Super like')
+
       const base64 = utf8ToBase64(value);
       const resourceResponse = await qortalRequest({
         action: "PUBLISH_QDN_RESOURCE",
         name: name,
         service:   "BLOG_COMMENT",
-        data64: base64,
+        data64: isSuperLike ? data64 : base64,
         identifier: identifier,
+        description,
+        tag1
       });
       dispatch(
         setNotification({
@@ -163,6 +191,15 @@ export const CommentEditor = ({
           alertType: "success",
         })
       );
+
+      if(isSuperLike){
+        dispatch(addtoHashMapSuperlikes({
+          ...superObj,
+          ...comment,
+          message: value
+        }))
+
+      }
       if (idForNotification) {
         addItem({
           id: idForNotification,
@@ -217,13 +254,18 @@ export const CommentEditor = ({
       }
     
       await publishComment(identifier, idForNotification);
-      onSubmit({
-        created: Date.now(),
-        identifier,
-        message: value,
-        service,
-        name: user?.name,
-      });
+      if(isSuperLike){
+        onSubmit({})
+      } else {
+        onSubmit({
+          created: Date.now(),
+          identifier,
+          message: value,
+          service,
+          name: user?.name,
+        });
+      }
+      
       setValue("");
     } catch (error) {
       console.error(error);

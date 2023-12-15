@@ -27,6 +27,8 @@ interface Props {
 let timer: number | null = null;
 
 export const queue = new RequestQueue();
+export const queueSuperlikes = new RequestQueue();
+
 
 const GlobalWrapper: React.FC<Props> = ({ children, setTheme }) => {
   const dispatch = useDispatch();

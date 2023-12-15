@@ -115,7 +115,7 @@ export const Notifications = () => {
                     let urlReference = null
                     try {
                         let idForUrl = extractIdValue(comment?.metadata?.description)
-                        const url = `/arbitrary/resources/search?mode=ALL&service=DOCUMENT&identifier=${idForUrl}&limit=1&includemetadata=false&reverse=true&excludeblocked=true&offset=0&name=${username}`;
+                        const url = `/arbitrary/resources/search?mode=ALL&service=DOCUMENT&identifier=${idForUrl}&limit=1&includemetadata=false&reverse=false&excludeblocked=true&offset=0&name=${username}`;
                         const response2 = await fetch(url, {
                             method: "GET",
                             headers: {

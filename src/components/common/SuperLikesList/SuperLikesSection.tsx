@@ -57,6 +57,9 @@ export const SuperLikesSection = ({ loadingSuperLikes, superlikes, postId, postN
   const { user } = useSelector((state: RootState) => state.auth);
   const [newMessages, setNewMessages] = useState(0);
   const [loadingComments, setLoadingComments] = useState<boolean>(null);
+  const hashMapSuperlikes = useSelector(
+    (state: RootState) => state.video.hashMapSuperlikes
+  )
   const onSubmit = (obj?: any, isEdit?: boolean) => {
     if (isEdit) {
       setListComments((prev: any[]) => {
@@ -168,7 +171,7 @@ export const SuperLikesSection = ({ loadingSuperLikes, superlikes, postId, postN
   );
 
   useEffect(() => {
-    if(superlikes.length > 0 && postId){
+    if(postId){
       getComments(superlikes, postId)
     }
   }, [getComments, superlikes, postId]);
@@ -188,7 +191,6 @@ export const SuperLikesSection = ({ loadingSuperLikes, superlikes, postId, postN
     }, []);
   }, [listComments]);
 
-  console.log({loadingComments, listComments, superlikes})
 
   return (
     <>
@@ -212,14 +214,24 @@ export const SuperLikesSection = ({ loadingSuperLikes, superlikes, postId, postN
           ) : (
             <CommentContainer>
               {structuredCommentList.map((comment: any) => {
+                let hasHash = false
+                let message = {...comment}
+                let hash = {}
+                if(hashMapSuperlikes[comment?.identifier]){
+                  message.message = hashMapSuperlikes[comment?.identifier]?.comment || ""
+                  hasHash = true
+                  hash = hashMapSuperlikes[comment?.identifier]
+                }
                 return (
                   <Comment
                     key={comment?.identifier}
-                    comment={comment}
+                    comment={{...message, ...hash}}
                     onSubmit={onSubmit}
                     postId={postId}
                     postName={postName}
                     amount={comment?.amount || null}
+                    isSuperLike
+                    hasHash={hasHash}
                   />
                 );
               })}

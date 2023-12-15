@@ -37,13 +37,17 @@ interface CommentProps {
   postName: string;
   onSubmit: (obj?: any, isEdit?: boolean) => void;
   amount?: null | number
+  isSuperLike?: boolean
+  hasHash?: boolean
 }
 export const Comment = ({
   comment,
   postId,
   postName,
   onSubmit,
-  amount
+  amount,
+  isSuperLike,
+  hasHash
 }: CommentProps) => {
   const [isReplying, setIsReplying] = useState<boolean>(false);
   const [isEditing, setIsEditing] = useState<boolean>(false);
@@ -90,6 +94,9 @@ export const Comment = ({
                   isEdit
                   commentId={currentEdit?.identifier}
                   commentMessage={currentEdit?.message}
+                  isSuperLike={!!currentEdit?.transactionReference}
+                  comment={comment}
+                  hasHash={hasHash}
                 />
               </Box>
             </DialogContent>
@@ -137,7 +144,7 @@ export const Comment = ({
             >
               reply
             </CommentActionButton>
-            {user?.name === comment?.name && (
+            {user?.name === comment?.name && hasHash && (
               <CommentActionButton
                 size="small"
                 variant="contained"

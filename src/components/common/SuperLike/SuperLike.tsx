@@ -19,7 +19,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { setNotification } from "../../../state/features/notificationsSlice";
 import ShortUniqueId from "short-unique-id";
 import { objectToBase64 } from "../../../utils/toBase64";
-import { FOR, FOR_SUPER_LIKE, QTUBE_VIDEO_BASE, SUPER_LIKE_BASE, minPriceSuperlike } from "../../../constants";
+import {
+  FOR,
+  FOR_SUPER_LIKE,
+  QTUBE_VIDEO_BASE,
+  SUPER_LIKE_BASE,
+  minPriceSuperlike,
+} from "../../../constants";
 import { CommentInput } from "../Comments/Comments-styles";
 import {
   CrowdfundActionButton,
@@ -33,7 +39,14 @@ import { RootState } from "../../../state/store";
 
 const uid = new ShortUniqueId({ length: 4 });
 
-export const SuperLike = ({ onSuccess, name, service, identifier, totalAmount, numberOfSuperlikes }) => {
+export const SuperLike = ({
+  onSuccess,
+  name,
+  service,
+  identifier,
+  totalAmount,
+  numberOfSuperlikes,
+}) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [amount, setAmount] = useState<number>(10);
   const [comment, setComment] = useState<string>("");
@@ -56,8 +69,8 @@ export const SuperLike = ({ onSuccess, name, service, identifier, totalAmount, n
 
   async function publishSuperLike() {
     try {
-        if(!username) throw new Error("You need a name to publish")
-        if(!name) throw new Error("Could not retrieve content creator's name");
+      if (!username) throw new Error("You need a name to publish");
+      if (!name) throw new Error("Could not retrieve content creator's name");
 
       let resName = await qortalRequest({
         action: "GET_NAME_DATA",
@@ -65,13 +78,15 @@ export const SuperLike = ({ onSuccess, name, service, identifier, totalAmount, n
       });
 
       const address = resName.owner;
-      if(!identifier) throw new Error("Could not retrieve id of video post");
-      if (comment.length > 200) throw new Error("Comment needs to be under 200 characters")
+      if (!identifier) throw new Error("Could not retrieve id of video post");
+      //   if (comment.length > 200) throw new Error("Comment needs to be under 200 characters")
 
       if (!address)
         throw new Error("Could not retrieve content creator's address");
       if (!amount || amount < minPriceSuperlike)
-        throw new Error(`The amount needs to be at least ${minPriceSuperlike} QORT`);
+        throw new Error(
+          `The amount needs to be at least ${minPriceSuperlike} QORT`
+        );
 
       let listOfPublishes = [];
 
@@ -82,9 +97,12 @@ export const SuperLike = ({ onSuccess, name, service, identifier, totalAmount, n
         amount: amount,
       });
 
-    
-
-      let metadescription = `**sig:${res.signature};${FOR}:${name}_${FOR_SUPER_LIKE};nm:${name.slice(0,20)};id:${identifier.slice(-30)}**`;
+      let metadescription = `**sig:${
+        res.signature
+      };${FOR}:${name}_${FOR_SUPER_LIKE};nm:${name.slice(
+        0,
+        20
+      )};id:${identifier.slice(-30)}**`;
 
       const id = uid();
       const identifierSuperLike = `${SUPER_LIKE_BASE}${identifier.slice(
@@ -92,14 +110,25 @@ export const SuperLike = ({ onSuccess, name, service, identifier, totalAmount, n
         39
       )}_${id}`;
 
+      const superLikeToBase64 = await objectToBase64({
+        comment,
+        transactionReference: res.signature,
+        notificationInformation: {
+          name,
+          identifier,
+          for: `${name}_${FOR_SUPER_LIKE}`,
+        },
+        about:
+          "Super likes are a way to suppert your favorite content creators. Attach a message to the Super like and have your message seen before normal comments. There is a minimum amount for a Super like. Each Super like is verified before displaying to make there aren't any non-paid Super likes",
+      });
       // Description is obtained from raw data
-      const base64 = utf8ToBase64(comment);
+      //   const base64 = utf8ToBase64(comment);
 
       const requestBodyJson: any = {
         action: "PUBLISH_QDN_RESOURCE",
         name: username,
         service: "BLOG_COMMENT",
-        data64: base64,
+        data64: superLikeToBase64,
         title: "",
         description: metadescription,
         identifier: identifierSuperLike,
@@ -107,7 +136,6 @@ export const SuperLike = ({ onSuccess, name, service, identifier, totalAmount, n
         filename: `superlike_metadata.json`,
       };
 
-     
       listOfPublishes.push(requestBodyJson);
 
       setPublishes(listOfPublishes);
@@ -140,47 +168,63 @@ export const SuperLike = ({ onSuccess, name, service, identifier, totalAmount, n
     <>
       <Box
         onClick={() => {
+          if (username === name) {
+            dispatch(
+              setNotification({
+                msg: "You cannot send yourself a Super like",
+                alertType: "error",
+              })
+            );
+            return;
+          }
           setIsOpen(true);
         }}
         sx={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '15px',
-            cursor: 'pointer',
-            flexShrink: 0
+          display: "flex",
+          alignItems: "center",
+          gap: "15px",
+          cursor: "pointer",
+          flexShrink: 0,
         }}
-      > 
-      {numberOfSuperlikes === 0 ? null : (
-         <p style={{
-            fontSize: '16px',
-            userSelect: 'none',
-            margin: '0px',
-            padding: '0px'
-          }}>{totalAmount} QORT from {numberOfSuperlikes} Super Likes</p>
-      )}
-     
-      <Tooltip title="Super Like" placement="top">
-        <Box sx={{
-            padding: '5px',
-            borderRadius: '7px',
-            gap: '10px',
-            display: 'flex',
-            alignItems: 'center',
-            outline: '1px gold solid'
-        }}>
-   
-        <ThumbUpIcon
-          style={{
-            color: "gold",
-           
-        
-          }}
-        />
-             <p style={{
-            fontSize: '16px',
-            margin: '0px'
-          }}>Super Like</p>
-        </Box>
+      >
+        {numberOfSuperlikes === 0 ? null : (
+          <p
+            style={{
+              fontSize: "16px",
+              userSelect: "none",
+              margin: "0px",
+              padding: "0px",
+            }}
+          >
+            {totalAmount} QORT from {numberOfSuperlikes} Super Likes
+          </p>
+        )}
+
+        <Tooltip title="Super Like" placement="top">
+          <Box
+            sx={{
+              padding: "5px",
+              borderRadius: "7px",
+              gap: "10px",
+              display: "flex",
+              alignItems: "center",
+              outline: "1px gold solid",
+            }}
+          >
+            <ThumbUpIcon
+              style={{
+                color: "gold",
+              }}
+            />
+            <p
+              style={{
+                fontSize: "16px",
+                margin: "0px",
+              }}
+            >
+              Super Like
+            </p>
+          </Box>
         </Tooltip>
       </Box>
       <Modal
@@ -190,12 +234,12 @@ export const SuperLike = ({ onSuccess, name, service, identifier, totalAmount, n
         aria-describedby="alert-dialog-description"
       >
         <ModalBody>
-        <Box
+          <Box
             sx={{
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              width: '100%'
+              width: "100%",
             }}
           >
             <NewCrowdfundTitle>Super Like</NewCrowdfundTitle>
@@ -210,7 +254,7 @@ export const SuperLike = ({ onSuccess, name, service, identifier, totalAmount, n
             >
               <Box>
                 <InputLabel htmlFor="standard-adornment-amount">
-                  Amount in QORT
+                  Amount in QORT (min 10 QORT)
                 </InputLabel>
                 <Input
                   id="standard-adornment-amount"
@@ -241,7 +285,7 @@ export const SuperLike = ({ onSuccess, name, service, identifier, totalAmount, n
                 variant="filled"
                 value={comment}
                 inputProps={{
-                  maxLength: 200,
+                  maxLength: 500,
                 }}
                 InputLabelProps={{ style: { fontSize: "18px" } }}
                 onChange={(e) => setComment(e.target.value)}
@@ -284,12 +328,12 @@ export const SuperLike = ({ onSuccess, name, service, identifier, totalAmount, n
           isOpen={isOpenMultiplePublish}
           onSubmit={() => {
             onSuccess({
-                name: username,
-                message: comment,
-                service,
-                identifier,
-                amount: +amount,
-                created: Date.now()
+              name: username,
+              message: comment,
+              service,
+              identifier,
+              amount: +amount,
+              created: Date.now(),
             });
             setIsOpenMultiplePublish(false);
             onClose();
@@ -300,7 +344,6 @@ export const SuperLike = ({ onSuccess, name, service, identifier, totalAmount, n
                 alertType: "success",
               })
             );
-           
           }}
           publishes={publishes}
         />

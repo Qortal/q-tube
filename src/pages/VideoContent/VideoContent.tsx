@@ -41,6 +41,7 @@ import { SuperLike } from "../../components/common/SuperLike/SuperLike";
 import { CommentContainer } from "../../components/common/Comments/Comments-styles";
 import { Comment } from "../../components/common/Comments/Comment";
 import { SuperLikesSection } from "../../components/common/SuperLikesList/SuperLikesSection";
+import { useFetchSuperLikes } from "../../hooks/useFetchSuperLikes";
 
 export function isTimestampWithinRange(resTimestamp, resCreated) {
   // Calculate the absolute difference in milliseconds
@@ -106,7 +107,7 @@ export const VideoContent = () => {
     useState<boolean>(false);
   const [superlikeList, setSuperlikelist] = useState<any[]>([])
   const [loadingSuperLikes, setLoadingSuperLikes] = useState<boolean>(false)
-
+  const {addSuperlikeRawDataGetToList}  = useFetchSuperLikes()
 
   const calculateAmountSuperlike = useMemo(()=> {
     const totalQort = superlikeList?.reduce((acc, curr)=> {
@@ -249,36 +250,7 @@ export const VideoContent = () => {
     }
   }, [id, name]);
 
-  // const getAvatar = React.useCallback(async (author: string) => {
-  //   try {
-  //     let url = await qortalRequest({
-  //       action: 'GET_QDN_RESOURCE_URL',
-  //       name: author,
-  //       service: 'THUMBNAIL',
-  //       identifier: 'qortal_avatar'
-  //     })
-
-  //     setAvatarUrl(url)
-  //     dispatch(setUserAvatarHash({
-  //       name: author,
-  //       url
-  //     }))
-  //   } catch (error) { }
-  // }, [])
-
-  // React.useEffect(() => {
-  //   if (name && !avatarUrl) {
-  //     const existingAvatar = userAvatarHash[name]
-
-  //     if (existingAvatar) {
-  //       setAvatarUrl(existingAvatar)
-  //     } else {
-  //       getAvatar(name)
-  //     }
-
-  //   }
-
-  // }, [name, userAvatarHash])
+  
 
   useEffect(() => {
     if (contentRef.current) {
@@ -313,23 +285,16 @@ export const VideoContent = () => {
             
     
               try {
+               
                 const result = extractSigValue(comment?.metadata?.description)
             if(!result) continue
                const res = await getPaymentInfo(result);
                if(+res?.amount >= minPriceSuperlike && res.recipient === nameAddressParam && isTimestampWithinRange(res?.timestamp, comment.created)){
+                addSuperlikeRawDataGetToList({name:comment.name, identifier:comment.identifier, content: comment})
 
-                const url = `/arbitrary/BLOG_COMMENT/${comment.name}/${comment.identifier}`;
-                const response = await fetch(url, {
-                  method: "GET",
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                });
-                if(!response.ok) continue
-                const responseData2 = await response.text();
                  comments = [...comments, {
                    ...comment,
-                   message: responseData2,
+                   message: "",
                    amount: res.amount
                  }];
  

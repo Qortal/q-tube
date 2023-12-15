@@ -7,13 +7,15 @@ interface GlobalState {
   userAvatarHash: Record<string, string>
   publishNames: string[] | null
   videoPlaying: any | null
+  superlikelistAll: any[]
 }
 const initialState: GlobalState = {
   isLoadingGlobal: false,
   downloads: {},
   userAvatarHash: {},
   publishNames: null,
-  videoPlaying: null
+  videoPlaying: null,
+  superlikelistAll: []
 }
 
 export const globalSlice = createSlice({
@@ -47,6 +49,9 @@ export const globalSlice = createSlice({
     setVideoPlaying: (state, action) => {
       state.videoPlaying = action.payload
     },
+    setSuperlikesAll: (state, action) => {
+      state.superlikelistAll = action.payload
+    },
   }
 })
 
@@ -56,7 +61,8 @@ export const {
   updateDownloads,
   setUserAvatarHash,
   addPublishNames,
-  setVideoPlaying
+  setVideoPlaying,
+  setSuperlikesAll
 } = globalSlice.actions
 
 export default globalSlice.reducer

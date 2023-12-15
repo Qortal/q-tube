@@ -33,6 +33,9 @@ import {
   FiltersTitle,
   IconsBox,
   NameContainer,
+  VideoCardCol,
+  ProductManagerRow,
+  VideoCardContainer,
   VideoCard,
   VideoCardName,
   VideoCardTitle,
@@ -60,6 +63,7 @@ import { Playlists } from "../../components/Playlists/Playlists";
 import { PlaylistSVG } from "../../assets/svgs/PlaylistSVG";
 import BlockIcon from "@mui/icons-material/Block";
 import EditIcon from '@mui/icons-material/Edit';
+import { LiskSuperLikeContainer } from "../../components/common/ListSuperLikes/LiskSuperLikeContainer";
 
 interface VideoListProps {
   mode?: string;
@@ -286,7 +290,7 @@ export const VideoList = ({ mode }: VideoListProps) => {
 
   return (
     <Grid container sx={{ width: "100%" }}>
-      <FiltersCol item xs={12} md={2} sm={3}>
+      <FiltersCol item xs={12} md={2} lg={2} xl={2} sm={3} >
         <FiltersContainer>
           <Input
             id="standard-adornment-name"
@@ -506,7 +510,8 @@ export const VideoList = ({ mode }: VideoListProps) => {
           </Button>
         </FiltersContainer>
       </FiltersCol>
-      <Grid item xs={12} md={10} sm={9}>
+      <Grid item xs={12} md={10} lg={7} xl={8} sm={9}>
+        <ProductManagerRow>
         <Box
           sx={{
             width: "100%",
@@ -524,41 +529,10 @@ export const VideoList = ({ mode }: VideoListProps) => {
               maxWidth: "1400px",
             }}
           >
-            {/* <Subtitle sx={{
-      textAlign: 'start',
-      fontSize: '18px'
-    }}>
-      {!isFiltering ? 'Recently Published Videos': 'Search'}
-      </Subtitle> */}
+        
           </SubtitleContainer>
-          {/* { countNewVideos > 0 && !isFiltering && (
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}
-        >
-          <Typography>
-            {countNewVideos === 1
-              ? `There is ${countNewVideos} new video`
-              : `There are ${countNewVideos} new videos`}
-          </Typography>
-          <Button
-            sx={{
-              backgroundColor: theme.palette.primary.light,
-              color: theme.palette.text.primary,
-              fontFamily: 'Arial'
-            }}
-            onClick={()=> {
-              getNewVideos()
-            }}
-          >
-            Load new Posts
-          </Button>
-        </Box>
-      )} */}
-          <VideoContainer>
+       
+          <VideoCardContainer >
             {videos.map((video: any, index: number) => {
               const existingVideo = hashMapVideos[video?.id];
               let hasHash = false;
@@ -581,17 +555,8 @@ export const VideoList = ({ mode }: VideoListProps) => {
 
               if (isPlaylist) {
                 return (
-                  <Box
-                    sx={{
-                      display: "flex",
-                      flex: 0,
-                      alignItems: "center",
-                      width: "auto",
-                      position: "relative",
-                      " @media (max-width: 450px)": {
-                        width: "100%",
-                      },
-                    }}
+                  <VideoCardCol
+                 
                     onMouseEnter={() => setShowIcons(videoObj.id)}
                     onMouseLeave={() => setShowIcons(null)}
                     key={videoObj.id}
@@ -686,22 +651,13 @@ export const VideoList = ({ mode }: VideoListProps) => {
                         </Box>
                       </BottomParent>
                     </VideoCard>
-                  </Box>
+                  </VideoCardCol>
                 );
               }
 
               return (
-                <Box
-                  sx={{
-                    display: "flex",
-                    flex: 0,
-                    alignItems: "center",
-                    width: "auto",
-                    position: "relative",
-                    " @media (max-width: 450px)": {
-                      width: "100%",
-                    },
-                  }}
+                <VideoCardCol
+                 
                   key={videoObj.id}
                   onMouseEnter={() => setShowIcons(videoObj.id)}
                   onMouseLeave={() => setShowIcons(null)}
@@ -776,17 +732,21 @@ export const VideoList = ({ mode }: VideoListProps) => {
                       )}
                     </BottomParent>
                   </VideoCard>
-                </Box>
+                </VideoCardCol>
               );
             })}
-          </VideoContainer>
+          </VideoCardContainer>
 
           <LazyLoad
             onLoadMore={getVideosHandler}
             isLoading={isLoading}
           ></LazyLoad>
         </Box>
+        </ProductManagerRow>
       </Grid>
+      <FiltersCol item xs={0} lg={3} xl={2}>
+        <LiskSuperLikeContainer />
+      </FiltersCol>
     </Grid>
   );
 };

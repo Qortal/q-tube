@@ -11,7 +11,7 @@ import {
 } from '@mui/material'
 import { useFetchVideos } from '../../hooks/useFetchVideos'
 import LazyLoad from '../../components/common/LazyLoad'
-import { BottomParent, NameContainer, VideoCard, VideoCardName, VideoCardTitle, VideoContainer, VideoUploadDate } from './VideoList-styles'
+import { BottomParent, NameContainer, ProductManagerRow, VideoCard, VideoCardCol, VideoCardContainer, VideoCardName, VideoCardTitle, VideoContainer, VideoUploadDate } from './VideoList-styles'
 import ResponsiveImage from '../../components/ResponsiveImage'
 import { formatDate, formatTimestampSeconds } from '../../utils/time'
 import { Video } from '../../state/features/videoSlice'
@@ -130,6 +130,7 @@ export const VideoListComponentLevel = ({ mode }: VideoListProps) => {
 
   
   return (
+    <ProductManagerRow>
     <Box sx={{
       width: '100%',
       display: 'flex',
@@ -137,7 +138,7 @@ export const VideoListComponentLevel = ({ mode }: VideoListProps) => {
       alignItems: 'center'
     }}>
       
-  <VideoContainer>
+  <VideoCardContainer>
         {videos.map((video: any, index: number) => {
           const existingVideo = hashMapVideos[video.id]
           let hasHash = false
@@ -158,17 +159,8 @@ export const VideoListComponentLevel = ({ mode }: VideoListProps) => {
 
  
           return (
-            <Box
-              sx={{
-                display: 'flex',
-                flex: 0,
-                alignItems: 'center',
-                width: 'auto',
-                position: 'relative',
-                ' @media (max-width: 450px)': {
-                  width: '100%'
-                }
-              }}
+            <VideoCardCol
+             
               key={videoObj.id}
             >
             
@@ -193,12 +185,13 @@ export const VideoListComponentLevel = ({ mode }: VideoListProps) => {
                 </VideoCard>
   
         
-            </Box>
+            </VideoCardCol>
           )
         })}
-        </VideoContainer>
+        </VideoCardContainer>
       <LazyLoad onLoadMore={getVideosHandler} isLoading={isLoading}></LazyLoad>
     </Box>
+    </ProductManagerRow>
   )
 }
 

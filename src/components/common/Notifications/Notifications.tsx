@@ -14,7 +14,7 @@ import moment from 'moment'
 const generalLocal = localForage.createInstance({
     name: "q-tube-general",
   });
-function extractIdValue(metadescription) {
+export function extractIdValue(metadescription) {
     // Function to extract the substring within double asterisks
     function extractSubstring(str) {
         const match = str.match(/\*\*(.*?)\*\*/);

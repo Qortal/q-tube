@@ -12,6 +12,39 @@ export const VideoContainer = styled(Grid)(({ theme }) => ({
   width: '100%'
 }));
 
+// export const VideoCardContainer = styled(Grid)({
+//   display: "flex",
+//   flexWrap: "wrap",
+//   padding: "5px 35px 15px 35px",
+// });
+
+// export const VideoCardCol = styled(Grid)(({ theme }) => ({
+//   display: "flex",
+//   gap: 1,
+//   alignItems: "center",
+//   width: "auto",
+//   position: "relative",
+//   maxWidth: "100%",
+//   flexGrow: 1,
+//   [theme.breakpoints.down("sm")]: {
+//     width: "100%",
+//   },
+// }));
+
+export const VideoCardContainer = styled('div')(({ theme }) => ({
+  display: 'grid',
+  gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
+  gap: theme.spacing(2),
+  padding: '10px',
+  width: '100%'
+}));
+
+export const VideoCardCol = styled('div')({
+  minWidth: '250px', // Minimum width of each item
+  maxWidth: '1fr',   // Maximum width, allowing the item to fill the column
+  // ... other styles
+});
+
 export const StoresRow = styled(Grid)(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
@@ -30,7 +63,7 @@ export const VideoCard = styled(Grid)(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
   height: "320px",
-  width: '300px',
+  // width: '300px',
   backgroundColor: theme.palette.background.paper,
   borderRadius: "8px",
   padding: "10px 15px",
@@ -176,6 +209,16 @@ export const MyStoresCheckbox = styled(Checkbox)(({ theme }) => ({
     color: "#6596ff"
   }
 }));
+
+export const ProductManagerRow = styled(Box)(({ theme }) => ({
+  display: "grid",
+  gridTemplateColumns: "1fr auto",
+  alignItems: "center",
+  justifyContent: "flex-end",
+  width: "100%",
+}));
+
+
 
 export const FiltersCol = styled(Grid)(({ theme }) => ({
   display: "flex",

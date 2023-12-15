@@ -65,7 +65,9 @@ export default function ListSuperLikes({ superlikes }) {
                 }
               }}
             >
-              <Box>
+              <Box sx={{
+                width: '100%'
+              }}>
               <ListItem
               sx={{
                 padding: '0px'

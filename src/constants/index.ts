@@ -60,6 +60,8 @@ export const categories = [
     {"id": 21, "name": "Personal Development"},
     {"id": 22, "name": "Other"},
     {"id": 23, "name": "History"},
+    {"id": 24, "name": "Anime"},
+    {"id": 25, "name": "Cartoons"}
 ]
 
 
@@ -99,5 +101,21 @@ export const subCategories: CategoryMap = {
         {"id": 214, "name": "International Series"},
         {"id": 215, "name": "Miniseries"},
         {"id": 216, "name": "Other"}
-    ]
+    ],
+    24: [
+        {"id": 2401, "name": "Kodomomuke"},
+        {"id": 2402, "name": "Shonen"},
+        {"id": 2403, "name": "Shoujo"},
+        {"id": 2404, "name": "Seinen"},
+        {"id": 2405, "name": "Josei"},
+        {"id": 2406, "name": "Mecha"},
+        {"id": 2407, "name": "Mahou Shoujo"},
+        {"id": 2408, "name": "Isekai"},
+        {"id": 2409, "name": "Yaoi"},
+        {"id": 2410, "name": "Yuri"},
+        {"id": 2411, "name": "Harem"},
+        {"id": 2412, "name": "Ecchi"},
+        {"id": 2413, "name": "Idol"},
+        {"id": 2414, "name": "Other"}
+    ]    
 }

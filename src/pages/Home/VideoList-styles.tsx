@@ -40,6 +40,7 @@ export const VideoCardContainer = styled('div')(({ theme }) => ({
 }));
 
 export const VideoCardCol = styled('div')({
+  position: 'relative',
   minWidth: '250px', // Minimum width of each item
   maxWidth: '1fr',   // Maximum width, allowing the item to fill the column
   // ... other styles

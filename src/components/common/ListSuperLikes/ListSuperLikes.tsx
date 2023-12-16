@@ -111,7 +111,7 @@ export default function ListSuperLikes({ superlikes }) {
                     fontSize: '15px'
                   }}>
                     <Typography
-                      sx={{ display: "inline" }}
+                      sx={{ display: "inline", wordBreak: "break-word", fontSize: '16px'}}
                       component="span"
                       variant="body2"
                       color="text.primary"

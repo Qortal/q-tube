@@ -48,7 +48,7 @@ export function isTimestampWithinRange(resTimestamp, resCreated) {
   var difference = Math.abs(resTimestamp - resCreated);
 
   // 2 minutes in milliseconds
-  var twoMinutesInMilliseconds = 2 * 60 * 1000;
+  var twoMinutesInMilliseconds = 3 * 60 * 1000;
 
   // Check if the difference is within 2 minutes
   return difference <= twoMinutesInMilliseconds;

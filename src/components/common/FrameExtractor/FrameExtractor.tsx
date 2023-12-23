@@ -50,7 +50,7 @@ export const FrameExtractor = ({ videoFile, onFramesExtracted }) => {
         let frameData = [];
     
         for (const time of durations) {
-            await new Promise((resolve) => {
+            await new Promise<void>((resolve) => {
                 video.currentTime = time;
                 const onSeeked = () => {
                     context.drawImage(video, 0, 0, canvas.width, canvas.height);

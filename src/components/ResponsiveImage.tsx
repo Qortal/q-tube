@@ -44,7 +44,7 @@ const ResponsiveImage: React.FC<ResponsiveImageProps> = ({
     <Box
       sx={{
         padding: '2px',
-        maxHeight: '50%'
+        height: '100%'
       }}
     >
    

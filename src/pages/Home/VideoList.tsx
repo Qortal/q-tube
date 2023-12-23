@@ -64,6 +64,7 @@ import { PlaylistSVG } from "../../assets/svgs/PlaylistSVG";
 import BlockIcon from "@mui/icons-material/Block";
 import EditIcon from '@mui/icons-material/Edit';
 import { LiskSuperLikeContainer } from "../../components/common/ListSuperLikes/LiskSuperLikeContainer";
+import { VideoCardImageContainer } from "./VideoCardImageContainer";
 
 interface VideoListProps {
   mode?: string;
@@ -696,11 +697,13 @@ export const VideoList = ({ mode }: VideoListProps) => {
                       navigate(`/video/${videoObj?.user}/${videoObj?.id}`);
                     }}
                   >
-                    <ResponsiveImage
+                    <VideoCardImageContainer width={266}
+                      height={150} videoImage={videoObj.videoImage} frameImages={videoObj?.extracts || []} />
+                    {/* <ResponsiveImage
                       src={videoObj.videoImage}
                       width={266}
                       height={150}
-                    />
+                    /> */}
                     <VideoCardTitle>{videoObj.title}</VideoCardTitle>
                     <BottomParent>
                       <NameContainer

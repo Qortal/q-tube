@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import Compressor from 'compressorjs'
+
 import {
   AddCoverImageButton,
   AddLogoIcon,
@@ -13,6 +15,8 @@ import {
   StyledButton,
   TimesIcon,
 } from "./Upload-styles";
+import { CircularProgress } from "@mui/material";
+
 import {
   Box,
   FormControl,
@@ -46,6 +50,8 @@ import { QTUBE_VIDEO_BASE, categories, subCategories } from "../../constants";
 import { MultiplePublish } from "../common/MultiplePublish/MultiplePublish";
 import { TextEditor } from "../common/TextEditor/TextEditor";
 import { extractTextFromHTML } from "../common/TextEditor/utils";
+import { toBase64 } from "../UploadVideo/UploadVideo";
+import { FrameExtractor } from "../common/FrameExtractor/FrameExtractor";
 
 const uid = new ShortUniqueId();
 const shortuid = new ShortUniqueId({ length: 5 });
@@ -88,6 +94,8 @@ export const EditVideo = () => {
     useState<any>(null);
   const [selectedSubCategoryVideos, setSelectedSubCategoryVideos] =
     useState<any>(null);
+    const [imageExtracts, setImageExtracts] = useState<any>([])
+
 
   const { getRootProps, getInputProps } = useDropzone({
     accept: {
@@ -205,6 +213,7 @@ export const EditVideo = () => {
     setVideoPropertiesToSetToRedux(null);
     setFile(null);
     setTitle("");
+    setImageExtracts([])
     setDescription("");
     setCoverImage("");
   };
@@ -270,6 +279,7 @@ export const EditVideo = () => {
         fullDescription,
         videoImage: coverImage,
         videoReference: editVideoProperties.videoReference,
+        extracts: file ? imageExtracts : editVideoProperties?.extracts,
         commentsId: editVideoProperties.commentsId,
         category,
         subcategory,
@@ -346,21 +356,7 @@ export const EditVideo = () => {
     }
   }
 
-  const handleOnchange = (index: number, type: string, value: string) => {
-    // setFiles((prev) => {
-    //   let formattedValue = value
-    //   console.log({type})
-    //   if(type === 'title'){
-    //     formattedValue = value.replace(/[^a-zA-Z0-9\s]/g, "")
-    //   }
-    //   const copyFiles = [...prev];
-    //   copyFiles[index] = {
-    //     ...copyFiles[index],
-    //     [type]: formattedValue,
-    //   };
-    //   return copyFiles;
-    // });
-  };
+
 
   const handleOptionCategoryChangeVideos = (
     event: SelectChangeEvent<string>
@@ -379,6 +375,44 @@ export const EditVideo = () => {
     );
     setSelectedSubCategoryVideos(selectedOption || null);
   };
+
+  const onFramesExtracted = async (imgs)=> {
+    try {
+      let imagesExtracts = []
+   
+      for (const img of imgs){
+        try {
+          let compressedFile
+          const image = img
+          await new Promise<void>((resolve) => {
+            new Compressor(image, {
+              quality: .8,
+              maxWidth: 750,
+              mimeType: 'image/webp',
+              success(result) {
+                const file = new File([result], 'name', {
+                  type: 'image/webp'
+                })
+                compressedFile = file
+                resolve()
+              },
+              error(err) {}
+            })
+          })
+          if (!compressedFile) continue
+          const base64Img = await toBase64(compressedFile)
+          imagesExtracts.push(base64Img)
+          
+        } catch (error) {
+          console.error(error)
+        }
+      }
+
+      setImageExtracts(imagesExtracts)
+    } catch (error) {
+      
+    }
+  }
 
   return (
     <>
@@ -466,6 +500,9 @@ export const EditVideo = () => {
                   </FormControl>
                 )}
             </Box>
+            {file && (
+                <FrameExtractor videoFile={file} onFramesExtracted={(imgs)=> onFramesExtracted(imgs)}/>
+            )}
             <React.Fragment>
               {!coverImage ? (
                 <ImageUploader onPick={(img: string) => setCoverImage(img)}>
@@ -548,7 +585,11 @@ export const EditVideo = () => {
                 onClick={() => {
                   publishQDNResource();
                 }}
+                disabled={file && imageExtracts.length === 0}
               >
+                {file && imageExtracts.length === 0 && (
+                    <CircularProgress color="secondary" size={14} />
+                  )}
                 Publish
               </CrowdfundActionButton>
             </Box>

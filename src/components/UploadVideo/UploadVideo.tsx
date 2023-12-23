@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import Compressor from 'compressorjs'
 import {
   AddCoverImageButton,
   AddLogoIcon,
@@ -13,6 +14,8 @@ import {
   StyledButton,
   TimesIcon,
 } from "./Upload-styles";
+import { CircularProgress } from "@mui/material";
+
 import {
   Box,
   Button,
@@ -57,6 +60,17 @@ import { CardContentContainerComment } from "../common/Comments/Comments-styles"
 import { TextEditor } from "../common/TextEditor/TextEditor";
 import { extractTextFromHTML } from "../common/TextEditor/utils";
 import { FiltersCheckbox, FiltersRow, FiltersSubContainer } from "../../pages/Home/VideoList-styles";
+import { FrameExtractor } from "../common/FrameExtractor/FrameExtractor";
+
+export const toBase64 = (file: File): Promise<string | ArrayBuffer | null> =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.readAsDataURL(file)
+    reader.onload = () => resolve(reader.result)
+    reader.onerror = (error) => {
+      reject(error)
+    }
+  })
 
 const uid = new ShortUniqueId();
 const shortuid = new ShortUniqueId({ length: 5 });
@@ -114,7 +128,7 @@ export const UploadVideo = ({ editId, editContent }: NewCrowdfundProps) => {
   const [isCheckTitleByFile, setIsCheckTitleByFile] = useState(false)
   const [isCheckSameCoverImage, setIsCheckSameCoverImage] = useState(false)
   const [isCheckDescriptionIsTitle, setIsCheckDescriptionIsTitle] = useState(false)
-
+  const [imageExtracts, setImageExtracts] = useState<any>({})
   const { getRootProps, getInputProps } = useDropzone({
     accept: {
       "video/*": [],
@@ -219,7 +233,8 @@ export const UploadVideo = ({ editId, editContent }: NewCrowdfundProps) => {
 
       let listOfPublishes = [];
 
-      for (const publish of files) {
+      for (let i = 0; i < files.length; i++) {
+        const publish = files[i]
         const title = publish.title;
         const description = isCheckDescriptionIsTitle ? publish.title : publish.description;
         const category = selectedCategoryVideos.id;
@@ -271,6 +286,7 @@ export const UploadVideo = ({ editId, editContent }: NewCrowdfundProps) => {
             identifier: identifier,
             service: "VIDEO",
           },
+          extracts: imageExtracts[i],
           commentsId: `${QTUBE_VIDEO_BASE}_cm_${id}`,
           category,
           subcategory,
@@ -539,6 +555,49 @@ export const UploadVideo = ({ editId, editContent }: NewCrowdfundProps) => {
     }
   };
 
+  const onFramesExtracted = async (imgs, index)=> {
+    try {
+      let imagesExtracts = []
+   
+      for (const img of imgs){
+        try {
+          let compressedFile
+          const image = img
+          await new Promise<void>((resolve) => {
+            new Compressor(image, {
+              quality: .8,
+              maxWidth: 750,
+              mimeType: 'image/webp',
+              success(result) {
+                const file = new File([result], 'name', {
+                  type: 'image/webp'
+                })
+                compressedFile = file
+                resolve()
+              },
+              error(err) {}
+            })
+          })
+          if (!compressedFile) continue
+          const base64Img = await toBase64(compressedFile)
+          imagesExtracts.push(base64Img)
+          
+        } catch (error) {
+          console.error(error)
+        }
+      }
+
+      setImageExtracts((prev)=> {
+        return {
+          ...prev,
+          [index]: imagesExtracts
+        }
+      })
+    } catch (error) {
+      
+    }
+  }
+
   return (
     <>
       {username && (
@@ -719,6 +778,7 @@ export const UploadVideo = ({ editId, editContent }: NewCrowdfundProps) => {
               {files.map((file, index) => {
                 return (
                   <React.Fragment key={index}>
+                     <FrameExtractor videoFile={file.file} onFramesExtracted={(imgs)=> onFramesExtracted(imgs, index)}/>
                     <Typography>{file?.file?.name}</Typography>
                     {!isCheckSameCoverImage && (
                       <>
@@ -1126,24 +1186,30 @@ export const UploadVideo = ({ editId, editContent }: NewCrowdfundProps) => {
               ) : (
                 <CrowdfundActionButton
                   variant="contained"
+                  disabled={files?.length !== Object.keys(imageExtracts)?.length}
                   onClick={() => {
                     next();
                   }}
                 >
-                  Next
+                  {files?.length !== Object.keys(imageExtracts)?.length ? 'Generating image extracts' : ''}
+                  {files?.length !== Object.keys(imageExtracts)?.length && (
+                    <CircularProgress color="secondary" size={14} />
+                  )}
+                Next
                 </CrowdfundActionButton>
               )}
             </Box>
           </CrowdfundActionButtonRow>
         </ModalBody>
       </Modal>
-
+     
       {isOpenMultiplePublish && (
         <MultiplePublish
           isOpen={isOpenMultiplePublish}
           onSubmit={() => {
             setIsOpenMultiplePublish(false);
             setIsOpen(false);
+            setImageExtracts({})
             setFiles([]);
             setStep("videos");
             setPlaylistCoverImage(null);

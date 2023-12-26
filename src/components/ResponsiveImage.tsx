@@ -23,28 +23,12 @@ const ResponsiveImage: React.FC<ResponsiveImageProps> = ({
 
   
 
-  const aspectRatio = (height / width) * 100
-
-
-
-  const imageStyle: CSSProperties = {
-    width: '100%',
-    height: '100%',
-    objectFit: 'cover'
-  }
-
-  const wrapperStyle: CSSProperties = {
-    position: 'relative',
-    paddingBottom: `${aspectRatio}%`,
-    overflow: 'hidden',
-    ...style
-  }
-
   return (
     <Box
       sx={{
         padding: '2px',
-        height: '100%'
+        height: '100%',
+        ...style
       }}
     >
    
@@ -75,34 +59,6 @@ const ResponsiveImage: React.FC<ResponsiveImageProps> = ({
         }}
       />
     </Box>
-  )
-
-  return (
-    <div style={wrapperStyle} className={className}>
-      {loading ? (
-        <Skeleton
-          variant="rectangular"
-          sx={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0
-          }}
-        />
-      ) : (
-        <img
-          src={src}
-          alt={alt}
-          style={{
-            ...imageStyle,
-            position: 'absolute',
-            top: 0,
-            left: 0
-          }}
-        />
-      )}
-    </div>
   )
 }
 

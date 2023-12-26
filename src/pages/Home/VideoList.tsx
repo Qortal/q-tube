@@ -606,6 +606,9 @@ export const VideoList = ({ mode }: VideoListProps) => {
                         src={videoObj?.image}
                         width={266}
                         height={150}
+                        style={{
+                          maxHeight: '50%'
+                        }}
                       />
                       <VideoCardTitle>{videoObj?.title}</VideoCardTitle>
                       <BottomParent>

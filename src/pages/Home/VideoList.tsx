@@ -289,6 +289,12 @@ export const VideoList = ({ mode }: VideoListProps) => {
     } catch (error) {}
   };
 
+  const handleInputKeyDown = (event: any) => {
+    if (event.key === 'Enter') {
+      getVideosHandler(true);
+    }
+  }
+
   return (
     <Grid container sx={{ width: "100%" }}>
       <FiltersCol item xs={12} md={2} lg={2} xl={2} sm={3} >
@@ -300,6 +306,7 @@ export const VideoList = ({ mode }: VideoListProps) => {
             }}
             value={filterSearch}
             placeholder="Search"
+            onKeyDown={handleInputKeyDown}
             sx={{
               borderBottom: "1px solid white",
               "&&:before": {
@@ -327,6 +334,7 @@ export const VideoList = ({ mode }: VideoListProps) => {
             }}
             value={filterName}
             placeholder="User's name"
+            onKeyDown={handleInputKeyDown}
             sx={{
               marginTop: "20px",
               borderBottom: "1px solid white",

@@ -342,7 +342,7 @@ export const EditPlaylist = () => {
           description: metadescription,
           id: identifier,
           service: "PLAYLIST",
-          name: username,
+          user: username,
           ...playlistObject
         }
         dispatch(

@@ -560,7 +560,6 @@ export const VideoList = ({ mode }: VideoListProps) => {
                 return null;
               }
               const isPlaylist = videoObj?.service === "PLAYLIST";
-       
 
               if (isPlaylist) {
                 return (

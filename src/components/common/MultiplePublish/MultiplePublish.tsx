@@ -8,13 +8,13 @@ import {
   useTheme,
 } from "@mui/material";
 import React, { useCallback, useEffect, useState, useRef } from "react";
-import { ModalBody } from "../../UploadVideo/Upload-styles";
+import { ModalBody } from "../../PublishVideo/PublishVideo-styles.tsx";
 import { CircleSVG } from "../../../assets/svgs/CircleSVG";
 import { EmptyCircleSVG } from "../../../assets/svgs/EmptyCircleSVG";
 
-export const MultiplePublish = ({ publishes, isOpen,  onSubmit }) => {
+export const MultiplePublish = ({ publishes, isOpen, onSubmit }) => {
   const theme = useTheme();
-  const listOfSuccessfulPublishesRef = useRef([])
+  const listOfSuccessfulPublishesRef = useRef([]);
   const [listOfSuccessfulPublishes, setListOfSuccessfulPublishes] = useState<
     any[]
   >([]);
@@ -23,7 +23,7 @@ export const MultiplePublish = ({ publishes, isOpen,  onSubmit }) => {
   const publish = useCallback(async (pub: any) => {
     await qortalRequest(pub);
   }, []);
-  const [isPublishing, setIsPublishing] = useState(true)
+  const [isPublishing, setIsPublishing] = useState(true);
 
   const handlePublish = useCallback(
     async (pub: any) => {
@@ -33,10 +33,13 @@ export const MultiplePublish = ({ publishes, isOpen,  onSubmit }) => {
         await publish(pub);
 
         setListOfSuccessfulPublishes((prev: any) => [...prev, pub?.identifier]);
-        listOfSuccessfulPublishesRef.current = [...listOfSuccessfulPublishesRef.current, pub?.identifier]
+        listOfSuccessfulPublishesRef.current = [
+          ...listOfSuccessfulPublishesRef.current,
+          pub?.identifier,
+        ];
       } catch (error) {
         console.log({ error });
-        await new Promise<void>((res) => {
+        await new Promise<void>(res => {
           setTimeout(() => {
             res();
           }, 5000);
@@ -49,17 +52,18 @@ export const MultiplePublish = ({ publishes, isOpen,  onSubmit }) => {
 
   const startPublish = useCallback(
     async (pubs: any) => {
-      setIsPublishing(true)
-      const filterPubs = pubs.filter((pub)=> !listOfSuccessfulPublishesRef.current.includes(pub.identifier))
+      setIsPublishing(true);
+      const filterPubs = pubs.filter(
+        pub => !listOfSuccessfulPublishesRef.current.includes(pub.identifier)
+      );
       for (const pub of filterPubs) {
         await handlePublish(pub);
-       
       }
-      
-      if(listOfSuccessfulPublishesRef.current.length === pubs.length){
-        onSubmit()
+
+      if (listOfSuccessfulPublishesRef.current.length === pubs.length) {
+        onSubmit();
       }
-      setIsPublishing(false)
+      setIsPublishing(false);
     },
     [handlePublish, onSubmit, listOfSuccessfulPublishes, publishes]
   );
@@ -71,7 +75,6 @@ export const MultiplePublish = ({ publishes, isOpen,  onSubmit }) => {
     }
   }, [startPublish, publishes, listOfSuccessfulPublishes]);
 
-  
   return (
     <Modal
       open={isOpen}
@@ -118,18 +121,28 @@ export const MultiplePublish = ({ publishes, isOpen,  onSubmit }) => {
             </Box>
           );
         })}
-      {!isPublishing && listOfSuccessfulPublishes.length !== publishes.length && (
-        <>
-           <Typography sx={{
-            marginTop: '20px',
-            fontSize: '16px'
-           }}>Some files were not published. Please try again. It's important that all the files get published. Maybe wait a couple minutes if the error keeps occurring</Typography>
-        <Button onClick={()=> {
-          startPublish(publishes)
-        }}>Try again</Button>
-        </>
-      )}
-       
+        {!isPublishing &&
+          listOfSuccessfulPublishes.length !== publishes.length && (
+            <>
+              <Typography
+                sx={{
+                  marginTop: "20px",
+                  fontSize: "16px",
+                }}
+              >
+                Some files were not published. Please try again. It's important
+                that all the files get published. Maybe wait a couple minutes if
+                the error keeps occurring
+              </Typography>
+              <Button
+                onClick={() => {
+                  startPublish(publishes);
+                }}
+              >
+                Try again
+              </Button>
+            </>
+          )}
       </ModalBody>
     </Modal>
   );

@@ -58,11 +58,11 @@ import {
   setEditPlaylist,
   setEditVideo,
 } from "../../state/features/videoSlice";
-import { categories, subCategories } from "../../constants";
+import { categories, subCategories } from "../../constants/Categories.ts";
 import { Playlists } from "../../components/Playlists/Playlists";
 import { PlaylistSVG } from "../../assets/svgs/PlaylistSVG";
 import BlockIcon from "@mui/icons-material/Block";
-import EditIcon from '@mui/icons-material/Edit';
+import EditIcon from "@mui/icons-material/Edit";
 import { LiskSuperLikeContainer } from "../../components/common/ListSuperLikes/LiskSuperLikeContainer";
 import { VideoCardImageContainer } from "./VideoCardImageContainer";
 
@@ -83,19 +83,19 @@ export const VideoList = ({ mode }: VideoListProps) => {
 
   const filterType = useSelector((state: RootState) => state.video.filterType);
 
-  const setFilterType = (payload) => {
+  const setFilterType = payload => {
     dispatch(changeFilterType(payload));
   };
   const filterSearch = useSelector(
     (state: RootState) => state.video.filterSearch
   );
 
-  const setFilterSearch = (payload) => {
+  const setFilterSearch = payload => {
     dispatch(changefilterSearch(payload));
   };
   const filterName = useSelector((state: RootState) => state.video.filterName);
 
-  const setFilterName = (payload) => {
+  const setFilterName = payload => {
     dispatch(changefilterName(payload));
   };
 
@@ -103,14 +103,14 @@ export const VideoList = ({ mode }: VideoListProps) => {
     (state: RootState) => state.video.selectedCategoryVideos
   );
 
-  const setSelectedCategoryVideos = (payload) => {
+  const setSelectedCategoryVideos = payload => {
     dispatch(changeSelectedCategoryVideos(payload));
   };
   const selectedSubCategoryVideos = useSelector(
     (state: RootState) => state.video.selectedSubCategoryVideos
   );
 
-  const setSelectedSubCategoryVideos = (payload) => {
+  const setSelectedSubCategoryVideos = payload => {
     dispatch(changeSelectedSubCategoryVideos(payload));
   };
 
@@ -144,8 +144,6 @@ export const VideoList = ({ mode }: VideoListProps) => {
 
   const getVideosHandler = React.useCallback(
     async (reset?: boolean, resetFilers?: boolean) => {
-      
-
       if (!firstFetch.current || !afterFetch.current) return;
       if (isFetching.current) return;
       isFetching.current = true;
@@ -259,7 +257,7 @@ export const VideoList = ({ mode }: VideoListProps) => {
     event: SelectChangeEvent<string>
   ) => {
     const optionId = event.target.value;
-    const selectedOption = categories.find((option) => option.id === +optionId);
+    const selectedOption = categories.find(option => option.id === +optionId);
     setSelectedCategoryVideos(selectedOption || null);
   };
   const handleOptionSubCategoryChangeVideos = (
@@ -268,7 +266,7 @@ export const VideoList = ({ mode }: VideoListProps) => {
   ) => {
     const optionId = event.target.value;
     const selectedOption = subcategories.find(
-      (option) => option.id === +optionId
+      option => option.id === +optionId
     );
     setSelectedSubCategoryVideos(selectedOption || null);
   };
@@ -284,24 +282,24 @@ export const VideoList = ({ mode }: VideoListProps) => {
       });
 
       if (response === true) {
-        dispatch(blockUser(user))
+        dispatch(blockUser(user));
       }
     } catch (error) {}
   };
 
   const handleInputKeyDown = (event: any) => {
-    if (event.key === 'Enter') {
+    if (event.key === "Enter") {
       getVideosHandler(true);
     }
-  }
+  };
 
   return (
     <Grid container sx={{ width: "100%" }}>
-      <FiltersCol item xs={12} md={2} lg={2} xl={2} sm={3} >
+      <FiltersCol item xs={12} md={2} lg={2} xl={2} sm={3}>
         <FiltersContainer>
           <Input
             id="standard-adornment-name"
-            onChange={(e) => {
+            onChange={e => {
               setFilterSearch(e.target.value);
             }}
             value={filterSearch}
@@ -329,11 +327,11 @@ export const VideoList = ({ mode }: VideoListProps) => {
           />
           <Input
             id="standard-adornment-name"
-            onChange={(e) => {
+            onChange={e => {
               setFilterName(e.target.value);
             }}
             value={filterName}
-            placeholder="User's name"
+            placeholder="User's Name (Exact)"
             onKeyDown={handleInputKeyDown}
             sx={{
               marginTop: "20px",
@@ -406,7 +404,7 @@ export const VideoList = ({ mode }: VideoListProps) => {
                       },
                     }}
                   >
-                    {categories.map((option) => (
+                    {categories.map(option => (
                       <MenuItem key={option.id} value={option.id}>
                         {option.name}
                       </MenuItem>
@@ -428,7 +426,7 @@ export const VideoList = ({ mode }: VideoListProps) => {
                         labelId="Sub-Category"
                         input={<OutlinedInput label="Sub-Category" />}
                         value={selectedSubCategoryVideos?.id || ""}
-                        onChange={(e) =>
+                        onChange={e =>
                           handleOptionSubCategoryChangeVideos(
                             e,
                             subCategories[selectedCategoryVideos?.id]
@@ -453,7 +451,7 @@ export const VideoList = ({ mode }: VideoListProps) => {
                         }}
                       >
                         {subCategories[selectedCategoryVideos.id].map(
-                          (option) => (
+                          option => (
                             <MenuItem key={option.id} value={option.id}>
                               {option.name}
                             </MenuItem>
@@ -521,73 +519,171 @@ export const VideoList = ({ mode }: VideoListProps) => {
       </FiltersCol>
       <Grid item xs={12} md={10} lg={7} xl={8} sm={9}>
         <ProductManagerRow>
-        <Box
-          sx={{
-            width: "100%",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            marginTop: "20px",
-          }}
-        >
-          <SubtitleContainer
+          <Box
             sx={{
-              justifyContent: "flex-start",
-              paddingLeft: "15px",
               width: "100%",
-              maxWidth: "1400px",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              marginTop: "20px",
             }}
           >
-        
-          </SubtitleContainer>
-       
-          <VideoCardContainer >
-            {videos.map((video: any, index: number) => {
-              const existingVideo = hashMapVideos[video?.id];
-              let hasHash = false;
-              let videoObj = video;
-              if (existingVideo) {
-                videoObj = existingVideo;
-                hasHash = true;
-              }
+            <SubtitleContainer
+              sx={{
+                justifyContent: "flex-start",
+                paddingLeft: "15px",
+                width: "100%",
+                maxWidth: "1400px",
+              }}
+            ></SubtitleContainer>
 
-              let avatarUrl = "";
-              if (userAvatarHash[videoObj?.user]) {
-                avatarUrl = userAvatarHash[videoObj?.user];
-              }
+            <VideoCardContainer>
+              {videos.map((video: any, index: number) => {
+                const existingVideo = hashMapVideos[video?.id];
+                let hasHash = false;
+                let videoObj = video;
+                if (existingVideo) {
+                  videoObj = existingVideo;
+                  hasHash = true;
+                }
 
-              if (hasHash && !videoObj?.videoImage && !videoObj?.image) {
-                return null;
-              }
-              const isPlaylist = videoObj?.service === "PLAYLIST";
+                let avatarUrl = "";
+                if (userAvatarHash[videoObj?.user]) {
+                  avatarUrl = userAvatarHash[videoObj?.user];
+                }
 
-              if (isPlaylist) {
+                if (hasHash && !videoObj?.videoImage && !videoObj?.image) {
+                  return null;
+                }
+                const isPlaylist = videoObj?.service === "PLAYLIST";
+
+                if (isPlaylist) {
+                  return (
+                    <VideoCardCol
+                      onMouseEnter={() => setShowIcons(videoObj.id)}
+                      onMouseLeave={() => setShowIcons(null)}
+                      key={videoObj.id}
+                    >
+                      <IconsBox
+                        sx={{
+                          opacity: showIcons === videoObj.id ? 1 : 0,
+                          zIndex: 2,
+                        }}
+                      >
+                        {videoObj?.user === username && (
+                          <Tooltip title="Edit playlist" placement="top">
+                            <BlockIconContainer>
+                              <EditIcon
+                                onClick={() => {
+                                  dispatch(setEditPlaylist(videoObj));
+                                }}
+                              />
+                            </BlockIconContainer>
+                          </Tooltip>
+                        )}
+
+                        <Tooltip title="Block user content" placement="top">
+                          <BlockIconContainer>
+                            <BlockIcon
+                              onClick={() => {
+                                blockUserFunc(videoObj?.user);
+                              }}
+                            />
+                          </BlockIconContainer>
+                        </Tooltip>
+                      </IconsBox>
+                      <VideoCard
+                        sx={{
+                          cursor: !hasHash && "default",
+                        }}
+                        onClick={() => {
+                          if (!hasHash) return;
+                          navigate(
+                            `/playlist/${videoObj?.user}/${videoObj?.id}`
+                          );
+                        }}
+                      >
+                        <ResponsiveImage
+                          src={videoObj?.image}
+                          width={266}
+                          height={150}
+                          style={{
+                            maxHeight: "50%",
+                          }}
+                        />
+                        <VideoCardTitle>{videoObj?.title}</VideoCardTitle>
+                        <BottomParent>
+                          <NameContainer
+                            onClick={e => {
+                              e.stopPropagation();
+                              navigate(`/channel/${videoObj?.user}`);
+                            }}
+                          >
+                            <Avatar
+                              sx={{ height: 24, width: 24 }}
+                              src={`/arbitrary/THUMBNAIL/${videoObj?.user}/qortal_avatar`}
+                              alt={`${videoObj?.user}'s avatar`}
+                            />
+                            <VideoCardName
+                              sx={{
+                                ":hover": {
+                                  textDecoration: "underline",
+                                },
+                              }}
+                            >
+                              {videoObj?.user}
+                            </VideoCardName>
+                          </NameContainer>
+
+                          {videoObj?.created && (
+                            <VideoUploadDate>
+                              {formatDate(videoObj.created)}
+                            </VideoUploadDate>
+                          )}
+                          <Box
+                            sx={{
+                              display: "flex",
+                              position: "absolute",
+                              bottom: "5px",
+                              right: "5px",
+                            }}
+                          >
+                            <PlaylistSVG
+                              color={theme.palette.text.primary}
+                              height="36px"
+                              width="36px"
+                            />
+                          </Box>
+                        </BottomParent>
+                      </VideoCard>
+                    </VideoCardCol>
+                  );
+                }
+
                 return (
                   <VideoCardCol
-                 
+                    key={videoObj.id}
                     onMouseEnter={() => setShowIcons(videoObj.id)}
                     onMouseLeave={() => setShowIcons(null)}
-                    key={videoObj.id}
                   >
-                   
                     <IconsBox
                       sx={{
                         opacity: showIcons === videoObj.id ? 1 : 0,
                         zIndex: 2,
                       }}
                     >
-                       {videoObj?.user === username && (
-                          <Tooltip title="Edit playlist" placement="top">
+                      {videoObj?.user === username && (
+                        <Tooltip title="Edit video properties" placement="top">
                           <BlockIconContainer>
                             <EditIcon
                               onClick={() => {
-                                dispatch(setEditPlaylist(videoObj));
+                                dispatch(setEditVideo(videoObj));
                               }}
                             />
                           </BlockIconContainer>
                         </Tooltip>
                       )}
-                     
+
                       <Tooltip title="Block user content" placement="top">
                         <BlockIconContainer>
                           <BlockIcon
@@ -599,28 +695,25 @@ export const VideoList = ({ mode }: VideoListProps) => {
                       </Tooltip>
                     </IconsBox>
                     <VideoCard
-                      sx={{
-                        cursor: !hasHash && 'default'
-                      }}
                       onClick={() => {
-                        if(!hasHash) return
-                        navigate(
-                          `/playlist/${videoObj?.user}/${videoObj?.id}`
-                        );
+                        navigate(`/video/${videoObj?.user}/${videoObj?.id}`);
                       }}
                     >
-                      <ResponsiveImage
-                        src={videoObj?.image}
+                      <VideoCardImageContainer
                         width={266}
                         height={150}
-                        style={{
-                          maxHeight: '50%'
-                        }}
+                        videoImage={videoObj.videoImage}
+                        frameImages={videoObj?.extracts || []}
                       />
-                      <VideoCardTitle>{videoObj?.title}</VideoCardTitle>
+                      {/* <ResponsiveImage
+                      src={videoObj.videoImage}
+                      width={266}
+                      height={150}
+                    /> */}
+                      <VideoCardTitle>{videoObj.title}</VideoCardTitle>
                       <BottomParent>
                         <NameContainer
-                          onClick={(e) => {
+                          onClick={e => {
                             e.stopPropagation();
                             navigate(`/channel/${videoObj?.user}`);
                           }}
@@ -646,115 +739,18 @@ export const VideoList = ({ mode }: VideoListProps) => {
                             {formatDate(videoObj.created)}
                           </VideoUploadDate>
                         )}
-                        <Box
-                          sx={{
-                            display: "flex",
-                            position: "absolute",
-                            bottom: "5px",
-                            right: "5px",
-                          }}
-                        >
-                          <PlaylistSVG
-                            color={theme.palette.text.primary}
-                            height="36px"
-                            width="36px"
-                          />
-                        </Box>
                       </BottomParent>
                     </VideoCard>
                   </VideoCardCol>
                 );
-              }
+              })}
+            </VideoCardContainer>
 
-              return (
-                <VideoCardCol
-                 
-                  key={videoObj.id}
-                  onMouseEnter={() => setShowIcons(videoObj.id)}
-                  onMouseLeave={() => setShowIcons(null)}
-                >
-                  <IconsBox
-                    sx={{
-                      opacity: showIcons === videoObj.id ? 1 : 0,
-                      zIndex: 2,
-                    }}
-                  >
-                     {videoObj?.user === username && ( 
-                       <Tooltip title="Edit video properties" placement="top">
-                       <BlockIconContainer>
-                         <EditIcon
-                           onClick={() => {
-                             dispatch(setEditVideo(videoObj));
-                           }}
-                         />
-                       </BlockIconContainer>
-                     </Tooltip>
-
-                     )}
-                   
-                    <Tooltip title="Block user content" placement="top">
-                      <BlockIconContainer>
-                        <BlockIcon
-                          onClick={() => {
-                            blockUserFunc(videoObj?.user);
-                          }}
-                        />
-                      </BlockIconContainer>
-                    </Tooltip>
-                  </IconsBox>
-                  <VideoCard
-                    onClick={() => {
-                      navigate(`/video/${videoObj?.user}/${videoObj?.id}`);
-                    }}
-                  >
-                    <VideoCardImageContainer width={266}
-                      height={150} videoImage={videoObj.videoImage} frameImages={videoObj?.extracts || []} />
-                    {/* <ResponsiveImage
-                      src={videoObj.videoImage}
-                      width={266}
-                      height={150}
-                    /> */}
-                    <VideoCardTitle>{videoObj.title}</VideoCardTitle>
-                    <BottomParent>
-                      <NameContainer
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          navigate(`/channel/${videoObj?.user}`);
-                        }}
-                      >
-                        <Avatar
-                          sx={{ height: 24, width: 24 }}
-                          src={`/arbitrary/THUMBNAIL/${videoObj?.user}/qortal_avatar`}
-                          alt={`${videoObj?.user}'s avatar`}
-                        />
-                        <VideoCardName
-                          sx={{
-                            ":hover": {
-                              textDecoration: "underline",
-                            },
-                          }}
-                        >
-                          {videoObj?.user}
-                        </VideoCardName>
-                      </NameContainer>
-
-                      {videoObj?.created && (
-                        <VideoUploadDate>
-                          {formatDate(videoObj.created)}
-                        </VideoUploadDate>
-                      )}
-                    </BottomParent>
-                  </VideoCard>
-                </VideoCardCol>
-              );
-            })}
-          </VideoCardContainer>
-
-          <LazyLoad
-            onLoadMore={getVideosHandler}
-            isLoading={isLoading}
-          ></LazyLoad>
-        </Box>
+            <LazyLoad
+              onLoadMore={getVideosHandler}
+              isLoading={isLoading}
+            ></LazyLoad>
+          </Box>
         </ProductManagerRow>
       </Grid>
       <FiltersCol item xs={0} lg={3} xl={2}>

@@ -21,8 +21,8 @@ import ResponsiveImage from "../../components/ResponsiveImage";
 import { formatDate, formatTimestampSeconds } from "../../utils/time";
 import { Video } from "../../state/features/videoSlice";
 import { queue } from "../../wrappers/GlobalWrapper";
-import { QTUBE_VIDEO_BASE } from "../../constants";
 import { VideoCardImageContainer } from "./VideoCardImageContainer";
+import { QTUBE_VIDEO_BASE } from "../../constants/Identifiers.ts";
 
 interface VideoListProps {
   mode?: string;
@@ -80,7 +80,7 @@ export const VideoListComponentLevel = ({ mode }: VideoListProps) => {
 
       const copiedVideos: Video[] = [...videos];
       structureData.forEach((video: Video) => {
-        const index = videos.findIndex((p) => p.id === video.id);
+        const index = videos.findIndex(p => p.id === video.id);
         if (index !== -1) {
           copiedVideos[index] = video;
         } else {

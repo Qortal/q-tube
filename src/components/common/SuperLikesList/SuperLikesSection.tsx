@@ -14,14 +14,17 @@ import {
   LoadMoreCommentsButtonRow,
   NoCommentsRow,
 } from "./Comments-styles";
-import { COMMENT_BASE } from "../../../constants";
-import { CrowdfundSubTitle, CrowdfundSubTitleRow } from "../../UploadVideo/Upload-styles";
+import {
+  CrowdfundSubTitle,
+  CrowdfundSubTitleRow,
+} from "../../PublishVideo/PublishVideo-styles.tsx";
+import { COMMENT_BASE } from "../../../constants/Identifiers.ts";
 
 interface CommentSectionProps {
   postId: string;
   postName: string;
   superlikes: any[];
-  getMore: ()=> void;
+  getMore: () => void;
   loadingSuperLikes: boolean;
 }
 
@@ -49,7 +52,13 @@ const Panel = styled("div")`
     background-color: #555;
   }
 `;
-export const SuperLikesSection = ({ loadingSuperLikes, superlikes, postId, postName, getMore }: CommentSectionProps) => {
+export const SuperLikesSection = ({
+  loadingSuperLikes,
+  superlikes,
+  postId,
+  postName,
+  getMore,
+}: CommentSectionProps) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [listComments, setListComments] = useState<any[]>([]);
@@ -59,7 +68,7 @@ export const SuperLikesSection = ({ loadingSuperLikes, superlikes, postId, postN
   const [loadingComments, setLoadingComments] = useState<boolean>(null);
   const hashMapSuperlikes = useSelector(
     (state: RootState) => state.video.hashMapSuperlikes
-  )
+  );
   const onSubmit = (obj?: any, isEdit?: boolean) => {
     if (isEdit) {
       setListComments((prev: any[]) => {
@@ -147,32 +156,28 @@ export const SuperLikesSection = ({ loadingSuperLikes, superlikes, postId, postN
     [postId]
   );
 
-  const getComments = useCallback(
-    async (superlikes, postId) => {
-      try {
-        setLoadingComments(true);
-     
-        let comments: any[] = [];
-        for (const comment of superlikes) {
-          comments.push(comment);
-            const res = await getReplies(comment.identifier, postId);
-            comments = [...comments, ...res];
-          }
-        
-        setListComments(comments);
-        
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoadingComments(false);
+  const getComments = useCallback(async (superlikes, postId) => {
+    try {
+      setLoadingComments(true);
+
+      let comments: any[] = [];
+      for (const comment of superlikes) {
+        comments.push(comment);
+        const res = await getReplies(comment.identifier, postId);
+        comments = [...comments, ...res];
       }
-    },
-    []
-  );
+
+      setListComments(comments);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoadingComments(false);
+    }
+  }, []);
 
   useEffect(() => {
-    if(postId){
-      getComments(superlikes, postId)
+    if (postId) {
+      getComments(superlikes, postId);
     }
   }, [getComments, superlikes, postId]);
 
@@ -191,41 +196,44 @@ export const SuperLikesSection = ({ loadingSuperLikes, superlikes, postId, postN
     }, []);
   }, [listComments]);
 
-
   return (
     <>
-    
       <Panel>
-      <CrowdfundSubTitleRow >
-        <CrowdfundSubTitle sx={{
-          fontSize: '18px',
-          color: 'gold'
-        }}>Super Likes</CrowdfundSubTitle>
-      </CrowdfundSubTitleRow>
+        <CrowdfundSubTitleRow>
+          <CrowdfundSubTitle
+            sx={{
+              fontSize: "18px",
+              color: "gold",
+            }}
+          >
+            Super Likes
+          </CrowdfundSubTitle>
+        </CrowdfundSubTitleRow>
         <CommentsContainer>
-          {(loadingComments || loadingSuperLikes) ? (
+          {loadingComments || loadingSuperLikes ? (
             <NoCommentsRow>
               <CircularProgress />
             </NoCommentsRow>
-          )  : listComments.length === 0 ? (
+          ) : listComments.length === 0 ? (
             <NoCommentsRow>
               There are no super likes yet. Be the first!
             </NoCommentsRow>
           ) : (
             <CommentContainer>
               {structuredCommentList.map((comment: any) => {
-                let hasHash = false
-                let message = {...comment}
-                let hash = {}
-                if(hashMapSuperlikes[comment?.identifier]){
-                  message.message = hashMapSuperlikes[comment?.identifier]?.comment || ""
-                  hasHash = true
-                  hash = hashMapSuperlikes[comment?.identifier]
+                let hasHash = false;
+                let message = { ...comment };
+                let hash = {};
+                if (hashMapSuperlikes[comment?.identifier]) {
+                  message.message =
+                    hashMapSuperlikes[comment?.identifier]?.comment || "";
+                  hasHash = true;
+                  hash = hashMapSuperlikes[comment?.identifier];
                 }
                 return (
                   <Comment
                     key={comment?.identifier}
-                    comment={{...message, ...hash}}
+                    comment={{ ...message, ...hash }}
                     onSubmit={onSubmit}
                     postId={postId}
                     postName={postName}
@@ -241,7 +249,7 @@ export const SuperLikesSection = ({ loadingSuperLikes, superlikes, postId, postN
             <LoadMoreCommentsButtonRow>
               <LoadMoreCommentsButton
                 onClick={() => {
-                 getMore()
+                  getMore();
                 }}
                 variant="contained"
                 size="small"

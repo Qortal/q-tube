@@ -11,7 +11,8 @@ import {
   CommentInputContainer,
   SubmitCommentButton,
 } from "./Comments-styles";
-import { COMMENT_BASE } from "../../../constants";
+
+import { COMMENT_BASE } from "../../../constants/Identifiers.ts";
 const uid = new ShortUniqueId();
 
 const notification = localforage.createInstance({

@@ -43,11 +43,15 @@ import {
   setEditPlaylist,
 } from "../../state/features/videoSlice";
 import ImageUploader from "../common/ImageUploader";
-import { QTUBE_PLAYLIST_BASE, QTUBE_VIDEO_BASE, categories, subCategories } from "../../constants";
+import { categories, subCategories } from "../../constants/Categories.ts";
 import { Playlists } from "../Playlists/Playlists";
 import { PlaylistListEdit } from "../PlaylistListEdit/PlaylistListEdit";
 import { TextEditor } from "../common/TextEditor/TextEditor";
 import { extractTextFromHTML } from "../common/TextEditor/utils";
+import {
+  QTUBE_PLAYLIST_BASE,
+  QTUBE_VIDEO_BASE,
+} from "../../constants/Identifiers.ts";
 
 const uid = new ShortUniqueId();
 const shortuid = new ShortUniqueId({ length: 5 });
@@ -87,17 +91,17 @@ export const EditPlaylist = () => {
   const [selectedSubCategoryVideos, setSelectedSubCategoryVideos] =
     useState<any>(null);
 
-  const isNew = useMemo(()=> {
-    return editVideoProperties?.mode === 'new'
-  }, [editVideoProperties])
+  const isNew = useMemo(() => {
+    return editVideoProperties?.mode === "new";
+  }, [editVideoProperties]);
 
-  useEffect(()=> {
-    if(isNew){
+  useEffect(() => {
+    if (isNew) {
       setPlaylistData({
-        videos: []
-      })
+        videos: [],
+      });
     }
-  }, [isNew])
+  }, [isNew]);
 
   // useEffect(() => {
   //   if (editVideoProperties) {
@@ -145,7 +149,7 @@ export const EditPlaylist = () => {
   //   }
   // }, [editVideoProperties]);
 
-  const checkforPlaylist = React.useCallback(async (videoList) => {
+  const checkforPlaylist = React.useCallback(async videoList => {
     try {
       const combinedData: any = {};
       const videos = [];
@@ -174,21 +178,19 @@ export const EditPlaylist = () => {
   useEffect(() => {
     if (editVideoProperties) {
       setTitle(editVideoProperties?.title || "");
-      
-      if(editVideoProperties?.htmlDescription){
+
+      if (editVideoProperties?.htmlDescription) {
         setDescription(editVideoProperties?.htmlDescription);
-
-      } else if(editVideoProperties?.description) {
-        const paragraph = `<p>${editVideoProperties?.description}</p>`
+      } else if (editVideoProperties?.description) {
+        const paragraph = `<p>${editVideoProperties?.description}</p>`;
         setDescription(paragraph);
-
       }
       setCoverImage(editVideoProperties?.image || "");
       setVideos(editVideoProperties?.videos || []);
 
       if (editVideoProperties?.category) {
         const selectedOption = categories.find(
-          (option) => option.id === +editVideoProperties.category
+          option => option.id === +editVideoProperties.category
         );
         setSelectedCategoryVideos(selectedOption || null);
       }
@@ -200,7 +202,7 @@ export const EditPlaylist = () => {
       ) {
         const selectedOption = subCategories[
           +editVideoProperties?.category
-        ]?.find((option) => option.id === +editVideoProperties.subcategory);
+        ]?.find(option => option.id === +editVideoProperties.subcategory);
         setSelectedSubCategoryVideos(selectedOption || null);
       }
 
@@ -211,24 +213,22 @@ export const EditPlaylist = () => {
   }, [editVideoProperties]);
 
   const onClose = () => {
-    setTitle("")
-    setDescription("")
-    setVideos([])
-    setPlaylistData(null)
-    setSelectedCategoryVideos(null)
-    setSelectedSubCategoryVideos(null)
-    setCoverImage("")
+    setTitle("");
+    setDescription("");
+    setVideos([]);
+    setPlaylistData(null);
+    setSelectedCategoryVideos(null);
+    setSelectedSubCategoryVideos(null);
+    setCoverImage("");
     dispatch(setEditPlaylist(null));
-  
   };
 
   async function publishQDNResource() {
     try {
-
-      if(!title) throw new Error('Please enter a title')
-      if(!description) throw new Error('Please enter a description')
-      if(!coverImage) throw new Error('Please select cover image')
-      if(!selectedCategoryVideos) throw new Error('Please select a category')
+      if (!title) throw new Error("Please enter a title");
+      if (!description) throw new Error("Please enter a description");
+      if (!coverImage) throw new Error("Please select cover image");
+      if (!selectedCategoryVideos) throw new Error("Please select a category");
 
       if (!editVideoProperties) return;
       if (!userAddress) throw new Error("Unable to locate user address");
@@ -258,7 +258,7 @@ export const EditPlaylist = () => {
       const category = selectedCategoryVideos.id;
       const subcategory = selectedSubCategoryVideos?.id || "";
 
-      const videoStructured = playlistData.videos.map((item) => {
+      const videoStructured = playlistData.videos.map(item => {
         const descriptionVid = item?.metadata?.description;
         if (!descriptionVid) throw new Error("cannot find video code");
 
@@ -286,13 +286,12 @@ export const EditPlaylist = () => {
       });
       const id = uid();
 
-      let commentsId =  editVideoProperties?.id
-      
-      if(isNew){
-        commentsId = `${QTUBE_PLAYLIST_BASE}_cm_${id}`
-      }
-      const stringDescription = extractTextFromHTML(description)
+      let commentsId = editVideoProperties?.id;
 
+      if (isNew) {
+        commentsId = `${QTUBE_PLAYLIST_BASE}_cm_${id}`;
+      }
+      const stringDescription = extractTextFromHTML(description);
 
       const playlistObject: any = {
         title,
@@ -303,10 +302,13 @@ export const EditPlaylist = () => {
         videos: videoStructured,
         commentsId: commentsId,
         category,
-        subcategory
+        subcategory,
       };
 
-      const codes = videoStructured.map((item) => `c:${item.code};`).slice(0,10).join("");
+      const codes = videoStructured
+        .map(item => `c:${item.code};`)
+        .slice(0, 10)
+        .join("");
       let metadescription =
         `**category:${category};subcategory:${subcategory};${codes}**` +
         stringDescription.slice(0, 120);
@@ -314,15 +316,18 @@ export const EditPlaylist = () => {
       const crowdfundObjectToBase64 = await objectToBase64(playlistObject);
       // Description is obtained from raw data
 
-      let identifier =  editVideoProperties?.id
+      let identifier = editVideoProperties?.id;
       const sanitizeTitle = title
         .replace(/[^a-zA-Z0-9\s-]/g, "")
         .replace(/\s+/g, "-")
         .replace(/-+/g, "-")
         .trim()
         .toLowerCase();
-      if(isNew){
-        identifier = `${QTUBE_PLAYLIST_BASE}${sanitizeTitle.slice(0, 30)}_${id}`;
+      if (isNew) {
+        identifier = `${QTUBE_PLAYLIST_BASE}${sanitizeTitle.slice(
+          0,
+          30
+        )}_${id}`;
       }
       const requestBodyJson: any = {
         action: "PUBLISH_QDN_RESOURCE",
@@ -336,21 +341,17 @@ export const EditPlaylist = () => {
       };
 
       await qortalRequest(requestBodyJson);
-      if(isNew){
+      if (isNew) {
         const objectToStore = {
           title: title.slice(0, 50),
           description: metadescription,
           id: identifier,
           service: "PLAYLIST",
           user: username,
-          ...playlistObject
-        }
-        dispatch(
-          updateVideo(objectToStore)
-        );
-        dispatch(
-          updateInHashMap(objectToStore)
-        );
+          ...playlistObject,
+        };
+        dispatch(updateVideo(objectToStore));
+        dispatch(updateInHashMap(objectToStore));
       } else {
         dispatch(
           updateVideo({
@@ -365,7 +366,7 @@ export const EditPlaylist = () => {
           })
         );
       }
-      
+
       dispatch(
         setNotification({
           msg: "Playlist published",
@@ -399,13 +400,11 @@ export const EditPlaylist = () => {
     }
   }
 
-
-
   const handleOptionCategoryChangeVideos = (
     event: SelectChangeEvent<string>
   ) => {
     const optionId = event.target.value;
-    const selectedOption = categories.find((option) => option.id === +optionId);
+    const selectedOption = categories.find(option => option.id === +optionId);
     setSelectedCategoryVideos(selectedOption || null);
   };
   const handleOptionSubCategoryChangeVideos = (
@@ -414,19 +413,18 @@ export const EditPlaylist = () => {
   ) => {
     const optionId = event.target.value;
     const selectedOption = subcategories.find(
-      (option) => option.id === +optionId
+      option => option.id === +optionId
     );
     setSelectedSubCategoryVideos(selectedOption || null);
   };
 
-
-  const removeVideo = (index) => {
+  const removeVideo = index => {
     const copyData = structuredClone(playlistData);
     copyData.videos.splice(index, 1);
     setPlaylistData(copyData);
   };
 
-  const addVideo = (data) => {
+  const addVideo = data => {
     const copyData = structuredClone(playlistData);
     copyData.videos = [...copyData.videos, { ...data }];
     setPlaylistData(copyData);
@@ -449,10 +447,8 @@ export const EditPlaylist = () => {
           >
             {isNew ? (
               <NewCrowdfundTitle>Create new playlist</NewCrowdfundTitle>
-
             ) : (
-        <NewCrowdfundTitle>Update Playlist properties</NewCrowdfundTitle>
-
+              <NewCrowdfundTitle>Update Playlist properties</NewCrowdfundTitle>
             )}
           </Box>
           <>
@@ -471,7 +467,7 @@ export const EditPlaylist = () => {
                   value={selectedCategoryVideos?.id || ""}
                   onChange={handleOptionCategoryChangeVideos}
                 >
-                  {categories.map((option) => (
+                  {categories.map(option => (
                     <MenuItem key={option.id} value={option.id}>
                       {option.name}
                     </MenuItem>
@@ -486,20 +482,18 @@ export const EditPlaylist = () => {
                       labelId="Sub-Category"
                       input={<OutlinedInput label="Select a Sub-Category" />}
                       value={selectedSubCategoryVideos?.id || ""}
-                      onChange={(e) =>
+                      onChange={e =>
                         handleOptionSubCategoryChangeVideos(
                           e,
                           subCategories[selectedCategoryVideos?.id]
                         )
                       }
                     >
-                      {subCategories[selectedCategoryVideos.id].map(
-                        (option) => (
-                          <MenuItem key={option.id} value={option.id}>
-                            {option.name}
-                          </MenuItem>
-                        )
-                      )}
+                      {subCategories[selectedCategoryVideos.id].map(option => (
+                        <MenuItem key={option.id} value={option.id}>
+                          {option.name}
+                        </MenuItem>
+                      ))}
                     </Select>
                   </FormControl>
                 )}
@@ -533,9 +527,12 @@ export const EditPlaylist = () => {
                 label="Title of playlist"
                 variant="filled"
                 value={title}
-                onChange={(e) => {
+                onChange={e => {
                   const value = e.target.value;
-                  const formattedValue = value.replace(/[^a-zA-Z0-9\s-_!?]/g, "");
+                  const formattedValue = value.replace(
+                    /[^a-zA-Z0-9\s-_!?]/g,
+                    ""
+                  );
                   setTitle(formattedValue);
                 }}
                 inputProps={{ maxLength: 180 }}
@@ -552,12 +549,19 @@ export const EditPlaylist = () => {
                 maxRows={3}
                 required
               /> */}
-               <Typography sx={{
-                      fontSize: '18px'
-                    }}>Description of playlist</Typography>
-                    <TextEditor inlineContent={description} setInlineContent={(value)=> {
-                      setDescription(value)
-                    }} />
+              <Typography
+                sx={{
+                  fontSize: "18px",
+                }}
+              >
+                Description of playlist
+              </Typography>
+              <TextEditor
+                inlineContent={description}
+                setInlineContent={value => {
+                  setDescription(value);
+                }}
+              />
             </React.Fragment>
 
             <PlaylistListEdit

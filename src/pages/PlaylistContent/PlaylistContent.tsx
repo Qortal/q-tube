@@ -38,12 +38,7 @@ import { CommentSection } from "../../components/common/Comments/CommentSection"
 import {
   CrowdfundSubTitle,
   CrowdfundSubTitleRow,
-} from "../../components/UploadVideo/Upload-styles";
-import {
-  QTUBE_VIDEO_BASE,
-  SUPER_LIKE_BASE,
-  minPriceSuperlike,
-} from "../../constants";
+} from "../../components/PublishVideo/PublishVideo-styles.tsx";
 import { Playlists } from "../../components/Playlists/Playlists";
 import { DisplayHtml } from "../../components/common/TextEditor/DisplayHtml";
 import FileElement from "../../components/common/FileElement";
@@ -55,6 +50,11 @@ import {
   isTimestampWithinRange,
 } from "../VideoContent/VideoContent";
 import { SuperLikesSection } from "../../components/common/SuperLikesList/SuperLikesSection";
+import {
+  QTUBE_VIDEO_BASE,
+  SUPER_LIKE_BASE,
+} from "../../constants/Identifiers.ts";
+import { minPriceSuperlike } from "../../constants/Misc.ts";
 
 export const PlaylistContent = () => {
   const { name, id } = useParams();
@@ -82,7 +82,7 @@ export const PlaylistContent = () => {
 
   const [nameAddress, setNameAddress] = useState<string>("");
 
-  const getAddressName = async (name) => {
+  const getAddressName = async name => {
     const response = await qortalRequest({
       action: "GET_NAME_DATA",
       name: name,
@@ -297,7 +297,7 @@ export const PlaylistContent = () => {
 
   const nextVideo = useMemo(() => {
     const currentVideoIndex = playlistData?.videos?.findIndex(
-      (item) => item?.identifier === videoData?.id
+      item => item?.identifier === videoData?.id
     );
     if (currentVideoIndex !== -1) {
       const nextVideoIndex = currentVideoIndex + 1;
@@ -318,7 +318,7 @@ export const PlaylistContent = () => {
 
   const onEndVideo = useCallback(() => {
     const currentVideoIndex = playlistData?.videos?.findIndex(
-      (item) => item?.identifier === videoData?.id
+      item => item?.identifier === videoData?.id
     );
     if (currentVideoIndex !== -1) {
       const nextVideoIndex = currentVideoIndex + 1;
@@ -490,8 +490,8 @@ export const PlaylistContent = () => {
                   name={videoData?.user}
                   service={videoData?.service}
                   identifier={videoData?.id}
-                  onSuccess={(val) => {
-                    setSuperlikelist((prev) => [val, ...prev]);
+                  onSuccess={val => {
+                    setSuperlikelist(prev => [val, ...prev]);
                   }}
                 />
               )}
@@ -554,16 +554,16 @@ export const PlaylistContent = () => {
                 cursor: !descriptionHeight
                   ? "default"
                   : isExpandedDescription
-                  ? "default"
-                  : "pointer",
+                    ? "default"
+                    : "pointer",
                 position: "relative",
               }}
               className={
                 !descriptionHeight
                   ? ""
                   : isExpandedDescription
-                  ? ""
-                  : "hover-click"
+                    ? ""
+                    : "hover-click"
               }
             >
               {descriptionHeight && !isExpandedDescription && (
@@ -588,8 +588,8 @@ export const PlaylistContent = () => {
                   height: !descriptionHeight
                     ? "auto"
                     : isExpandedDescription
-                    ? "auto"
-                    : "100px",
+                      ? "auto"
+                      : "100px",
                   overflow: "hidden",
                 }}
               >
@@ -610,7 +610,7 @@ export const PlaylistContent = () => {
               {descriptionHeight && (
                 <Typography
                   onClick={() => {
-                    setIsExpandedDescription((prev) => !prev);
+                    setIsExpandedDescription(prev => !prev);
                   }}
                   sx={{
                     fontWeight: "bold",

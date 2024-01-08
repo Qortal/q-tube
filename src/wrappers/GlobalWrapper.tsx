@@ -11,16 +11,24 @@ import { addUser } from "../state/features/authSlice";
 import NavBar from "../components/layout/Navbar/Navbar";
 import PageLoader from "../components/common/PageLoader";
 import { RootState } from "../state/store";
-import { setSuperlikesAll, setUserAvatarHash } from "../state/features/globalSlice";
+import {
+  setSuperlikesAll,
+  setUserAvatarHash,
+} from "../state/features/globalSlice";
 import { VideoPlayerGlobal } from "../components/common/VideoPlayerGlobal";
 import { Rnd } from "react-rnd";
 import { RequestQueue } from "../utils/queue";
 import { EditVideo } from "../components/EditVideo/EditVideo";
 import { EditPlaylist } from "../components/EditPlaylist/EditPlaylist";
 import ConsentModal from "../components/common/ConsentModal";
-import { SUPER_LIKE_BASE, minPriceSuperlike } from "../constants";
-import { extractSigValue, getPaymentInfo, isTimestampWithinRange } from "../pages/VideoContent/VideoContent";
+import {
+  extractSigValue,
+  getPaymentInfo,
+  isTimestampWithinRange,
+} from "../pages/VideoContent/VideoContent";
 import { useFetchSuperLikes } from "../hooks/useFetchSuperLikes";
+import { SUPER_LIKE_BASE } from "../constants/Identifiers.ts";
+import { minPriceSuperlike } from "../constants/Misc.ts";
 
 interface Props {
   children: React.ReactNode;
@@ -32,14 +40,13 @@ let timer: number | null = null;
 export const queue = new RequestQueue();
 export const queueSuperlikes = new RequestQueue();
 
-
 const GlobalWrapper: React.FC<Props> = ({ children, setTheme }) => {
   const dispatch = useDispatch();
   const isDragging = useRef(false);
   const [userAvatar, setUserAvatar] = useState<string>("");
   const user = useSelector((state: RootState) => state.auth.user);
-  const {addSuperlikeRawDataGetToList} = useFetchSuperLikes()
-  const interval = useRef<any>(null)
+  const { addSuperlikeRawDataGetToList } = useFetchSuperLikes();
+  const interval = useRef<any>(null);
 
   const videoPlaying = useSelector(
     (state: RootState) => state.global.videoPlaying
@@ -134,79 +141,70 @@ const GlobalWrapper: React.FC<Props> = ({ children, setTheme }) => {
     return isDragging.current;
   }, []);
 
+  const getSuperlikes = useCallback(async () => {
+    try {
+      const url = `/arbitrary/resources/search?mode=ALL&service=BLOG_COMMENT&query=${SUPER_LIKE_BASE}&limit=20&includemetadata=true&reverse=true&excludeblocked=true`;
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const responseData = await response.json();
+      let comments: any[] = [];
+      for (const comment of responseData) {
+        if (
+          comment.identifier &&
+          comment.name &&
+          comment?.metadata?.description
+        ) {
+          try {
+            const result = extractSigValue(comment?.metadata?.description);
+            if (!result) continue;
+            const res = await getPaymentInfo(result);
+            if (
+              +res?.amount >= minPriceSuperlike &&
+              isTimestampWithinRange(res?.timestamp, comment.created)
+            ) {
+              addSuperlikeRawDataGetToList({
+                name: comment.name,
+                identifier: comment.identifier,
+                content: comment,
+              });
 
-  const getSuperlikes = useCallback(
-    async () => {
-      try {
-      
-     
-        const url = `/arbitrary/resources/search?mode=ALL&service=BLOG_COMMENT&query=${SUPER_LIKE_BASE}&limit=20&includemetadata=true&reverse=true&excludeblocked=true`;
-        const response = await fetch(url, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-        const responseData = await response.json();
-        let comments: any[] = [];
-        for (const comment of responseData) {
-          if (comment.identifier && comment.name && comment?.metadata?.description) {
-            
-    
-              try {
-               
-                const result = extractSigValue(comment?.metadata?.description)
-            if(!result) continue
-               const res = await getPaymentInfo(result);
-               if(+res?.amount >= minPriceSuperlike  && isTimestampWithinRange(res?.timestamp, comment.created)){
-                addSuperlikeRawDataGetToList({name:comment.name, identifier:comment.identifier, content: comment})
-
-                 comments = [...comments, {
-                   ...comment,
-                   message: "",
-                   amount: res.amount
-                 }];
- 
-               }
- 
-              } catch (error) {
-               
-              }
- 
-             
-
-       
-        
-          }
+              comments = [
+                ...comments,
+                {
+                  ...comment,
+                  message: "",
+                  amount: res.amount,
+                },
+              ];
+            }
+          } catch (error) {}
         }
-        dispatch(setSuperlikesAll(comments));
-
-      
-      } catch (error) {
-        console.error(error);
-      } finally {
       }
-    },
-    []
-  );
+      dispatch(setSuperlikesAll(comments));
+    } catch (error) {
+      console.error(error);
+    } finally {
+    }
+  }, []);
 
-  const checkSuperlikes = useCallback(
-    () => {
-      let isCalling = false
-      interval.current = setInterval(async () => {
-        if (isCalling) return
-        isCalling = true
-        const res = await getSuperlikes()
-        isCalling = false
-      }, 300000)
-      getSuperlikes()
-    },
-    [getSuperlikes])
+  const checkSuperlikes = useCallback(() => {
+    let isCalling = false;
+    interval.current = setInterval(async () => {
+      if (isCalling) return;
+      isCalling = true;
+      const res = await getSuperlikes();
+      isCalling = false;
+    }, 300000);
+    getSuperlikes();
+  }, [getSuperlikes]);
 
   useEffect(() => {
     checkSuperlikes();
   }, [checkSuperlikes]);
-
 
   return (
     <>

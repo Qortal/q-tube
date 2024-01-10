@@ -35,8 +35,8 @@ import {
 } from "../../../state/features/videoSlice";
 import { RootState } from "../../../state/store";
 import { useWindowSize } from "../../../hooks/useWindowSize";
-import { UploadVideo } from "../../UploadVideo/UploadVideo";
-import { StyledButton } from "../../UploadVideo/Upload-styles";
+import { PublishVideo } from "../../PublishVideo/PublishVideo.tsx";
+import { StyledButton } from "../../PublishVideo/PublishVideo-styles.tsx";
 import { Notifications } from "../../common/Notifications/Notifications";
 interface Props {
   isAuthenticated: boolean;
@@ -279,10 +279,10 @@ const NavBar: React.FC<Props> = ({
             <Input
               id="standard-adornment-name"
               inputRef={inputRef}
-              onChange={(e) => {
+              onChange={e => {
                 searchValRef.current = e.target.value;
               }}
-              onKeyDown={(event) => {
+              onKeyDown={event => {
                 if (event.key === "Enter" || event.keyCode === 13) {
                   if (!searchValRef.current) {
                     dispatch(setIsFiltering(false));
@@ -355,9 +355,7 @@ const NavBar: React.FC<Props> = ({
             />
           </Box>
         </Popover>
-        {isAuthenticated && userName && (
-          <Notifications />
-        )}
+        {isAuthenticated && userName && <Notifications />}
 
         <DownloadTaskManager />
         {isAuthenticated && userName && (
@@ -393,20 +391,18 @@ const NavBar: React.FC<Props> = ({
         <AvatarContainer>
           {isAuthenticated && userName && (
             <>
-            <UploadVideo />
-          <StyledButton
-              color="primary"
-              startIcon={<AddBoxIcon />}
-              onClick={() => {
-                dispatch(setEditPlaylist({mode: 'new'}))
-              }}
-            >
-              create playlist
-            </StyledButton>
+              <PublishVideo />
+              <StyledButton
+                color="primary"
+                startIcon={<AddBoxIcon />}
+                onClick={() => {
+                  dispatch(setEditPlaylist({ mode: "new" }));
+                }}
+              >
+                create playlist
+              </StyledButton>
             </>
           )}
-          
-          
         </AvatarContainer>
 
         <Popover

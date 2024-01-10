@@ -11,8 +11,8 @@ import {
   CommentInputContainer,
   SubmitCommentButton,
 } from "./Comments-styles";
-import { COMMENT_BASE } from "../../../constants";
 import { addtoHashMapSuperlikes } from "../../../state/features/videoSlice";
+import { COMMENT_BASE } from "../../../constants/Identifiers.ts";
 const uid = new ShortUniqueId();
 
 const notification = localforage.createInstance({
@@ -84,9 +84,9 @@ interface CommentEditorProps {
   commentId?: string;
   isEdit?: boolean;
   commentMessage?: string;
-  isSuperLike?: boolean
+  isSuperLike?: boolean;
   comment?: any;
-  hasHash?: boolean
+  hasHash?: boolean;
 }
 
 export function utf8ToBase64(inputString: string): string {
@@ -111,7 +111,7 @@ export const CommentEditor = ({
   commentMessage,
   isSuperLike,
   comment,
-  hasHash
+  hasHash,
 }: CommentEditorProps) => {
   const [value, setValue] = useState<string>("");
   const dispatch = useDispatch();
@@ -156,34 +156,41 @@ export const CommentEditor = ({
     }
 
     try {
-      let data64 = null
-      let description = ""
-      let tag1 = ""
-      let superObj =  {}
-      if(isSuperLike){
-        if(!comment?.metadata?.description || !comment?.metadata?.tags[0] || !comment?.transactionReference || !comment?.notificationInformation || !comment?.about) throw new Error('unable to edit Super like')
-        description = comment?.metadata?.description
-      tag1 = comment?.metadata?.tags[0]
-         superObj = {
+      let data64 = null;
+      let description = "";
+      let tag1 = "";
+      let superObj = {};
+      if (isSuperLike) {
+        if (
+          !comment?.metadata?.description ||
+          !comment?.metadata?.tags[0] ||
+          !comment?.transactionReference ||
+          !comment?.notificationInformation ||
+          !comment?.about
+        )
+          throw new Error("unable to edit Super like");
+        description = comment?.metadata?.description;
+        tag1 = comment?.metadata?.tags[0];
+        superObj = {
           comment: value,
           transactionReference: comment.transactionReference,
           notificationInformation: comment.notificationInformation,
-          about: comment.about
-        }
+          about: comment.about,
+        };
         const superLikeToBase64 = await objectToBase64(superObj);
-        data64 = superLikeToBase64
+        data64 = superLikeToBase64;
       }
-      if(isSuperLike && !data64) throw new Error('unable to edit Super like')
+      if (isSuperLike && !data64) throw new Error("unable to edit Super like");
 
       const base64 = utf8ToBase64(value);
       const resourceResponse = await qortalRequest({
         action: "PUBLISH_QDN_RESOURCE",
         name: name,
-        service:   "BLOG_COMMENT",
+        service: "BLOG_COMMENT",
         data64: isSuperLike ? data64 : base64,
         identifier: identifier,
         description,
-        tag1
+        tag1,
       });
       dispatch(
         setNotification({
@@ -192,13 +199,14 @@ export const CommentEditor = ({
         })
       );
 
-      if(isSuperLike){
-        dispatch(addtoHashMapSuperlikes({
-          ...superObj,
-          ...comment,
-          message: value
-        }))
-
+      if (isSuperLike) {
+        dispatch(
+          addtoHashMapSuperlikes({
+            ...superObj,
+            ...comment,
+            message: value,
+          })
+        );
       }
       if (idForNotification) {
         addItem({
@@ -240,7 +248,7 @@ export const CommentEditor = ({
 
       let identifier = `${COMMENT_BASE}${postId.slice(-12)}_base_${id}`;
       let idForNotification = identifier;
-      let service = 'BLOG_COMMENT'
+      let service = "BLOG_COMMENT";
       if (isReply && commentId) {
         const removeBaseCommentId = commentId;
         removeBaseCommentId.replace("_base_", "");
@@ -252,10 +260,10 @@ export const CommentEditor = ({
       if (isEdit && commentId) {
         identifier = commentId;
       }
-    
+
       await publishComment(identifier, idForNotification);
-      if(isSuperLike){
-        onSubmit({})
+      if (isSuperLike) {
+        onSubmit({});
       } else {
         onSubmit({
           created: Date.now(),
@@ -265,7 +273,7 @@ export const CommentEditor = ({
           name: user?.name,
         });
       }
-      
+
       setValue("");
     } catch (error) {
       console.error(error);

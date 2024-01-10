@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Compressor from 'compressorjs'
+import Compressor from "compressorjs";
 
 import {
   AddCoverImageButton,
@@ -14,7 +14,7 @@ import {
   NewCrowdfundTitle,
   StyledButton,
   TimesIcon,
-} from "./Upload-styles";
+} from "./EditVideo-styles.tsx";
 import { CircularProgress } from "@mui/material";
 
 import {
@@ -46,12 +46,14 @@ import {
   updateInHashMap,
 } from "../../state/features/videoSlice";
 import ImageUploader from "../common/ImageUploader";
-import { QTUBE_VIDEO_BASE, categories, subCategories } from "../../constants";
+import { categories, subCategories } from "../../constants/Categories.ts";
 import { MultiplePublish } from "../common/MultiplePublish/MultiplePublish";
 import { TextEditor } from "../common/TextEditor/TextEditor";
 import { extractTextFromHTML } from "../common/TextEditor/utils";
-import { toBase64 } from "../UploadVideo/UploadVideo";
+import { toBase64 } from "../PublishVideo/PublishVideo.tsx";
 import { FrameExtractor } from "../common/FrameExtractor/FrameExtractor";
+import { QTUBE_VIDEO_BASE } from "../../constants/Identifiers.ts";
+import { titleFormatter } from "../../constants/Misc.ts";
 
 const uid = new ShortUniqueId();
 const shortuid = new ShortUniqueId({ length: 5 });
@@ -94,8 +96,7 @@ export const EditVideo = () => {
     useState<any>(null);
   const [selectedSubCategoryVideos, setSelectedSubCategoryVideos] =
     useState<any>(null);
-    const [imageExtracts, setImageExtracts] = useState<any>([])
-
+  const [imageExtracts, setImageExtracts] = useState<any>([]);
 
   const { getRootProps, getInputProps } = useDropzone({
     accept: {
@@ -111,7 +112,7 @@ export const EditVideo = () => {
       let errorString = null;
 
       rejectedFiles.forEach(({ file, errors }) => {
-        errors.forEach((error) => {
+        errors.forEach(error => {
           if (error.code === "file-too-large") {
             errorString = "File must be under 400mb";
           }
@@ -178,19 +179,17 @@ export const EditVideo = () => {
   useEffect(() => {
     if (editVideoProperties) {
       setTitle(editVideoProperties?.title || "");
-      if(editVideoProperties?.htmlDescription){
+      if (editVideoProperties?.htmlDescription) {
         setDescription(editVideoProperties?.htmlDescription);
-
-      } else if(editVideoProperties?.fullDescription) {
-        const paragraph = `<p>${editVideoProperties?.fullDescription}</p>`
+      } else if (editVideoProperties?.fullDescription) {
+        const paragraph = `<p>${editVideoProperties?.fullDescription}</p>`;
         setDescription(paragraph);
-
       }
       setCoverImage(editVideoProperties?.videoImage || "");
 
       if (editVideoProperties?.category) {
         const selectedOption = categories.find(
-          (option) => option.id === +editVideoProperties.category
+          option => option.id === +editVideoProperties.category
         );
         setSelectedCategoryVideos(selectedOption || null);
       }
@@ -202,7 +201,7 @@ export const EditVideo = () => {
       ) {
         const selectedOption = subCategories[
           +editVideoProperties?.category
-        ]?.find((option) => option.id === +editVideoProperties.subcategory);
+        ]?.find(option => option.id === +editVideoProperties.subcategory);
         setSelectedSubCategoryVideos(selectedOption || null);
       }
     }
@@ -213,7 +212,7 @@ export const EditVideo = () => {
     setVideoPropertiesToSetToRedux(null);
     setFile(null);
     setTitle("");
-    setImageExtracts([])
+    setImageExtracts([]);
     setDescription("");
     setCoverImage("");
   };
@@ -253,7 +252,7 @@ export const EditVideo = () => {
       const category = selectedCategoryVideos.id;
       const subcategory = selectedSubCategoryVideos?.id || "";
 
-      const fullDescription = extractTextFromHTML(description)
+      const fullDescription = extractTextFromHTML(description);
       let fileExtension = "mp4";
       const fileExtensionSplit = file?.name?.split(".");
       if (fileExtensionSplit?.length > 1) {
@@ -285,14 +284,12 @@ export const EditVideo = () => {
         subcategory,
         code: editVideoProperties.code,
         videoType: file?.type || "video/mp4",
-        filename: `${alphanumericString.trim()}.${fileExtension}`
+        filename: `${alphanumericString.trim()}.${fileExtension}`,
       };
 
       let metadescription =
         `**category:${category};subcategory:${subcategory};code:${editVideoProperties.code}**` +
         description.slice(0, 150);
-
-  
 
       const crowdfundObjectToBase64 = await objectToBase64(videoObject);
       // Description is obtained from raw data
@@ -319,7 +316,7 @@ export const EditVideo = () => {
           description: metadescription,
           identifier: editVideoProperties.videoReference?.identifier,
           tag1: QTUBE_VIDEO_BASE,
-          filename: `${alphanumericString.trim()}.${fileExtension}`
+          filename: `${alphanumericString.trim()}.${fileExtension}`,
         };
 
         listOfPublishes.push(requestBodyVideo);
@@ -356,13 +353,11 @@ export const EditVideo = () => {
     }
   }
 
-
-
   const handleOptionCategoryChangeVideos = (
     event: SelectChangeEvent<string>
   ) => {
     const optionId = event.target.value;
-    const selectedOption = categories.find((option) => option.id === +optionId);
+    const selectedOption = categories.find(option => option.id === +optionId);
     setSelectedCategoryVideos(selectedOption || null);
   };
   const handleOptionSubCategoryChangeVideos = (
@@ -371,48 +366,45 @@ export const EditVideo = () => {
   ) => {
     const optionId = event.target.value;
     const selectedOption = subcategories.find(
-      (option) => option.id === +optionId
+      option => option.id === +optionId
     );
     setSelectedSubCategoryVideos(selectedOption || null);
   };
 
-  const onFramesExtracted = async (imgs)=> {
+  const onFramesExtracted = async imgs => {
     try {
-      let imagesExtracts = []
-   
-      for (const img of imgs){
+      let imagesExtracts = [];
+
+      for (const img of imgs) {
         try {
-          let compressedFile
-          const image = img
-          await new Promise<void>((resolve) => {
+          let compressedFile;
+          const image = img;
+          await new Promise<void>(resolve => {
             new Compressor(image, {
-              quality: .8,
+              quality: 0.8,
               maxWidth: 750,
-              mimeType: 'image/webp',
+              mimeType: "image/webp",
               success(result) {
-                const file = new File([result], 'name', {
-                  type: 'image/webp'
-                })
-                compressedFile = file
-                resolve()
+                const file = new File([result], "name", {
+                  type: "image/webp",
+                });
+                compressedFile = file;
+                resolve();
               },
-              error(err) {}
-            })
-          })
-          if (!compressedFile) continue
-          const base64Img = await toBase64(compressedFile)
-          imagesExtracts.push(base64Img)
-          
+              error(err) {},
+            });
+          });
+          if (!compressedFile) continue;
+          const base64Img = await toBase64(compressedFile);
+          imagesExtracts.push(base64Img);
         } catch (error) {
-          console.error(error)
+          console.error(error);
         }
       }
 
-      setImageExtracts(imagesExtracts)
-    } catch (error) {
-      
-    }
-  }
+      setImageExtracts(imagesExtracts);
+    } catch (error) {}
+  };
 
   return (
     <>
@@ -467,7 +459,7 @@ export const EditVideo = () => {
                   value={selectedCategoryVideos?.id || ""}
                   onChange={handleOptionCategoryChangeVideos}
                 >
-                  {categories.map((option) => (
+                  {categories.map(option => (
                     <MenuItem key={option.id} value={option.id}>
                       {option.name}
                     </MenuItem>
@@ -482,26 +474,27 @@ export const EditVideo = () => {
                       labelId="Sub-Category"
                       input={<OutlinedInput label="Select a Sub-Category" />}
                       value={selectedSubCategoryVideos?.id || ""}
-                      onChange={(e) =>
+                      onChange={e =>
                         handleOptionSubCategoryChangeVideos(
                           e,
                           subCategories[selectedCategoryVideos?.id]
                         )
                       }
                     >
-                      {subCategories[selectedCategoryVideos.id].map(
-                        (option) => (
-                          <MenuItem key={option.id} value={option.id}>
-                            {option.name}
-                          </MenuItem>
-                        )
-                      )}
+                      {subCategories[selectedCategoryVideos.id].map(option => (
+                        <MenuItem key={option.id} value={option.id}>
+                          {option.name}
+                        </MenuItem>
+                      ))}
                     </Select>
                   </FormControl>
                 )}
             </Box>
             {file && (
-                <FrameExtractor videoFile={file} onFramesExtracted={(imgs)=> onFramesExtracted(imgs)}/>
+              <FrameExtractor
+                videoFile={file}
+                onFramesExtracted={imgs => onFramesExtracted(imgs)}
+              />
             )}
             <React.Fragment>
               {!coverImage ? (
@@ -532,23 +525,27 @@ export const EditVideo = () => {
                 label="Title of video"
                 variant="filled"
                 value={title}
-                onChange={(e) => {
+                onChange={e => {
                   const value = e.target.value;
-                  const formattedValue = value.replace(
-                    /[^a-zA-Z0-9\s-_!?]/g,
-                    ""
-                  );
+                  const formattedValue = value.replace(titleFormatter, "");
                   setTitle(formattedValue);
                 }}
                 inputProps={{ maxLength: 180 }}
                 required
               />
-              <Typography sx={{
-                      fontSize: '18px'
-                    }}>Description of video</Typography>
-                <TextEditor inlineContent={description} setInlineContent={(value)=> {
-                      setDescription(value)
-                    }} />
+              <Typography
+                sx={{
+                  fontSize: "18px",
+                }}
+              >
+                Description of video
+              </Typography>
+              <TextEditor
+                inlineContent={description}
+                setInlineContent={value => {
+                  setDescription(value);
+                }}
+              />
               {/* <CustomInputField
                 name="description"
                 label="Describe your video in a few words"
@@ -588,8 +585,8 @@ export const EditVideo = () => {
                 disabled={file && imageExtracts.length === 0}
               >
                 {file && imageExtracts.length === 0 && (
-                    <CircularProgress color="secondary" size={14} />
-                  )}
+                  <CircularProgress color="secondary" size={14} />
+                )}
                 Publish
               </CrowdfundActionButton>
             </Box>

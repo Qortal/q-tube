@@ -51,7 +51,7 @@ import {
   categories,
   subCategories,
 } from "../../constants";
-import { MultiplePublish } from "../common/MultiplePublish/MultiplePublish";
+import { MultiplePublish } from "../common/MultiplePublish/MultiplePublishAll";
 import {
   CrowdfundSubTitle,
   CrowdfundSubTitleRow,
@@ -124,7 +124,7 @@ export const UploadVideo = ({ editId, editContent }: NewCrowdfundProps) => {
     useState<any>(null);
 
   const [playlistSetting, setPlaylistSetting] = useState<null | string>(null);
-  const [publishes, setPublishes] = useState<any[]>([]);
+  const [publishes, setPublishes] = useState<any>(null);
   const [isCheckTitleByFile, setIsCheckTitleByFile] = useState(false)
   const [isCheckSameCoverImage, setIsCheckSameCoverImage] = useState(false)
   const [isCheckDescriptionIsTitle, setIsCheckDescriptionIsTitle] = useState(false)
@@ -456,8 +456,11 @@ export const UploadVideo = ({ editId, editContent }: NewCrowdfundProps) => {
           throw new Error("cannot get playlist data");
         }
       }
-
-      setPublishes(listOfPublishes);
+      const multiplePublish = {
+        action: "PUBLISH_MULTIPLE_QDN_RESOURCES",
+        resources: [...listOfPublishes],
+      };
+      setPublishes(multiplePublish);
       setIsOpenMultiplePublish(true);
     } catch (error: any) {
       let notificationObj: any = null;
@@ -1206,6 +1209,18 @@ export const UploadVideo = ({ editId, editContent }: NewCrowdfundProps) => {
       {isOpenMultiplePublish && (
         <MultiplePublish
           isOpen={isOpenMultiplePublish}
+          onError={(messageNotification)=> {
+            setIsOpenMultiplePublish(false);
+            setPublishes(null)
+            if(messageNotification){
+              dispatch(
+                setNotification({
+                  msg: messageNotification,
+                  alertType: 'error'
+                })
+              )
+            }
+          }}
           onSubmit={() => {
             setIsOpenMultiplePublish(false);
             setIsOpen(false);

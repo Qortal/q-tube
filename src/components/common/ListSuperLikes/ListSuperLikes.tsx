@@ -70,7 +70,7 @@ export default function ListSuperLikes({ superlikes }) {
               }}>
               <ListItem
               sx={{
-                padding: '0px'
+                padding: '0px',
               }}
               alignItems="flex-start"
              

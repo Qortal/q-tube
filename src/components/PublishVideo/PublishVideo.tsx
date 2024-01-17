@@ -696,7 +696,6 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
                   setTitlesPrefix(e.target.value.replace(titleFormatter, ""))
                 }
                 inputProps={{ maxLength: 180 }}
-                required
               />
               <Box
                 {...getRootProps()}

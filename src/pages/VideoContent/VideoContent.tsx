@@ -170,6 +170,38 @@ export const VideoContent = () => {
 
   const [videoData, setVideoData] = useState<any>(null);
 
+  const saveAsFilename = useMemo(() => {
+
+    // nb. we prefer to construct the local filename to use for
+    // saving, from the video "title" when possible
+    if (videoData?.title) {
+
+      // figure out filename extension
+      let ext = ".mp4";
+      if (videoData?.filename) {
+        // nb. this regex copied from https://stackoverflow.com/a/680982
+        const re = /(?:\.([^.]+))?$/;
+        const match = re.exec(videoData.filename);
+        if (match[1]) {
+          ext = "." + match[1];
+        }
+      }
+
+      return videoData.title + ext;
+    }
+
+    // otherwise use QDN filename if applicable
+    if (videoData?.filename) {
+      return videoData.filename;
+    }
+
+    // TODO: this was the previous value, leaving here as the
+    // fallback for now even though it probably is not needed..?
+    return videoData?.filename ||
+      videoData?.title?.slice(0, 20) + ".mp4";
+
+  }, [videoData]);
+
   const hashMapVideos = useSelector(
     (state: RootState) => state.video.hashMapVideos
   );
@@ -370,9 +402,7 @@ export const VideoContent = () => {
             <FileElement
               fileInfo={{
                 ...videoReference,
-                filename:
-                  videoData?.filename ||
-                  videoData?.title?.slice(0, 20) + ".mp4",
+                filename: saveAsFilename,
                 mimeType: videoData?.videoType || '"video/mp4',
               }}
               title={videoData?.filename || videoData?.title?.slice(0, 20)}

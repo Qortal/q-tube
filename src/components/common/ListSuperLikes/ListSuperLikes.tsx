@@ -11,8 +11,8 @@ import { Box } from "@mui/material";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../state/store";
 import { useNavigate } from "react-router-dom";
-import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
-const truncateMessage = (message) => {
+import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
+const truncateMessage = message => {
   return message.length > 40 ? message.slice(0, 40) + "..." : message;
 };
 
@@ -28,18 +28,16 @@ export default function ListSuperLikes({ superlikes }) {
         //  let hasHash = false
         let message = "";
         let url = "";
-        let forName = ""
+        let forName = "";
         //  let hash = {}
         if (hashMapSuperlikes[superlike?.identifier]) {
-          
           message = hashMapSuperlikes[superlike?.identifier]?.comment || "";
           if (
             hashMapSuperlikes[superlike?.identifier]?.notificationInformation
           ) {
-            
             const info =
               hashMapSuperlikes[superlike?.identifier]?.notificationInformation;
-              forName = info?.name
+            forName = info?.name;
             url = `/video/${info?.name}/${info?.identifier}`;
           }
 
@@ -57,7 +55,7 @@ export default function ListSuperLikes({ superlikes }) {
               alignItems="flex-start"
               sx={{
                 cursor: url ? "pointer" : "default",
-                minHeight: '130px'
+                minHeight: "130px",
               }}
               onClick={async () => {
                 if (url) {
@@ -65,79 +63,86 @@ export default function ListSuperLikes({ superlikes }) {
                 }
               }}
             >
-              <Box sx={{
-                width: '100%'
-              }}>
-              <ListItem
-              sx={{
-                padding: '0px'
-              }}
-              alignItems="flex-start"
-             
-            >
-              
-              <ListItemAvatar>
-                <Avatar
-                  alt="Remy Sharp"
-                  src={`/arbitrary/THUMBNAIL/${superlike?.name}/qortal_avatar`}
-                />
-              </ListItemAvatar>
-              <ListItemText
-                primary={
+              <Box
+                sx={{
+                  width: "100%",
+                }}
+              >
+                <ListItem
+                  sx={{
+                    padding: "0px",
+                  }}
+                  alignItems="flex-start"
+                >
+                  <ListItemAvatar>
+                    <Avatar
+                      alt="Remy Sharp"
+                      src={`/arbitrary/THUMBNAIL/${superlike?.name}/qortal_avatar`}
+                    />
+                  </ListItemAvatar>
+                  <ListItemText
+                    primary={
+                      <Box
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "5px",
+                          fontSize: "16px",
+                        }}
+                      >
+                        <ThumbUpIcon
+                          style={{
+                            color: "gold",
+                          }}
+                        />
+                        <Typography
+                          sx={{
+                            fontSize: "18px",
+                          }}
+                        >
+                          {amount ? amount : ""} QORT
+                        </Typography>
+                      </Box>
+                    }
+                    secondary={
+                      <Box
+                        sx={{
+                          fontSize: "15px",
+                        }}
+                      >
+                        <Typography
+                          sx={{
+                            display: "inline",
+                            wordBreak: "break-word",
+                            fontSize: "16px",
+                          }}
+                          component="span"
+                          variant="body2"
+                          color="text.primary"
+                        >
+                          {superlike?.name}
+                        </Typography>
+
+                        {` - ${truncateMessage(message)}`}
+                      </Box>
+                    }
+                  />
+                </ListItem>
+                {forName && (
                   <Box
                     sx={{
                       display: "flex",
                       alignItems: "center",
-                      gap: "5px",
-                      fontSize: "16px",
+                      fontSize: "17px",
+                      gap: "10px",
+                      justifyContent: "flex-end",
                     }}
                   >
-                    <ThumbUpIcon
-                      style={{
-                        color: "gold",
-                      }}
-                    />
-                    <Typography
-                      sx={{
-                        fontSize: "18px",
-                      }}
-                    >
-                      {amount ? amount : ""} QORT
-                    </Typography>
+                    <EmojiEventsIcon />
+                    {forName}
                   </Box>
-                }
-                secondary={
-                  <Box sx={{
-                    fontSize: '15px'
-                  }}>
-                    <Typography
-                      sx={{ display: "inline", wordBreak: "break-word", fontSize: '16px'}}
-                      component="span"
-                      variant="body2"
-                      color="text.primary"
-                    >
-                      {superlike?.name}
-                    </Typography>
-                    
-                    {` - ${truncateMessage(message)}`}
-                  </Box>
-                }
-              />
-              </ListItem>
-              {forName && (
-                <Box sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  fontSize: '17px',
-                  gap: '10px',
-                  justifyContent: 'flex-end'
-                }}>
-                  <EmojiEventsIcon />
-                  {forName}
-                </Box>
-              )}
-              
-            </Box>
+                )}
+              </Box>
             </ListItem>
             <Box
               sx={{

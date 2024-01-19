@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Compressor from 'compressorjs'
+import Compressor from "compressorjs";
 import {
   AddCoverImageButton,
   AddLogoIcon,
@@ -13,7 +13,7 @@ import {
   NewCrowdfundTitle,
   StyledButton,
   TimesIcon,
-} from "./Upload-styles";
+} from "./PublishVideo-styles.tsx";
 import { CircularProgress } from "@mui/material";
 
 import {
@@ -45,13 +45,8 @@ import {
   upsertVideos,
 } from "../../state/features/videoSlice";
 import ImageUploader from "../common/ImageUploader";
-import {
-  QTUBE_PLAYLIST_BASE,
-  QTUBE_VIDEO_BASE,
-  categories,
-  subCategories,
-} from "../../constants";
-import { MultiplePublish } from "../common/MultiplePublish/MultiplePublish";
+import { categories, subCategories } from "../../constants/Categories.ts";
+import { MultiplePublish } from "../common/MultiplePublish/MultiplePublishAll";
 import {
   CrowdfundSubTitle,
   CrowdfundSubTitleRow,
@@ -59,18 +54,28 @@ import {
 import { CardContentContainerComment } from "../common/Comments/Comments-styles";
 import { TextEditor } from "../common/TextEditor/TextEditor";
 import { extractTextFromHTML } from "../common/TextEditor/utils";
-import { FiltersCheckbox, FiltersRow, FiltersSubContainer } from "../../pages/Home/VideoList-styles";
+import {
+  FiltersCheckbox,
+  FiltersRow,
+  FiltersSubContainer,
+} from "../../pages/Home/VideoList-styles";
 import { FrameExtractor } from "../common/FrameExtractor/FrameExtractor";
+import {
+  QTUBE_PLAYLIST_BASE,
+  QTUBE_VIDEO_BASE,
+} from "../../constants/Identifiers.ts";
+import { titleFormatter } from "../../constants/Misc.ts";
+import { getFileName } from "../../utils/stringFunctions.ts";
 
 export const toBase64 = (file: File): Promise<string | ArrayBuffer | null> =>
   new Promise((resolve, reject) => {
-    const reader = new FileReader()
-    reader.readAsDataURL(file)
-    reader.onload = () => resolve(reader.result)
-    reader.onerror = (error) => {
-      reject(error)
-    }
-  })
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => {
+      reject(error);
+    };
+  });
 
 const uid = new ShortUniqueId();
 const shortuid = new ShortUniqueId({ length: 5 });
@@ -90,7 +95,7 @@ interface VideoFile {
   description: string;
   coverImage?: string;
 }
-export const UploadVideo = ({ editId, editContent }: NewCrowdfundProps) => {
+export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
   const theme = useTheme();
   const dispatch = useDispatch();
   const [isOpenMultiplePublish, setIsOpenMultiplePublish] = useState(false);
@@ -113,6 +118,7 @@ export const UploadVideo = ({ editId, editContent }: NewCrowdfundProps) => {
     useState<any>(null);
   const [searchResults, setSearchResults] = useState([]);
   const [filterSearch, setFilterSearch] = useState("");
+  const [titlesPrefix, setTitlesPrefix] = useState("");
   const [playlistTitle, setPlaylistTitle] = useState<string>("");
   const [playlistDescription, setPlaylistDescription] = useState<string>("");
   const [selectedCategory, setSelectedCategory] = useState<any>(null);
@@ -124,40 +130,38 @@ export const UploadVideo = ({ editId, editContent }: NewCrowdfundProps) => {
     useState<any>(null);
 
   const [playlistSetting, setPlaylistSetting] = useState<null | string>(null);
-  const [publishes, setPublishes] = useState<any[]>([]);
-  const [isCheckTitleByFile, setIsCheckTitleByFile] = useState(false)
-  const [isCheckSameCoverImage, setIsCheckSameCoverImage] = useState(false)
-  const [isCheckDescriptionIsTitle, setIsCheckDescriptionIsTitle] = useState(false)
-  const [imageExtracts, setImageExtracts] = useState<any>({})
+  const [publishes, setPublishes] = useState<any>(null);
+  const [isCheckTitleByFile, setIsCheckTitleByFile] = useState(true);
+  const [isCheckSameCoverImage, setIsCheckSameCoverImage] = useState(true);
+  const [isCheckDescriptionIsTitle, setIsCheckDescriptionIsTitle] =
+    useState(false);
+  const [imageExtracts, setImageExtracts] = useState<any>({});
   const { getRootProps, getInputProps } = useDropzone({
     accept: {
       "video/*": [],
     },
     maxSize: 419430400, // 400 MB in bytes
     onDrop: (acceptedFiles, rejectedFiles) => {
-      const formatArray = acceptedFiles.map((item) => {
+      const formatArray = acceptedFiles.map(item => {
+        let filteredTitle = "";
 
-        let formatTitle = ''
-        if(isCheckTitleByFile && item?.name){
-          const fileExtensionSplit = item?.name?.split(".");
-          if (fileExtensionSplit?.length > 1) {
-            formatTitle = fileExtensionSplit[0]
-          }
-          formatTitle = (formatTitle || "").replace(/[^a-zA-Z0-9\s-_!?]/g, "");
+        if (isCheckTitleByFile) {
+          const fileName = getFileName(item?.name || "");
+          filteredTitle = (titlesPrefix + fileName).replace(titleFormatter, "");
         }
         return {
           file: item,
-          title: formatTitle,
+          title: filteredTitle || "",
           description: "",
           coverImage: "",
         };
       });
 
-      setFiles((prev) => [...prev, ...formatArray]);
+      setFiles(prev => [...prev, ...formatArray]);
 
       let errorString = null;
       rejectedFiles.forEach(({ file, errors }) => {
-        errors.forEach((error) => {
+        errors.forEach(error => {
           if (error.code === "file-too-large") {
             errorString = "File must be under 400mb";
           }
@@ -204,8 +208,10 @@ export const UploadVideo = ({ editId, editContent }: NewCrowdfundProps) => {
         if (!playlistCoverImage) throw new Error("Please select cover image");
         if (!selectedCategory) throw new Error("Please select a category");
       }
-      if(files?.length === 0) throw new Error("Please select at least one file");
-      if(isCheckSameCoverImage && !coverImageForAll) throw new Error("Please select cover image");
+      if (files?.length === 0)
+        throw new Error("Please select at least one file");
+      if (isCheckSameCoverImage && !coverImageForAll)
+        throw new Error("Please select cover image");
       if (!userAddress) throw new Error("Unable to locate user address");
       let errorMsg = "";
       let name = "";
@@ -234,12 +240,16 @@ export const UploadVideo = ({ editId, editContent }: NewCrowdfundProps) => {
       let listOfPublishes = [];
 
       for (let i = 0; i < files.length; i++) {
-        const publish = files[i]
+        const publish = files[i];
         const title = publish.title;
-        const description = isCheckDescriptionIsTitle ? publish.title : publish.description;
+        const description = isCheckDescriptionIsTitle
+          ? publish.title
+          : publish.description;
         const category = selectedCategoryVideos.id;
         const subcategory = selectedSubCategoryVideos?.id || "";
-        const coverImage = isCheckSameCoverImage ? coverImageForAll : publish.coverImage;
+        const coverImage = isCheckSameCoverImage
+          ? coverImageForAll
+          : publish.coverImage;
         const file = publish.file;
         const sanitizeTitle = title
           .replace(/[^a-zA-Z0-9\s-]/g, "")
@@ -255,7 +265,7 @@ export const UploadVideo = ({ editId, editContent }: NewCrowdfundProps) => {
           : `${QTUBE_VIDEO_BASE}${sanitizeTitle.slice(0, 30)}_${id}`;
 
         const code = shortuid();
-        const fullDescription = extractTextFromHTML(description)
+        const fullDescription = extractTextFromHTML(description);
 
         let fileExtension = "mp4";
         const fileExtensionSplit = file?.name?.split(".");
@@ -292,14 +302,12 @@ export const UploadVideo = ({ editId, editContent }: NewCrowdfundProps) => {
           subcategory,
           code,
           videoType: file?.type || "video/mp4",
-          filename: `${alphanumericString.trim()}.${fileExtension}`
+          filename: `${alphanumericString.trim()}.${fileExtension}`,
         };
 
         let metadescription =
           `**category:${category};subcategory:${subcategory};code:${code}**` +
           fullDescription.slice(0, 150);
-
-        
 
         const crowdfundObjectToBase64 = await objectToBase64(videoObject);
         // Description is obtained from raw data
@@ -335,7 +343,7 @@ export const UploadVideo = ({ editId, editContent }: NewCrowdfundProps) => {
       if (isNewPlaylist) {
         const title = playlistTitle;
         const description = playlistDescription;
-        const stringDescription = extractTextFromHTML(description)
+        const stringDescription = extractTextFromHTML(description);
         const category = selectedCategory.id;
         const subcategory = selectedSubCategory?.id || "";
         const coverImage = playlistCoverImage;
@@ -354,10 +362,10 @@ export const UploadVideo = ({ editId, editContent }: NewCrowdfundProps) => {
 
         const videos = listOfPublishes
           .filter(
-            (item) =>
+            item =>
               item.service === "DOCUMENT" && item.tag1 === QTUBE_VIDEO_BASE
           )
-          .map((vid) => {
+          .map(vid => {
             return {
               identifier: vid.identifier,
               service: vid.service,
@@ -378,7 +386,10 @@ export const UploadVideo = ({ editId, editContent }: NewCrowdfundProps) => {
           subcategory,
         };
 
-        const codes = videos.map((item) => `c:${item.code};`).slice(0,10).join("");
+        const codes = videos
+          .map(item => `c:${item.code};`)
+          .slice(0, 10)
+          .join("");
 
         let metadescription =
           `**category:${category};subcategory:${subcategory};${codes}**` +
@@ -413,10 +424,10 @@ export const UploadVideo = ({ editId, editContent }: NewCrowdfundProps) => {
         if (responseData && !responseData.error) {
           const videos = listOfPublishes
             .filter(
-              (item) =>
+              item =>
                 item.service === "DOCUMENT" && item.tag1 === QTUBE_VIDEO_BASE
             )
-            .map((vid) => {
+            .map(vid => {
               return {
                 identifier: vid.identifier,
                 service: vid.service,
@@ -431,7 +442,8 @@ export const UploadVideo = ({ editId, editContent }: NewCrowdfundProps) => {
             videos: videosInPlaylist,
           };
           const codes = videosInPlaylist
-            .map((item) => `c:${item.code};`).slice(0,10)
+            .map(item => `c:${item.code};`)
+            .slice(0, 10)
             .join("");
 
           let metadescription =
@@ -457,7 +469,11 @@ export const UploadVideo = ({ editId, editContent }: NewCrowdfundProps) => {
         }
       }
 
-      setPublishes(listOfPublishes);
+      const multiplePublish = {
+        action: "PUBLISH_MULTIPLE_QDN_RESOURCES",
+        resources: [...listOfPublishes],
+      };
+      setPublishes(multiplePublish);
       setIsOpenMultiplePublish(true);
     } catch (error: any) {
       let notificationObj: any = null;
@@ -485,10 +501,10 @@ export const UploadVideo = ({ editId, editContent }: NewCrowdfundProps) => {
   }
 
   const handleOnchange = (index: number, type: string, value: string) => {
-    setFiles((prev) => {
+    setFiles(prev => {
       let formattedValue = value;
       if (type === "title") {
-        formattedValue = value.replace(/[^a-zA-Z0-9\s-_!?]/g, "");
+        formattedValue = value.replace(titleFormatter, "");
       }
       const copyFiles = [...prev];
       copyFiles[index] = {
@@ -501,7 +517,7 @@ export const UploadVideo = ({ editId, editContent }: NewCrowdfundProps) => {
 
   const handleOptionCategoryChange = (event: SelectChangeEvent<string>) => {
     const optionId = event.target.value;
-    const selectedOption = categories.find((option) => option.id === +optionId);
+    const selectedOption = categories.find(option => option.id === +optionId);
     setSelectedCategory(selectedOption || null);
   };
   const handleOptionSubCategoryChange = (
@@ -510,7 +526,7 @@ export const UploadVideo = ({ editId, editContent }: NewCrowdfundProps) => {
   ) => {
     const optionId = event.target.value;
     const selectedOption = subcategories.find(
-      (option) => option.id === +optionId
+      option => option.id === +optionId
     );
     setSelectedSubCategory(selectedOption || null);
   };
@@ -519,7 +535,7 @@ export const UploadVideo = ({ editId, editContent }: NewCrowdfundProps) => {
     event: SelectChangeEvent<string>
   ) => {
     const optionId = event.target.value;
-    const selectedOption = categories.find((option) => option.id === +optionId);
+    const selectedOption = categories.find(option => option.id === +optionId);
     setSelectedCategoryVideos(selectedOption || null);
   };
   const handleOptionSubCategoryChangeVideos = (
@@ -528,20 +544,24 @@ export const UploadVideo = ({ editId, editContent }: NewCrowdfundProps) => {
   ) => {
     const optionId = event.target.value;
     const selectedOption = subcategories.find(
-      (option) => option.id === +optionId
+      option => option.id === +optionId
     );
     setSelectedSubCategoryVideos(selectedOption || null);
   };
 
   const next = () => {
     try {
-      if(isCheckSameCoverImage && !coverImageForAll) throw new Error("Please select cover image");
-      if(files?.length === 0) throw new Error("Please select at least one file");
+      if (isCheckSameCoverImage && !coverImageForAll)
+        throw new Error("Please select cover image");
+      if (files?.length === 0)
+        throw new Error("Please select at least one file");
       if (!selectedCategoryVideos) throw new Error("Please select a category");
-      files.forEach((file) => {
+      files.forEach(file => {
         if (!file.title) throw new Error("Please enter a title");
-        if (!isCheckTitleByFile && !file.description) throw new Error("Please enter a description");
-        if (!isCheckSameCoverImage && !file.coverImage) throw new Error("Please select cover image");
+        if (!isCheckTitleByFile && !file.description)
+          throw new Error("Please enter a description");
+        if (!isCheckSameCoverImage && !file.coverImage)
+          throw new Error("Please select cover image");
       });
 
       setStep("playlist");
@@ -555,48 +575,45 @@ export const UploadVideo = ({ editId, editContent }: NewCrowdfundProps) => {
     }
   };
 
-  const onFramesExtracted = async (imgs, index)=> {
+  const onFramesExtracted = async (imgs, index) => {
     try {
-      let imagesExtracts = []
-   
-      for (const img of imgs){
+      let imagesExtracts = [];
+
+      for (const img of imgs) {
         try {
-          let compressedFile
-          const image = img
-          await new Promise<void>((resolve) => {
+          let compressedFile;
+          const image = img;
+          await new Promise<void>(resolve => {
             new Compressor(image, {
-              quality: .8,
+              quality: 0.8,
               maxWidth: 750,
-              mimeType: 'image/webp',
+              mimeType: "image/webp",
               success(result) {
-                const file = new File([result], 'name', {
-                  type: 'image/webp'
-                })
-                compressedFile = file
-                resolve()
+                const file = new File([result], "name", {
+                  type: "image/webp",
+                });
+                compressedFile = file;
+                resolve();
               },
-              error(err) {}
-            })
-          })
-          if (!compressedFile) continue
-          const base64Img = await toBase64(compressedFile)
-          imagesExtracts.push(base64Img)
-          
+              error(err) {},
+            });
+          });
+          if (!compressedFile) continue;
+          const base64Img = await toBase64(compressedFile);
+          imagesExtracts.push(base64Img);
         } catch (error) {
-          console.error(error)
+          console.error(error);
         }
       }
 
-      setImageExtracts((prev)=> {
+      setImageExtracts(prev => {
         return {
           ...prev,
-          [index]: imagesExtracts
-        }
-      })
-    } catch (error) {
-      
-    }
-  }
+          [index]: imagesExtracts,
+        };
+      });
+    } catch (error) {}
+  };
 
   return (
     <>
@@ -638,38 +655,48 @@ export const UploadVideo = ({ editId, editContent }: NewCrowdfundProps) => {
 
           {step === "videos" && (
             <>
-            <FiltersSubContainer>
-            <FiltersRow>
-            Populate Titles by filename (when the files are picked)
-              <FiltersCheckbox
-                checked={isCheckTitleByFile}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                  setIsCheckTitleByFile(e.target.checked);
-                }}
-                inputProps={{ "aria-label": "controlled" }}
+              <FiltersSubContainer>
+                <FiltersRow>
+                  Populate Titles by filename (when the files are picked)
+                  <FiltersCheckbox
+                    checked={isCheckTitleByFile}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      setIsCheckTitleByFile(e.target.checked);
+                    }}
+                    inputProps={{ "aria-label": "controlled" }}
+                  />
+                </FiltersRow>
+                <FiltersRow>
+                  All videos use the same Cover Image
+                  <FiltersCheckbox
+                    checked={isCheckSameCoverImage}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      setIsCheckSameCoverImage(e.target.checked);
+                    }}
+                    inputProps={{ "aria-label": "controlled" }}
+                  />
+                </FiltersRow>
+                <FiltersRow>
+                  Populate all descriptions by Title
+                  <FiltersCheckbox
+                    checked={isCheckDescriptionIsTitle}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      setIsCheckDescriptionIsTitle(e.target.checked);
+                    }}
+                    inputProps={{ "aria-label": "controlled" }}
+                  />
+                </FiltersRow>
+              </FiltersSubContainer>
+              <CustomInputField
+                name="prefix"
+                label="Titles Prefix"
+                variant="filled"
+                value={titlesPrefix}
+                onChange={e =>
+                  setTitlesPrefix(e.target.value.replace(titleFormatter, ""))
+                }
+                inputProps={{ maxLength: 180 }}
               />
-            </FiltersRow>
-            <FiltersRow>
-            All videos use the same Cover Image
-              <FiltersCheckbox
-                checked={isCheckSameCoverImage}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                  setIsCheckSameCoverImage(e.target.checked);
-                }}
-                inputProps={{ "aria-label": "controlled" }}
-              />
-            </FiltersRow>
-            <FiltersRow>
-            Populate all descriptions by Title 
-              <FiltersCheckbox
-                checked={isCheckDescriptionIsTitle}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                  setIsCheckDescriptionIsTitle(e.target.checked);
-                }}
-                inputProps={{ "aria-label": "controlled" }}
-              />
-            </FiltersRow>
-          </FiltersSubContainer>
               <Box
                 {...getRootProps()}
                 sx={{
@@ -685,7 +712,7 @@ export const UploadVideo = ({ editId, editContent }: NewCrowdfundProps) => {
                   Drag and drop a video files here or click to select files
                 </Typography>
               </Box>
-              
+
               <Box
                 sx={{
                   display: "flex",
@@ -703,7 +730,7 @@ export const UploadVideo = ({ editId, editContent }: NewCrowdfundProps) => {
                         value={selectedCategoryVideos?.id || ""}
                         onChange={handleOptionCategoryChangeVideos}
                       >
-                        {categories.map((option) => (
+                        {categories.map(option => (
                           <MenuItem key={option.id} value={option.id}>
                             {option.name}
                           </MenuItem>
@@ -722,7 +749,7 @@ export const UploadVideo = ({ editId, editContent }: NewCrowdfundProps) => {
                               <OutlinedInput label="Select a Sub-Category" />
                             }
                             value={selectedSubCategoryVideos?.id || ""}
-                            onChange={(e) =>
+                            onChange={e =>
                               handleOptionSubCategoryChangeVideos(
                                 e,
                                 subCategories[selectedCategoryVideos?.id]
@@ -730,7 +757,7 @@ export const UploadVideo = ({ editId, editContent }: NewCrowdfundProps) => {
                             }
                           >
                             {subCategories[selectedCategoryVideos.id].map(
-                              (option) => (
+                              option => (
                                 <MenuItem key={option.id} value={option.id}>
                                   {option.name}
                                 </MenuItem>
@@ -743,83 +770,85 @@ export const UploadVideo = ({ editId, editContent }: NewCrowdfundProps) => {
                 )}
               </Box>
               {files?.length > 0 && isCheckSameCoverImage && (
-                      <>
-                       {!coverImageForAll ? (
-                      <ImageUploader
-                        onPick={(img: string) =>
-                          setCoverImageForAll(img)
-                        }
-                      >
-                        <AddCoverImageButton variant="contained">
-                          Add Cover Image
-                          <AddLogoIcon
-                            sx={{
-                              height: "25px",
-                              width: "auto",
-                            }}
-                          ></AddLogoIcon>
-                        </AddCoverImageButton>
-                      </ImageUploader>
-                    ) : (
-                      <LogoPreviewRow>
-                        <CoverImagePreview src={coverImageForAll} alt="logo" />
-                        <TimesIcon
-                          color={theme.palette.text.primary}
-                          onClickFunc={() =>
-                            setCoverImageForAll(null)
-                          }
-                          height={"32"}
-                          width={"32"}
-                        ></TimesIcon>
-                      </LogoPreviewRow>
-                    )}
-                      </>
-                    )}
+                <>
+                  {!coverImageForAll ? (
+                    <ImageUploader
+                      onPick={(img: string) => setCoverImageForAll(img)}
+                    >
+                      <AddCoverImageButton variant="contained">
+                        Add Cover Image
+                        <AddLogoIcon
+                          sx={{
+                            height: "25px",
+                            width: "auto",
+                          }}
+                        ></AddLogoIcon>
+                      </AddCoverImageButton>
+                    </ImageUploader>
+                  ) : (
+                    <LogoPreviewRow>
+                      <CoverImagePreview src={coverImageForAll} alt="logo" />
+                      <TimesIcon
+                        color={theme.palette.text.primary}
+                        onClickFunc={() => setCoverImageForAll(null)}
+                        height={"32"}
+                        width={"32"}
+                      ></TimesIcon>
+                    </LogoPreviewRow>
+                  )}
+                </>
+              )}
               {files.map((file, index) => {
                 return (
                   <React.Fragment key={index}>
-                     <FrameExtractor videoFile={file.file} onFramesExtracted={(imgs)=> onFramesExtracted(imgs, index)}/>
+                    <FrameExtractor
+                      videoFile={file.file}
+                      onFramesExtracted={imgs => onFramesExtracted(imgs, index)}
+                    />
                     <Typography>{file?.file?.name}</Typography>
                     {!isCheckSameCoverImage && (
                       <>
-                       {!file?.coverImage ? (
-                      <ImageUploader
-                        onPick={(img: string) =>
-                          handleOnchange(index, "coverImage", img)
-                        }
-                      >
-                        <AddCoverImageButton variant="contained">
-                          Add Cover Image
-                          <AddLogoIcon
-                            sx={{
-                              height: "25px",
-                              width: "auto",
-                            }}
-                          ></AddLogoIcon>
-                        </AddCoverImageButton>
-                      </ImageUploader>
-                    ) : (
-                      <LogoPreviewRow>
-                        <CoverImagePreview src={file?.coverImage} alt="logo" />
-                        <TimesIcon
-                          color={theme.palette.text.primary}
-                          onClickFunc={() =>
-                            handleOnchange(index, "coverImage", "")
-                          }
-                          height={"32"}
-                          width={"32"}
-                        ></TimesIcon>
-                      </LogoPreviewRow>
-                    )}
+                        {!file?.coverImage ? (
+                          <ImageUploader
+                            onPick={(img: string) =>
+                              handleOnchange(index, "coverImage", img)
+                            }
+                          >
+                            <AddCoverImageButton variant="contained">
+                              Add Cover Image
+                              <AddLogoIcon
+                                sx={{
+                                  height: "25px",
+                                  width: "auto",
+                                }}
+                              ></AddLogoIcon>
+                            </AddCoverImageButton>
+                          </ImageUploader>
+                        ) : (
+                          <LogoPreviewRow>
+                            <CoverImagePreview
+                              src={file?.coverImage}
+                              alt="logo"
+                            />
+                            <TimesIcon
+                              color={theme.palette.text.primary}
+                              onClickFunc={() =>
+                                handleOnchange(index, "coverImage", "")
+                              }
+                              height={"32"}
+                              width={"32"}
+                            ></TimesIcon>
+                          </LogoPreviewRow>
+                        )}
                       </>
                     )}
-                   
+
                     <CustomInputField
                       name="title"
                       label="Title of video"
                       variant="filled"
                       value={file.title}
-                      onChange={(e) =>
+                      onChange={e =>
                         handleOnchange(index, "title", e.target.value)
                       }
                       inputProps={{ maxLength: 180 }}
@@ -827,15 +856,22 @@ export const UploadVideo = ({ editId, editContent }: NewCrowdfundProps) => {
                     />
                     {!isCheckDescriptionIsTitle && (
                       <>
-                         <Typography sx={{
-                      fontSize: '18px'
-                    }}>Description of video</Typography>
-                    <TextEditor inlineContent={file?.description} setInlineContent={(value)=> {
-                      handleOnchange(index, "description", value)
-                    }} />
+                        <Typography
+                          sx={{
+                            fontSize: "18px",
+                          }}
+                        >
+                          Description of video
+                        </Typography>
+                        <TextEditor
+                          inlineContent={file?.description}
+                          setInlineContent={value => {
+                            handleOnchange(index, "description", value);
+                          }}
+                        />
                       </>
                     )}
-                   
+
                     {/* <CustomInputField
                       name="description"
                       label="Describe your video in a few words"
@@ -962,7 +998,7 @@ export const UploadVideo = ({ editId, editContent }: NewCrowdfundProps) => {
                     >
                       <Input
                         id="standard-adornment-name"
-                        onChange={(e) => {
+                        onChange={e => {
                           setFilterSearch(e.target.value);
                         }}
                         value={filterSearch}
@@ -1072,11 +1108,11 @@ export const UploadVideo = ({ editId, editContent }: NewCrowdfundProps) => {
                     label="Title of playlist"
                     variant="filled"
                     value={playlistTitle}
-                    onChange={(e) => {
+                    onChange={e => {
                       const value = e.target.value;
                       let formattedValue: string = value;
 
-                      formattedValue = value.replace(/[^a-zA-Z0-9\s-_!?]/g, "");
+                      formattedValue = value.replace(titleFormatter, "");
 
                       setPlaylistTitle(formattedValue);
                     }}
@@ -1095,12 +1131,19 @@ export const UploadVideo = ({ editId, editContent }: NewCrowdfundProps) => {
                     required
                   /> */}
 
-                  <Typography sx={{
-                      fontSize: '18px'
-                    }}>Description of playlist</Typography>
-                    <TextEditor inlineContent={playlistDescription} setInlineContent={(value)=> {
-                      setPlaylistDescription(value)
-                    }} />
+                  <Typography
+                    sx={{
+                      fontSize: "18px",
+                    }}
+                  >
+                    Description of playlist
+                  </Typography>
+                  <TextEditor
+                    inlineContent={playlistDescription}
+                    setInlineContent={value => {
+                      setPlaylistDescription(value);
+                    }}
+                  />
                   <FormControl fullWidth sx={{ marginBottom: 2, marginTop: 2 }}>
                     <InputLabel id="Category">Select a Category</InputLabel>
                     <Select
@@ -1109,7 +1152,7 @@ export const UploadVideo = ({ editId, editContent }: NewCrowdfundProps) => {
                       value={selectedCategory?.id || ""}
                       onChange={handleOptionCategoryChange}
                     >
-                      {categories.map((option) => (
+                      {categories.map(option => (
                         <MenuItem key={option.id} value={option.id}>
                           {option.name}
                         </MenuItem>
@@ -1125,14 +1168,14 @@ export const UploadVideo = ({ editId, editContent }: NewCrowdfundProps) => {
                         labelId="Sub-Category"
                         input={<OutlinedInput label="Select a Sub-Category" />}
                         value={selectedSubCategory?.id || ""}
-                        onChange={(e) =>
+                        onChange={e =>
                           handleOptionSubCategoryChange(
                             e,
                             subCategories[selectedCategory?.id]
                           )
                         }
                       >
-                        {subCategories[selectedCategory.id].map((option) => (
+                        {subCategories[selectedCategory.id].map(option => (
                           <MenuItem key={option.id} value={option.id}>
                             {option.name}
                           </MenuItem>
@@ -1186,37 +1229,53 @@ export const UploadVideo = ({ editId, editContent }: NewCrowdfundProps) => {
               ) : (
                 <CrowdfundActionButton
                   variant="contained"
-                  disabled={files?.length !== Object.keys(imageExtracts)?.length}
+                  disabled={
+                    files?.length !== Object.keys(imageExtracts)?.length
+                  }
                   onClick={() => {
                     next();
                   }}
                 >
-                  {files?.length !== Object.keys(imageExtracts)?.length ? 'Generating image extracts' : ''}
+                  {files?.length !== Object.keys(imageExtracts)?.length
+                    ? "Generating image extracts"
+                    : ""}
                   {files?.length !== Object.keys(imageExtracts)?.length && (
                     <CircularProgress color="secondary" size={14} />
                   )}
-                Next
+                  Next
                 </CrowdfundActionButton>
               )}
             </Box>
           </CrowdfundActionButtonRow>
         </ModalBody>
       </Modal>
-     
+
       {isOpenMultiplePublish && (
         <MultiplePublish
           isOpen={isOpenMultiplePublish}
+          onError={messageNotification => {
+            setIsOpenMultiplePublish(false);
+            setPublishes(null);
+            if (messageNotification) {
+              dispatch(
+                setNotification({
+                  msg: messageNotification,
+                  alertType: "error",
+                })
+              );
+            }
+          }}
           onSubmit={() => {
             setIsOpenMultiplePublish(false);
             setIsOpen(false);
-            setImageExtracts({})
+            setImageExtracts({});
             setFiles([]);
             setStep("videos");
             setPlaylistCoverImage(null);
             setPlaylistTitle("");
             setPlaylistDescription("");
             setSelectedCategory(null);
-            setCoverImageForAll(null)
+            setCoverImageForAll(null);
             setSelectedSubCategory(null);
             setSelectedCategoryVideos(null);
             setSelectedSubCategoryVideos(null);

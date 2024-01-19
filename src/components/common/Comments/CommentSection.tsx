@@ -14,8 +14,11 @@ import {
   LoadMoreCommentsButtonRow,
   NoCommentsRow,
 } from "./Comments-styles";
-import { COMMENT_BASE } from "../../../constants";
-import { CrowdfundSubTitle, CrowdfundSubTitleRow } from "../../UploadVideo/Upload-styles";
+import {
+  CrowdfundSubTitle,
+  CrowdfundSubTitleRow,
+} from "../../PublishVideo/PublishVideo-styles.tsx";
+import { COMMENT_BASE } from "../../../constants/Identifiers.ts";
 
 interface CommentSectionProps {
   postId: string;
@@ -218,11 +221,10 @@ export const CommentSection = ({ postId, postName }: CommentSectionProps) => {
 
   return (
     <>
-    
       <Panel>
-      <CrowdfundSubTitleRow >
-        <CrowdfundSubTitle>Comments</CrowdfundSubTitle>
-      </CrowdfundSubTitleRow>
+        <CrowdfundSubTitleRow>
+          <CrowdfundSubTitle>Comments</CrowdfundSubTitle>
+        </CrowdfundSubTitleRow>
         <CommentsContainer>
           {loadingComments ? (
             <NoCommentsRow>

@@ -44,14 +44,13 @@ export default function ConsentModal() {
         <DialogTitle id="alert-dialog-title">Welcome</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            Q-Tube is currently in its first version and as such there could be
-            some bugs. The Qortal community, along with its development team and
-            the creators of this application, cannot be held accountable for any
-            content published or displayed. Also, they are not responsible for
-            any loss of coin due to either bad actors or bugs in the
-            application. Furthermore, they bear no responsibility for any data
-            loss that may occur as a result of using this application. Finally, they bear no responsibility for any of the content uploaded by users.
-          </DialogContentText>
+            Q-Tube is currently in its early stages, and may yet have undiscovered bugs.
+            The Qortal community, including the Qortal Development Group, cannot be held responsible for any 
+            content published with the assistance of Q-Tube. All content published to QDN is done so by the owner of 
+            the registered name, and no one else. The same applies to data loss, social manipulation, 
+            any other potential issue. All responsibility lies with the user, as with every application built by
+            the Qortal Development Group.
+            </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button

@@ -113,7 +113,13 @@ export default function FileElement({
           service: service,
           identifier: identifier,
         });
-        filename = res?.filename || filename;
+        // TODO: previously this was "always" overriding the filename
+        // here, but i think caller filename should be honored if set.
+        // if there was a reason to always override, then maybe this
+        // should be changed back..?
+        if (!filename) {
+          filename = res?.filename || filename;
+        }
         mimeType = res?.mimeType || mimeType;
       } catch (error) {
         

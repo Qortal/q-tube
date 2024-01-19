@@ -17,7 +17,7 @@ import {
   Tooltip,
 } from "@mui/material";
 import qortImg from "../../../assets/img/qort.png";
-import { MultiplePublish } from "../MultiplePublish/MultiplePublish";
+import { MultiplePublish } from "../MultiplePublish/MultiplePublishAll";
 import { useDispatch, useSelector } from "react-redux";
 import { setNotification } from "../../../state/features/notificationsSlice";
 import ShortUniqueId from "short-unique-id";
@@ -64,13 +64,13 @@ export const SuperLike = ({
   const [comment, setComment] = useState<string>("");
   const username = useSelector((state: RootState) => state.auth?.user?.name);
   const [isOpenMultiplePublish, setIsOpenMultiplePublish] = useState(false);
-  const [publishes, setPublishes] = useState<any[]>([]);
+  const [publishes, setPublishes] = useState<any>(null);
   const dispatch = useDispatch();
 
   const resetValues = () => {
     setSuperlikeDonationAmount(0);
     setComment("");
-    setPublishes([]);
+    setPublishes(null);
   };
   const onClose = () => {
     resetValues();
@@ -177,7 +177,12 @@ export const SuperLike = ({
 
       listOfPublishes.push(requestBodyJson);
 
-      setPublishes(listOfPublishes);
+      const multiplePublish = {
+        action: "PUBLISH_MULTIPLE_QDN_RESOURCES",
+        resources: [...listOfPublishes],
+      };
+      setPublishes(multiplePublish);
+
       setIsOpenMultiplePublish(true);
     } catch (error: any) {
       let notificationObj: any = null;
@@ -405,6 +410,18 @@ export const SuperLike = ({
       {isOpenMultiplePublish && (
         <MultiplePublish
           isOpen={isOpenMultiplePublish}
+          onError={messageNotification => {
+            setIsOpenMultiplePublish(false);
+            setPublishes(null);
+            if (messageNotification) {
+              dispatch(
+                setNotification({
+                  msg: messageNotification,
+                  alertType: "error",
+                })
+              );
+            }
+          }}
           onSubmit={() => {
             onSuccess({
               name: username,

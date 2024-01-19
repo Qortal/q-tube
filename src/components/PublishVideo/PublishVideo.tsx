@@ -46,7 +46,7 @@ import {
 } from "../../state/features/videoSlice";
 import ImageUploader from "../common/ImageUploader";
 import { categories, subCategories } from "../../constants/Categories.ts";
-import { MultiplePublish } from "../common/MultiplePublish/MultiplePublish";
+import { MultiplePublish } from "../common/MultiplePublish/MultiplePublishAll";
 import {
   CrowdfundSubTitle,
   CrowdfundSubTitleRow,
@@ -130,7 +130,7 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
     useState<any>(null);
 
   const [playlistSetting, setPlaylistSetting] = useState<null | string>(null);
-  const [publishes, setPublishes] = useState<any[]>([]);
+  const [publishes, setPublishes] = useState<any>(null);
   const [isCheckTitleByFile, setIsCheckTitleByFile] = useState(true);
   const [isCheckSameCoverImage, setIsCheckSameCoverImage] = useState(true);
   const [isCheckDescriptionIsTitle, setIsCheckDescriptionIsTitle] =
@@ -469,7 +469,11 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
         }
       }
 
-      setPublishes(listOfPublishes);
+      const multiplePublish = {
+        action: "PUBLISH_MULTIPLE_QDN_RESOURCES",
+        resources: [...listOfPublishes],
+      };
+      setPublishes(multiplePublish);
       setIsOpenMultiplePublish(true);
     } catch (error: any) {
       let notificationObj: any = null;
@@ -692,7 +696,6 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
                   setTitlesPrefix(e.target.value.replace(titleFormatter, ""))
                 }
                 inputProps={{ maxLength: 180 }}
-                required
               />
               <Box
                 {...getRootProps()}
@@ -1250,6 +1253,18 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
       {isOpenMultiplePublish && (
         <MultiplePublish
           isOpen={isOpenMultiplePublish}
+          onError={messageNotification => {
+            setIsOpenMultiplePublish(false);
+            setPublishes(null);
+            if (messageNotification) {
+              dispatch(
+                setNotification({
+                  msg: messageNotification,
+                  alertType: "error",
+                })
+              );
+            }
+          }}
           onSubmit={() => {
             setIsOpenMultiplePublish(false);
             setIsOpen(false);

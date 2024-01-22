@@ -261,7 +261,8 @@ export const PlaylistContent = () => {
             setPlaylistData(combinedData);
             if (combinedData?.videos?.length > 0) {
               const vid = combinedData?.videos[0];
-              const existingVideo = hashMapVideos[vid?.identifier];
+              const fullId = vid ? `${vid.identifier}-${vid.name}` : undefined;
+              const existingVideo = hashMapVideos[fullId];
 
               if (existingVideo) {
                 setVideoData(existingVideo);

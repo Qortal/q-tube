@@ -37,7 +37,7 @@ export const useFetchVideos = () => {
 
   const checkAndUpdateVideo = React.useCallback(
     (video: Video) => {
-      const existingVideo = hashMapVideos[video.id];
+      const existingVideo = hashMapVideos[video.id + "-" + video.user];
       if (!existingVideo) {
         return true;
       } else if (

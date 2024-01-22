@@ -133,7 +133,7 @@ export const VideoListComponentLevel = ({ mode }: VideoListProps) => {
       >
         <VideoCardContainer>
           {videos.map((video: any, index: number) => {
-            const existingVideo = hashMapVideos[video.id];
+            const existingVideo = hashMapVideos[video.id + '-' + video.user];
             let hasHash = false;
             let videoObj = video;
             if (existingVideo) {

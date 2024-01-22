@@ -113,7 +113,7 @@ export const videoSlice = createSlice({
     },
     addToHashMap: (state, action) => {
       const video = action.payload
-      const fullId state.hashMapVideos[video.id + '-' + video.user] = video
+      state.hashMapVideos[video.id + '-' + video.user] = video
     },
     addtoHashMapSuperlikes: (state, action) => {
       const superlike = action.payload

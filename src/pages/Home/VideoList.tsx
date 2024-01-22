@@ -539,7 +539,8 @@ export const VideoList = ({ mode }: VideoListProps) => {
 
             <VideoCardContainer>
               {videos.map((video: any, index: number) => {
-                const existingVideo = hashMapVideos[video?.id];
+                const fullId = video ? `${video.id}-${video.user}` : undefined;
+                const existingVideo = hashMapVideos[fullId];
                 let hasHash = false;
                 let videoObj = video;
                 if (existingVideo) {

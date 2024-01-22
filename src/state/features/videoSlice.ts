@@ -113,16 +113,16 @@ export const videoSlice = createSlice({
     },
     addToHashMap: (state, action) => {
       const video = action.payload
-      state.hashMapVideos[video.id] = video
+      const fullId state.hashMapVideos[video.id + '-' + video.user] = video
     },
     addtoHashMapSuperlikes: (state, action) => {
       const superlike = action.payload
       state.hashMapSuperlikes[superlike.identifier] = superlike
     }, 
     updateInHashMap: (state, action) => {
-      const { id } = action.payload
+      const { id, user } = action.payload
       const video = action.payload
-      state.hashMapVideos[id] = { ...video }
+      state.hashMapVideos[id + '-' + user] = { ...video }
     },
     removeFromHashMap: (state, action) => {
       const idToDelete = action.payload
@@ -131,7 +131,7 @@ export const videoSlice = createSlice({
     addArrayToHashMap: (state, action) => {
       const videos = action.payload
       videos.forEach((video: Video) => {
-        state.hashMapVideos[video.id] = video
+        state.hashMapVideos[video.id + '-' + video.user] = video
       })
     },
     upsertVideos: (state, action) => {

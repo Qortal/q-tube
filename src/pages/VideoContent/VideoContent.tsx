@@ -280,7 +280,7 @@ export const VideoContent = () => {
 
   React.useEffect(() => {
     if (name && id) {
-      const existingVideo = hashMapVideos[id];
+      const existingVideo = hashMapVideos[id + '-' + name];
 
       if (existingVideo) {
         setVideoData(existingVideo);

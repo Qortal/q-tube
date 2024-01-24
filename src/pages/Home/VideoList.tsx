@@ -63,8 +63,9 @@ import { Playlists } from "../../components/Playlists/Playlists";
 import { PlaylistSVG } from "../../assets/svgs/PlaylistSVG";
 import BlockIcon from "@mui/icons-material/Block";
 import EditIcon from "@mui/icons-material/Edit";
-import { LiskSuperLikeContainer } from "../../components/common/ListSuperLikes/LiskSuperLikeContainer";
+import { ListSuperLikeContainer } from "../../components/common/ListSuperLikes/ListSuperLikeContainer.tsx";
 import { VideoCardImageContainer } from "./VideoCardImageContainer";
+import { SubscribeButton } from "../../components/common/SubscribeButton.tsx";
 
 interface VideoListProps {
   mode?: string;
@@ -634,13 +635,13 @@ export const VideoList = ({ mode }: VideoListProps) => {
                             >
                               {videoObj?.user}
                             </VideoCardName>
-                          </NameContainer>
 
-                          {videoObj?.created && (
-                            <VideoUploadDate>
-                              {formatDate(videoObj.created)}
-                            </VideoUploadDate>
-                          )}
+                            {videoObj?.created && (
+                              <VideoUploadDate>
+                                {formatDate(videoObj.created)}
+                              </VideoUploadDate>
+                            )}
+                          </NameContainer>
                           <Box
                             sx={{
                               display: "flex",
@@ -733,8 +734,8 @@ export const VideoList = ({ mode }: VideoListProps) => {
                           >
                             {videoObj?.user}
                           </VideoCardName>
+                          <SubscribeButton name={videoObj?.user} />
                         </NameContainer>
-
                         {videoObj?.created && (
                           <VideoUploadDate>
                             {formatDate(videoObj.created)}
@@ -755,7 +756,7 @@ export const VideoList = ({ mode }: VideoListProps) => {
         </ProductManagerRow>
       </Grid>
       <FiltersCol item xs={0} lg={3} xl={2}>
-        <LiskSuperLikeContainer />
+        <ListSuperLikeContainer />
       </FiltersCol>
     </Grid>
   );

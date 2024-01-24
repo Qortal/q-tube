@@ -239,28 +239,19 @@ export const SuperLike = ({
           flexShrink: 0,
         }}
       >
-        {numberOfSuperlikes === 0 ? null : (
-          <p
-            style={{
-              fontSize: "16px",
-              userSelect: "none",
-              margin: "0px",
-              padding: "0px",
-            }}
-          >
-            {totalAmount} QORT from {numberOfSuperlikes} Super Likes
-          </p>
-        )}
+
 
         <Tooltip title="Super Like" placement="top">
           <Box
             sx={{
               padding: "5px",
               borderRadius: "7px",
-              gap: "10px",
+              gap: "5px",
               display: "flex",
               alignItems: "center",
               outline: "1px gold solid",
+              marginRight:'10px',
+              height: '53px',
             }}
           >
             <ThumbUpIcon
@@ -268,14 +259,25 @@ export const SuperLike = ({
                 color: "gold",
               }}
             />
-            <p
-              style={{
-                fontSize: "16px",
-                margin: "0px",
-              }}
-            >
-              Super Like
-            </p>
+
+              {numberOfSuperlikes === 0 ? null : (
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center', userSelect: "none"}}>
+                  <span style={{marginRight:'10px', paddingBottom:'4px'}}>{numberOfSuperlikes}</span>
+                  <img
+                    style={{
+                      height: "25px",
+                      width: "25px",
+                      marginRight:'5px',
+                    }}
+                    src={qortImg}
+                    alt={"Qort Icon"}
+                  />
+                  {truncateNumber(totalAmount,0)}
+                </div>
+              )}
           </Box>
         </Tooltip>
       </Box>

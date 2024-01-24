@@ -553,6 +553,13 @@ export const VideoList = ({ mode }: VideoListProps) => {
                   avatarUrl = userAvatarHash[videoObj?.user];
                 }
 
+                // nb. this prevents showing metadata for a video which
+                // belongs to a different user
+                if (videoObj?.user && videoObj?.videoReference?.name
+                    && videoObj.user != videoObj.videoReference.name) {
+                  return null;
+                }
+
                 if (hasHash && !videoObj?.videoImage && !videoObj?.image) {
                   return null;
                 }

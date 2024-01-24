@@ -55,6 +55,7 @@ import {
   SUPER_LIKE_BASE,
 } from "../../constants/Identifiers.ts";
 import { minPriceSuperlike } from "../../constants/Misc.ts";
+import { SubscribeButton } from "../../components/common/SubscribeButton.tsx";
 
 export const PlaylistContent = () => {
   const { name, id } = useParams();
@@ -414,7 +415,6 @@ export const PlaylistContent = () => {
               sx={{
                 width: "100%",
                 display: "flex",
-                justifyContent: "center",
               }}
             >
               <Typography>This playlist is empty</Typography>
@@ -422,48 +422,128 @@ export const PlaylistContent = () => {
           </>
         ) : (
           <>
-            {videoReference && (
-              <VideoPlayer
-                name={videoReference?.name}
-                service={videoReference?.service}
-                identifier={videoReference?.identifier}
-                user={name}
-                jsonId={id}
-                poster={videoCover || ""}
-                nextVideo={nextVideo}
-                onEnd={onEndVideo}
-                autoPlay={doAutoPlay}
-              />
-            )}
-
+            <Box
+              sx={{
+                display: "grid",
+                gridTemplateColumns: "70vw 30vw",
+                width: "100vw",
+              }}
+            >
+              {videoReference && (
+                <VideoPlayer
+                  name={videoReference?.name}
+                  service={videoReference?.service}
+                  identifier={videoReference?.identifier}
+                  user={name}
+                  jsonId={id}
+                  poster={videoCover || ""}
+                  nextVideo={nextVideo}
+                  onEnd={onEndVideo}
+                  autoPlay={doAutoPlay}
+                />
+              )}
+              {playlistData && (
+                <Playlists
+                  playlistData={playlistData}
+                  currentVideoIdentifier={videoData?.id}
+                  onClick={getVideoData}
+                />
+              )}
+            </Box>
             <Spacer height="15px" />
             <Box
               sx={{
                 width: "100%",
-                display: "flex",
-                justifyContent: "flex-end",
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
               }}
             >
-              <FileAttachmentContainer>
-                <FileAttachmentFont>save to disk</FileAttachmentFont>
-                <FileElement
-                  fileInfo={{
-                    ...videoReference,
-                    filename:
-                      videoData?.filename ||
-                      videoData?.title?.slice(0, 20) + ".mp4",
-                    mimeType: videoData?.videoType || '"video/mp4',
-                  }}
-                  title={videoData?.filename || videoData?.title?.slice(0, 20)}
-                  customStyles={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "flex-end",
+              {" "}
+              <Box>
+                <StyledCardHeaderComment
+                  sx={{
+                    "& .MuiCardHeader-content": {
+                      overflow: "hidden",
+                    },
                   }}
                 >
-                  <DownloadIcon />
-                </FileElement>
-              </FileAttachmentContainer>
+                  <Box
+                    sx={{
+                      cursor: "pointer",
+                    }}
+                    onClick={() => {
+                      navigate(`/channel/${name}`);
+                    }}
+                  >
+                    <Avatar
+                      src={`/arbitrary/THUMBNAIL/${name}/qortal_avatar`}
+                      alt={`${name}'s avatar`}
+                    />
+                  </Box>
+                  <StyledCardColComment>
+                    <AuthorTextComment
+                      color={
+                        theme.palette.mode === "light"
+                          ? theme.palette.text.secondary
+                          : "#d6e8ff"
+                      }
+                      sx={{
+                        cursor: "pointer",
+                      }}
+                      onClick={() => {
+                        navigate(`/channel/${name}`);
+                      }}
+                    >
+                      {name}
+                      <SubscribeButton
+                        name={name}
+                        sx={{ marginLeft: "20px" }}
+                      />
+                    </AuthorTextComment>
+                  </StyledCardColComment>
+                </StyledCardHeaderComment>
+              </Box>
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "row",
+                }}
+              >
+                {videoData && (
+                  <SuperLike
+                    numberOfSuperlikes={numberOfSuperlikes}
+                    totalAmount={calculateAmountSuperlike}
+                    name={videoData?.user}
+                    service={videoData?.service}
+                    identifier={videoData?.id}
+                    onSuccess={val => {
+                      setSuperlikelist(prev => [val, ...prev]);
+                    }}
+                  />
+                )}
+                <FileAttachmentContainer>
+                  <FileAttachmentFont>Save to Disk</FileAttachmentFont>
+                  <FileElement
+                    fileInfo={{
+                      ...videoReference,
+                      filename:
+                        videoData?.filename ||
+                        videoData?.title?.slice(0, 20) + ".mp4",
+                      mimeType: videoData?.videoType || '"video/mp4',
+                    }}
+                    title={
+                      videoData?.filename || videoData?.title?.slice(0, 20)
+                    }
+                    customStyles={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "flex-end",
+                    }}
+                  >
+                    <DownloadIcon />
+                  </FileElement>
+                </FileAttachmentContainer>
+              </Box>
             </Box>
             <Box
               sx={{
@@ -484,25 +564,13 @@ export const PlaylistContent = () => {
               >
                 {videoData?.title}
               </VideoTitle>
-              {videoData && (
-                <SuperLike
-                  numberOfSuperlikes={numberOfSuperlikes}
-                  totalAmount={calculateAmountSuperlike}
-                  name={videoData?.user}
-                  service={videoData?.service}
-                  identifier={videoData?.id}
-                  onSuccess={val => {
-                    setSuperlikelist(prev => [val, ...prev]);
-                  }}
-                />
-              )}
             </Box>
 
             {videoData?.created && (
               <Typography
                 variant="h6"
                 sx={{
-                  fontSize: "12px",
+                  fontSize: "16px",
                 }}
                 color={theme.palette.text.primary}
               >
@@ -510,42 +578,7 @@ export const PlaylistContent = () => {
               </Typography>
             )}
 
-            <Spacer height="15px" />
-            <Box
-              sx={{
-                cursor: "pointer",
-              }}
-              onClick={() => {
-                navigate(`/channel/${name}`);
-              }}
-            >
-              <StyledCardHeaderComment
-                sx={{
-                  "& .MuiCardHeader-content": {
-                    overflow: "hidden",
-                  },
-                }}
-              >
-                <Box>
-                  <Avatar
-                    src={`/arbitrary/THUMBNAIL/${name}/qortal_avatar`}
-                    alt={`${name}'s avatar`}
-                  />
-                </Box>
-                <StyledCardColComment>
-                  <AuthorTextComment
-                    color={
-                      theme.palette.mode === "light"
-                        ? theme.palette.text.secondary
-                        : "#d6e8ff"
-                    }
-                  >
-                    {name}
-                  </AuthorTextComment>
-                </StyledCardColComment>
-              </StyledCardHeaderComment>
-            </Box>
-            <Spacer height="15px" />
+            <Spacer height="30px" />
             <Box
               sx={{
                 background: "#333333",
@@ -555,16 +588,16 @@ export const PlaylistContent = () => {
                 cursor: !descriptionHeight
                   ? "default"
                   : isExpandedDescription
-                    ? "default"
-                    : "pointer",
+                  ? "default"
+                  : "pointer",
                 position: "relative",
               }}
               className={
                 !descriptionHeight
                   ? ""
                   : isExpandedDescription
-                    ? ""
-                    : "hover-click"
+                  ? ""
+                  : "hover-click"
               }
             >
               {descriptionHeight && !isExpandedDescription && (
@@ -589,8 +622,8 @@ export const PlaylistContent = () => {
                   height: !descriptionHeight
                     ? "auto"
                     : isExpandedDescription
-                      ? "auto"
-                      : "100px",
+                    ? "auto"
+                    : "100px",
                   overflow: "hidden",
                 }}
               >
@@ -644,13 +677,6 @@ export const PlaylistContent = () => {
         }}
       >
         <CommentSection postId={videoData?.id || ""} postName={name || ""} />
-        {playlistData && (
-          <Playlists
-            playlistData={playlistData}
-            currentVideoIdentifier={videoData?.id}
-            onClick={getVideoData}
-          />
-        )}
       </Box>
     </Box>
   );

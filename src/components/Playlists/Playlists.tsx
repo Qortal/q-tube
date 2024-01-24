@@ -20,18 +20,15 @@ export const Playlists = ({
       sx={{
         display: "flex",
         flexDirection: "column",
-
-        maxWidth: "400px",
         width: "100%",
+        maxWidth: "25vw",
+        maxHeight: "70vh",
       }}
     >
-      <CrowdfundSubTitleRow>
-        <CrowdfundSubTitle>Playlist</CrowdfundSubTitle>
-      </CrowdfundSubTitleRow>
       <CardContentContainerComment
         sx={{
-          marginTop: "25px",
-          height: "450px",
+          marginTop: "0px",
+          height: "100%",
           overflow: "auto",
         }}
       >
@@ -61,7 +58,8 @@ export const Playlists = ({
             >
               <Typography
                 sx={{
-                  fontSize: "14px",
+                  fontSize: "18px",
+                  fontWeight: "bold",
                 }}
               >
                 {index + 1}

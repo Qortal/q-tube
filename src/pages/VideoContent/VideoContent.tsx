@@ -53,6 +53,7 @@ import {
   SUPER_LIKE_BASE,
 } from "../../constants/Identifiers.ts";
 import { minPriceSuperlike } from "../../constants/Misc.ts";
+import { SubscribeButton } from "../../components/common/SubscribeButton.tsx";
 
 export function isTimestampWithinRange(resTimestamp, resCreated) {
   // Calculate the absolute difference in milliseconds
@@ -171,11 +172,9 @@ export const VideoContent = () => {
   const [videoData, setVideoData] = useState<any>(null);
 
   const saveAsFilename = useMemo(() => {
-
     // nb. we prefer to construct the local filename to use for
     // saving, from the video "title" when possible
     if (videoData?.title) {
-
       // figure out filename extension
       let ext = ".mp4";
       if (videoData?.filename) {
@@ -197,9 +196,7 @@ export const VideoContent = () => {
 
     // TODO: this was the previous value, leaving here as the
     // fallback for now even though it probably is not needed..?
-    return videoData?.filename ||
-      videoData?.title?.slice(0, 20) + ".mp4";
-
+    return videoData?.filename || videoData?.title?.slice(0, 20) + ".mp4";
   }, [videoData]);
 
   const hashMapVideos = useSelector(
@@ -280,7 +277,7 @@ export const VideoContent = () => {
 
   React.useEffect(() => {
     if (name && id) {
-      const existingVideo = hashMapVideos[id + '-' + name];
+      const existingVideo = hashMapVideos[id + "-" + name];
 
       if (existingVideo) {
         setVideoData(existingVideo);
@@ -376,6 +373,8 @@ export const VideoContent = () => {
       <VideoPlayerContainer
         sx={{
           marginBottom: "30px",
+          width: "70vw",
+          height: "70vw",
         }}
       >
         {videoReference && (
@@ -393,30 +392,89 @@ export const VideoContent = () => {
         <Box
           sx={{
             width: "100%",
-            display: "flex",
-            justifyContent: "flex-end",
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
           }}
         >
-          <FileAttachmentContainer>
-            <FileAttachmentFont>save to disk</FileAttachmentFont>
-            <FileElement
-              fileInfo={{
-                ...videoReference,
-                filename: saveAsFilename,
-                mimeType: videoData?.videoType || '"video/mp4',
-              }}
-              title={videoData?.filename || videoData?.title?.slice(0, 20)}
-              customStyles={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "flex-end",
+          <Box>
+            <StyledCardHeaderComment
+              sx={{
+                "& .MuiCardHeader-content": {
+                  overflow: "hidden",
+                },
               }}
             >
-              <DownloadIcon />
-            </FileElement>
-          </FileAttachmentContainer>
+              <Box
+                sx={{
+                  cursor: "pointer",
+                }}
+                onClick={() => {
+                  navigate(`/channel/${name}`);
+                }}
+              >
+                <Avatar
+                  src={`/arbitrary/THUMBNAIL/${name}/qortal_avatar`}
+                  alt={`${name}'s avatar`}
+                />
+              </Box>
+              <StyledCardColComment>
+                <AuthorTextComment
+                  color={
+                    theme.palette.mode === "light"
+                      ? theme.palette.text.secondary
+                      : "#d6e8ff"
+                  }
+                  sx={{
+                    cursor: "pointer",
+                  }}
+                  onClick={() => {
+                    navigate(`/channel/${name}`);
+                  }}
+                >
+                  {name}
+                  <SubscribeButton name={name} sx={{ marginLeft: "20px" }} />
+                </AuthorTextComment>
+              </StyledCardColComment>
+            </StyledCardHeaderComment>
+          </Box>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+            }}
+          >
+            {videoData && (
+              <SuperLike
+                numberOfSuperlikes={numberOfSuperlikes}
+                totalAmount={calculateAmountSuperlike}
+                name={videoData?.user}
+                service={videoData?.service}
+                identifier={videoData?.id}
+                onSuccess={val => {
+                  setSuperlikelist(prev => [val, ...prev]);
+                }}
+              />
+            )}
+            <FileAttachmentContainer>
+              <FileAttachmentFont>Save to Disk</FileAttachmentFont>
+              <FileElement
+                fileInfo={{
+                  ...videoReference,
+                  filename: saveAsFilename,
+                  mimeType: videoData?.videoType || '"video/mp4',
+                }}
+                title={videoData?.filename || videoData?.title?.slice(0, 20)}
+                customStyles={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "flex-end",
+                }}
+              >
+                <DownloadIcon />
+              </FileElement>
+            </FileAttachmentContainer>
+          </Box>
         </Box>
-
         <Box
           sx={{
             display: "flex",
@@ -436,25 +494,13 @@ export const VideoContent = () => {
           >
             {videoData?.title}
           </VideoTitle>
-          {videoData && (
-            <SuperLike
-              numberOfSuperlikes={numberOfSuperlikes}
-              totalAmount={calculateAmountSuperlike}
-              name={videoData?.user}
-              service={videoData?.service}
-              identifier={videoData?.id}
-              onSuccess={val => {
-                setSuperlikelist(prev => [val, ...prev]);
-              }}
-            />
-          )}
         </Box>
 
         {videoData?.created && (
           <Typography
             variant="h6"
             sx={{
-              fontSize: "12px",
+              fontSize: "16px",
             }}
             color={theme.palette.text.primary}
           >
@@ -462,42 +508,7 @@ export const VideoContent = () => {
           </Typography>
         )}
 
-        <Spacer height="15px" />
-        <Box
-          sx={{
-            cursor: "pointer",
-          }}
-          onClick={() => {
-            navigate(`/channel/${name}`);
-          }}
-        >
-          <StyledCardHeaderComment
-            sx={{
-              "& .MuiCardHeader-content": {
-                overflow: "hidden",
-              },
-            }}
-          >
-            <Box>
-              <Avatar
-                src={`/arbitrary/THUMBNAIL/${name}/qortal_avatar`}
-                alt={`${name}'s avatar`}
-              />
-            </Box>
-            <StyledCardColComment>
-              <AuthorTextComment
-                color={
-                  theme.palette.mode === "light"
-                    ? theme.palette.text.secondary
-                    : "#d6e8ff"
-                }
-              >
-                {name}
-              </AuthorTextComment>
-            </StyledCardColComment>
-          </StyledCardHeaderComment>
-        </Box>
-        <Spacer height="15px" />
+        <Spacer height="30px" />
         <Box
           sx={{
             background: "#333333",
@@ -507,8 +518,8 @@ export const VideoContent = () => {
             cursor: !descriptionHeight
               ? "default"
               : isExpandedDescription
-                ? "default"
-                : "pointer",
+              ? "default"
+              : "pointer",
             position: "relative",
           }}
           className={
@@ -537,8 +548,8 @@ export const VideoContent = () => {
               height: !descriptionHeight
                 ? "auto"
                 : isExpandedDescription
-                  ? "auto"
-                  : "100px",
+                ? "auto"
+                : "100px",
               overflow: "hidden",
             }}
           >

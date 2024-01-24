@@ -7,6 +7,7 @@ import { useParams } from 'react-router-dom'
 import {  useSelector } from 'react-redux'
 import { setUserAvatarHash } from '../../state/features/globalSlice'
 import { RootState } from '../../state/store'
+import { SubscribeButton } from "../../components/common/SubscribeButton.tsx";
 
 export const IndividualProfile = () => {
   const { name: paramName } = useParams()
@@ -53,7 +54,7 @@ export const IndividualProfile = () => {
                 {paramName}
               </AuthorTextComment>
             </StyledCardColComment>
-
+            <SubscribeButton name={paramName} sx={{marginLeft:'10px'}}/>
           </StyledCardHeaderComment>
         </Box>
       </HeaderContainer>

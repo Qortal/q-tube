@@ -49,9 +49,8 @@ export default function ListSuperLikes({ superlikes }) {
           amount = parseFloat(superlike?.amount).toFixed(2);
         }
         return (
-          <>
+          <React.Fragment key={superlike?.identifier}>
             <ListItem
-              key={superlike?.identifier}
               alignItems="flex-start"
               sx={{
                 cursor: url ? "pointer" : "default",
@@ -68,66 +67,64 @@ export default function ListSuperLikes({ superlikes }) {
                   width: "100%",
                 }}
               >
-                <ListItem
-                  sx={{
-                    padding: "0px",
-                  }}
-                  alignItems="flex-start"
-                >
-                  <ListItemAvatar>
-                    <Avatar
-                      alt="Remy Sharp"
-                      src={`/arbitrary/THUMBNAIL/${superlike?.name}/qortal_avatar`}
-                    />
-                  </ListItemAvatar>
-                  <ListItemText
-                    primary={
-                      <Box
-                        sx={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "5px",
-                          fontSize: "16px",
-                        }}
-                      >
-                        <ThumbUpIcon
-                          style={{
-                            color: "gold",
-                          }}
-                        />
-                        <Typography
+                <List sx={{ padding: "0px" }}>
+                  <ListItem
+                    sx={{
+                      padding: "0px",
+                    }}
+                    alignItems="flex-start"
+                  >
+                    <ListItemAvatar>
+                      <Avatar
+                        alt="Remy Sharp"
+                        src={`/arbitrary/THUMBNAIL/${superlike?.name}/qortal_avatar`}
+                      />
+                    </ListItemAvatar>
+                    <ListItemText
+                      primary={
+                        <Box
                           sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "5px",
                             fontSize: "18px",
                           }}
                         >
-                          {amount ? amount : ""} QORT
-                        </Typography>
-                      </Box>
-                    }
-                    secondary={
-                      <Box
-                        sx={{
-                          fontSize: "15px",
-                        }}
-                      >
-                        <Typography
-                          sx={{
-                            display: "inline",
-                            wordBreak: "break-word",
-                            fontSize: "16px",
-                          }}
-                          component="span"
-                          variant="body2"
-                          color="text.primary"
-                        >
-                          {superlike?.name}
-                        </Typography>
+                          <ThumbUpIcon
+                            style={{
+                              color: "gold",
+                            }}
+                          />
+                          <Typography
+                            sx={{
+                              fontSize: "18px",
+                            }}
+                          >
+                            {amount ? amount : ""} QORT
+                          </Typography>
+                        </Box>
+                      }
+                      secondary={
+                        <>
+                          <Typography
+                            sx={{
+                              display: "inline",
+                              wordBreak: "break-word",
+                              fontSize: "15px",
+                            }}
+                            component="span"
+                            variant="body2"
+                            color="text.primary"
+                          >
+                            {superlike?.name}
+                          </Typography>
 
-                        {` - ${truncateMessage(message)}`}
-                      </Box>
-                    }
-                  />
-                </ListItem>
+                          {` - ${truncateMessage(message)}`}
+                        </>
+                      }
+                    />
+                  </ListItem>
+                </List>
                 {forName && (
                   <Box
                     sx={{
@@ -151,7 +148,7 @@ export default function ListSuperLikes({ superlikes }) {
             >
               {superlikes.length === index + 1 ? null : <Divider />}
             </Box>
-          </>
+          </React.Fragment>
         );
       })}
     </List>

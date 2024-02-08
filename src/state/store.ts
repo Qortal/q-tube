@@ -19,7 +19,7 @@ const persistVideoConfig = {
   key: "video",
   version: 1,
   storage,
-  whitelist: ["subscriptionList"],
+  whitelist: ["subscriptionList", "filterType"],
 };
 
 const persistSettingsConfig = {

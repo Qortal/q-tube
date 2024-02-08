@@ -150,7 +150,7 @@ export const Home = ({ mode }: HomeProps) => {
     useFetchVideos();
 
   const getVideosHandler = React.useCallback(
-    async (reset?: boolean, resetFilers?: boolean) => {
+    async (reset?: boolean, resetFilters?: boolean) => {
       if (!firstFetch.current || !afterFetch.current) return;
       if (isFetching.current) return;
       isFetching.current = true;
@@ -163,7 +163,7 @@ export const Home = ({ mode }: HomeProps) => {
           type: filterType,
         },
         reset,
-        resetFilers,
+        resetFilters,
         20,
         tabValue
       );
@@ -195,7 +195,7 @@ export const Home = ({ mode }: HomeProps) => {
     firstFetch.current = true;
     setIsLoading(true);
 
-    await getVideos({}, null, null, 20, tabValue);
+    await getVideos({ type: filterType }, null, null, 20, tabValue);
     afterFetch.current = true;
     isFetching.current = false;
 
@@ -556,14 +556,14 @@ export const Home = ({ mode }: HomeProps) => {
                   sx={{ fontSize: tabFontSize }}
                 />
               </TabList>
-              <TabPanel value="all" sx={{ width: "100%" }}>
+              <TabPanel value={allTabValue} sx={{ width: "100%" }}>
                 <VideoList videos={videos} />
                 <LazyLoad
                   onLoadMore={getVideosHandler}
                   isLoading={isLoading}
                 ></LazyLoad>
               </TabPanel>
-              <TabPanel value="subscriptions" sx={{ width: "100%" }}>
+              <TabPanel value={subscriptionTabValue} sx={{ width: "100%" }}>
                 <VideoList videos={videos} />
                 <LazyLoad
                   onLoadMore={getVideosHandler}

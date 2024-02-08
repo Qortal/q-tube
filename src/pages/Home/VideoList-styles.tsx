@@ -7,6 +7,7 @@ import {
   TextField,
   InputLabel,
   Autocomplete,
+  Radio,
 } from "@mui/material";
 
 export const VideoContainer = styled(Grid)(({ theme }) => ({
@@ -131,7 +132,7 @@ export const VideoCardTitle = styled(DoubleLine)(({ theme }) => ({
 }));
 export const VideoCardName = styled(Typography)(({ theme }) => ({
   fontFamily: "Cairo",
-  fontSize: "18px",
+  fontSize: "16px",
   letterSpacing: "0.4px",
   color: theme.palette.text.primary,
   userSelect: "none",
@@ -264,6 +265,13 @@ export const FiltersTitle = styled(Typography)(({ theme }) => ({
 }));
 
 export const FiltersCheckbox = styled(Checkbox)(({ theme }) => ({
+  color: "#c0d4ff",
+  "&.Mui-checked": {
+    color: "#6596ff",
+  },
+}));
+
+export const FiltersRadioButton = styled(Radio)(({ theme }) => ({
   color: "#c0d4ff",
   "&.Mui-checked": {
     color: "#6596ff",

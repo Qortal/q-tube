@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
 import ReactDOM from "react-dom";
-import { Box, IconButton, Slider } from "@mui/material";
+import { Box, IconButton, Slider, useTheme } from "@mui/material";
 import { CircularProgress, Typography } from "@mui/material";
 import { Key } from "ts-key-enum";
 import {
@@ -12,14 +12,15 @@ import {
   VolumeOff,
 } from "@mui/icons-material";
 import { styled } from "@mui/system";
-import { MyContext } from "../../wrappers/DownloadWrapper";
+import { MyContext } from "../../../wrappers/DownloadWrapper.tsx";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../state/store";
+import { RootState } from "../../../state/store.ts";
 import { Refresh } from "@mui/icons-material";
+import CloseIcon from "@mui/icons-material/Close";
 
 import { Menu, MenuItem } from "@mui/material";
 import { MoreVert as MoreIcon } from "@mui/icons-material";
-import { setVideoPlaying } from "../../state/features/globalSlice";
+import { setVideoPlaying } from "../../../state/features/globalSlice.ts";
 const VideoContainer = styled(Box)`
   position: relative;
   display: flex;
@@ -30,14 +31,13 @@ const VideoContainer = styled(Box)`
   height: 100%;
   margin: 0px;
   padding: 0px;
-  max-height: 70vh;
 `;
 
 const VideoElement = styled("video")`
   width: 100%;
   height: auto;
+  max-height: calc(100vh - 150px);
   background: rgb(33, 33, 33);
-  max-height: 70vh;
 `;
 
 const ControlsContainer = styled(Box)`
@@ -48,6 +48,7 @@ const ControlsContainer = styled(Box)`
   bottom: 0;
   left: 0;
   right: 0;
+  padding: 8px;
   background-color: rgba(0, 0, 0, 0.6);
 `;
 
@@ -62,12 +63,11 @@ interface VideoPlayerProps {
   customStyle?: any;
   user?: string;
   jsonId?: string;
-  nextVideo?: any;
-  onEnd?: () => void;
-  autoPlay?: boolean;
+  element?: null | any;
+  checkIfDrag?: () => boolean;
 }
 
-export const VideoPlayer: React.FC<VideoPlayerProps> = ({
+export const VideoPlayerGlobal: React.FC<VideoPlayerProps> = ({
   poster,
   name,
   identifier,
@@ -77,11 +77,11 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
   customStyle = {},
   user = "",
   jsonId = "",
-  nextVideo,
-  onEnd,
-  autoPlay,
+  element,
+  checkIfDrag,
 }) => {
-  const dispatch = useDispatch();
+  const theme = useTheme();
+
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [playing, setPlaying] = useState(false);
   const [volume, setVolume] = useState(1);
@@ -94,15 +94,8 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
   const [isMobileView, setIsMobileView] = useState(false);
   const [playbackRate, setPlaybackRate] = useState(1);
   const [anchorEl, setAnchorEl] = useState(null);
-  const videoPlaying = useSelector(
-    (state: RootState) => state.global.videoPlaying
-  );
+  const dispatch = useDispatch();
   const reDownload = useRef<boolean>(false);
-  const reDownloadNextVid = useRef<boolean>(false);
-
-  const isFetchingProperties = useRef<boolean>(false);
-
-  const status = useRef<null | string>(null);
   const { downloads } = useSelector((state: RootState) => state.global);
   const download = useMemo(() => {
     if (!downloads || !identifier) return {};
@@ -112,9 +105,6 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
     return findDownload;
   }, [downloads, identifier]);
 
-  const src = useMemo(() => {
-    return download?.url || "";
-  }, [download?.url]);
   const resourceStatus = useMemo(() => {
     return download?.status || {};
   }, [download]);
@@ -148,68 +138,17 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
     }
   };
 
-  useEffect(() => {
-    reDownload.current = false;
-    reDownloadNextVid.current = false;
-    setIsLoading(false);
-    setCanPlay(false);
-    setProgress(0);
-    setPlaying(false);
-    setStartPlay(false);
-    isFetchingProperties.current = false;
-    status.current = null;
-  }, [identifier]);
-
-  useEffect(() => {
-    if (autoPlay && identifier) {
-      setStartPlay(true);
-      setPlaying(true);
-      togglePlay(undefined, true);
-    }
-  }, [autoPlay, startPlay, identifier]);
-
-  const refetch = React.useCallback(async () => {
-    if (!name || !identifier || !service || isFetchingProperties.current)
-      return;
-    try {
-      isFetchingProperties.current = true;
-      await qortalRequest({
-        action: "GET_QDN_RESOURCE_PROPERTIES",
-        name,
-        service,
-        identifier,
-      });
-    } catch (error) {
-    } finally {
-      isFetchingProperties.current = false;
-    }
-  }, [identifier, name, service]);
-
   const toggleRef = useRef<any>(null);
   const { downloadVideo } = useContext(MyContext);
-  const togglePlay = async (event?: any, isPlay?: boolean) => {
+  const togglePlay = async () => {
+    if (checkIfDrag && checkIfDrag()) return;
     if (!videoRef.current) return;
-    setStartPlay(true);
-    if (!src || resourceStatus?.status !== "READY") {
-      const el = document.getElementById("videoWrapper");
-      if (el) {
-        el?.parentElement?.removeChild(el);
-      }
-      ReactDOM.flushSync(() => {
-        setIsLoading(true);
-      });
-      getSrc();
-    }
-    if (playing && !isPlay) {
+    if (playing) {
       videoRef.current.pause();
     } else {
       videoRef.current.play();
     }
-    if (isPlay) {
-      setPlaying(true);
-    } else {
-      setPlaying(!playing);
-    }
+    setPlaying(prev => !prev);
   };
 
   const onVolumeChange = (_: any, value: number | number[]) => {
@@ -231,9 +170,6 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
   const handleEnded = () => {
     setPlaying(false);
-    if (onEnd) {
-      onEnd();
-    }
   };
 
   const updateProgress = () => {
@@ -279,44 +215,10 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
     };
   }, []);
 
-  useEffect(() => {
-    if (
-      videoPlaying &&
-      videoPlaying.id === identifier &&
-      src &&
-      videoRef?.current
-    ) {
-      handleCanPlay();
-      videoRef.current.volume = videoPlaying.volume;
-      videoRef.current.currentTime = videoPlaying.currentTime;
-      videoRef.current.play();
-      setPlaying(true);
-      setStartPlay(true);
-      dispatch(setVideoPlaying(null));
-    }
-  }, [videoPlaying, identifier, src]);
-
   const handleCanPlay = () => {
     setIsLoading(false);
     setCanPlay(true);
   };
-
-  const getSrc = React.useCallback(async () => {
-    if (!name || !identifier || !service || !jsonId || !user) return;
-    try {
-      downloadVideo({
-        name,
-        service,
-        identifier,
-        properties: {
-          jsonId,
-          user,
-        },
-      });
-    } catch (error) {
-      console.error(error);
-    }
-  }, [identifier, name, service, jsonId, user]);
 
   useEffect(() => {
     const videoElement = videoRef.current;
@@ -348,67 +250,6 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
     };
   }, []);
 
-  useEffect(() => {
-    const videoElement = videoRef.current;
-
-    const minimizeVideo = async () => {
-      if (!videoElement) return;
-
-      dispatch(setVideoPlaying(videoElement));
-      // const handleClose = () => {
-      //   if (videoElement && videoElement.parentElement) {
-      //     const el = document.getElementById('videoWrapper')
-      //     if (el) {
-      //       el?.parentElement?.removeChild(el)
-      //     }
-      //   }
-      // }
-      // const createCloseButton = (): HTMLButtonElement => {
-      //   const closeButton = document.createElement('button')
-      //   closeButton.textContent = 'X'
-      //   closeButton.style.position = 'absolute'
-      //   closeButton.style.top = '0'
-      //   closeButton.style.right = '0'
-      //   closeButton.style.backgroundColor = 'rgba(255, 255, 255, 0.7)'
-      //   closeButton.style.border = 'none'
-      //   closeButton.style.fontWeight = 'bold'
-      //   closeButton.style.fontSize = '1.2rem'
-      //   closeButton.style.cursor = 'pointer'
-      //   closeButton.style.padding = '2px 8px'
-      //   closeButton.style.borderRadius = '0 0 0 4px'
-
-      //   closeButton.addEventListener('click', handleClose)
-
-      //   return closeButton
-      // }
-      // const buttonClose = createCloseButton()
-      // const videoWrapper = document.createElement('div')
-      // videoWrapper.id = 'videoWrapper'
-      // videoWrapper.style.position = 'fixed'
-      // videoWrapper.style.zIndex = '900000009'
-      // videoWrapper.style.bottom = '0px'
-      // videoWrapper.style.right = '0px'
-
-      // videoElement.parentElement?.insertBefore(videoWrapper, videoElement)
-      // videoWrapper.appendChild(videoElement)
-
-      // videoWrapper.appendChild(buttonClose)
-      // videoElement.controls = true
-      // videoElement.style.height = 'auto'
-      // videoElement.style.width = '300px'
-
-      // document.body.appendChild(videoWrapper)
-    };
-
-    return () => {
-      if (videoElement) {
-        if (videoElement && !videoElement.paused && !videoElement.ended) {
-          minimizeVideo();
-        }
-      }
-    };
-  }, []);
-
   function formatTime(seconds: number): string {
     seconds = Math.floor(seconds);
     let minutes: number | string = Math.floor(seconds / 60);
@@ -436,6 +277,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
   const reloadVideo = () => {
     if (!videoRef.current) return;
+    const src = videoRef.current.src;
     const currentTime = videoRef.current.currentTime;
     videoRef.current.src = src;
     videoRef.current.load();
@@ -444,55 +286,6 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
       videoRef.current.play();
     }
   };
-
-  const refetchInInterval = () => {
-    try {
-      const interval = setInterval(() => {
-        if (status?.current === "DOWNLOADED") {
-          refetch();
-        }
-        if (status?.current === "READY") {
-          clearInterval(interval);
-        }
-      }, 7500);
-    } catch (error) {}
-  };
-
-  useEffect(() => {
-    if (resourceStatus?.status) {
-      status.current = resourceStatus?.status;
-    }
-    if (
-      resourceStatus?.status === "DOWNLOADED" &&
-      reDownload?.current === false
-    ) {
-      refetchInInterval();
-      reDownload.current = true;
-    }
-  }, [getSrc, resourceStatus]);
-
-  useEffect(() => {
-    if (resourceStatus?.status) {
-      status.current = resourceStatus?.status;
-    }
-    if (
-      resourceStatus?.status === "READY" &&
-      reDownloadNextVid?.current === false
-    ) {
-      if (nextVideo) {
-        downloadVideo({
-          name: nextVideo?.name,
-          service: nextVideo?.service,
-          identifier: nextVideo?.identifier,
-          properties: {
-            jsonId: nextVideo?.jsonId,
-            user,
-          },
-        });
-      }
-      reDownloadNextVid.current = true;
-    }
-  }, [getSrc, resourceStatus]);
 
   const handleMenuOpen = (event: any) => {
     setAnchorEl(event.currentTarget);
@@ -671,6 +464,22 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
     }
   };
 
+  useEffect(() => {
+    if (element) {
+      let oldElement = document.getElementById("videoPlayer");
+      if (oldElement && oldElement?.parentNode) {
+        oldElement?.parentNode.replaceChild(element, oldElement);
+        videoRef.current = element;
+        setPlaying(true);
+        setCanPlay(true);
+        setStartPlay(true);
+        videoRef?.current?.addEventListener("click", () => {});
+        videoRef?.current?.addEventListener("timeupdate", updateProgress);
+        videoRef?.current?.addEventListener("ended", handleEnded);
+      }
+    }
+  }, [element]);
+
   return (
     <VideoContainer
       tabIndex={0}
@@ -678,129 +487,28 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
       onKeyDown={keyboardShortcutsDown}
       style={{
         padding: from === "create" ? "8px" : 0,
+        zIndex: 1000,
+        backgroundColor: theme.palette.background.default,
       }}
     >
-      {isLoading && (
-        <Box
-          position="absolute"
-          top={0}
-          left={0}
-          right={0}
-          bottom={resourceStatus?.status === "READY" ? "55px " : 0}
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
-          zIndex={25}
-          bgcolor="rgba(0, 0, 0, 0.6)"
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            gap: "10px",
-          }}
-        >
-          <CircularProgress color="secondary" />
-          {resourceStatus && (
-            <Typography
-              variant="subtitle2"
-              component="div"
-              sx={{
-                color: "white",
-                fontSize: "15px",
-                textAlign: "center",
-              }}
-            >
-              {resourceStatus?.status === "NOT_PUBLISHED" && (
-                <>Video file was not published. Please inform the publisher!</>
-              )}
-              {resourceStatus?.status === "REFETCHING" ? (
-                <>
-                  <>
-                    {getDownloadProgress(
-                      resourceStatus?.localChunkCount,
-                      resourceStatus?.totalChunkCount
-                    )}
-                  </>
-
-                  <> Refetching in 25 seconds</>
-                </>
-              ) : resourceStatus?.status === "DOWNLOADED" ? (
-                <>Download Completed: building video...</>
-              ) : resourceStatus?.status !== "READY" ? (
-                <>
-                  {getDownloadProgress(
-                    resourceStatus?.localChunkCount,
-                    resourceStatus?.totalChunkCount
-                  )}
-                </>
-              ) : (
-                <>Fetching video...</>
-              )}
-            </Typography>
-          )}
-        </Box>
-      )}
-      {((!src && !isLoading) || !startPlay) && (
-        <Box
-          position="absolute"
-          top={0}
-          left={0}
-          right={0}
-          bottom={0}
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
-          zIndex={500}
-          bgcolor="rgba(0, 0, 0, 0.6)"
+      <div className="closePlayer">
+        <CloseIcon
           onClick={() => {
-            if (from === "create") return;
             dispatch(setVideoPlaying(null));
-            togglePlay();
           }}
           sx={{
             cursor: "pointer",
+            backgroundColor: "rgba(0,0,0,.5)",
           }}
-        >
-          <PlayArrow
-            sx={{
-              width: "50px",
-              height: "50px",
-              color: "white",
-            }}
-          />
-        </Box>
-      )}
-
-      <VideoElement
-        id={identifier}
-        ref={videoRef}
-        src={!startPlay ? "" : resourceStatus?.status === "READY" ? src : ""}
-        poster={!startPlay ? poster : ""}
-        onTimeUpdate={updateProgress}
-        autoPlay={autoplay}
-        onClick={togglePlay}
-        onEnded={handleEnded}
-        // onLoadedMetadata={handleLoadedMetadata}
-        onCanPlay={handleCanPlay}
-        preload="metadata"
-        style={
-          startPlay
-            ? {
-                ...customStyle,
-                objectFit: "fill",
-              }
-            : { ...customStyle }
-        }
-      />
-
+        ></CloseIcon>
+      </div>
+      <div onClick={togglePlay}>
+        <VideoElement id="videoPlayer" />
+      </div>
       <ControlsContainer
-        style={
-          startPlay
-            ? {
-                bottom: from === "create" ? "15px" : 0,
-                padding: "8px",
-              }
-            : { bottom: from === "create" ? "15px" : 0, padding: "0px" }
-        }
+        style={{
+          bottom: from === "create" ? "15px" : 0,
+        }}
       >
         {isMobileView && canPlay ? (
           <>

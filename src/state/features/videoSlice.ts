@@ -1,23 +1,23 @@
-import { createSlice } from '@reduxjs/toolkit';
-import { RootState } from '../store'
-
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface GlobalState {
-  videos: Video[]
-  filteredVideos: Video[]
-  hashMapVideos: Record<string, Video>
-  hashMapSuperlikes: Record<string, any>
-  countNewVideos: number
-  isFiltering: boolean
-  filterValue: string
-  filterType: string
-  filterSearch: string
-  filterName: string
-  selectedCategoryVideos: any
-  selectedSubCategoryVideos: any
-  editVideoProperties: any
-  editPlaylistProperties: any
+  videos: Video[];
+  filteredVideos: Video[];
+  hashMapVideos: Record<string, Video>;
+  hashMapSuperlikes: Record<string, any>;
+  countNewVideos: number;
+  isFiltering: boolean;
+  filterValue: string;
+  filterType: string;
+  filterSearch: string;
+  filterName: string;
+  selectedCategoryVideos: any;
+  selectedSubCategoryVideos: any;
+  editVideoProperties: any;
+  editPlaylistProperties: any;
+  subscriptionList: string[];
 }
+
 const initialState: GlobalState = {
   videos: [],
   filteredVideos: [],
@@ -25,159 +25,168 @@ const initialState: GlobalState = {
   hashMapSuperlikes: {},
   countNewVideos: 0,
   isFiltering: false,
-  filterValue: '',
-  filterType: 'videos',
-  filterSearch: '',
-  filterName: '',
+  filterValue: "",
+  filterType: "videos",
+  filterSearch: "",
+  filterName: "",
   selectedCategoryVideos: null,
   selectedSubCategoryVideos: null,
   editVideoProperties: null,
-  editPlaylistProperties: null
-}
+  editPlaylistProperties: null,
+  subscriptionList: [],
+};
 
 export interface Video {
-  title: string
-  description: string
-  created: number | string
-  user: string
-  service?: string
-  videoImage?: string
-  id: string
-  category?: string
-  categoryName?: string
-  tags?: string[]
-  updated?: number | string
-  isValid?: boolean
-  code?: string
+  title: string;
+  description: string;
+  created: number | string;
+  user: string;
+  service?: string;
+  videoImage?: string;
+  id: string;
+  category?: string;
+  categoryName?: string;
+  tags?: string[];
+  updated?: number | string;
+  isValid?: boolean;
+  code?: string;
 }
 
-
-
 export const videoSlice = createSlice({
-  name: 'video',
+  name: "video",
   initialState,
   reducers: {
     setEditVideo: (state, action) => {
-      state.editVideoProperties = action.payload
+      state.editVideoProperties = action.payload;
     },
     setEditPlaylist: (state, action) => {
-      state.editPlaylistProperties = action.payload
+      state.editPlaylistProperties = action.payload;
     },
     changeFilterType: (state, action) => {
-      state.filterType = action.payload
+      state.filterType = action.payload;
     },
     changefilterSearch: (state, action) => {
-      state.filterSearch = action.payload
+      state.filterSearch = action.payload;
     },
     changefilterName: (state, action) => {
-      state.filterName = action.payload
+      state.filterName = action.payload;
     },
     changeSelectedCategoryVideos: (state, action) => {
-      state.selectedCategoryVideos = action.payload
+      state.selectedCategoryVideos = action.payload;
     },
     changeSelectedSubCategoryVideos: (state, action) => {
-      state.selectedSubCategoryVideos = action.payload
+      state.selectedSubCategoryVideos = action.payload;
     },
     setCountNewVideos: (state, action) => {
-      state.countNewVideos = action.payload
+      state.countNewVideos = action.payload;
     },
     addVideos: (state, action) => {
-      state.videos = action.payload
+      state.videos = action.payload;
     },
     addFilteredVideos: (state, action) => {
-      state.filteredVideos = action.payload
+      state.filteredVideos = action.payload;
     },
     removeVideo: (state, action) => {
-      const idToDelete = action.payload
-      state.videos = state.videos.filter((item) => item.id !== idToDelete)
+      const idToDelete = action.payload;
+      state.videos = state.videos.filter(item => item.id !== idToDelete);
       state.filteredVideos = state.filteredVideos.filter(
-        (item) => item.id !== idToDelete
-      )
+        item => item.id !== idToDelete
+      );
     },
     addVideoToBeginning: (state, action) => {
-      state.videos.unshift(action.payload)
+      state.videos.unshift(action.payload);
     },
-    clearVideoList: (state) => {
-      state.videos = []
+    clearVideoList: state => {
+      state.videos = [];
     },
     updateVideo: (state, action) => {
-      const { id } = action.payload
-      const index = state.videos.findIndex((video) => video.id === id)
+      const { id } = action.payload;
+      const index = state.videos.findIndex(video => video.id === id);
       if (index !== -1) {
-        state.videos[index] = { ...action.payload }
+        state.videos[index] = { ...action.payload };
       }
-      const index2 = state.filteredVideos.findIndex((video) => video.id === id)
+      const index2 = state.filteredVideos.findIndex(video => video.id === id);
       if (index2 !== -1) {
-        state.filteredVideos[index2] = { ...action.payload }
+        state.filteredVideos[index2] = { ...action.payload };
       }
     },
     addToHashMap: (state, action) => {
-      const video = action.payload
-      state.hashMapVideos[video.id + '-' + video.user] = video
+      const video = action.payload;
+      state.hashMapVideos[video.id + "-" + video.user] = video;
     },
     addtoHashMapSuperlikes: (state, action) => {
-      const superlike = action.payload
-      state.hashMapSuperlikes[superlike.identifier] = superlike
-    }, 
+      const superlike = action.payload;
+      state.hashMapSuperlikes[superlike.identifier] = superlike;
+    },
     updateInHashMap: (state, action) => {
-      const { id, user } = action.payload
-      const video = action.payload
-      state.hashMapVideos[id + '-' + user] = { ...video }
+      const { id, user } = action.payload;
+      const video = action.payload;
+      state.hashMapVideos[id + "-" + user] = { ...video };
     },
     removeFromHashMap: (state, action) => {
-      const idToDelete = action.payload
-      delete state.hashMapVideos[idToDelete]
+      const idToDelete = action.payload;
+      delete state.hashMapVideos[idToDelete];
     },
     addArrayToHashMap: (state, action) => {
-      const videos = action.payload
+      const videos = action.payload;
       videos.forEach((video: Video) => {
-        state.hashMapVideos[video.id + '-' + video.user] = video
-      })
+        state.hashMapVideos[video.id + "-" + video.user] = video;
+      });
     },
     upsertVideos: (state, action) => {
       action.payload.forEach((video: Video) => {
-        const index = state.videos.findIndex((p) => p.id === video.id)
+        const index = state.videos.findIndex(p => p.id === video.id);
         if (index !== -1) {
-          state.videos[index] = video
+          state.videos[index] = video;
         } else {
-          state.videos.push(video)
+          state.videos.push(video);
         }
-      })
+      });
     },
     upsertFilteredVideos: (state, action) => {
       action.payload.forEach((video: Video) => {
-        const index = state.filteredVideos.findIndex((p) => p.id === video.id)
+        const index = state.filteredVideos.findIndex(p => p.id === video.id);
         if (index !== -1) {
-          state.filteredVideos[index] = video
+          state.filteredVideos[index] = video;
         } else {
-          state.filteredVideos.push(video)
+          state.filteredVideos.push(video);
         }
-      })
+      });
     },
     upsertVideosBeginning: (state, action) => {
       action.payload.reverse().forEach((video: Video) => {
-        const index = state.videos.findIndex((p) => p.id === video.id)
+        const index = state.videos.findIndex(p => p.id === video.id);
         if (index !== -1) {
-          state.videos[index] = video
+          state.videos[index] = video;
         } else {
-          state.videos.unshift(video)
+          state.videos.unshift(video);
         }
-      })
+      });
     },
     setIsFiltering: (state, action) => {
-      state.isFiltering = action.payload
+      state.isFiltering = action.payload;
     },
     setFilterValue: (state, action) => {
-      state.filterValue = action.payload
+      state.filterValue = action.payload;
     },
     blockUser: (state, action) => {
-      const username = action.payload
-      
-      state.videos = state.videos.filter((item) => item.user !== username)
-    
-    }
-  }
-})
+      const username = action.payload;
+
+      state.videos = state.videos.filter(item => item.user !== username);
+    },
+    subscribe: (state, action: PayloadAction<string>) => {
+      const currentSubscriptions = state.subscriptionList;
+      if (!currentSubscriptions.includes(action.payload)) {
+        state.subscriptionList = [...currentSubscriptions, action.payload];
+      }
+    },
+    unSubscribe: (state, action) => {
+      state.subscriptionList = state.subscriptionList.filter(
+        item => item !== action.payload
+      );
+    },
+  },
+});
 
 export const {
   setCountNewVideos,
@@ -204,8 +213,9 @@ export const {
   blockUser,
   setEditVideo,
   setEditPlaylist,
-  addtoHashMapSuperlikes
-} = videoSlice.actions
+  addtoHashMapSuperlikes,
+  subscribe,
+  unSubscribe,
+} = videoSlice.actions;
 
-export default videoSlice.reducer
-
+export default videoSlice.reducer;

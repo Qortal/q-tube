@@ -21,6 +21,7 @@ import {
   QTUBE_PLAYLIST_BASE,
   QTUBE_VIDEO_BASE,
 } from "../constants/Identifiers.ts";
+import { allTabValue, subscriptionTabValue } from "../constants/Misc.ts";
 
 export const useFetchVideos = () => {
   const dispatch = useDispatch();
@@ -33,6 +34,10 @@ export const useFetchVideos = () => {
   );
   const filteredVideos = useSelector(
     (state: RootState) => state.video.filteredVideos
+  );
+
+  const subscriptions = useSelector(
+    (state: RootState) => state.video.subscriptionList
   );
 
   const checkAndUpdateVideo = React.useCallback(
@@ -100,27 +105,29 @@ export const useFetchVideos = () => {
     try {
       dispatch(setIsLoadingGlobal(true));
 
-      const url = `/arbitrary/resources/search?mode=ALL&service=DOCUMENT&query=${QTUBE_VIDEO_BASE}&limit=20&includemetadata=false&reverse=true&excludeblocked=true&exactmatchnames=true`;
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      const responseData = await response.json();
+      // const url = `/arbitrary/resources/search?mode=ALL&service=DOCUMENT&query=${QTUBE_VIDEO_BASE}&limit=20&includemetadata=false&reverse=true&exc
+      // ludeblocked=true&exactmatchnames=true`;
+      //
+      // const response = await fetch(url, {
+      //   method: "GET",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //   },
+      // });
+      // const responseData = await response.json();
 
-      // const responseData = await qortalRequest({
-      //   action: "SEARCH_QDN_RESOURCES",
-      //   mode: "ALL",
-      //   service: "DOCUMENT",
-      //   query: "${QTUBE_VIDEO_BASE}",
-      //   limit: 20,
-      //   includeMetadata: true,
-      //   reverse: true,
-      //   excludeBlocked: true,
-      //   exactMatchNames: true,
-      //   name: names
-      // })
+      const responseData = await qortalRequest({
+        action: "SEARCH_QDN_RESOURCES",
+        mode: "ALL",
+        service: "DOCUMENT",
+        query: "${QTUBE_VIDEO_BASE}",
+        limit: 20,
+        includeMetadata: true,
+        reverse: true,
+        excludeBlocked: true,
+        exactMatchNames: true,
+      });
+
       const latestVideo = videos[0];
       if (!latestVideo) return;
       const findVideo = responseData?.findIndex(
@@ -174,8 +181,9 @@ export const useFetchVideos = () => {
     async (
       filters = {},
       reset?: boolean,
-      resetFilers?: boolean,
-      limit?: number
+      resetFilters?: boolean,
+      limit?: number,
+      listType = allTabValue
     ) => {
       try {
         const {
@@ -184,7 +192,7 @@ export const useFetchVideos = () => {
           subcategory = "",
           keywords = "",
           type = "",
-        }: any = resetFilers ? {} : filters;
+        }: any = resetFilters ? {} : filters;
         let offset = videos.length;
         if (reset) {
           offset = 0;
@@ -196,6 +204,12 @@ export const useFetchVideos = () => {
         if (name) {
           defaultUrl = defaultUrl + `&name=${name}`;
         }
+        if (listType === subscriptionTabValue) {
+          subscriptions.map(sub => {
+            defaultUrl += `&name=${sub}`;
+          });
+        }
+
         if (category) {
           if (!subcategory) {
             defaultUrl = defaultUrl + `&description=category:${category}`;

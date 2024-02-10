@@ -12,6 +12,9 @@ import {
 import {
   setIsLoadingGlobal,
   setUserAvatarHash,
+  setTotalVideosPublished,
+  setTotalNamesPublished,
+  setVideosPerNamePublished,
 } from "../state/features/globalSlice";
 import { RootState } from "../state/store";
 import { fetchAndEvaluateVideos } from "../utils/fetchVideos";
@@ -30,6 +33,15 @@ export const useFetchVideos = () => {
   const videos = useSelector((state: RootState) => state.video.videos);
   const userAvatarHash = useSelector(
     (state: RootState) => state.global.userAvatarHash
+  );
+  const totalVideosPublished = useSelector(
+    (state: RootState) => state.global.totalVideosPublished
+  );
+  const totalNamesPublished = useSelector(
+    (state: RootState) => state.global.totalNamesPublished
+  );
+  const videosPerNamePublished = useSelector(
+    (state: RootState) => state.global.videosPerNamePublished
   );
   const filteredVideos = useSelector(
     (state: RootState) => state.video.filteredVideos
@@ -372,6 +384,35 @@ export const useFetchVideos = () => {
     } catch (error) {}
   }, [videos]);
 
+  const getVideosCount = React.useCallback(
+    async () => {
+      try {
+        let url = `/arbitrary/resources/search?mode=ALL&includemetadata=false&limit=0&service=DOCUMENT&identifier=${QTUBE_VIDEO_BASE}`;
+
+        const response = await fetch(url, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        const responseData = await response.json();
+
+        const totalVideosPublished = responseData.length;
+        const uniqueNames = new Set(responseData.map(video => video.name));
+        const totalNamesPublished = uniqueNames.size;
+        const videosPerNamePublished = (totalVideosPublished / totalNamesPublished).toFixed(2);
+
+        dispatch(setTotalVideosPublished(totalVideosPublished));
+        dispatch(setTotalNamesPublished(totalNamesPublished));
+        dispatch(setVideosPerNamePublished(videosPerNamePublished));
+      } catch (error) {
+        console.log({ error });
+      } finally {
+      }
+    },
+    []
+  );
+
   return {
     getVideos,
     checkAndUpdateVideo,
@@ -380,5 +421,6 @@ export const useFetchVideos = () => {
     getNewVideos,
     checkNewVideos,
     getVideosFiltered,
+    getVideosCount,
   };
 };

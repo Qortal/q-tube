@@ -135,12 +135,21 @@ export const VideoList = ({ mode }: VideoListProps) => {
   const userAvatarHash = useSelector(
     (state: RootState) => state.global.userAvatarHash
   );
+  const totalVideosPublished = useSelector(
+    (state: RootState) => state.global.totalVideosPublished
+  );
+  const totalNamesPublished = useSelector(
+    (state: RootState) => state.global.totalNamesPublished
+  );
+  const videosPerNamePublished = useSelector(
+    (state: RootState) => state.global.videosPerNamePublished
+  );
 
   const { videos: globalVideos } = useSelector(
     (state: RootState) => state.video
   );
   const navigate = useNavigate();
-  const { getVideos, getNewVideos, checkNewVideos, getVideosFiltered } =
+  const { getVideos, getNewVideos, checkNewVideos, getVideosFiltered, getVideosCount } =
     useFetchVideos();
 
   const getVideosHandler = React.useCallback(
@@ -175,11 +184,12 @@ export const VideoList = ({ mode }: VideoListProps) => {
   );
 
   useEffect(() => {
+    getVideosCount();
     if (isFiltering && filterValue !== prevVal?.current) {
       prevVal.current = filterValue;
       getVideosHandler();
     }
-  }, [filterValue, isFiltering, filteredVideos]);
+  }, [filterValue, isFiltering, filteredVideos, getVideosCount]);
 
   const getVideosHandlerMount = React.useCallback(async () => {
     if (firstFetch.current) return;
@@ -295,6 +305,20 @@ export const VideoList = ({ mode }: VideoListProps) => {
   };
 
   return (
+    <>
+      <Box sx={{ width: "100%" }}>
+        <Grid container spacing={2} justifyContent="space-around">
+          <Grid item xs={12} sm={4}>
+            Total Videos Published: {totalVideosPublished}
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            Total Names Publishing: {totalNamesPublished}
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            Average Videos per Name: {videosPerNamePublished}
+          </Grid>
+        </Grid>
+      </Box>
     <Grid container sx={{ width: "100%" }}>
       <FiltersCol item xs={12} md={2} lg={2} xl={2} sm={3}>
         <FiltersContainer>
@@ -766,5 +790,6 @@ export const VideoList = ({ mode }: VideoListProps) => {
         <ListSuperLikeContainer />
       </FiltersCol>
     </Grid>
+    </>
   );
 };

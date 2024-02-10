@@ -1,10 +1,8 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../state/store";
 import {
-  Avatar,
   Box,
   Button,
   FormControl,
@@ -16,69 +14,38 @@ import {
   Select,
   SelectChangeEvent,
   Tab,
-  Tabs,
-  Tooltip,
-  Typography,
   useTheme,
 } from "@mui/material";
 import { useFetchVideos } from "../../hooks/useFetchVideos";
 import LazyLoad from "../../components/common/LazyLoad";
 import {
-  BlockIconContainer,
-  BottomParent,
-  FilterSelect,
-  FiltersCheckbox,
   FiltersCol,
   FiltersContainer,
   FiltersRow,
   FiltersSubContainer,
-  FiltersTitle,
-  IconsBox,
-  NameContainer,
-  VideoCardCol,
   ProductManagerRow,
-  VideoCardContainer,
-  VideoCard,
-  VideoCardName,
-  VideoCardTitle,
-  VideoContainer,
-  VideoUploadDate,
   FiltersRadioButton,
 } from "./VideoList-styles";
-import ResponsiveImage from "../../components/ResponsiveImage";
-import { formatDate, formatTimestampSeconds } from "../../utils/time";
-import { Subtitle, SubtitleContainer } from "./Home-styles";
-import { ExpandMoreSVG } from "../../assets/svgs/ExpandMoreSVG";
+import { SubtitleContainer } from "./Home-styles";
+
 import {
-  addVideos,
-  blockUser,
-  changeFilterType,
   changeSelectedCategoryVideos,
   changeSelectedSubCategoryVideos,
   changefilterName,
   changefilterSearch,
-  clearVideoList,
-  setEditPlaylist,
-  setEditVideo,
 } from "../../state/features/videoSlice";
+import { changeFilterType } from "../../state/features/persistSlice.ts";
 import { categories, subCategories } from "../../constants/Categories.ts";
-import { Playlists } from "../../components/Playlists/Playlists";
-import { PlaylistSVG } from "../../assets/svgs/PlaylistSVG";
-import BlockIcon from "@mui/icons-material/Block";
-import EditIcon from "@mui/icons-material/Edit";
 import { ListSuperLikeContainer } from "../../components/common/ListSuperLikes/ListSuperLikeContainer.tsx";
-import { VideoCardImageContainer } from "./VideoCardImageContainer";
-import { SubscribeButton } from "../../components/common/SubscribeButton.tsx";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import VideoList from "./VideoList.tsx";
 import { allTabValue, subscriptionTabValue } from "../../constants/Misc.ts";
-import { setHomePageSelectedTab } from "../../state/features/settingsSlice.ts";
+import { setHomePageSelectedTab } from "../../state/features/persistSlice.ts";
 
 interface HomeProps {
   mode?: string;
 }
 export const Home = ({ mode }: HomeProps) => {
-  const theme = useTheme();
   const prevVal = useRef("");
   const isFiltering = useSelector(
     (state: RootState) => state.video.isFiltering
@@ -86,33 +53,42 @@ export const Home = ({ mode }: HomeProps) => {
   const filterValue = useSelector(
     (state: RootState) => state.video.filterValue
   );
+  const persistSelector = useSelector((state: RootState) => state.persist);
+  const filterType = useSelector(
+    (state: RootState) => state.persist.filterType
+  );
+  const filterSearch = useSelector(
+    (state: RootState) => state.video.filterSearch
+  );
+  const filterName = useSelector((state: RootState) => state.video.filterName);
+  const selectedCategoryVideos = useSelector(
+    (state: RootState) => state.video.selectedCategoryVideos
+  );
 
-  const settingsState = useSelector((state: RootState) => state.settings);
+  const { videos: globalVideos } = useSelector(
+    (state: RootState) => state.video
+  );
+
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [tabValue, setTabValue] = useState<string>(settingsState.selectedTab);
+  const [tabValue, setTabValue] = useState<string>(persistSelector.selectedTab);
 
   const tabFontSize = "20px";
-  const filterType = useSelector((state: RootState) => state.video.filterType);
 
   const setFilterType = payload => {
     dispatch(changeFilterType(payload));
   };
-  const filterSearch = useSelector(
-    (state: RootState) => state.video.filterSearch
-  );
 
+  useEffect(() => {
+    // Makes displayed videos reload when switching filter type. Removes need to click Search button after changing type
+    getVideosHandler(true);
+  }, [filterType]);
   const setFilterSearch = payload => {
     dispatch(changefilterSearch(payload));
   };
-  const filterName = useSelector((state: RootState) => state.video.filterName);
 
   const setFilterName = payload => {
     dispatch(changefilterName(payload));
   };
-
-  const selectedCategoryVideos = useSelector(
-    (state: RootState) => state.video.selectedCategoryVideos
-  );
 
   const setSelectedCategoryVideos = payload => {
     dispatch(changeSelectedCategoryVideos(payload));
@@ -133,18 +109,7 @@ export const Home = ({ mode }: HomeProps) => {
   const isFilterMode = useRef(false);
   const firstFetch = useRef(false);
   const afterFetch = useRef(false);
-  const isFetchingFiltered = useRef(false);
   const isFetching = useRef(false);
-
-  const countNewVideos = useSelector(
-    (state: RootState) => state.video.countNewVideos
-  );
-
-  const videoSelector = useSelector((state: RootState) => state.video);
-
-  const { videos: globalVideos } = useSelector(
-    (state: RootState) => state.video
-  );
 
   const { getVideos, getNewVideos, checkNewVideos, getVideosFiltered } =
     useFetchVideos();
@@ -357,16 +322,9 @@ export const Home = ({ mode }: HomeProps) => {
               fontSize: "18px",
             }}
           />
-          <FiltersTitle>
-            Categories
-            <ExpandMoreSVG
-              color={theme.palette.text.primary}
-              height={"22"}
-              width={"22"}
-            />
-          </FiltersTitle>
+
           <FiltersSubContainer>
-            <FormControl sx={{ width: "100%" }}>
+            <FormControl sx={{ width: "100%", marginTop: "30px" }}>
               <Box
                 sx={{
                   display: "flex",
@@ -466,14 +424,6 @@ export const Home = ({ mode }: HomeProps) => {
               </Box>
             </FormControl>
           </FiltersSubContainer>
-          <FiltersTitle>
-            Type
-            <ExpandMoreSVG
-              color={theme.palette.text.primary}
-              height={"22"}
-              width={"22"}
-            />
-          </FiltersTitle>
           <FiltersSubContainer>
             <FiltersRow>
               Videos
@@ -551,7 +501,7 @@ export const Home = ({ mode }: HomeProps) => {
                   sx={{ fontSize: tabFontSize }}
                 />
                 <Tab
-                  label="Subsciptions"
+                  label="Subscriptions"
                   value={subscriptionTabValue}
                   sx={{ fontSize: tabFontSize }}
                 />
@@ -564,11 +514,19 @@ export const Home = ({ mode }: HomeProps) => {
                 ></LazyLoad>
               </TabPanel>
               <TabPanel value={subscriptionTabValue} sx={{ width: "100%" }}>
-                <VideoList videos={videos} />
-                <LazyLoad
-                  onLoadMore={getVideosHandler}
-                  isLoading={isLoading}
-                ></LazyLoad>
+                {persistSelector.subscriptionList.length > 0 ? (
+                  <>
+                    <VideoList videos={videos} />
+                    <LazyLoad
+                      onLoadMore={getVideosHandler}
+                      isLoading={isLoading}
+                    ></LazyLoad>
+                  </>
+                ) : (
+                  <div style={{ textAlign: "center" }}>
+                    You have no subscriptions
+                  </div>
+                )}
               </TabPanel>
             </TabContext>
           </Box>

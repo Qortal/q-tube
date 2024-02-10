@@ -3,7 +3,7 @@ import notificationsReducer from "./features/notificationsSlice";
 import authReducer from "./features/authSlice";
 import globalReducer from "./features/globalSlice";
 import videoReducer from "./features/videoSlice";
-import settingsReducer from "./features/settingsSlice";
+import settingsReducer from "./features/persistSlice.ts";
 import {
   persistReducer,
   FLUSH,
@@ -15,15 +15,8 @@ import {
 } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 
-const persistVideoConfig = {
-  key: "video",
-  version: 1,
-  storage,
-  whitelist: ["subscriptionList", "filterType"],
-};
-
 const persistSettingsConfig = {
-  key: "settings",
+  key: "persist",
   version: 1,
   storage,
 };
@@ -32,8 +25,8 @@ const reducer = combineReducers({
   notifications: notificationsReducer,
   auth: authReducer,
   global: globalReducer,
-  video: persistReducer(persistVideoConfig, videoReducer),
-  settings: persistReducer(persistSettingsConfig, settingsReducer),
+  video: videoReducer,
+  persist: persistReducer(persistSettingsConfig, settingsReducer),
 });
 
 export const store = configureStore({

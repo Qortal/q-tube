@@ -2,7 +2,7 @@ import { Button, ButtonProps } from "@mui/material";
 import { MouseEvent, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../state/store.ts";
-import { subscribe, unSubscribe } from "../../state/features/videoSlice.ts";
+import { subscribe, unSubscribe } from "../../state/features/persistSlice.ts";
 
 interface SubscribeButtonProps extends ButtonProps {
   name: string;
@@ -10,13 +10,13 @@ interface SubscribeButtonProps extends ButtonProps {
 
 export const SubscribeButton = ({ name, ...props }: SubscribeButtonProps) => {
   const dispatch = useDispatch();
-  const select = useSelector((state: RootState) => {
-    return state.video;
+  const persistSelector = useSelector((state: RootState) => {
+    return state.persist;
   });
   const [isSubscribed, setIsSubscribed] = useState<boolean>(false);
 
   useEffect(() => {
-    setIsSubscribed(select.subscriptionList.includes(name));
+    setIsSubscribed(persistSelector.subscriptionList.includes(name));
   }, []);
 
   const subscribeToRedux = () => {
@@ -37,7 +37,6 @@ export const SubscribeButton = ({ name, ...props }: SubscribeButtonProps) => {
   const verticalPadding = "3px";
   const horizontalPadding = "8px";
   const buttonStyle = {
-    ...props.sx,
     fontSize: "15px",
     fontWeight: "700",
     paddingTop: verticalPadding,
@@ -45,7 +44,8 @@ export const SubscribeButton = ({ name, ...props }: SubscribeButtonProps) => {
     paddingLeft: horizontalPadding,
     paddingRight: horizontalPadding,
     borderRadius: 28,
-    height: "40px",
+    height: "45px",
+    ...props.sx,
   };
   return (
     <Button

@@ -26,6 +26,7 @@ import {
   VideoElement,
 } from "./VideoPlayer-styles.ts";
 import CSS from "csstype";
+import { setReduxPlaybackRate } from "../../../state/features/persistSlice.ts";
 
 interface VideoPlayerProps {
   src?: string;
@@ -59,6 +60,8 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
   autoPlay,
   style = {},
 }) => {
+  const videoSelector = useSelector((state: RootState) => state.video);
+  const persistSelector = useSelector((state: RootState) => state.persist);
   const dispatch = useDispatch();
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [playing, setPlaying] = useState(false);
@@ -70,14 +73,15 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
   const [canPlay, setCanPlay] = useState(false);
   const [startPlay, setStartPlay] = useState(false);
   const [isMobileView, setIsMobileView] = useState(false);
-  const [playbackRate, setPlaybackRate] = useState(1);
+  const [playbackRate, setPlaybackRate] = useState(
+    persistSelector.playbackRate
+  );
   const [anchorEl, setAnchorEl] = useState(null);
   const [showControlsFullScreen, setShowControlsFullScreen] =
     useState<boolean>(true);
   const videoPlaying = useSelector(
     (state: RootState) => state.global.videoPlaying
   );
-  const settingsState = useSelector((state: RootState) => state.settings);
   const { downloads } = useSelector((state: RootState) => state.global);
 
   const reDownload = useRef<boolean>(false);
@@ -109,8 +113,10 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
   const updatePlaybackRate = (newSpeed: number) => {
     if (videoRef.current) {
       if (newSpeed > maxSpeed || newSpeed < minSpeed) newSpeed = minSpeed;
-      videoRef.current.playbackRate = newSpeed;
+
+      videoRef.current.playbackRate = playbackRate;
       setPlaybackRate(newSpeed);
+      dispatch(setReduxPlaybackRate(newSpeed));
     }
   };
 
@@ -282,6 +288,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
   const handleCanPlay = () => {
     setIsLoading(false);
     setCanPlay(true);
+    updatePlaybackRate(playbackRate);
   };
 
   const getSrc = React.useCallback(async () => {
@@ -767,18 +774,16 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
         onCanPlay={handleCanPlay}
         onMouseEnter={e => {
           setShowControlsFullScreen(true);
-          console.log("entering video, fullscreen is: ", isFullscreen);
         }}
         onMouseLeave={e => {
           setShowControlsFullScreen(false);
-          console.log("leaving video, fullscreen is: ", isFullscreen);
         }}
         preload="metadata"
         style={
           startPlay
             ? {
                 ...customStyle,
-                objectFit: settingsState.stretchVideoSetting,
+                objectFit: persistSelector.stretchVideoSetting,
                 height: "calc(100% - 80px)",
               }
             : { ...customStyle, height: "100%" }

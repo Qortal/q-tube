@@ -64,7 +64,7 @@ export const VideoList = ({ videos }: VideoListProps) => {
 
   return (
     <VideoCardContainer>
-      {videos.map((video: any, index: number) => {
+      {videos.map((video: any) => {
         const fullId = video ? `${video.id}-${video.user}` : undefined;
         const existingVideo = hashMapVideos[fullId];
         let hasHash = false;
@@ -269,9 +269,11 @@ export const VideoList = ({ videos }: VideoListProps) => {
                   </VideoCardName>
                 </NameContainer>
                 {videoObj?.created && (
-                  <VideoUploadDate>
-                    {formatDate(videoObj.created)}
-                  </VideoUploadDate>
+                  <Box sx={{ flexDirection: "row", width: "100%" }}>
+                    <VideoUploadDate sx={{ display: "inline" }}>
+                      {formatDate(videoObj.created)}
+                    </VideoUploadDate>
+                  </Box>
                 )}
               </BottomParent>
             </VideoCard>

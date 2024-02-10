@@ -196,7 +196,7 @@ export const NameContainer = styled(Box)(({ theme }) => ({
   justifyContent: "flex-start",
   alignItems: "center",
   gap: "10px",
-  marginBottom: "10px",
+  marginBottom: "2px",
 }));
 
 export const MyStoresCard = styled(Box)(({ theme }) => ({

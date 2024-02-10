@@ -8,14 +8,12 @@ interface GlobalState {
   countNewVideos: number;
   isFiltering: boolean;
   filterValue: string;
-  filterType: string;
   filterSearch: string;
   filterName: string;
   selectedCategoryVideos: any;
   selectedSubCategoryVideos: any;
   editVideoProperties: any;
   editPlaylistProperties: any;
-  subscriptionList: string[];
 }
 
 const initialState: GlobalState = {
@@ -26,14 +24,12 @@ const initialState: GlobalState = {
   countNewVideos: 0,
   isFiltering: false,
   filterValue: "",
-  filterType: "videos",
   filterSearch: "",
   filterName: "",
   selectedCategoryVideos: null,
   selectedSubCategoryVideos: null,
   editVideoProperties: null,
   editPlaylistProperties: null,
-  subscriptionList: [],
 };
 
 export interface Video {
@@ -62,9 +58,7 @@ export const videoSlice = createSlice({
     setEditPlaylist: (state, action) => {
       state.editPlaylistProperties = action.payload;
     },
-    changeFilterType: (state, action) => {
-      state.filterType = action.payload;
-    },
+
     changefilterSearch: (state, action) => {
       state.filterSearch = action.payload;
     },
@@ -174,17 +168,6 @@ export const videoSlice = createSlice({
 
       state.videos = state.videos.filter(item => item.user !== username);
     },
-    subscribe: (state, action: PayloadAction<string>) => {
-      const currentSubscriptions = state.subscriptionList;
-      if (!currentSubscriptions.includes(action.payload)) {
-        state.subscriptionList = [...currentSubscriptions, action.payload];
-      }
-    },
-    unSubscribe: (state, action) => {
-      state.subscriptionList = state.subscriptionList.filter(
-        item => item !== action.payload
-      );
-    },
   },
 });
 
@@ -205,7 +188,6 @@ export const {
   setIsFiltering,
   setFilterValue,
   clearVideoList,
-  changeFilterType,
   changefilterSearch,
   changefilterName,
   changeSelectedCategoryVideos,
@@ -214,8 +196,6 @@ export const {
   setEditVideo,
   setEditPlaylist,
   addtoHashMapSuperlikes,
-  subscribe,
-  unSubscribe,
 } = videoSlice.actions;
 
 export default videoSlice.reducer;

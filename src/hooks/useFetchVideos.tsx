@@ -37,7 +37,7 @@ export const useFetchVideos = () => {
   );
 
   const subscriptions = useSelector(
-    (state: RootState) => state.video.subscriptionList
+    (state: RootState) => state.persist.subscriptionList
   );
 
   const checkAndUpdateVideo = React.useCallback(

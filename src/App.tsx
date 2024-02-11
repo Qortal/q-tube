@@ -12,28 +12,36 @@ import { VideoContent } from "./pages/VideoContent/VideoContent";
 import DownloadWrapper from "./wrappers/DownloadWrapper";
 import { IndividualProfile } from "./pages/IndividualProfile/IndividualProfile";
 import { PlaylistContent } from "./pages/PlaylistContent/PlaylistContent";
+import { PersistGate } from "redux-persist/integration/react";
+import { persistStore } from "redux-persist";
 
 function App() {
   // const themeColor = window._qdnTheme
 
   const [theme, setTheme] = useState("dark");
+  let persistor = persistStore(store);
 
   return (
     <Provider store={store}>
-      <ThemeProvider theme={theme === "light" ? lightTheme : darkTheme}>
-        <Notification />
-        <DownloadWrapper>
-        <GlobalWrapper setTheme={(val: string) => setTheme(val)}>
-          <CssBaseline />
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/video/:name/:id" element={<VideoContent />} />
-            <Route path="/playlist/:name/:id" element={<PlaylistContent />} />
-            <Route path="/channel/:name" element={<IndividualProfile />} />
-          </Routes>
-        </GlobalWrapper>
-        </DownloadWrapper>
-      </ThemeProvider>
+      <PersistGate loading={null} persistor={persistor}>
+        <ThemeProvider theme={theme === "light" ? lightTheme : darkTheme}>
+          <Notification />
+          <DownloadWrapper>
+            <GlobalWrapper setTheme={(val: string) => setTheme(val)}>
+              <CssBaseline />
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/video/:name/:id" element={<VideoContent />} />
+                <Route
+                  path="/playlist/:name/:id"
+                  element={<PlaylistContent />}
+                />
+                <Route path="/channel/:name" element={<IndividualProfile />} />
+              </Routes>
+            </GlobalWrapper>
+          </DownloadWrapper>
+        </ThemeProvider>
+      </PersistGate>
     </Provider>
   );
 }

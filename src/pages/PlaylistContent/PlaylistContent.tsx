@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { setIsLoadingGlobal } from "../../state/features/globalSlice";
 import { Avatar, Box, Typography, useTheme } from "@mui/material";
-import { VideoPlayer } from "../../components/common/VideoPlayer";
+import { VideoPlayer } from "../../components/common/VideoPlayer/VideoPlayer.tsx";
 import { RootState } from "../../state/store";
 import { addToHashMap } from "../../state/features/videoSlice";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
@@ -440,6 +440,7 @@ export const PlaylistContent = () => {
                   nextVideo={nextVideo}
                   onEnd={onEndVideo}
                   autoPlay={doAutoPlay}
+                  customStyle={{ aspectRatio: "16/9" }}
                 />
               )}
               {playlistData && (

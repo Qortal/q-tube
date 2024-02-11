@@ -13,6 +13,7 @@
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
     "@mui/icons-material": "^5.11.11",
+    "@mui/lab": "^5.0.0-alpha.163",
     "@mui/material": "^5.11.13",
     "@reduxjs/toolkit": "^1.9.3",
     "compressorjs": "^1.2.1",
@@ -29,6 +30,7 @@
     "react-rnd": "^10.4.1",
     "react-router-dom": "^6.9.0",
     "react-toastify": "^9.1.2",
+    "redux-persist": "^6.0.0",
     "short-unique-id": "^4.4.4",
     "ts-key-enum": "^2.0.12"
   },

@@ -12,44 +12,21 @@ import {
   VolumeOff,
 } from "@mui/icons-material";
 import { styled } from "@mui/system";
-import { MyContext } from "../../wrappers/DownloadWrapper";
+import { MyContext } from "../../../wrappers/DownloadWrapper.tsx";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../state/store";
+import { RootState } from "../../../state/store.ts";
 import { Refresh } from "@mui/icons-material";
 
 import { Menu, MenuItem } from "@mui/material";
 import { MoreVert as MoreIcon } from "@mui/icons-material";
-import { setVideoPlaying } from "../../state/features/globalSlice";
-const VideoContainer = styled(Box)`
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-  margin: 0px;
-  padding: 0px;
-  max-height: 70vh;
-`;
-
-const VideoElement = styled("video")`
-  width: 100%;
-  height: auto;
-  background: rgb(33, 33, 33);
-  max-height: 70vh;
-`;
-
-const ControlsContainer = styled(Box)`
-  position: absolute;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background-color: rgba(0, 0, 0, 0.6);
-`;
+import { setVideoPlaying } from "../../../state/features/globalSlice.ts";
+import {
+  ControlsContainer,
+  VideoContainer,
+  VideoElement,
+} from "./VideoPlayer-styles.ts";
+import CSS from "csstype";
+import { setReduxPlaybackRate } from "../../../state/features/persistSlice.ts";
 
 interface VideoPlayerProps {
   src?: string;
@@ -65,6 +42,7 @@ interface VideoPlayerProps {
   nextVideo?: any;
   onEnd?: () => void;
   autoPlay?: boolean;
+  style?: CSS.Properties;
 }
 
 export const VideoPlayer: React.FC<VideoPlayerProps> = ({
@@ -80,7 +58,10 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
   nextVideo,
   onEnd,
   autoPlay,
+  style = {},
 }) => {
+  const videoSelector = useSelector((state: RootState) => state.video);
+  const persistSelector = useSelector((state: RootState) => state.persist);
   const dispatch = useDispatch();
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [playing, setPlaying] = useState(false);
@@ -92,18 +73,24 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
   const [canPlay, setCanPlay] = useState(false);
   const [startPlay, setStartPlay] = useState(false);
   const [isMobileView, setIsMobileView] = useState(false);
-  const [playbackRate, setPlaybackRate] = useState(1);
+  const [playbackRate, setPlaybackRate] = useState(
+    persistSelector.playbackRate
+  );
   const [anchorEl, setAnchorEl] = useState(null);
+  const [showControlsFullScreen, setShowControlsFullScreen] =
+    useState<boolean>(true);
   const videoPlaying = useSelector(
     (state: RootState) => state.global.videoPlaying
   );
+  const { downloads } = useSelector((state: RootState) => state.global);
+
   const reDownload = useRef<boolean>(false);
   const reDownloadNextVid = useRef<boolean>(false);
 
   const isFetchingProperties = useRef<boolean>(false);
 
   const status = useRef<null | string>(null);
-  const { downloads } = useSelector((state: RootState) => state.global);
+
   const download = useMemo(() => {
     if (!downloads || !identifier) return {};
     const findDownload = downloads[identifier];
@@ -126,8 +113,10 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
   const updatePlaybackRate = (newSpeed: number) => {
     if (videoRef.current) {
       if (newSpeed > maxSpeed || newSpeed < minSpeed) newSpeed = minSpeed;
-      videoRef.current.playbackRate = newSpeed;
+
+      videoRef.current.playbackRate = playbackRate;
       setPlaybackRate(newSpeed);
+      dispatch(setReduxPlaybackRate(newSpeed));
     }
   };
 
@@ -299,6 +288,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
   const handleCanPlay = () => {
     setIsLoading(false);
     setCanPlay(true);
+    updatePlaybackRate(playbackRate);
   };
 
   const getSrc = React.useCallback(async () => {
@@ -678,6 +668,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
       onKeyDown={keyboardShortcutsDown}
       style={{
         padding: from === "create" ? "8px" : 0,
+        ...customStyle,
       }}
     >
       {isLoading && (
@@ -781,28 +772,29 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
         onEnded={handleEnded}
         // onLoadedMetadata={handleLoadedMetadata}
         onCanPlay={handleCanPlay}
+        onMouseEnter={e => {
+          setShowControlsFullScreen(true);
+        }}
+        onMouseLeave={e => {
+          setShowControlsFullScreen(false);
+        }}
         preload="metadata"
         style={
           startPlay
             ? {
                 ...customStyle,
-                objectFit: "fill",
+                objectFit: persistSelector.stretchVideoSetting,
+                height: "calc(100% - 80px)",
               }
-            : { ...customStyle }
+            : { ...customStyle, height: "100%" }
         }
       />
 
       <ControlsContainer
-        style={
-          startPlay
-            ? {
-                bottom: from === "create" ? "15px" : 0,
-                padding: "8px",
-              }
-            : { bottom: from === "create" ? "15px" : 0, padding: "0px" }
-        }
+        style={{ bottom: from === "create" ? "15px" : 0, padding: "0px" }}
+        display={showControlsFullScreen ? "flex" : "none"}
       >
-        {isMobileView && canPlay ? (
+        {isMobileView && canPlay && showControlsFullScreen ? (
           <>
             <IconButton
               sx={{

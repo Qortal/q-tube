@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { setIsLoadingGlobal } from "../../state/features/globalSlice";
 import { Avatar, Box, Typography, useTheme } from "@mui/material";
-import { VideoPlayer } from "../../components/common/VideoPlayer";
+import { VideoPlayer } from "../../components/common/VideoPlayer/VideoPlayer.tsx";
 import { RootState } from "../../state/store";
 import { addToHashMap } from "../../state/features/videoSlice";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
@@ -52,7 +52,10 @@ import {
   QTUBE_VIDEO_BASE,
   SUPER_LIKE_BASE,
 } from "../../constants/Identifiers.ts";
-import { minPriceSuperlike } from "../../constants/Misc.ts";
+import {
+  minPriceSuperlike,
+  titleFormatterOnSave,
+} from "../../constants/Misc.ts";
 import { SubscribeButton } from "../../components/common/SubscribeButton.tsx";
 
 export function isTimestampWithinRange(resTimestamp, resCreated) {
@@ -186,12 +189,12 @@ export const VideoContent = () => {
         }
       }
 
-      return videoData.title + ext;
+      return (videoData.title + ext).replace(titleFormatterOnSave, "");
     }
 
     // otherwise use QDN filename if applicable
     if (videoData?.filename) {
-      return videoData.filename;
+      return videoData.filename.replace(titleFormatterOnSave, "");
     }
 
     // TODO: this was the previous value, leaving here as the
@@ -360,6 +363,9 @@ export const VideoContent = () => {
     if (!nameAddress || !id) return;
     getComments(id, nameAddress);
   }, [getComments, id, nameAddress]);
+  const subList = useSelector(
+    (state: RootState) => state.video.subscriptionList
+  );
 
   return (
     <Box
@@ -374,7 +380,6 @@ export const VideoContent = () => {
         sx={{
           marginBottom: "30px",
           width: "70vw",
-          height: "70vw",
         }}
       >
         {videoReference && (
@@ -385,15 +390,15 @@ export const VideoContent = () => {
             user={name}
             jsonId={id}
             poster={videoCover || ""}
+            customStyle={{ aspectRatio: "16/9" }}
           />
         )}
-
-        <Spacer height="15px" />
         <Box
           sx={{
             width: "100%",
             display: "grid",
             gridTemplateColumns: "1fr 1fr",
+            marginTop: "15px",
           }}
         >
           <Box>

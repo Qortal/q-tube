@@ -712,6 +712,17 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
                   Drag and drop a video files here or click to select files
                 </Typography>
               </Box>
+              <Box>
+                <Typography sx={{fontSize: "14px"}}>
+                  Supported File Containers: MP4, Ogg, WebM, WAV
+                </Typography>
+                <Typography sx={{fontSize: "14px"}}>
+                  Audio Codecs: FLAC, MP3, Opus, PCM (8/16/32-bit, μ-law), Vorbis
+                </Typography>
+                <Typography sx={{fontSize: "14px"}}>
+                  Video Codecs: AV1, VP8, VP9
+                </Typography>
+              </Box>
 
               <Box
                 sx={{

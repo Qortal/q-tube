@@ -364,7 +364,7 @@ export const VideoContent = () => {
     getComments(id, nameAddress);
   }, [getComments, id, nameAddress]);
   const subList = useSelector(
-    (state: RootState) => state.video.subscriptionList
+    (state: RootState) => state.persist.subscriptionList
   );
 
   return (

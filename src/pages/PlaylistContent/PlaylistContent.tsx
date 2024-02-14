@@ -497,7 +497,7 @@ export const PlaylistContent = () => {
                     >
                       {name}
                       <SubscribeButton
-                        name={name}
+                        subscriberName={name}
                         sx={{ marginLeft: "20px" }}
                       />
                     </AuthorTextComment>

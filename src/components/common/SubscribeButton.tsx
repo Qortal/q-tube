@@ -2,29 +2,57 @@ import { Button, ButtonProps } from "@mui/material";
 import { MouseEvent, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../state/store.ts";
-import { subscribe, unSubscribe } from "../../state/features/persistSlice.ts";
+import {
+  resetSubscriptions,
+  subscribe,
+  unSubscribe,
+} from "../../state/features/persistSlice.ts";
+import { setFilteredSubscriptions } from "../../state/features/videoSlice.ts";
 
 interface SubscribeButtonProps extends ButtonProps {
-  name: string;
+  subscriberName: string;
 }
 
-export const SubscribeButton = ({ name, ...props }: SubscribeButtonProps) => {
+export const SubscribeButton = ({
+  subscriberName,
+  ...props
+}: SubscribeButtonProps) => {
   const dispatch = useDispatch();
-  const persistSelector = useSelector((state: RootState) => {
-    return state.persist;
+  const filteredSubscriptionList = useSelector((state: RootState) => {
+    return state.video.filteredSubscriptionList;
   });
+  const userName = useSelector((state: RootState) => state.auth.user?.name);
   const [isSubscribed, setIsSubscribed] = useState<boolean>(false);
 
   useEffect(() => {
-    setIsSubscribed(persistSelector.subscriptionList.includes(name));
+    const isSubscribedToName =
+      filteredSubscriptionList.find(item => {
+        return item.subscriberName === subscriberName;
+      }) !== undefined;
+
+    setIsSubscribed(isSubscribedToName);
   }, []);
 
+  const subscriptionData = {
+    userName: userName,
+    subscriberName: subscriberName,
+  };
   const subscribeToRedux = () => {
-    dispatch(subscribe(name));
+    dispatch(subscribe(subscriptionData));
+    dispatch(
+      setFilteredSubscriptions([...filteredSubscriptionList, subscriptionData])
+    );
     setIsSubscribed(true);
   };
   const unSubscribeFromRedux = () => {
-    dispatch(unSubscribe(name));
+    dispatch(unSubscribe(subscriptionData));
+    dispatch(
+      setFilteredSubscriptions(
+        filteredSubscriptionList.filter(
+          item => item.subscriberName !== subscriptionData.subscriberName
+        )
+      )
+    );
     setIsSubscribed(false);
   };
 

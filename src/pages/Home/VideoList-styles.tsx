@@ -237,6 +237,16 @@ export const FiltersCol = styled(Grid)(({ theme }) => ({
   borderRight: `1px solid ${theme.palette.background.paper}`,
 }));
 
+export const StatsCol = styled(Grid)(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  width: "100%",
+  padding: "20px 15px",
+  backgroundColor: theme.palette.background.default,
+  borderTop: `1px solid ${theme.palette.background.paper}`,
+  borderRight: `1px solid ${theme.palette.background.paper}`,
+}));
+
 export const FiltersContainer = styled(Box)(({ theme }) => ({
   display: "flex",
   flexDirection: "column",

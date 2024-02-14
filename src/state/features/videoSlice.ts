@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { SubscriptionObject } from "./persistSlice.ts";
 
 interface GlobalState {
   videos: Video[];
@@ -14,6 +15,7 @@ interface GlobalState {
   selectedSubCategoryVideos: any;
   editVideoProperties: any;
   editPlaylistProperties: any;
+  filteredSubscriptionList: SubscriptionObject[];
 }
 
 const initialState: GlobalState = {
@@ -30,6 +32,7 @@ const initialState: GlobalState = {
   selectedSubCategoryVideos: null,
   editVideoProperties: null,
   editPlaylistProperties: null,
+  filteredSubscriptionList: [],
 };
 
 export interface Video {
@@ -168,6 +171,13 @@ export const videoSlice = createSlice({
 
       state.videos = state.videos.filter(item => item.user !== username);
     },
+
+    setFilteredSubscriptions: (
+      state,
+      action: PayloadAction<SubscriptionObject[]>
+    ) => {
+      state.filteredSubscriptionList = action.payload;
+    },
   },
 });
 
@@ -196,6 +206,7 @@ export const {
   setEditVideo,
   setEditPlaylist,
   addtoHashMapSuperlikes,
+  setFilteredSubscriptions,
 } = videoSlice.actions;
 
 export default videoSlice.reducer;

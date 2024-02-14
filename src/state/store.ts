@@ -3,7 +3,7 @@ import notificationsReducer from "./features/notificationsSlice";
 import authReducer from "./features/authSlice";
 import globalReducer from "./features/globalSlice";
 import videoReducer from "./features/videoSlice";
-import settingsReducer from "./features/persistSlice.ts";
+import persistDataReducer from "./features/persistSlice.ts";
 import {
   persistReducer,
   FLUSH,
@@ -26,7 +26,7 @@ const reducer = combineReducers({
   auth: authReducer,
   global: globalReducer,
   video: videoReducer,
-  persist: persistReducer(persistSettingsConfig, settingsReducer),
+  persist: persistReducer(persistSettingsConfig, persistDataReducer),
 });
 
 export const store = configureStore({

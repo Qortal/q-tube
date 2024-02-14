@@ -143,46 +143,53 @@ const GlobalWrapper: React.FC<Props> = ({ children, setTheme }) => {
 
   const getSuperlikes = useCallback(async () => {
     try {
-      const url = `/arbitrary/resources/search?mode=ALL&service=BLOG_COMMENT&query=${SUPER_LIKE_BASE}&limit=20&includemetadata=true&reverse=true&excludeblocked=true`;
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      const responseData = await response.json();
+      let totalCount = 0
+      let validCount = 0
       let comments: any[] = [];
-      for (const comment of responseData) {
-        if (
-          comment.identifier &&
-          comment.name &&
-          comment?.metadata?.description
-        ) {
-          try {
-            const result = extractSigValue(comment?.metadata?.description);
-            if (!result) continue;
-            const res = await getPaymentInfo(result);
+      while (validCount < 20 && totalCount < 100) {
+        const url = `/arbitrary/resources/search?mode=ALL&service=BLOG_COMMENT&query=${SUPER_LIKE_BASE}&limit=1&offset=${totalCount}&includemetadata=true&reverse=true&excludeblocked=true`;
+        const response = await fetch(url, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        const responseData = await response.json();
+        if (responseData && responseData.length > 0) {
+          for (const comment of responseData) {
             if (
-              +res?.amount >= minPriceSuperlike &&
-              isTimestampWithinRange(res?.timestamp, comment.created)
+              comment.identifier &&
+              comment.name &&
+              comment?.metadata?.description
             ) {
-              addSuperlikeRawDataGetToList({
-                name: comment.name,
-                identifier: comment.identifier,
-                content: comment,
-              });
-
-              comments = [
-                ...comments,
-                {
-                  ...comment,
-                  message: "",
-                  amount: res.amount,
-                },
-              ];
+              try {
+                const result = extractSigValue(comment?.metadata?.description);
+                if (!result) continue;
+                const res = await getPaymentInfo(result);
+                if (
+                  +res?.amount >= minPriceSuperlike &&
+                  isTimestampWithinRange(res?.timestamp, comment.created)
+                ) {
+                  addSuperlikeRawDataGetToList({
+                    name: comment.name,
+                    identifier: comment.identifier,
+                    content: comment,
+                  });
+                  comments = [
+                    ...comments,
+                  {
+                    ...comment,
+                    message: "",
+                    amount: res.amount,
+                  },
+                ];
+                  validCount++;
+                }
+              } catch (error) {}
             }
-          } catch (error) {}
+          }
         }
+        totalCount++;
       }
       dispatch(setSuperlikesAll(comments));
     } catch (error) {

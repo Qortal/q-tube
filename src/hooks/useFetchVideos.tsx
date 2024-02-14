@@ -25,6 +25,7 @@ import {
   QTUBE_VIDEO_BASE,
 } from "../constants/Identifiers.ts";
 import { allTabValue, subscriptionTabValue } from "../constants/Misc.ts";
+import { persistReducer } from "redux-persist";
 
 export const useFetchVideos = () => {
   const dispatch = useDispatch();
@@ -48,9 +49,7 @@ export const useFetchVideos = () => {
     (state: RootState) => state.video.filteredVideos
   );
 
-  const subscriptions = useSelector(
-    (state: RootState) => state.persist.subscriptionList
-  );
+  const videoReducer = useSelector((state: RootState) => state.video);
 
   const checkAndUpdateVideo = React.useCallback(
     (video: Video) => {
@@ -189,22 +188,38 @@ export const useFetchVideos = () => {
     }
   }, [videos, hashMapVideos]);
 
+  type FilterType = {
+    name?: string;
+    category?: string;
+    subcategory?: string;
+    keywords?: string;
+    type?: string;
+  };
+
+  const emptyFilters = {
+    name: "",
+    category: "",
+    subcategory: "",
+    keywords: "",
+    type: "",
+  };
   const getVideos = React.useCallback(
     async (
-      filters = {},
+      filters = emptyFilters,
       reset?: boolean,
       resetFilters?: boolean,
       limit?: number,
       listType = allTabValue
     ) => {
+      emptyFilters.type = filters.type;
       try {
         const {
           name = "",
           category = "",
           subcategory = "",
           keywords = "",
-          type = "",
-        }: any = resetFilters ? {} : filters;
+          type = filters.type,
+        }: FilterType = resetFilters ? emptyFilters : filters;
         let offset = videos.length;
         if (reset) {
           offset = 0;
@@ -217,8 +232,9 @@ export const useFetchVideos = () => {
           defaultUrl = defaultUrl + `&name=${name}`;
         }
         if (listType === subscriptionTabValue) {
-          subscriptions.map(sub => {
-            defaultUrl += `&name=${sub}`;
+          const filteredSubscribeList = videoReducer.filteredSubscriptionList;
+          filteredSubscribeList.map(sub => {
+            defaultUrl += `&name=${sub.subscriberName}`;
           });
         }
 

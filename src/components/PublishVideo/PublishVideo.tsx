@@ -3,6 +3,7 @@ import Compressor from "compressorjs";
 import {
   AddCoverImageButton,
   AddLogoIcon,
+  CodecTypography,
   CoverImagePreview,
   CrowdfundActionButton,
   CrowdfundActionButtonRow,
@@ -713,15 +714,23 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
                 </Typography>
               </Box>
               <Box>
-                <Typography sx={{fontSize: "14px"}}>
-                  Supported File Containers: MP4, Ogg, WebM, WAV
-                </Typography>
-                <Typography sx={{fontSize: "14px"}}>
-                  Audio Codecs: FLAC, MP3, Opus, PCM (8/16/32-bit, μ-law), Vorbis
-                </Typography>
-                <Typography sx={{fontSize: "14px"}}>
-                  Video Codecs: AV1, VP8, VP9
-                </Typography>
+                <CodecTypography>
+                  Supported File Containers:{" "}
+                  <span style={{ fontWeight: "bold" }}>MP4</span>, Ogg, WebM,
+                  WAV
+                </CodecTypography>
+                <CodecTypography>
+                  Audio Codecs: <span style={{ fontWeight: "bold" }}>Opus</span>
+                  , MP3, FLAC, PCM (8/16/32-bit, μ-law), Vorbis
+                </CodecTypography>
+                <CodecTypography>
+                  Video Codecs: <span style={{ fontWeight: "bold" }}>AV1</span>,
+                  VP8, VP9, H.264
+                </CodecTypography>
+                <CodecTypography sx={{ fontWeight: "800", color: "red" }}>
+                  Using unsupported Codecs may result in video or audio not
+                  working properly
+                </CodecTypography>
               </Box>
 
               <Box

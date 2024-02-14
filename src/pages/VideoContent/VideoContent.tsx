@@ -437,7 +437,10 @@ export const VideoContent = () => {
                   }}
                 >
                   {name}
-                  <SubscribeButton name={name} sx={{ marginLeft: "20px" }} />
+                  <SubscribeButton
+                    subscriberName={name}
+                    sx={{ marginLeft: "20px" }}
+                  />
                 </AuthorTextComment>
               </StyledCardColComment>
             </StyledCardHeaderComment>

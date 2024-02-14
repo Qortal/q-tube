@@ -8,6 +8,9 @@ interface GlobalState {
   publishNames: string[] | null
   videoPlaying: any | null
   superlikelistAll: any[]
+  totalVideosPublished: number
+  totalNamesPublished: number
+  videosPerNamePublished: number
 }
 const initialState: GlobalState = {
   isLoadingGlobal: false,
@@ -15,7 +18,10 @@ const initialState: GlobalState = {
   userAvatarHash: {},
   publishNames: null,
   videoPlaying: null,
-  superlikelistAll: []
+  superlikelistAll: [],
+  totalVideosPublished: null,
+  totalNamesPublished: null,
+  videosPerNamePublished: null
 }
 
 export const globalSlice = createSlice({
@@ -52,6 +58,15 @@ export const globalSlice = createSlice({
     setSuperlikesAll: (state, action) => {
       state.superlikelistAll = action.payload
     },
+    setTotalVideosPublished: (state, action) => {
+      state.totalVideosPublished = action.payload
+    },
+    setTotalNamesPublished: (state, action) => {
+      state.totalNamesPublished = action.payload
+    },
+    setVideosPerNamePublished: (state, action) => {
+      state.videosPerNamePublished = action.payload
+    },
   }
 })
 
@@ -62,7 +77,10 @@ export const {
   setUserAvatarHash,
   addPublishNames,
   setVideoPlaying,
-  setSuperlikesAll
+  setSuperlikesAll,
+  setTotalVideosPublished,
+  setTotalNamesPublished,
+  setVideosPerNamePublished
 } = globalSlice.actions
 
 export default globalSlice.reducer

@@ -64,6 +64,15 @@ export const Home = ({ mode }: HomeProps) => {
   const selectedCategoryVideos = useSelector(
     (state: RootState) => state.video.selectedCategoryVideos
   );
+  const totalVideosPublished = useSelector(
+    (state: RootState) => state.global.totalVideosPublished
+  );
+  const totalNamesPublished = useSelector(
+    (state: RootState) => state.global.totalNamesPublished
+  );
+  const videosPerNamePublished = useSelector(
+    (state: RootState) => state.global.videosPerNamePublished
+  );
 
   const { videos: globalVideos } = useSelector(
     (state: RootState) => state.video
@@ -111,7 +120,7 @@ export const Home = ({ mode }: HomeProps) => {
   const afterFetch = useRef(false);
   const isFetching = useRef(false);
 
-  const { getVideos, getNewVideos, checkNewVideos, getVideosFiltered } =
+  const { getVideos, getNewVideos, checkNewVideos, getVideosFiltered, getVideosCount } =
     useFetchVideos();
 
   const getVideosHandler = React.useCallback(
@@ -149,11 +158,12 @@ export const Home = ({ mode }: HomeProps) => {
   );
 
   useEffect(() => {
+    getVideosCount();
     if (isFiltering && filterValue !== prevVal?.current) {
       prevVal.current = filterValue;
       getVideosHandler();
     }
-  }, [filterValue, isFiltering, filteredVideos]);
+  }, [filterValue, isFiltering, filteredVideos, getVideosCount]);
 
   const getVideosHandlerMount = React.useCallback(async () => {
     if (firstFetch.current) return;
@@ -262,6 +272,20 @@ export const Home = ({ mode }: HomeProps) => {
   };
 
   return (
+    <>
+      <Box sx={{ width: "100%" }}>
+        <Grid container spacing={2} justifyContent="space-around">
+          <Grid item xs={12} sm={4}>
+            Total Videos Published: {totalVideosPublished}
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            Total Names Publishing: {totalNamesPublished}
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            Average Videos per Name: {videosPerNamePublished}
+          </Grid>
+        </Grid>
+      </Box>
     <Grid container sx={{ width: "100%" }}>
       <FiltersCol item xs={12} md={2} lg={2} xl={2} sm={3}>
         <FiltersContainer>
@@ -536,5 +560,6 @@ export const Home = ({ mode }: HomeProps) => {
         <ListSuperLikeContainer />
       </FiltersCol>
     </Grid>
+    </>
   );
 };

@@ -241,7 +241,7 @@ export const StatsCol = styled(Grid)(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
   width: "100%",
-  padding: "20px 15px",
+  padding: "20px 0px",
   backgroundColor: theme.palette.background.default,
   borderTop: `1px solid ${theme.palette.background.paper}`,
   borderRight: `1px solid ${theme.palette.background.paper}`,

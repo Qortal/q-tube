@@ -300,19 +300,19 @@ export const Home = ({ mode }: HomeProps) => {
               sx={{ display: persistReducer.showStats ? "block" : "none" }}
             >
               <div>
-                # of Videos:{" "}
+                Videos:{" "}
                 <span style={{ fontWeight: "bold" }}>
                   {totalVideosPublished}
                 </span>
               </div>
               <div>
-                Names Publishing:{" "}
+                Publishers:{" "}
                 <span style={{ fontWeight: "bold" }}>
                   {totalNamesPublished}
                 </span>
               </div>
               <div>
-                Videos per Name:{" "}
+                Average:{" "}
                 <span style={{ fontWeight: "bold" }}>
                   {videosPerNamePublished}
                 </span>

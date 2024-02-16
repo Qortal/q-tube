@@ -3,11 +3,12 @@ import { MouseEvent, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../state/store.ts";
 import {
-  resetSubscriptions,
   subscribe,
+  SubscriptionObject,
   unSubscribe,
 } from "../../state/features/persistSlice.ts";
 import { setFilteredSubscriptions } from "../../state/features/videoSlice.ts";
+import { subscriptionListFilter } from "../../App.tsx";
 
 interface SubscribeButtonProps extends ButtonProps {
   subscriberName: string;
@@ -18,19 +19,34 @@ export const SubscribeButton = ({
   ...props
 }: SubscribeButtonProps) => {
   const dispatch = useDispatch();
+  const subscriptionList = useSelector((state: RootState) => {
+    return state.persist.subscriptionList;
+  });
+
   const filteredSubscriptionList = useSelector((state: RootState) => {
     return state.video.filteredSubscriptionList;
   });
+
   const userName = useSelector((state: RootState) => state.auth.user?.name);
   const [isSubscribed, setIsSubscribed] = useState<boolean>(false);
 
-  useEffect(() => {
-    const isSubscribedToName =
-      filteredSubscriptionList.find(item => {
+  const isSubscribedToName = (subscriptionList: SubscriptionObject[]) => {
+    return (
+      subscriptionList.find(item => {
         return item.subscriberName === subscriberName;
-      }) !== undefined;
+      }) !== undefined
+    );
+  };
 
-    setIsSubscribed(isSubscribedToName);
+  useEffect(() => {
+    if (!filteredSubscriptionList || filteredSubscriptionList.length === 0) {
+      subscriptionListFilter().then(filteredList => {
+        dispatch(setFilteredSubscriptions(filteredList));
+        setIsSubscribed(isSubscribedToName(filteredList));
+      });
+    } else {
+      setIsSubscribed(isSubscribedToName(filteredSubscriptionList));
+    }
   }, []);
 
   const subscriptionData = {

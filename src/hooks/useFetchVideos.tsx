@@ -414,34 +414,33 @@ export const useFetchVideos = () => {
     } catch (error) {}
   }, [videos]);
 
-  const getVideosCount = React.useCallback(
-    async () => {
-      try {
-        let url = `/arbitrary/resources/search?mode=ALL&includemetadata=false&limit=0&service=DOCUMENT&identifier=${QTUBE_VIDEO_BASE}`;
+  const getVideosCount = React.useCallback(async () => {
+    try {
+      let url = `/arbitrary/resources/search?mode=ALL&includemetadata=false&limit=0&service=DOCUMENT&identifier=${QTUBE_VIDEO_BASE}`;
 
-        const response = await fetch(url, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-        const responseData = await response.json();
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const responseData = await response.json();
 
-        const totalVideosPublished = responseData.length;
-        const uniqueNames = new Set(responseData.map(video => video.name));
-        const totalNamesPublished = uniqueNames.size;
-        const videosPerNamePublished = (totalVideosPublished / totalNamesPublished).toFixed(2);
+      const totalVideosPublished = responseData.length;
+      const uniqueNames = new Set(responseData.map(video => video.name));
+      const totalNamesPublished = uniqueNames.size;
+      const videosPerNamePublished = (
+        totalVideosPublished / totalNamesPublished
+      ).toFixed(0);
 
-        dispatch(setTotalVideosPublished(totalVideosPublished));
-        dispatch(setTotalNamesPublished(totalNamesPublished));
-        dispatch(setVideosPerNamePublished(videosPerNamePublished));
-      } catch (error) {
-        console.log({ error });
-      } finally {
-      }
-    },
-    []
-  );
+      dispatch(setTotalVideosPublished(totalVideosPublished));
+      dispatch(setTotalNamesPublished(totalNamesPublished));
+      dispatch(setVideosPerNamePublished(videosPerNamePublished));
+    } catch (error) {
+      console.log({ error });
+    } finally {
+    }
+  }, []);
 
   return {
     getVideos,

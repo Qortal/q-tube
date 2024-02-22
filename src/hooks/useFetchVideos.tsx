@@ -26,6 +26,7 @@ import {
 } from "../constants/Identifiers.ts";
 import { allTabValue, subscriptionTabValue } from "../constants/Misc.ts";
 import { persistReducer } from "redux-persist";
+import { subscriptionListFilter } from "../App.tsx";
 
 export const useFetchVideos = () => {
   const dispatch = useDispatch();
@@ -231,8 +232,9 @@ export const useFetchVideos = () => {
         if (name) {
           defaultUrl = defaultUrl + `&name=${name}`;
         }
+
         if (listType === subscriptionTabValue) {
-          const filteredSubscribeList = videoReducer.filteredSubscriptionList;
+          const filteredSubscribeList = await subscriptionListFilter(false);
           filteredSubscribeList.map(sub => {
             defaultUrl += `&name=${sub.subscriberName}`;
           });

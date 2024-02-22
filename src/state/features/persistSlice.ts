@@ -1,19 +1,15 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { allTabValue, subscriptionTabValue } from "../../constants/Misc.ts";
+import { SubscriptionData } from "../../components/common/SubscribeButton.tsx";
 
 type StretchVideoType = "contain" | "fill" | "cover" | "none" | "scale-down";
 type SubscriptionListFilterType = "ALL" | "currentNameOnly";
-
-export type SubscriptionObject = {
-  userName: string;
-  subscriberName: string;
-};
 
 interface settingsState {
   selectedTab: string;
   stretchVideoSetting: StretchVideoType;
   filterType: string;
-  subscriptionList: SubscriptionObject[];
+  subscriptionList: SubscriptionData[];
   playbackRate: number;
   subscriptionListFilter: SubscriptionListFilterType;
   showStats: boolean;
@@ -42,18 +38,21 @@ export const persistSlice = createSlice({
     setShowStats: (state, action) => {
       state.showStats = action.payload;
     },
-    subscribe: (state, action: PayloadAction<SubscriptionObject>) => {
+    subscribe: (state, action: PayloadAction<SubscriptionData>) => {
       const currentSubscriptions = state.subscriptionList;
       const notSubscribedToName =
         currentSubscriptions.find(item => {
-          return item.subscriberName === action.payload.subscriberName;
+          return (
+            item.subscriberName === action.payload.subscriberName &&
+            item.userName === action.payload.userName
+          );
         }) === undefined;
       if (notSubscribedToName) {
         state.subscriptionList = [...currentSubscriptions, action.payload];
       }
       console.log("subscribeList after subscribe: ", state.subscriptionList);
     },
-    unSubscribe: (state, action: PayloadAction<SubscriptionObject>) => {
+    unSubscribe: (state, action: PayloadAction<SubscriptionData>) => {
       state.subscriptionList = state.subscriptionList.filter(
         item => item.subscriberName !== action.payload.subscriberName
       );

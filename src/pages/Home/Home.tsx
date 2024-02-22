@@ -137,6 +137,7 @@ export const Home = ({ mode }: HomeProps) => {
       if (!firstFetch.current || !afterFetch.current) return;
       if (isFetching.current) return;
       isFetching.current = true;
+      console.log("in getvideoshandler");
       await getVideos(
         {
           name: filterName,
@@ -170,6 +171,7 @@ export const Home = ({ mode }: HomeProps) => {
     getVideosCount();
     if (isFiltering && filterValue !== prevVal?.current) {
       prevVal.current = filterValue;
+
       getVideosHandler();
     }
   }, [filterValue, isFiltering, filteredVideos, getVideosCount]);
@@ -178,7 +180,6 @@ export const Home = ({ mode }: HomeProps) => {
     if (firstFetch.current) return;
     firstFetch.current = true;
     setIsLoading(true);
-
     await getVideos(
       {
         name: "",
@@ -283,6 +284,7 @@ export const Home = ({ mode }: HomeProps) => {
   };
 
   useEffect(() => {
+    console.log("useeffect 5");
     getVideosHandler(true);
   }, [tabValue]);
 

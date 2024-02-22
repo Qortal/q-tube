@@ -2,11 +2,7 @@ import { Button, ButtonProps } from "@mui/material";
 import { MouseEvent, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../state/store.ts";
-import {
-  subscribe,
-  SubscriptionObject,
-  unSubscribe,
-} from "../../state/features/persistSlice.ts";
+import { subscribe, unSubscribe } from "../../state/features/persistSlice.ts";
 import { setFilteredSubscriptions } from "../../state/features/videoSlice.ts";
 import { subscriptionListFilter } from "../../App.tsx";
 
@@ -14,14 +10,16 @@ interface SubscribeButtonProps extends ButtonProps {
   subscriberName: string;
 }
 
+export type SubscriptionData = {
+  userName: string;
+  subscriberName: string;
+};
+
 export const SubscribeButton = ({
   subscriberName,
   ...props
 }: SubscribeButtonProps) => {
   const dispatch = useDispatch();
-  const subscriptionList = useSelector((state: RootState) => {
-    return state.persist.subscriptionList;
-  });
 
   const filteredSubscriptionList = useSelector((state: RootState) => {
     return state.video.filteredSubscriptionList;
@@ -30,7 +28,7 @@ export const SubscribeButton = ({
   const userName = useSelector((state: RootState) => state.auth.user?.name);
   const [isSubscribed, setIsSubscribed] = useState<boolean>(false);
 
-  const isSubscribedToName = (subscriptionList: SubscriptionObject[]) => {
+  const isSubscribedToName = (subscriptionList: SubscriptionData[]) => {
     return (
       subscriptionList.find(item => {
         return item.subscriberName === subscriberName;
@@ -49,7 +47,7 @@ export const SubscribeButton = ({
     }
   }, []);
 
-  const subscriptionData = {
+  const subscriptionData: SubscriptionData = {
     userName: userName,
     subscriberName: subscriberName,
   };

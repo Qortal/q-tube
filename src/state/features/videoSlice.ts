@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { SubscriptionObject } from "./persistSlice.ts";
+import { SubscriptionData } from "../../components/common/SubscribeButton";
 
 interface GlobalState {
   videos: Video[];
@@ -15,7 +15,7 @@ interface GlobalState {
   selectedSubCategoryVideos: any;
   editVideoProperties: any;
   editPlaylistProperties: any;
-  filteredSubscriptionList: SubscriptionObject[];
+  filteredSubscriptionList: SubscriptionData[];
 }
 
 const initialState: GlobalState = {
@@ -174,7 +174,7 @@ export const videoSlice = createSlice({
 
     setFilteredSubscriptions: (
       state,
-      action: PayloadAction<SubscriptionObject[]>
+      action: PayloadAction<SubscriptionData[]>
     ) => {
       state.filteredSubscriptionList = action.payload;
     },

@@ -15,7 +15,7 @@ import { PlaylistContent } from "./pages/PlaylistContent/PlaylistContent";
 import { PersistGate } from "redux-persist/integration/react";
 import { persistStore } from "redux-persist";
 import { setFilteredSubscriptions } from "./state/features/videoSlice.ts";
-import { SubscriptionObject } from "./state/features/persistSlice.ts";
+import { SubscriptionData } from "./components/common/SubscribeButton.tsx";
 
 export const getUserName = async () => {
   const account = await qortalRequest({
@@ -31,7 +31,7 @@ export const getUserName = async () => {
 };
 
 export const filterVideosByName = (
-  subscriptionList: SubscriptionObject[],
+  subscriptionList: SubscriptionData[],
   userName: string
 ) => {
   return subscriptionList.filter(item => {
@@ -39,7 +39,15 @@ export const filterVideosByName = (
   });
 };
 
-export const subscriptionListFilter = async () => {
+export const subscriptionListFilter = async (reset = true) => {
+  const filteredSubscriptionList =
+    store.getState().video.filteredSubscriptionList;
+  const isFilteredSubscriptionListEmpty = filteredSubscriptionList.length === 0;
+
+  if (!reset && !isFilteredSubscriptionListEmpty) {
+    return filteredSubscriptionList;
+  }
+
   const subscriptionList = store.getState().persist.subscriptionList;
   const filterByUserName =
     store.getState().persist.subscriptionListFilter === "currentNameOnly";
@@ -58,7 +66,7 @@ function App() {
 
   useEffect(() => {
     const subscriptionList = store.getState().persist.subscriptionList;
-    subscriptionListFilter().then(filteredList => {
+    subscriptionListFilter(false).then(filteredList => {
       store.dispatch(setFilteredSubscriptions(filteredList));
     });
   }, []);

@@ -25,7 +25,6 @@ import {
   FiltersSubContainer,
   ProductManagerRow,
   FiltersRadioButton,
-  StatsCol,
 } from "./VideoList-styles";
 import { SubtitleContainer } from "./Home-styles";
 
@@ -45,6 +44,7 @@ import { TabContext, TabList, TabPanel } from "@mui/lab";
 import VideoList from "./VideoList.tsx";
 import { allTabValue, subscriptionTabValue } from "../../constants/Misc.ts";
 import { setHomePageSelectedTab } from "../../state/features/persistSlice.ts";
+import { StatsData } from "../../components/StatsData.tsx";
 
 interface HomeProps {
   mode?: string;
@@ -67,15 +67,6 @@ export const Home = ({ mode }: HomeProps) => {
   const filterName = useSelector((state: RootState) => state.video.filterName);
   const selectedCategoryVideos = useSelector(
     (state: RootState) => state.video.selectedCategoryVideos
-  );
-  const totalVideosPublished = useSelector(
-    (state: RootState) => state.global.totalVideosPublished
-  );
-  const totalNamesPublished = useSelector(
-    (state: RootState) => state.global.totalNamesPublished
-  );
-  const videosPerNamePublished = useSelector(
-    (state: RootState) => state.global.videosPerNamePublished
   );
 
   const { videos: globalVideos, filteredSubscriptionList } = useSelector(
@@ -124,13 +115,8 @@ export const Home = ({ mode }: HomeProps) => {
   const afterFetch = useRef(false);
   const isFetching = useRef(false);
 
-  const {
-    getVideos,
-    getNewVideos,
-    checkNewVideos,
-    getVideosFiltered,
-    getVideosCount,
-  } = useFetchVideos();
+  const { getVideos, getNewVideos, checkNewVideos, getVideosFiltered } =
+    useFetchVideos();
 
   const getVideosHandler = React.useCallback(
     async (reset?: boolean, resetFilters?: boolean) => {
@@ -168,13 +154,12 @@ export const Home = ({ mode }: HomeProps) => {
   );
 
   useEffect(() => {
-    getVideosCount();
     if (isFiltering && filterValue !== prevVal?.current) {
       prevVal.current = filterValue;
 
       getVideosHandler();
     }
-  }, [filterValue, isFiltering, filteredVideos, getVideosCount]);
+  }, [filterValue, isFiltering, filteredVideos]);
 
   const getVideosHandlerMount = React.useCallback(async () => {
     if (firstFetch.current) return;
@@ -298,28 +283,7 @@ export const Home = ({ mode }: HomeProps) => {
       <Grid container sx={{ width: "100%" }}>
         <FiltersCol item xs={12} md={2} lg={2} xl={2} sm={3}>
           <FiltersContainer>
-            <StatsCol
-              sx={{ display: persistReducer.showStats ? "block" : "none" }}
-            >
-              <div>
-                Videos:{" "}
-                <span style={{ fontWeight: "bold" }}>
-                  {totalVideosPublished}
-                </span>
-              </div>
-              <div>
-                Publishers:{" "}
-                <span style={{ fontWeight: "bold" }}>
-                  {totalNamesPublished}
-                </span>
-              </div>
-              <div>
-                Average:{" "}
-                <span style={{ fontWeight: "bold" }}>
-                  {videosPerNamePublished}
-                </span>
-              </div>
-            </StatsCol>
+            <StatsData />
             <Input
               id="standard-adornment-name"
               onChange={e => {

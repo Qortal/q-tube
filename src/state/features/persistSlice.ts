@@ -1,14 +1,19 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { allTabValue, subscriptionTabValue } from "../../constants/Misc.ts";
-import { SubscriptionData } from "../../components/common/SubscribeButton.tsx";
+import { SubscriptionData } from "../../components/common/ContentButtons/SubscribeButton.tsx";
 
-type StretchVideoType = "contain" | "fill" | "cover" | "none" | "scale-down";
-type SubscriptionListFilterType = "ALL" | "currentNameOnly";
-
+export type StretchVideoType =
+  | "contain"
+  | "fill"
+  | "cover"
+  | "none"
+  | "scale-down";
+export type SubscriptionListFilterType = "ALL" | "currentNameOnly";
+export type ContentType = "videos" | "playlists";
+export type VideoListType = "all" | "subscriptions";
 interface settingsState {
-  selectedTab: string;
+  selectedTab: VideoListType;
   stretchVideoSetting: StretchVideoType;
-  filterType: string;
+  filterType: ContentType;
   subscriptionList: SubscriptionData[];
   playbackRate: number;
   subscriptionListFilter: SubscriptionListFilterType;
@@ -16,7 +21,7 @@ interface settingsState {
 }
 
 const initialState: settingsState = {
-  selectedTab: allTabValue,
+  selectedTab: "all",
   stretchVideoSetting: "contain",
   filterType: "videos",
   subscriptionList: [],

@@ -17,26 +17,25 @@ import {
   Tooltip,
 } from "@mui/material";
 import qortImg from "../../../assets/img/qort.png";
-import { MultiplePublish } from "../MultiplePublish/MultiplePublishAll";
+import { MultiplePublish } from "../../Publish/MultiplePublish/MultiplePublishAll.tsx";
 import { useDispatch, useSelector } from "react-redux";
-import { setNotification } from "../../../state/features/notificationsSlice";
+import { setNotification } from "../../../state/features/notificationsSlice.ts";
 import ShortUniqueId from "short-unique-id";
-import { objectToBase64 } from "../../../utils/toBase64";
+import { objectToBase64 } from "../../../utils/toBase64.ts";
 import { minPriceSuperlike } from "../../../constants/Misc.ts";
-import { CommentInput } from "../Comments/Comments-styles";
+import { CommentInput } from "../Comments/Comments-styles.tsx";
 import {
   CrowdfundActionButton,
   CrowdfundActionButtonRow,
   ModalBody,
   NewCrowdfundTitle,
   Spacer,
-} from "../../PublishVideo/PublishVideo-styles.tsx";
-import { utf8ToBase64 } from "../SuperLikesList/CommentEditor";
-import { RootState } from "../../../state/store";
+} from "../../Publish/PublishVideo/PublishVideo-styles.tsx";
+import { utf8ToBase64 } from "../SuperLikesList/CommentEditor.tsx";
+import { RootState } from "../../../state/store.ts";
 import {
   FOR,
   FOR_SUPER_LIKE,
-  QTUBE_VIDEO_BASE,
   SUPER_LIKE_BASE,
 } from "../../../constants/Identifiers.ts";
 import BoundedNumericTextField from "../../../utils/BoundedNumericTextField.tsx";
@@ -158,7 +157,7 @@ export const SuperLike = ({
           for: `${name}_${FOR_SUPER_LIKE}`,
         },
         about:
-          "Super likes are a way to suppert your favorite content creators. Attach a message to the Super like and have your message seen before normal comments. There is a minimum superLikeAmount for a Super like. Each Super like is verified before displaying to make there aren't any non-paid Super likes",
+          "Super likes are a way to support your favorite content creators. Attach a message to the Super like and have your message seen before normal comments. There is a minimum superLikeAmount for a Super like. Each Super like is verified before displaying to make there aren't any non-paid Super likes",
       });
       // Description is obtained from raw data
       //   const base64 = utf8ToBase64(comment);
@@ -185,26 +184,16 @@ export const SuperLike = ({
 
       setIsOpenMultiplePublish(true);
     } catch (error: any) {
-      let notificationObj: any = null;
-      if (typeof error === "string") {
-        notificationObj = {
-          msg: error || "Failed to publish Super Like",
+      dispatch(
+        setNotification({
+          msg:
+            error ||
+            error?.error ||
+            error?.message ||
+            "Failed to publish Super Like",
           alertType: "error",
-        };
-      } else if (typeof error?.error === "string") {
-        notificationObj = {
-          msg: error?.error || "Failed to publish Super Like",
-          alertType: "error",
-        };
-      } else {
-        notificationObj = {
-          msg: error?.message || "Failed to publish Super Like",
-          alertType: "error",
-        };
-      }
-      if (!notificationObj) return;
-      dispatch(setNotification(notificationObj));
-
+        })
+      );
       throw new Error("Failed to publish Super Like");
     }
   }
@@ -239,8 +228,6 @@ export const SuperLike = ({
           flexShrink: 0,
         }}
       >
-
-
         <Tooltip title="Super Like" placement="top">
           <Box
             sx={{
@@ -250,8 +237,8 @@ export const SuperLike = ({
               display: "flex",
               alignItems: "center",
               outline: "1px gold solid",
-              marginRight:'10px',
-              height: '53px',
+              marginRight: "10px",
+              height: "53px",
             }}
           >
             <ThumbUpIcon
@@ -260,24 +247,30 @@ export const SuperLike = ({
               }}
             />
 
-              {numberOfSuperlikes === 0 ? null : (
-                <div style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center', userSelect: "none"}}>
-                  <span style={{marginRight:'10px', paddingBottom:'4px'}}>{numberOfSuperlikes}</span>
-                  <img
-                    style={{
-                      height: "25px",
-                      width: "25px",
-                      marginRight:'5px',
-                    }}
-                    src={qortImg}
-                    alt={"Qort Icon"}
-                  />
-                  {truncateNumber(totalAmount,0)}
-                </div>
-              )}
+            {numberOfSuperlikes === 0 ? null : (
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  userSelect: "none",
+                }}
+              >
+                <span style={{ marginRight: "10px", paddingBottom: "4px" }}>
+                  {numberOfSuperlikes}
+                </span>
+                <img
+                  style={{
+                    height: "25px",
+                    width: "25px",
+                    marginRight: "5px",
+                  }}
+                  src={qortImg}
+                  alt={"Qort Icon"}
+                />
+                {truncateNumber(totalAmount, 0)}
+              </div>
+            )}
           </Box>
         </Tooltip>
       </Box>
@@ -301,10 +294,10 @@ export const SuperLike = ({
           <DialogContent>
             <Box>
               <InputLabel htmlFor="standard-adornment-amount">
-                Amount in QORT (min 10 QORT)
+                Amount in QORT (min 1 QORT)
               </InputLabel>
               <BoundedNumericTextField
-                minValue={10}
+                minValue={+minPriceSuperlike}
                 initialValue={minPriceSuperlike.toString()}
                 maxValue={numberToInt(+currentBalance)}
                 allowDecimals={false}

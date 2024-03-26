@@ -1,6 +1,4 @@
-import React, { useEffect, useState } from "react";
-import Compressor from "compressorjs";
-
+import React, { useEffect, useMemo, useState } from "react";
 import {
   AddCoverImageButton,
   AddLogoIcon,
@@ -14,9 +12,7 @@ import {
   NewCrowdfundTitle,
   StyledButton,
   TimesIcon,
-} from "./EditVideo-styles.tsx";
-import { CircularProgress } from "@mui/material";
-
+} from "./Upload-styles.tsx";
 import {
   Box,
   FormControl,
@@ -34,9 +30,9 @@ import { useDispatch, useSelector } from "react-redux";
 import AddBoxIcon from "@mui/icons-material/AddBox";
 import { useDropzone } from "react-dropzone";
 
-import { setNotification } from "../../state/features/notificationsSlice";
-import { objectToBase64, uint8ArrayToBase64 } from "../../utils/toBase64";
-import { RootState } from "../../state/store";
+import { setNotification } from "../../../state/features/notificationsSlice.ts";
+import { objectToBase64, uint8ArrayToBase64 } from "../../../utils/toBase64.ts";
+import { RootState } from "../../../state/store.ts";
 import {
   upsertVideosBeginning,
   addToHashMap,
@@ -44,16 +40,18 @@ import {
   setEditVideo,
   updateVideo,
   updateInHashMap,
-} from "../../state/features/videoSlice";
-import ImageUploader from "../common/ImageUploader";
-import { categories, subCategories } from "../../constants/Categories.ts";
-import { MultiplePublish } from "../common/MultiplePublish/MultiplePublishAll";
-import { TextEditor } from "../common/TextEditor/TextEditor";
-import { extractTextFromHTML } from "../common/TextEditor/utils";
-import { toBase64 } from "../PublishVideo/PublishVideo.tsx";
-import { FrameExtractor } from "../common/FrameExtractor/FrameExtractor";
-import { QTUBE_VIDEO_BASE } from "../../constants/Identifiers.ts";
-import { titleFormatter } from "../../constants/Misc.ts";
+  setEditPlaylist,
+} from "../../../state/features/videoSlice.ts";
+import ImageUploader from "../../common/ImageUploader.tsx";
+import { categories, subCategories } from "../../../constants/Categories.ts";
+import { Playlists } from "../../Playlists/Playlists.tsx";
+import { PlaylistListEdit } from "../PlaylistListEdit/PlaylistListEdit.tsx";
+import { TextEditor } from "../../common/TextEditor/TextEditor.tsx";
+import { extractTextFromHTML } from "../../common/TextEditor/utils.ts";
+import {
+  QTUBE_PLAYLIST_BASE,
+  QTUBE_VIDEO_BASE,
+} from "../../../constants/Identifiers.ts";
 
 const uid = new ShortUniqueId();
 const shortuid = new ShortUniqueId({ length: 5 });
@@ -73,7 +71,7 @@ interface VideoFile {
   description: string;
   coverImage?: string;
 }
-export const EditVideo = () => {
+export const EditPlaylist = () => {
   const theme = useTheme();
   const dispatch = useDispatch();
   const username = useSelector((state: RootState) => state.auth?.user?.name);
@@ -81,54 +79,29 @@ export const EditVideo = () => {
     (state: RootState) => state.auth?.user?.address
   );
   const editVideoProperties = useSelector(
-    (state: RootState) => state.video.editVideoProperties
+    (state: RootState) => state.video.editPlaylistProperties
   );
-  const [publishes, setPublishes] = useState<any>(null);
-  const [isOpenMultiplePublish, setIsOpenMultiplePublish] = useState(false);
-  const [videoPropertiesToSetToRedux, setVideoPropertiesToSetToRedux] =
-    useState(null);
-
+  const [playlistData, setPlaylistData] = useState<any>(null);
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [coverImage, setCoverImage] = useState<string>("");
-  const [file, setFile] = useState(null);
+  const [videos, setVideos] = useState([]);
   const [selectedCategoryVideos, setSelectedCategoryVideos] =
     useState<any>(null);
   const [selectedSubCategoryVideos, setSelectedSubCategoryVideos] =
     useState<any>(null);
-  const [imageExtracts, setImageExtracts] = useState<any>([]);
 
-  const { getRootProps, getInputProps } = useDropzone({
-    accept: {
-      "video/*": [],
-    },
-    maxFiles: 1,
-    maxSize: 419430400, // 400 MB in bytes
-    onDrop: (acceptedFiles, rejectedFiles) => {
-      const firstFile = acceptedFiles[0];
+  const isNew = useMemo(() => {
+    return editVideoProperties?.mode === "new";
+  }, [editVideoProperties]);
 
-      setFile(firstFile);
-
-      let errorString = null;
-
-      rejectedFiles.forEach(({ file, errors }) => {
-        errors.forEach(error => {
-          if (error.code === "file-too-large") {
-            errorString = "File must be under 400mb";
-          }
-          console.log(`Error with file ${file.name}: ${error.message}`);
-        });
+  useEffect(() => {
+    if (isNew) {
+      setPlaylistData({
+        videos: [],
       });
-      if (errorString) {
-        const notificationObj = {
-          msg: errorString,
-          alertType: "error",
-        };
-
-        dispatch(setNotification(notificationObj));
-      }
-    },
-  });
+    }
+  }, [isNew]);
 
   // useEffect(() => {
   //   if (editVideoProperties) {
@@ -176,16 +149,44 @@ export const EditVideo = () => {
   //   }
   // }, [editVideoProperties]);
 
+  const checkforPlaylist = React.useCallback(async videoList => {
+    try {
+      const combinedData: any = {};
+      const videos = [];
+      if (videoList) {
+        for (const vid of videoList) {
+          const url = `/arbitrary/resources/search?mode=ALL&service=DOCUMENT&identifier=${vid.identifier}&limit=1&includemetadata=true&reverse=true&name=${vid.name}&exactmatchnames=true&offset=0`;
+          const response = await fetch(url, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+          const responseDataSearchVid = await response.json();
+
+          if (responseDataSearchVid?.length > 0) {
+            let resourceData2 = responseDataSearchVid[0];
+            videos.push(resourceData2);
+          }
+        }
+      }
+      combinedData.videos = videos;
+      setPlaylistData(combinedData);
+    } catch (error) {}
+  }, []);
+
   useEffect(() => {
     if (editVideoProperties) {
       setTitle(editVideoProperties?.title || "");
+
       if (editVideoProperties?.htmlDescription) {
         setDescription(editVideoProperties?.htmlDescription);
-      } else if (editVideoProperties?.fullDescription) {
-        const paragraph = `<p>${editVideoProperties?.fullDescription}</p>`;
+      } else if (editVideoProperties?.description) {
+        const paragraph = `<p>${editVideoProperties?.description}</p>`;
         setDescription(paragraph);
       }
-      setCoverImage(editVideoProperties?.videoImage || "");
+      setCoverImage(editVideoProperties?.image || "");
+      setVideos(editVideoProperties?.videos || []);
 
       if (editVideoProperties?.category) {
         const selectedOption = categories.find(
@@ -204,17 +205,22 @@ export const EditVideo = () => {
         ]?.find(option => option.id === +editVideoProperties.subcategory);
         setSelectedSubCategoryVideos(selectedOption || null);
       }
+
+      if (editVideoProperties?.videos) {
+        checkforPlaylist(editVideoProperties?.videos);
+      }
     }
   }, [editVideoProperties]);
 
   const onClose = () => {
-    dispatch(setEditVideo(null));
-    setVideoPropertiesToSetToRedux(null);
-    setFile(null);
     setTitle("");
-    setImageExtracts([]);
     setDescription("");
+    setVideos([]);
+    setPlaylistData(null);
+    setSelectedCategoryVideos(null);
+    setSelectedSubCategoryVideos(null);
     setCoverImage("");
+    dispatch(setEditPlaylist(null));
   };
 
   async function publishQDNResource() {
@@ -223,6 +229,7 @@ export const EditVideo = () => {
       if (!description) throw new Error("Please enter a description");
       if (!coverImage) throw new Error("Please select cover image");
       if (!selectedCategoryVideos) throw new Error("Please select a category");
+
       if (!editVideoProperties) return;
       if (!userAddress) throw new Error("Unable to locate user address");
       let errorMsg = "";
@@ -235,7 +242,7 @@ export const EditVideo = () => {
           "Cannot publish without access to your name. Please authenticate.";
       }
 
-      if (editVideoProperties?.user !== username) {
+      if (!isNew && editVideoProperties?.user !== username) {
         errorMsg = "Cannot publish another user's resource";
       }
 
@@ -248,90 +255,126 @@ export const EditVideo = () => {
         );
         return;
       }
-      let listOfPublishes = [];
       const category = selectedCategoryVideos.id;
       const subcategory = selectedSubCategoryVideos?.id || "";
 
-      const fullDescription = extractTextFromHTML(description);
-      let fileExtension = "mp4";
-      const fileExtensionSplit = file?.name?.split(".");
-      if (fileExtensionSplit?.length > 1) {
-        fileExtension = fileExtensionSplit?.pop() || "mp4";
+      const videoStructured = playlistData.videos.map(item => {
+        const descriptionVid = item?.metadata?.description;
+        if (!descriptionVid) throw new Error("cannot find video code");
+
+        // Split the string by ';'
+        let parts = descriptionVid.split(";");
+
+        // Initialize a variable to hold the code value
+        let codeValue = "";
+
+        // Loop through the parts to find the one that starts with 'code:'
+        for (let part of parts) {
+          if (part.startsWith("code:")) {
+            codeValue = part.split(":")[1];
+            break;
+          }
+        }
+        if (!codeValue) throw new Error("cannot find video code");
+
+        return {
+          identifier: item.identifier,
+          name: item.name,
+          service: item.service,
+          code: codeValue,
+        };
+      });
+      const id = uid();
+
+      let commentsId = editVideoProperties?.id;
+
+      if (isNew) {
+        commentsId = `${QTUBE_PLAYLIST_BASE}_cm_${id}`;
       }
+      const stringDescription = extractTextFromHTML(description);
 
-      let filename = title.slice(0, 15);
-      // Step 1: Replace all white spaces with underscores
-
-      // Replace all forms of whitespace (including non-standard ones) with underscores
-      let stringWithUnderscores = filename.replace(/[\s\uFEFF\xA0]+/g, "_");
-
-      // Remove all non-alphanumeric characters (except underscores)
-      let alphanumericString = stringWithUnderscores.replace(
-        /[^a-zA-Z0-9_]/g,
-        ""
-      );
-
-      const videoObject: any = {
+      const playlistObject: any = {
         title,
-        version: editVideoProperties.version,
+        version: 1,
+        description: stringDescription,
         htmlDescription: description,
-        fullDescription,
-        videoImage: coverImage,
-        videoReference: editVideoProperties.videoReference,
-        extracts: file ? imageExtracts : editVideoProperties?.extracts,
-        commentsId: editVideoProperties.commentsId,
+        image: coverImage,
+        videos: videoStructured,
+        commentsId: commentsId,
         category,
         subcategory,
-        code: editVideoProperties.code,
-        videoType: file?.type || "video/mp4",
-        filename: `${alphanumericString.trim()}.${fileExtension}`,
       };
 
+      const codes = videoStructured
+        .map(item => `c:${item.code};`)
+        .slice(0, 10)
+        .join("");
       let metadescription =
-        `**category:${category};subcategory:${subcategory};code:${editVideoProperties.code}**` +
-        description.slice(0, 150);
+        `**category:${category};subcategory:${subcategory};${codes}**` +
+        stringDescription.slice(0, 120);
 
-      const crowdfundObjectToBase64 = await objectToBase64(videoObject);
+      const crowdfundObjectToBase64 = await objectToBase64(playlistObject);
       // Description is obtained from raw data
+
+      let identifier = editVideoProperties?.id;
+      const sanitizeTitle = title
+        .replace(/[^a-zA-Z0-9\s-]/g, "")
+        .replace(/\s+/g, "-")
+        .replace(/-+/g, "-")
+        .trim()
+        .toLowerCase();
+      if (isNew) {
+        identifier = `${QTUBE_PLAYLIST_BASE}${sanitizeTitle.slice(
+          0,
+          30
+        )}_${id}`;
+      }
       const requestBodyJson: any = {
         action: "PUBLISH_QDN_RESOURCE",
         name: username,
-        service: "DOCUMENT",
+        service: "PLAYLIST",
         data64: crowdfundObjectToBase64,
         title: title.slice(0, 50),
         description: metadescription,
-        identifier: editVideoProperties.id,
+        identifier: identifier,
         tag1: QTUBE_VIDEO_BASE,
-        filename: `video_metadata.json`,
       };
-      listOfPublishes.push(requestBodyJson);
 
-      if (file && editVideoProperties.videoReference?.identifier) {
-        const requestBodyVideo: any = {
-          action: "PUBLISH_QDN_RESOURCE",
-          name: username,
-          service: "VIDEO",
-          file,
+      await qortalRequest(requestBodyJson);
+      if (isNew) {
+        const objectToStore = {
           title: title.slice(0, 50),
           description: metadescription,
-          identifier: editVideoProperties.videoReference?.identifier,
-          tag1: QTUBE_VIDEO_BASE,
-          filename: `${alphanumericString.trim()}.${fileExtension}`,
+          id: identifier,
+          service: "PLAYLIST",
+          user: username,
+          ...playlistObject,
         };
-
-        listOfPublishes.push(requestBodyVideo);
+        dispatch(updateVideo(objectToStore));
+        dispatch(updateInHashMap(objectToStore));
+      } else {
+        dispatch(
+          updateVideo({
+            ...editVideoProperties,
+            ...playlistObject,
+          })
+        );
+        dispatch(
+          updateInHashMap({
+            ...editVideoProperties,
+            ...playlistObject,
+          })
+        );
       }
 
-      const multiplePublish = {
-        action: "PUBLISH_MULTIPLE_QDN_RESOURCES",
-        resources: [...listOfPublishes],
-      };
-      setPublishes(multiplePublish);
-      setIsOpenMultiplePublish(true);
-      setVideoPropertiesToSetToRedux({
-        ...editVideoProperties,
-        ...videoObject,
-      });
+      dispatch(
+        setNotification({
+          msg: "Playlist published",
+          alertType: "success",
+        })
+      );
+
+      onClose();
     } catch (error: any) {
       let notificationObj: any = null;
       if (typeof error === "string") {
@@ -375,39 +418,16 @@ export const EditVideo = () => {
     setSelectedSubCategoryVideos(selectedOption || null);
   };
 
-  const onFramesExtracted = async imgs => {
-    try {
-      let imagesExtracts = [];
+  const removeVideo = index => {
+    const copyData = structuredClone(playlistData);
+    copyData.videos.splice(index, 1);
+    setPlaylistData(copyData);
+  };
 
-      for (const img of imgs) {
-        try {
-          let compressedFile;
-          const image = img;
-          await new Promise<void>(resolve => {
-            new Compressor(image, {
-              quality: 0.8,
-              maxWidth: 750,
-              mimeType: "image/webp",
-              success(result) {
-                const file = new File([result], "name", {
-                  type: "image/webp",
-                });
-                compressedFile = file;
-                resolve();
-              },
-              error(err) {},
-            });
-          });
-          if (!compressedFile) continue;
-          const base64Img = await toBase64(compressedFile);
-          imagesExtracts.push(base64Img);
-        } catch (error) {
-          console.error(error);
-        }
-      }
-
-      setImageExtracts(imagesExtracts);
-    } catch (error) {}
+  const addVideo = data => {
+    const copyData = structuredClone(playlistData);
+    copyData.videos = [...copyData.videos, { ...data }];
+    setPlaylistData(copyData);
   };
 
   return (
@@ -425,29 +445,13 @@ export const EditVideo = () => {
               justifyContent: "space-between",
             }}
           >
-            <NewCrowdfundTitle>Update Video properties</NewCrowdfundTitle>
+            {isNew ? (
+              <NewCrowdfundTitle>Create new playlist</NewCrowdfundTitle>
+            ) : (
+              <NewCrowdfundTitle>Update Playlist properties</NewCrowdfundTitle>
+            )}
           </Box>
           <>
-            <Box
-              {...getRootProps()}
-              sx={{
-                border: "1px dashed gray",
-                padding: 2,
-                textAlign: "center",
-                marginBottom: 2,
-                cursor: "pointer",
-              }}
-            >
-              <input {...getInputProps()} />
-              <Typography>Click to update video file - optional</Typography>
-            </Box>
-            <Typography
-              sx={{
-                marginBottom: "10px",
-              }}
-            >
-              {file?.name}
-            </Typography>
             <Box
               sx={{
                 display: "flex",
@@ -494,12 +498,6 @@ export const EditVideo = () => {
                   </FormControl>
                 )}
             </Box>
-            {file && (
-              <FrameExtractor
-                videoFile={file}
-                onFramesExtracted={imgs => onFramesExtracted(imgs)}
-              />
-            )}
             <React.Fragment>
               {!coverImage ? (
                 <ImageUploader onPick={(img: string) => setCoverImage(img)}>
@@ -526,33 +524,23 @@ export const EditVideo = () => {
               )}
               <CustomInputField
                 name="title"
-                label="Title of video"
+                label="Title of playlist"
                 variant="filled"
                 value={title}
                 onChange={e => {
                   const value = e.target.value;
-                  const formattedValue = value.replace(titleFormatter, "");
+                  const formattedValue = value.replace(
+                    /[^a-zA-Z0-9\s-_!?]/g,
+                    ""
+                  );
                   setTitle(formattedValue);
                 }}
                 inputProps={{ maxLength: 180 }}
                 required
               />
-              <Typography
-                sx={{
-                  fontSize: "18px",
-                }}
-              >
-                Description of video
-              </Typography>
-              <TextEditor
-                inlineContent={description}
-                setInlineContent={value => {
-                  setDescription(value);
-                }}
-              />
               {/* <CustomInputField
                 name="description"
-                label="Describe your video in a few words"
+                label="Describe your playlist in a few words"
                 variant="filled"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
@@ -561,7 +549,26 @@ export const EditVideo = () => {
                 maxRows={3}
                 required
               /> */}
+              <Typography
+                sx={{
+                  fontSize: "18px",
+                }}
+              >
+                Description of playlist
+              </Typography>
+              <TextEditor
+                inlineContent={description}
+                setInlineContent={value => {
+                  setDescription(value);
+                }}
+              />
             </React.Fragment>
+
+            <PlaylistListEdit
+              playlistData={playlistData}
+              removeVideo={removeVideo}
+              addVideo={addVideo}
+            />
           </>
 
           <CrowdfundActionButtonRow>
@@ -586,48 +593,13 @@ export const EditVideo = () => {
                 onClick={() => {
                   publishQDNResource();
                 }}
-                disabled={file && imageExtracts.length === 0}
               >
-                {file && imageExtracts.length === 0 && (
-                  <CircularProgress color="secondary" size={14} />
-                )}
                 Publish
               </CrowdfundActionButton>
             </Box>
           </CrowdfundActionButtonRow>
         </ModalBody>
       </Modal>
-      {isOpenMultiplePublish && (
-        <MultiplePublish
-          isOpen={isOpenMultiplePublish}
-          onError={messageNotification => {
-            setIsOpenMultiplePublish(false);
-            setPublishes(null);
-            if (messageNotification) {
-              dispatch(
-                setNotification({
-                  msg: messageNotification,
-                  alertType: "error",
-                })
-              );
-            }
-          }}
-          onSubmit={() => {
-            setIsOpenMultiplePublish(false);
-            const clonedCopy = structuredClone(videoPropertiesToSetToRedux);
-            dispatch(updateVideo(clonedCopy));
-            dispatch(updateInHashMap(clonedCopy));
-            dispatch(
-              setNotification({
-                msg: "Video updated",
-                alertType: "success",
-              })
-            );
-            onClose();
-          }}
-          publishes={publishes}
-        />
-      )}
     </>
   );
 };

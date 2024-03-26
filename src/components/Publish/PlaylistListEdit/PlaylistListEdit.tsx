@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { CardContentContainerComment } from "../common/Comments/Comments-styles";
+import { CardContentContainerComment } from "../../common/Comments/Comments-styles.tsx";
 import {
   CrowdfundSubTitle,
   CrowdfundSubTitleRow,
@@ -7,11 +7,11 @@ import {
 import { Box, Button, Input, Typography, useTheme } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import { removeVideo } from "../../state/features/videoSlice";
+import { removeVideo } from "../../../state/features/videoSlice.ts";
 import AddIcon from "@mui/icons-material/Add";
 import { useSelector } from "react-redux";
-import { RootState } from "../../state/store";
-import { QTUBE_VIDEO_BASE } from "../../constants/Identifiers.ts";
+import { RootState } from "../../../state/store.ts";
+import { QTUBE_VIDEO_BASE } from "../../../constants/Identifiers.ts";
 export const PlaylistListEdit = ({ playlistData, removeVideo, addVideo }) => {
   const theme = useTheme();
   const navigate = useNavigate();

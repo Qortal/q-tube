@@ -7,15 +7,18 @@ import React, {
 } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import { setIsLoadingGlobal } from "../../state/features/globalSlice";
+import { setIsLoadingGlobal } from "../../../state/features/globalSlice.ts";
 import { Avatar, Box, Typography, useTheme } from "@mui/material";
-import { VideoPlayer } from "../../components/common/VideoPlayer/VideoPlayer.tsx";
-import { RootState } from "../../state/store";
-import { addToHashMap } from "../../state/features/videoSlice";
+import {
+  refType,
+  VideoPlayer,
+} from "../../../components/common/VideoPlayer/VideoPlayer.tsx";
+import { RootState } from "../../../state/store.ts";
+import { addToHashMap } from "../../../state/features/videoSlice.ts";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
 import DownloadIcon from "@mui/icons-material/Download";
 
-import mockImg from "../../test/mockimg.jpg";
+import mockImg from "../../../test/mockimg.jpg";
 import {
   AuthorTextComment,
   FileAttachmentContainer,
@@ -26,39 +29,43 @@ import {
   VideoDescription,
   VideoPlayerContainer,
   VideoTitle,
-} from "./PlaylistContent-styles";
-import { setUserAvatarHash } from "../../state/features/globalSlice";
+} from "./PlaylistContent-styles.tsx";
+import { setUserAvatarHash } from "../../../state/features/globalSlice.ts";
 import {
   formatDate,
   formatDateSeconds,
   formatTimestampSeconds,
-} from "../../utils/time";
-import { NavbarName } from "../../components/layout/Navbar/Navbar-styles";
-import { CommentSection } from "../../components/common/Comments/CommentSection";
+} from "../../../utils/time.ts";
+import { NavbarName } from "../../../components/layout/Navbar/Navbar-styles.tsx";
+import { CommentSection } from "../../../components/common/Comments/CommentSection.tsx";
 import {
   CrowdfundSubTitle,
   CrowdfundSubTitleRow,
-} from "../../components/PublishVideo/PublishVideo-styles.tsx";
-import { Playlists } from "../../components/Playlists/Playlists";
-import { DisplayHtml } from "../../components/common/TextEditor/DisplayHtml";
-import FileElement from "../../components/common/FileElement";
-import { SuperLike } from "../../components/common/SuperLike/SuperLike";
-import { useFetchSuperLikes } from "../../hooks/useFetchSuperLikes";
+} from "../../../components/Publish/PublishVideo/PublishVideo-styles.tsx";
+import { Playlists } from "../../../components/Playlists/Playlists.tsx";
+import { DisplayHtml } from "../../../components/common/TextEditor/DisplayHtml.tsx";
+import FileElement from "../../../components/common/FileElement.tsx";
+import { SuperLike } from "../../../components/common/ContentButtons/SuperLike.tsx";
+import { useFetchSuperLikes } from "../../../hooks/useFetchSuperLikes.tsx";
 import {
   extractSigValue,
   getPaymentInfo,
   isTimestampWithinRange,
-} from "../VideoContent/VideoContent";
-import { SuperLikesSection } from "../../components/common/SuperLikesList/SuperLikesSection";
+} from "../VideoContent/VideoContent.tsx";
+import { SuperLikesSection } from "../../../components/common/SuperLikesList/SuperLikesSection.tsx";
 import {
   QTUBE_VIDEO_BASE,
   SUPER_LIKE_BASE,
-} from "../../constants/Identifiers.ts";
-import { minPriceSuperlike } from "../../constants/Misc.ts";
-import { SubscribeButton } from "../../components/common/SubscribeButton.tsx";
+} from "../../../constants/Identifiers.ts";
+import { minPriceSuperlike } from "../../../constants/Misc.ts";
+import { SubscribeButton } from "../../../components/common/ContentButtons/SubscribeButton.tsx";
+import { FollowButton } from "../../../components/common/ContentButtons/FollowButton.tsx";
+import { LikeAndDislike } from "../../../components/common/ContentButtons/LikeAndDislike.tsx";
 
 export const PlaylistContent = () => {
-  const { name, id } = useParams();
+  const { name: channelName, id } = useParams();
+  const userName = useSelector((state: RootState) => state.auth.user?.name);
+
   const [doAutoPlay, setDoAutoPlay] = useState(false);
   const [isExpandedDescription, setIsExpandedDescription] =
     useState<boolean>(false);
@@ -68,6 +75,7 @@ export const PlaylistContent = () => {
   const [superlikeList, setSuperlikelist] = useState<any[]>([]);
   const [loadingSuperLikes, setLoadingSuperLikes] = useState<boolean>(false);
   const { addSuperlikeRawDataGetToList } = useFetchSuperLikes();
+  const containerRef = useRef<refType>(null);
 
   const calculateAmountSuperlike = useMemo(() => {
     const totalQort = superlikeList?.reduce((acc, curr) => {
@@ -95,10 +103,10 @@ export const PlaylistContent = () => {
   };
 
   useEffect(() => {
-    if (name) {
-      getAddressName(name);
+    if (channelName) {
+      getAddressName(channelName);
     }
-  }, [name]);
+  }, [channelName]);
 
   const userAvatarHash = useSelector(
     (state: RootState) => state.global.userAvatarHash
@@ -107,12 +115,12 @@ export const PlaylistContent = () => {
 
   const avatarUrl = useMemo(() => {
     let url = "";
-    if (name && userAvatarHash[name]) {
-      url = userAvatarHash[name];
+    if (channelName && userAvatarHash[channelName]) {
+      url = userAvatarHash[channelName];
     }
 
     return url;
-  }, [userAvatarHash, name]);
+  }, [userAvatarHash, channelName]);
   const navigate = useNavigate();
   const theme = useTheme();
 
@@ -282,10 +290,10 @@ export const PlaylistContent = () => {
   );
 
   React.useEffect(() => {
-    if (name && id) {
-      checkforPlaylist(name, id);
+    if (channelName && id) {
+      checkforPlaylist(channelName, id);
     }
-  }, [id, name]);
+  }, [id, channelName]);
 
   useEffect(() => {
     if (contentRef.current) {
@@ -395,6 +403,14 @@ export const PlaylistContent = () => {
     getComments(videoData?.id, nameAddress);
   }, [getComments, videoData?.id, nameAddress]);
 
+  const focusVideo = (e: React.MouseEvent<HTMLDivElement>) => {
+    const focusRef = containerRef.current?.getContainerRef()?.current;
+    const isCorrectTarget = e.currentTarget == e.target;
+    if (focusRef && isCorrectTarget) {
+      focusRef.focus({ preventScroll: true });
+    }
+  };
+
   return (
     <Box
       sx={{
@@ -403,6 +419,7 @@ export const PlaylistContent = () => {
         flexDirection: "column",
         padding: "20px 10px",
       }}
+      onClick={focusVideo}
     >
       <VideoPlayerContainer
         sx={{
@@ -434,13 +451,14 @@ export const PlaylistContent = () => {
                   name={videoReference?.name}
                   service={videoReference?.service}
                   identifier={videoReference?.identifier}
-                  user={name}
+                  user={channelName}
                   jsonId={id}
                   poster={videoCover || ""}
                   nextVideo={nextVideo}
                   onEnd={onEndVideo}
                   autoPlay={doAutoPlay}
                   customStyle={{ aspectRatio: "16/9" }}
+                  ref={containerRef}
                 />
               )}
               {playlistData && (
@@ -473,12 +491,12 @@ export const PlaylistContent = () => {
                       cursor: "pointer",
                     }}
                     onClick={() => {
-                      navigate(`/channel/${name}`);
+                      navigate(`/channel/${channelName}`);
                     }}
                   >
                     <Avatar
-                      src={`/arbitrary/THUMBNAIL/${name}/qortal_avatar`}
-                      alt={`${name}'s avatar`}
+                      src={`/arbitrary/THUMBNAIL/${channelName}/qortal_avatar`}
+                      alt={`${channelName}'s avatar`}
                     />
                   </Box>
                   <StyledCardColComment>
@@ -492,14 +510,22 @@ export const PlaylistContent = () => {
                         cursor: "pointer",
                       }}
                       onClick={() => {
-                        navigate(`/channel/${name}`);
+                        navigate(`/channel/${channelName}`);
                       }}
                     >
-                      {name}
-                      <SubscribeButton
-                        subscriberName={name}
-                        sx={{ marginLeft: "20px" }}
-                      />
+                      {channelName}
+                      {channelName !== userName && (
+                        <>
+                          <SubscribeButton
+                            subscriberName={channelName}
+                            sx={{ marginLeft: "20px" }}
+                          />
+                          <FollowButton
+                            followerName={channelName}
+                            sx={{ marginLeft: "20px" }}
+                          />
+                        </>
+                      )}
                     </AuthorTextComment>
                   </StyledCardColComment>
                 </StyledCardHeaderComment>
@@ -511,16 +537,22 @@ export const PlaylistContent = () => {
                 }}
               >
                 {videoData && (
-                  <SuperLike
-                    numberOfSuperlikes={numberOfSuperlikes}
-                    totalAmount={calculateAmountSuperlike}
-                    name={videoData?.user}
-                    service={videoData?.service}
-                    identifier={videoData?.id}
-                    onSuccess={val => {
-                      setSuperlikelist(prev => [val, ...prev]);
-                    }}
-                  />
+                  <>
+                    <LikeAndDislike
+                      name={videoData?.user}
+                      identifier={videoData?.id}
+                    />
+                    <SuperLike
+                      numberOfSuperlikes={numberOfSuperlikes}
+                      totalAmount={calculateAmountSuperlike}
+                      name={videoData?.user}
+                      service={videoData?.service}
+                      identifier={videoData?.id}
+                      onSuccess={val => {
+                        setSuperlikelist(prev => [val, ...prev]);
+                      }}
+                    />
+                  </>
                 )}
                 <FileAttachmentContainer>
                   <FileAttachmentFont>Save to Disk</FileAttachmentFont>
@@ -677,7 +709,10 @@ export const PlaylistContent = () => {
           maxWidth: "1200px",
         }}
       >
-        <CommentSection postId={videoData?.id || ""} postName={name || ""} />
+        <CommentSection
+          postId={videoData?.id || ""}
+          postName={channelName || ""}
+        />
       </Box>
     </Box>
   );

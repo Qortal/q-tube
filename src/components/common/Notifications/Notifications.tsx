@@ -24,7 +24,7 @@ import {
   extractSigValue,
   getPaymentInfo,
   isTimestampWithinRange,
-} from "../../../pages/VideoContent/VideoContent";
+} from "../../../pages/ContentPages/VideoContent/VideoContent";
 import { useNavigate } from "react-router-dom";
 import localForage from "localforage";
 import moment from "moment";

@@ -23,6 +23,23 @@ export interface SearchTransactionResponse {
   amount: string;
 }
 
+export interface MetaData {
+  title: string;
+  description: string;
+  tags: string[];
+  mimeType: string;
+}
+
+export interface SearchResourcesResponse {
+  name: string;
+  service: string;
+  identifier: string;
+  metadata?: MetaData;
+  size: number;
+  created: number;
+  updated: number;
+}
+
 export type TransactionType =
   | "GENESIS"
   | "PAYMENT"

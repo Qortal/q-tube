@@ -3,7 +3,7 @@ import { CardContentContainerComment } from "../common/Comments/Comments-styles"
 import {
   CrowdfundSubTitle,
   CrowdfundSubTitleRow,
-} from "../PublishVideo/PublishVideo-styles.tsx";
+} from "../Publish/PublishVideo/PublishVideo-styles.tsx";
 import { Box, Typography, useTheme } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 

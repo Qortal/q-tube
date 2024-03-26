@@ -7,15 +7,18 @@ import React, {
 } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import { setIsLoadingGlobal } from "../../state/features/globalSlice";
+import { setIsLoadingGlobal } from "../../../state/features/globalSlice.ts";
 import { Avatar, Box, Typography, useTheme } from "@mui/material";
-import { VideoPlayer } from "../../components/common/VideoPlayer/VideoPlayer.tsx";
-import { RootState } from "../../state/store";
-import { addToHashMap } from "../../state/features/videoSlice";
+import {
+  refType,
+  VideoPlayer,
+} from "../../../components/common/VideoPlayer/VideoPlayer.tsx";
+import { RootState } from "../../../state/store.ts";
+import { addToHashMap } from "../../../state/features/videoSlice.ts";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
 import DownloadIcon from "@mui/icons-material/Download";
 
-import mockImg from "../../test/mockimg.jpg";
+import mockImg from "../../../test/mockimg.jpg";
 import {
   AuthorTextComment,
   FileAttachmentContainer,
@@ -26,37 +29,39 @@ import {
   VideoDescription,
   VideoPlayerContainer,
   VideoTitle,
-} from "./VideoContent-styles";
-import { setUserAvatarHash } from "../../state/features/globalSlice";
+} from "./VideoContent-styles.tsx";
+import { setUserAvatarHash } from "../../../state/features/globalSlice.ts";
 import {
   formatDate,
   formatDateSeconds,
   formatTimestampSeconds,
-} from "../../utils/time";
-import { NavbarName } from "../../components/layout/Navbar/Navbar-styles";
-import { CommentSection } from "../../components/common/Comments/CommentSection";
+} from "../../../utils/time.ts";
+import { NavbarName } from "../../../components/layout/Navbar/Navbar-styles.tsx";
+import { CommentSection } from "../../../components/common/Comments/CommentSection.tsx";
 import {
   CrowdfundSubTitle,
   CrowdfundSubTitleRow,
-} from "../../components/PublishVideo/PublishVideo-styles.tsx";
-import { Playlists } from "../../components/Playlists/Playlists";
-import { DisplayHtml } from "../../components/common/TextEditor/DisplayHtml";
-import FileElement from "../../components/common/FileElement";
-import { SuperLike } from "../../components/common/SuperLike/SuperLike";
-import { CommentContainer } from "../../components/common/Comments/Comments-styles";
-import { Comment } from "../../components/common/Comments/Comment";
-import { SuperLikesSection } from "../../components/common/SuperLikesList/SuperLikesSection";
-import { useFetchSuperLikes } from "../../hooks/useFetchSuperLikes";
+} from "../../../components/Publish/PublishVideo/PublishVideo-styles.tsx";
+import { Playlists } from "../../../components/Playlists/Playlists.tsx";
+import { DisplayHtml } from "../../../components/common/TextEditor/DisplayHtml.tsx";
+import FileElement from "../../../components/common/FileElement.tsx";
+import { SuperLike } from "../../../components/common/ContentButtons/SuperLike.tsx";
+import { CommentContainer } from "../../../components/common/Comments/Comments-styles.tsx";
+import { Comment } from "../../../components/common/Comments/Comment.tsx";
+import { SuperLikesSection } from "../../../components/common/SuperLikesList/SuperLikesSection.tsx";
+import { useFetchSuperLikes } from "../../../hooks/useFetchSuperLikes.tsx";
 import {
   FOR_SUPER_LIKE,
   QTUBE_VIDEO_BASE,
   SUPER_LIKE_BASE,
-} from "../../constants/Identifiers.ts";
+} from "../../../constants/Identifiers.ts";
 import {
   minPriceSuperlike,
   titleFormatterOnSave,
-} from "../../constants/Misc.ts";
-import { SubscribeButton } from "../../components/common/SubscribeButton.tsx";
+} from "../../../constants/Misc.ts";
+import { SubscribeButton } from "../../../components/common/ContentButtons/SubscribeButton.tsx";
+import { FollowButton } from "../../../components/common/ContentButtons/FollowButton.tsx";
+import { LikeAndDislike } from "../../../components/common/ContentButtons/LikeAndDislike.tsx";
 
 export function isTimestampWithinRange(resTimestamp, resCreated) {
   // Calculate the absolute difference in milliseconds
@@ -116,12 +121,15 @@ export const getPaymentInfo = async (signature: string) => {
 };
 
 export const VideoContent = () => {
-  const { name, id } = useParams();
+  const { name: channelName, id } = useParams();
+  const userName = useSelector((state: RootState) => state.auth.user?.name);
+
   const [isExpandedDescription, setIsExpandedDescription] =
     useState<boolean>(false);
   const [superlikeList, setSuperlikelist] = useState<any[]>([]);
   const [loadingSuperLikes, setLoadingSuperLikes] = useState<boolean>(false);
   const { addSuperlikeRawDataGetToList } = useFetchSuperLikes();
+  const containerRef = useRef<refType>(null);
 
   const calculateAmountSuperlike = useMemo(() => {
     const totalQort = superlikeList?.reduce((acc, curr) => {
@@ -143,6 +151,7 @@ export const VideoContent = () => {
   const userAvatarHash = useSelector(
     (state: RootState) => state.global.userAvatarHash
   );
+
   const contentRef = useRef(null);
 
   const getAddressName = async name => {
@@ -157,18 +166,18 @@ export const VideoContent = () => {
   };
 
   useEffect(() => {
-    if (name) {
-      getAddressName(name);
+    if (channelName) {
+      getAddressName(channelName);
     }
-  }, [name]);
+  }, [channelName]);
   const avatarUrl = useMemo(() => {
     let url = "";
-    if (name && userAvatarHash[name]) {
-      url = userAvatarHash[name];
+    if (channelName && userAvatarHash[channelName]) {
+      url = userAvatarHash[channelName];
     }
 
     return url;
-  }, [userAvatarHash, name]);
+  }, [userAvatarHash, channelName]);
   const navigate = useNavigate();
   const theme = useTheme();
 
@@ -279,16 +288,16 @@ export const VideoContent = () => {
   }, []);
 
   React.useEffect(() => {
-    if (name && id) {
-      const existingVideo = hashMapVideos[id + "-" + name];
+    if (channelName && id) {
+      const existingVideo = hashMapVideos[id + "-" + channelName];
 
       if (existingVideo) {
         setVideoData(existingVideo);
       } else {
-        getVideoData(name, id);
+        getVideoData(channelName, id);
       }
     }
-  }, [id, name]);
+  }, [id, channelName]);
 
   useEffect(() => {
     if (contentRef.current) {
@@ -367,6 +376,14 @@ export const VideoContent = () => {
     (state: RootState) => state.persist.subscriptionList
   );
 
+  const focusVideo = (e: React.MouseEvent<HTMLDivElement>) => {
+    const focusRef = containerRef.current?.getContainerRef()?.current;
+    const isCorrectTarget = e.currentTarget == e.target;
+    if (focusRef && isCorrectTarget) {
+      focusRef.focus({ preventScroll: true });
+    }
+  };
+
   return (
     <Box
       sx={{
@@ -375,6 +392,7 @@ export const VideoContent = () => {
         flexDirection: "column",
         padding: "20px 10px",
       }}
+      onClick={focusVideo}
     >
       <VideoPlayerContainer
         sx={{
@@ -387,10 +405,11 @@ export const VideoContent = () => {
             name={videoReference?.name}
             service={videoReference?.service}
             identifier={videoReference?.identifier}
-            user={name}
+            user={channelName}
             jsonId={id}
             poster={videoCover || ""}
             customStyle={{ aspectRatio: "16/9" }}
+            ref={containerRef}
           />
         )}
         <Box
@@ -414,12 +433,12 @@ export const VideoContent = () => {
                   cursor: "pointer",
                 }}
                 onClick={() => {
-                  navigate(`/channel/${name}`);
+                  navigate(`/channel/${channelName}`);
                 }}
               >
                 <Avatar
-                  src={`/arbitrary/THUMBNAIL/${name}/qortal_avatar`}
-                  alt={`${name}'s avatar`}
+                  src={`/arbitrary/THUMBNAIL/${channelName}/qortal_avatar`}
+                  alt={`${channelName}'s avatar`}
                 />
               </Box>
               <StyledCardColComment>
@@ -433,14 +452,22 @@ export const VideoContent = () => {
                     cursor: "pointer",
                   }}
                   onClick={() => {
-                    navigate(`/channel/${name}`);
+                    navigate(`/channel/${channelName}`);
                   }}
                 >
-                  {name}
-                  <SubscribeButton
-                    subscriberName={name}
-                    sx={{ marginLeft: "20px" }}
-                  />
+                  {channelName}
+                  {channelName !== userName && (
+                    <>
+                      <SubscribeButton
+                        subscriberName={channelName}
+                        sx={{ marginLeft: "20px" }}
+                      />
+                      <FollowButton
+                        followerName={channelName}
+                        sx={{ marginLeft: "20px" }}
+                      />
+                    </>
+                  )}
                 </AuthorTextComment>
               </StyledCardColComment>
             </StyledCardHeaderComment>
@@ -452,16 +479,22 @@ export const VideoContent = () => {
             }}
           >
             {videoData && (
-              <SuperLike
-                numberOfSuperlikes={numberOfSuperlikes}
-                totalAmount={calculateAmountSuperlike}
-                name={videoData?.user}
-                service={videoData?.service}
-                identifier={videoData?.id}
-                onSuccess={val => {
-                  setSuperlikelist(prev => [val, ...prev]);
-                }}
-              />
+              <>
+                <LikeAndDislike
+                  name={videoData?.user}
+                  identifier={videoData?.id}
+                />
+                <SuperLike
+                  numberOfSuperlikes={numberOfSuperlikes}
+                  totalAmount={calculateAmountSuperlike}
+                  name={videoData?.user}
+                  service={videoData?.service}
+                  identifier={videoData?.id}
+                  onSuccess={val => {
+                    setSuperlikelist(prev => [val, ...prev]);
+                  }}
+                />
+              </>
             )}
             <FileAttachmentContainer>
               <FileAttachmentFont>Save to Disk</FileAttachmentFont>
@@ -598,7 +631,7 @@ export const VideoContent = () => {
         loadingSuperLikes={loadingSuperLikes}
         superlikes={superlikeList}
         postId={id || ""}
-        postName={name || ""}
+        postName={channelName || ""}
       />
 
       <Box
@@ -609,7 +642,7 @@ export const VideoContent = () => {
           maxWidth: "1200px",
         }}
       >
-        <CommentSection postId={id || ""} postName={name || ""} />
+        <CommentSection postId={id || ""} postName={channelName || ""} />
       </Box>
     </Box>
   );

@@ -1,18 +1,19 @@
 import { styled } from "@mui/system";
 import { Box } from "@mui/material";
 
-export const VideoContainer = styled(Box)`
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  max-height: 70vh;
-`;
+export const VideoContainer = styled(Box)(({ theme }) => ({
+  position: "relative",
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "center",
+  width: "100%",
+  height: "100%",
+  margin: 0,
+  padding: 0,
+  maxHeight: "70vh",
+  "&:focus": { outline: "none" },
+}));
 
 export const VideoElement = styled("video")`
   width: 100%;

@@ -35,8 +35,8 @@ import {
 } from "../../../state/features/videoSlice";
 import { RootState } from "../../../state/store";
 import { useWindowSize } from "../../../hooks/useWindowSize";
-import { PublishVideo } from "../../PublishVideo/PublishVideo.tsx";
-import { StyledButton } from "../../PublishVideo/PublishVideo-styles.tsx";
+import { PublishVideo } from "../../Publish/PublishVideo/PublishVideo.tsx";
+import { StyledButton } from "../../Publish/PublishVideo/PublishVideo-styles.tsx";
 import { Notifications } from "../../common/Notifications/Notifications";
 interface Props {
   isAuthenticated: boolean;

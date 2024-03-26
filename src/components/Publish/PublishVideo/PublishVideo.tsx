@@ -37,36 +37,36 @@ import AddBoxIcon from "@mui/icons-material/AddBox";
 import { useDropzone } from "react-dropzone";
 import AddIcon from "@mui/icons-material/Add";
 
-import { setNotification } from "../../state/features/notificationsSlice";
-import { objectToBase64, uint8ArrayToBase64 } from "../../utils/toBase64";
-import { RootState } from "../../state/store";
+import { setNotification } from "../../../state/features/notificationsSlice.ts";
+import { objectToBase64, uint8ArrayToBase64 } from "../../../utils/toBase64.ts";
+import { RootState } from "../../../state/store.ts";
 import {
   upsertVideosBeginning,
   addToHashMap,
   upsertVideos,
-} from "../../state/features/videoSlice";
-import ImageUploader from "../common/ImageUploader";
-import { categories, subCategories } from "../../constants/Categories.ts";
-import { MultiplePublish } from "../common/MultiplePublish/MultiplePublishAll";
+} from "../../../state/features/videoSlice.ts";
+import ImageUploader from "../../common/ImageUploader.tsx";
+import { categories, subCategories } from "../../../constants/Categories.ts";
+import { MultiplePublish } from "../MultiplePublish/MultiplePublishAll.tsx";
 import {
   CrowdfundSubTitle,
   CrowdfundSubTitleRow,
-} from "../EditPlaylist/Upload-styles";
-import { CardContentContainerComment } from "../common/Comments/Comments-styles";
-import { TextEditor } from "../common/TextEditor/TextEditor";
-import { extractTextFromHTML } from "../common/TextEditor/utils";
+} from "../EditPlaylist/Upload-styles.tsx";
+import { CardContentContainerComment } from "../../common/Comments/Comments-styles.tsx";
+import { TextEditor } from "../../common/TextEditor/TextEditor.tsx";
+import { extractTextFromHTML } from "../../common/TextEditor/utils.ts";
 import {
   FiltersCheckbox,
   FiltersRow,
   FiltersSubContainer,
-} from "../../pages/Home/VideoList-styles";
-import { FrameExtractor } from "../common/FrameExtractor/FrameExtractor";
+} from "../../../pages/Home/VideoList-styles.tsx";
+import { FrameExtractor } from "../../common/FrameExtractor/FrameExtractor.tsx";
 import {
   QTUBE_PLAYLIST_BASE,
   QTUBE_VIDEO_BASE,
-} from "../../constants/Identifiers.ts";
-import { titleFormatter } from "../../constants/Misc.ts";
-import { getFileName } from "../../utils/stringFunctions.ts";
+} from "../../../constants/Identifiers.ts";
+import { titleFormatter } from "../../../constants/Misc.ts";
+import { getFileName } from "../../../utils/stringFunctions.ts";
 
 export const toBase64 = (file: File): Promise<string | ArrayBuffer | null> =>
   new Promise((resolve, reject) => {

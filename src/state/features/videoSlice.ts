@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { SubscriptionData } from "../../components/common/SubscribeButton";
+import { SubscriptionData } from "../../components/common/ContentButtons/SubscribeButton.tsx";
 
 interface GlobalState {
   videos: Video[];

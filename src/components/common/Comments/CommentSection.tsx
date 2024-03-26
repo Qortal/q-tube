@@ -17,7 +17,7 @@ import {
 import {
   CrowdfundSubTitle,
   CrowdfundSubTitleRow,
-} from "../../PublishVideo/PublishVideo-styles.tsx";
+} from "../../Publish/PublishVideo/PublishVideo-styles.tsx";
 import { COMMENT_BASE } from "../../../constants/Identifiers.ts";
 
 interface CommentSectionProps {

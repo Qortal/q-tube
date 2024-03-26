@@ -18,14 +18,14 @@ import {
 import { VideoPlayerGlobal } from "../components/common/VideoPlayer/VideoPlayerGlobal.tsx";
 import { Rnd } from "react-rnd";
 import { RequestQueue } from "../utils/queue";
-import { EditVideo } from "../components/EditVideo/EditVideo";
-import { EditPlaylist } from "../components/EditPlaylist/EditPlaylist";
+import { EditVideo } from "../components/Publish/EditVideo/EditVideo";
+import { EditPlaylist } from "../components/Publish/EditPlaylist/EditPlaylist";
 import ConsentModal from "../components/common/ConsentModal";
 import {
   extractSigValue,
   getPaymentInfo,
   isTimestampWithinRange,
-} from "../pages/VideoContent/VideoContent";
+} from "../pages/ContentPages/VideoContent/VideoContent";
 import { useFetchSuperLikes } from "../hooks/useFetchSuperLikes";
 import { SUPER_LIKE_BASE } from "../constants/Identifiers.ts";
 import { minPriceSuperlike } from "../constants/Misc.ts";
@@ -143,8 +143,8 @@ const GlobalWrapper: React.FC<Props> = ({ children, setTheme }) => {
 
   const getSuperlikes = useCallback(async () => {
     try {
-      let totalCount = 0
-      let validCount = 0
+      let totalCount = 0;
+      let validCount = 0;
       let comments: any[] = [];
       while (validCount < 20 && totalCount < 100) {
         const url = `/arbitrary/resources/search?mode=ALL&service=BLOG_COMMENT&query=${SUPER_LIKE_BASE}&limit=1&offset=${totalCount}&includemetadata=true&reverse=true&excludeblocked=true`;
@@ -177,12 +177,12 @@ const GlobalWrapper: React.FC<Props> = ({ children, setTheme }) => {
                   });
                   comments = [
                     ...comments,
-                  {
-                    ...comment,
-                    message: "",
-                    amount: res.amount,
-                  },
-                ];
+                    {
+                      ...comment,
+                      message: "",
+                      amount: res.amount,
+                    },
+                  ];
                   validCount++;
                 }
               } catch (error) {}

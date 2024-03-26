@@ -39,6 +39,7 @@ export const categories = [
   { id: 24, name: "Anime" },
   { id: 25, name: "Cartoons" },
   { id: 26, name: "Qortal" },
+  { id: 99, name: "Other" },
 ].sort(sortCategory);
 
 export const subCategories: CategoryMap = {
@@ -59,7 +60,7 @@ export const subCategories: CategoryMap = {
     { id: 113, name: "Indie Films" },
     { id: 114, name: "International Films" },
     { id: 115, name: "Biographies & True Stories" },
-    { id: 116, name: "Other" },
+    { id: 199, name: "Other" },
   ].sort(sortCategory),
   2: [
     // Series
@@ -78,14 +79,14 @@ export const subCategories: CategoryMap = {
     { id: 213, name: "Anthologies" },
     { id: 214, name: "International Series" },
     { id: 215, name: "Miniseries" },
-    { id: 216, name: "Other" },
+    { id: 299, name: "Other" },
   ].sort(sortCategory),
   4: [
     // Education
     { id: 400, name: "Tutorial" },
-    { id: 401, name: "Documentary" },
     { id: 401, name: "Qortal" },
-    { id: 402, name: "Other" },
+    { id: 402, name: "Documentary" },
+    { id: 499, name: "Other" },
   ].sort(sortCategory),
 
   24: [
@@ -102,6 +103,6 @@ export const subCategories: CategoryMap = {
     { id: 2411, name: "Harem" },
     { id: 2412, name: "Ecchi" },
     { id: 2413, name: "Idol" },
-    { id: 2414, name: "Other" },
+    { id: 2499, name: "Other" },
   ].sort(sortCategory),
 };

@@ -8,14 +8,14 @@ import { Provider } from "react-redux";
 import GlobalWrapper from "./wrappers/GlobalWrapper";
 import Notification from "./components/common/Notification/Notification";
 import { Home } from "./pages/Home/Home";
-import { VideoContent } from "./pages/VideoContent/VideoContent";
+import { VideoContent } from "./pages/ContentPages/VideoContent/VideoContent";
 import DownloadWrapper from "./wrappers/DownloadWrapper";
-import { IndividualProfile } from "./pages/IndividualProfile/IndividualProfile";
-import { PlaylistContent } from "./pages/PlaylistContent/PlaylistContent";
+import { IndividualProfile } from "./pages/ContentPages/IndividualProfile/IndividualProfile";
+import { PlaylistContent } from "./pages/ContentPages/PlaylistContent/PlaylistContent";
 import { PersistGate } from "redux-persist/integration/react";
 import { persistStore } from "redux-persist";
 import { setFilteredSubscriptions } from "./state/features/videoSlice.ts";
-import { SubscriptionData } from "./components/common/SubscribeButton.tsx";
+import { SubscriptionData } from "./components/common/ContentButtons/SubscribeButton.tsx";
 
 export const getUserName = async () => {
   const account = await qortalRequest({

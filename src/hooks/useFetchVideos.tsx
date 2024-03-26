@@ -24,9 +24,9 @@ import {
   QTUBE_PLAYLIST_BASE,
   QTUBE_VIDEO_BASE,
 } from "../constants/Identifiers.ts";
-import { allTabValue, subscriptionTabValue } from "../constants/Misc.ts";
 import { persistReducer } from "redux-persist";
 import { subscriptionListFilter } from "../App.tsx";
+import { ContentType, VideoListType } from "../state/features/persistSlice.ts";
 
 export const useFetchVideos = () => {
   const dispatch = useDispatch();
@@ -194,15 +194,15 @@ export const useFetchVideos = () => {
     category?: string;
     subcategory?: string;
     keywords?: string;
-    type?: string;
+    contentType?: ContentType;
   };
 
-  const emptyFilters = {
+  const emptyFilters: FilterType = {
     name: "",
     category: "",
     subcategory: "",
     keywords: "",
-    type: "",
+    contentType: "videos",
   };
   const getVideos = React.useCallback(
     async (
@@ -210,16 +210,16 @@ export const useFetchVideos = () => {
       reset?: boolean,
       resetFilters?: boolean,
       limit?: number,
-      listType = allTabValue
+      videoListType: VideoListType = "all"
     ) => {
-      emptyFilters.type = filters.type;
+      emptyFilters.contentType = filters.contentType;
       try {
         const {
           name = "",
           category = "",
           subcategory = "",
           keywords = "",
-          type = filters.type,
+          contentType = filters.contentType,
         }: FilterType = resetFilters ? emptyFilters : filters;
         let offset = videos.length;
         if (reset) {
@@ -231,9 +231,7 @@ export const useFetchVideos = () => {
 
         if (name) {
           defaultUrl = defaultUrl + `&name=${name}`;
-        }
-
-        if (listType === subscriptionTabValue) {
+        } else if (videoListType === "subscriptions") {
           const filteredSubscribeList = await subscriptionListFilter(false);
           filteredSubscribeList.map(sub => {
             defaultUrl += `&name=${sub.subscriberName}`;
@@ -252,7 +250,7 @@ export const useFetchVideos = () => {
         if (keywords) {
           defaultUrl = defaultUrl + `&query=${keywords}`;
         }
-        if (type === "playlists") {
+        if (contentType === "playlists") {
           defaultUrl = defaultUrl + `&service=PLAYLIST`;
           defaultUrl = defaultUrl + `&identifier=${QTUBE_PLAYLIST_BASE}`;
         } else {
@@ -431,9 +429,7 @@ export const useFetchVideos = () => {
       const totalVideosPublished = responseData.length;
       const uniqueNames = new Set(responseData.map(video => video.name));
       const totalNamesPublished = uniqueNames.size;
-      const videosPerNamePublished = (
-        totalVideosPublished / totalNamesPublished
-      ).toFixed(0);
+      const videosPerNamePublished = totalVideosPublished / totalNamesPublished;
 
       dispatch(setTotalVideosPublished(totalVideosPublished));
       dispatch(setTotalNamesPublished(totalNamesPublished));

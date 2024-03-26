@@ -37,12 +37,12 @@ import {
 import {
   changeFilterType,
   resetSubscriptions,
+  VideoListType,
 } from "../../state/features/persistSlice.ts";
 import { categories, subCategories } from "../../constants/Categories.ts";
 import { ListSuperLikeContainer } from "../../components/common/ListSuperLikes/ListSuperLikeContainer.tsx";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import VideoList from "./VideoList.tsx";
-import { allTabValue, subscriptionTabValue } from "../../constants/Misc.ts";
 import { setHomePageSelectedTab } from "../../state/features/persistSlice.ts";
 import { StatsData } from "../../components/StatsData.tsx";
 
@@ -74,7 +74,9 @@ export const Home = ({ mode }: HomeProps) => {
   );
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [tabValue, setTabValue] = useState<string>(persistReducer.selectedTab);
+  const [tabValue, setTabValue] = useState<VideoListType>(
+    persistReducer.selectedTab
+  );
 
   const tabFontSize = "20px";
 
@@ -123,14 +125,14 @@ export const Home = ({ mode }: HomeProps) => {
       if (!firstFetch.current || !afterFetch.current) return;
       if (isFetching.current) return;
       isFetching.current = true;
-      console.log("in getvideoshandler");
+
       await getVideos(
         {
           name: filterName,
           category: selectedCategoryVideos?.id,
           subcategory: selectedSubCategoryVideos?.id,
           keywords: filterSearch,
-          type: filterType,
+          contentType: filterType,
         },
         reset,
         resetFilters,
@@ -171,7 +173,7 @@ export const Home = ({ mode }: HomeProps) => {
         category: "",
         subcategory: "",
         keywords: "",
-        type: filterType,
+        contentType: filterType,
       },
       null,
       null,
@@ -269,11 +271,10 @@ export const Home = ({ mode }: HomeProps) => {
   };
 
   useEffect(() => {
-    console.log("useeffect 5");
     getVideosHandler(true);
   }, [tabValue]);
 
-  const changeTab = (e: React.SyntheticEvent, newValue: string) => {
+  const changeTab = (e: React.SyntheticEvent, newValue: VideoListType) => {
     setTabValue(newValue);
     dispatch(setHomePageSelectedTab(newValue));
   };
@@ -516,23 +517,23 @@ export const Home = ({ mode }: HomeProps) => {
                 >
                   <Tab
                     label="All Videos"
-                    value={allTabValue}
+                    value={"all"}
                     sx={{ fontSize: tabFontSize }}
                   />
                   <Tab
                     label="Subscriptions"
-                    value={subscriptionTabValue}
+                    value={"subscriptions"}
                     sx={{ fontSize: tabFontSize }}
                   />
                 </TabList>
-                <TabPanel value={allTabValue} sx={{ width: "100%" }}>
+                <TabPanel value={"all"} sx={{ width: "100%" }}>
                   <VideoList videos={videos} />
                   <LazyLoad
                     onLoadMore={getVideosHandler}
                     isLoading={isLoading}
                   ></LazyLoad>
                 </TabPanel>
-                <TabPanel value={subscriptionTabValue} sx={{ width: "100%" }}>
+                <TabPanel value={"subscriptions"} sx={{ width: "100%" }}>
                   {filteredSubscriptionList.length > 0 ? (
                     <>
                       <VideoList videos={videos} />
@@ -541,10 +542,12 @@ export const Home = ({ mode }: HomeProps) => {
                         isLoading={isLoading}
                       ></LazyLoad>
                     </>
-                  ) : (
+                  ) : !isLoading ? (
                     <div style={{ textAlign: "center" }}>
                       You have no subscriptions
                     </div>
+                  ) : (
+                    <></>
                   )}
                 </TabPanel>
               </TabContext>

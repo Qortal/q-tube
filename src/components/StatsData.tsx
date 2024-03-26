@@ -12,8 +12,6 @@ export const StatsData = () => {
     width: "100%",
     padding: "20px 0px",
     backgroundColor: theme.palette.background.default,
-    borderTop: `1px solid ${theme.palette.background.paper}`,
-    borderRight: `1px solid ${theme.palette.background.paper}`,
   }));
 
   const {
@@ -51,7 +49,10 @@ export const StatsData = () => {
       </div>
       <div>
         Average:{" "}
-        <span style={{ fontWeight: "bold" }}>{videosPerNamePublished}</span>
+        <span style={{ fontWeight: "bold" }}>
+          {videosPerNamePublished > 0 &&
+            Number(videosPerNamePublished).toFixed(0)}
+        </span>
       </div>
     </StatsCol>
   );

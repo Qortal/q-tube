@@ -8,8 +8,8 @@ import {
   useTheme,
 } from "@mui/material";
 import React, { useCallback, useEffect, useState, useRef } from "react";
-import { CircleSVG } from "../../../assets/svgs/CircleSVG";
-import { EmptyCircleSVG } from "../../../assets/svgs/EmptyCircleSVG";
+import { CircleSVG } from "../../../assets/svgs/CircleSVG.tsx";
+import { EmptyCircleSVG } from "../../../assets/svgs/EmptyCircleSVG.tsx";
 import { styled } from "@mui/system";
 
 interface Publish {

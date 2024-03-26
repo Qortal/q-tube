@@ -12,7 +12,7 @@ import {
   Select,
 } from "@mui/material";
 import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
-import { TimesSVG } from "../../assets/svgs/TimesSVG";
+import { TimesSVG } from "../../../assets/svgs/TimesSVG.tsx";
 
 export const DoubleLine = styled(Typography)`
   display: -webkit-box;
@@ -51,9 +51,6 @@ export const CreateContainer = styled(Box)(({ theme }) => ({
   borderRadius: "50%",
 }));
 
-export const CodecTypography = styled(Typography)(({ theme }) => ({
-  fontSize: "18px",
-}));
 export const ModalBody = styled(Box)(({ theme }) => ({
   position: "absolute",
   backgroundColor: theme.palette.background.default,

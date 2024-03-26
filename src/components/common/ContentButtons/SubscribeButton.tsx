@@ -1,10 +1,14 @@
-import { Button, ButtonProps } from "@mui/material";
+import { Button, ButtonProps, Tooltip } from "@mui/material";
 import { MouseEvent, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../state/store.ts";
-import { subscribe, unSubscribe } from "../../state/features/persistSlice.ts";
-import { setFilteredSubscriptions } from "../../state/features/videoSlice.ts";
-import { subscriptionListFilter } from "../../App.tsx";
+import { RootState } from "../../../state/store.ts";
+import {
+  subscribe,
+  unSubscribe,
+} from "../../../state/features/persistSlice.ts";
+import { setFilteredSubscriptions } from "../../../state/features/videoSlice.ts";
+import { subscriptionListFilter } from "../../../App.tsx";
+import { styled } from "@mui/material/styles";
 
 interface SubscribeButtonProps extends ButtonProps {
   subscriberName: string;
@@ -89,15 +93,31 @@ export const SubscribeButton = ({
     height: "45px",
     ...props.sx,
   };
+
+  const TooltipLine = styled("div")(({ theme }) => ({
+    fontSize: "18px",
+  }));
+
+  const tooltipTitle = (
+    <>
+      <TooltipLine>
+        Subscribing to a name lets you see their content on the Subscriptions
+        tab of the Home Page. This does NOT download any data to your node.
+      </TooltipLine>
+    </>
+  );
+
   return (
-    <Button
-      {...props}
-      variant={"contained"}
-      color="error"
-      sx={buttonStyle}
-      onClick={e => manageSubscription(e)}
-    >
-      {isSubscribed ? "Unsubscribe" : "Subscribe"}
-    </Button>
+    <Tooltip title={tooltipTitle} placement={"top"} arrow>
+      <Button
+        {...props}
+        variant={"contained"}
+        color="error"
+        sx={buttonStyle}
+        onClick={e => manageSubscription(e)}
+      >
+        {isSubscribed ? "Unsubscribe" : "Subscribe"}
+      </Button>
+    </Tooltip>
   );
 };

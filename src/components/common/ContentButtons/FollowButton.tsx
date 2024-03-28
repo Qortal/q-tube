@@ -33,9 +33,9 @@ export const FollowButton = ({ followerName, ...props }: FollowButtonProps) => {
   const followName = () => {
     if (followingList.includes(followerName) === false) {
       qortalRequest({
-        action: "ADD_LIST_ITEM",
+        action: "ADD_LIST_ITEMS",
         list_name: "followedNames",
-        item: followerName,
+        items: [followerName],
       }).then(response => {
         if (response === false) console.log("followName failed");
         else {

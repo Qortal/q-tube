@@ -44,6 +44,7 @@ import {
 } from "../../../state/features/videoSlice.ts";
 import ImageUploader from "../../common/ImageUploader.tsx";
 import { categories, subCategories } from "../../../constants/Categories.ts";
+import { ratings } from "../../../constants/Ratings.ts";
 import { Playlists } from "../../Playlists/Playlists.tsx";
 import { PlaylistListEdit } from "../PlaylistListEdit/PlaylistListEdit.tsx";
 import { TextEditor } from "../../common/TextEditor/TextEditor.tsx";
@@ -90,6 +91,8 @@ export const EditPlaylist = () => {
     useState<any>(null);
   const [selectedSubCategoryVideos, setSelectedSubCategoryVideos] =
     useState<any>(null);
+  const [selectedRatingVideos, setSelectedRatingVideos] =
+    useState<any>(null);
 
   const isNew = useMemo(() => {
     return editVideoProperties?.mode === "new";
@@ -121,8 +124,8 @@ export const EditPlaylist = () => {
   //     // Split the extracted string into key-value pairs
   //     const keyValuePairs = extractedString.split(";");
 
-  //     // Initialize variables to hold the category and subcategory values
-  //     let category, subcategory;
+  //     // Initialize variables to hold the category, subcategory, and rating values
+  //     let category, subcategory, rating;
 
   //     // Loop through each key-value pair
   //     keyValuePairs.forEach((pair) => {
@@ -133,6 +136,8 @@ export const EditPlaylist = () => {
   //         category = value;
   //       } else if (key === "subcategory") {
   //         subcategory = value;
+  //       } else if (key === "rating") {
+  //         rating = value;
   //       }
   //     });
 
@@ -144,6 +149,11 @@ export const EditPlaylist = () => {
   //     if(subcategory){
   //       const selectedOption = categories.find((option) => option.id === +subcategory);
   //   setSelectedCategoryVideos(selectedOption || null);
+  //     }
+
+  //     if(rating){
+  //       const selectedOption = ratings.find((option) => option.id === +rating);
+  //   setSelectedRatingVideos(selectedOption || null);
   //     }
 
   //   }
@@ -206,6 +216,13 @@ export const EditPlaylist = () => {
         setSelectedSubCategoryVideos(selectedOption || null);
       }
 
+      if (editVideoProperties?.rating) {
+        const selectedOption = ratings.find(
+          option => option.id === +editVideoProperties.rating
+        );
+        setSelectedRatingVideos(selectedOption || null);
+      }
+
       if (editVideoProperties?.videos) {
         checkforPlaylist(editVideoProperties?.videos);
       }
@@ -219,6 +236,7 @@ export const EditPlaylist = () => {
     setPlaylistData(null);
     setSelectedCategoryVideos(null);
     setSelectedSubCategoryVideos(null);
+    setSelectedRatingVideos(null);
     setCoverImage("");
     dispatch(setEditPlaylist(null));
   };
@@ -229,6 +247,7 @@ export const EditPlaylist = () => {
       if (!description) throw new Error("Please enter a description");
       if (!coverImage) throw new Error("Please select cover image");
       if (!selectedCategoryVideos) throw new Error("Please select a category");
+      if (!selectedRatingVideos) throw new Error("Please select a rating");
 
       if (!editVideoProperties) return;
       if (!userAddress) throw new Error("Unable to locate user address");
@@ -257,6 +276,7 @@ export const EditPlaylist = () => {
       }
       const category = selectedCategoryVideos.id;
       const subcategory = selectedSubCategoryVideos?.id || "";
+      const rating = selectedRatingVideos.id;
 
       const videoStructured = playlistData.videos.map(item => {
         const descriptionVid = item?.metadata?.description;
@@ -303,6 +323,7 @@ export const EditPlaylist = () => {
         commentsId: commentsId,
         category,
         subcategory,
+        rating,
       };
 
       const codes = videoStructured
@@ -310,8 +331,8 @@ export const EditPlaylist = () => {
         .slice(0, 10)
         .join("");
       let metadescription =
-        `**category:${category};subcategory:${subcategory};${codes}**` +
-        stringDescription.slice(0, 120);
+        `**category:${category};subcategory:${subcategory};rating:${rating};${codes}**` +
+        stringDescription.slice(0, 110);
 
       const crowdfundObjectToBase64 = await objectToBase64(playlistObject);
       // Description is obtained from raw data
@@ -417,6 +438,13 @@ export const EditPlaylist = () => {
     );
     setSelectedSubCategoryVideos(selectedOption || null);
   };
+  const handleOptionRatingChangeVideos = (
+    event: SelectChangeEvent<string>
+  ) => {
+    const optionId = event.target.value;
+    const selectedOption = ratings.find(option => option.id === +optionId);
+    setSelectedRatingVideos(selectedOption || null);
+  };
 
   const removeVideo = index => {
     const copyData = structuredClone(playlistData);
@@ -497,6 +525,21 @@ export const EditPlaylist = () => {
                     </Select>
                   </FormControl>
                 )}
+              <FormControl fullWidth sx={{ marginBottom: 2 }}>
+                <InputLabel id="Rating">Select a Rating</InputLabel>
+                <Select
+                  labelId="Rating"
+                  input={<OutlinedInput label="Select a Rating" />}
+                  value={selectedRatingVideos?.id || ""}
+                  onChange={handleOptionRatingChangeVideos}
+                >
+                  {ratings.map(option => (
+                    <MenuItem key={option.id} value={option.id}>
+                      {option.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
             </Box>
             <React.Fragment>
               {!coverImage ? (

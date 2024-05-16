@@ -47,6 +47,7 @@ import {
 } from "../../../state/features/videoSlice.ts";
 import ImageUploader from "../../common/ImageUploader.tsx";
 import { categories, subCategories } from "../../../constants/Categories.ts";
+import { ratings } from "../../../constants/Ratings.ts";
 import { MultiplePublish } from "../MultiplePublish/MultiplePublishAll.tsx";
 import {
   CrowdfundSubTitle,
@@ -124,10 +125,13 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
   const [playlistDescription, setPlaylistDescription] = useState<string>("");
   const [selectedCategory, setSelectedCategory] = useState<any>(null);
   const [selectedSubCategory, setSelectedSubCategory] = useState<any>(null);
+  const [selectedRating, setSelectedRating] = useState<any>(null);
 
   const [selectedCategoryVideos, setSelectedCategoryVideos] =
     useState<any>(null);
   const [selectedSubCategoryVideos, setSelectedSubCategoryVideos] =
+    useState<any>(null);
+  const [selectedRatingVideos, setSelectedRatingVideos] =
     useState<any>(null);
 
   const [playlistSetting, setPlaylistSetting] = useState<null | string>(null);
@@ -208,6 +212,7 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
         if (!playlistDescription) throw new Error("Please enter a description");
         if (!playlistCoverImage) throw new Error("Please select cover image");
         if (!selectedCategory) throw new Error("Please select a category");
+        if (!selectedRating) throw new Error("Please select a rating");
       }
       if (files?.length === 0)
         throw new Error("Please select at least one file");
@@ -248,6 +253,7 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
           : publish.description;
         const category = selectedCategoryVideos.id;
         const subcategory = selectedSubCategoryVideos?.id || "";
+        const rating = selectedRatingVideos.id;
         const coverImage = isCheckSameCoverImage
           ? coverImageForAll
           : publish.coverImage;
@@ -301,14 +307,15 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
           commentsId: `${QTUBE_VIDEO_BASE}_cm_${id}`,
           category,
           subcategory,
+          rating,
           code,
           videoType: file?.type || "video/mp4",
           filename: `${alphanumericString.trim()}.${fileExtension}`,
         };
 
         let metadescription =
-          `**category:${category};subcategory:${subcategory};code:${code}**` +
-          fullDescription.slice(0, 150);
+          `**category:${category};subcategory:${subcategory};rating:${rating};code:${code}**` +
+          fullDescription.slice(0, 140);
 
         const crowdfundObjectToBase64 = await objectToBase64(videoObject);
         // Description is obtained from raw data
@@ -347,6 +354,7 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
         const stringDescription = extractTextFromHTML(description);
         const category = selectedCategory.id;
         const subcategory = selectedSubCategory?.id || "";
+        const rating = selectedRating.id;
         const coverImage = playlistCoverImage;
         const sanitizeTitle = title
           .replace(/[^a-zA-Z0-9\s-]/g, "")
@@ -385,6 +393,7 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
           commentsId: `${QTUBE_PLAYLIST_BASE}_cm_${id}`,
           category,
           subcategory,
+          rating,
         };
 
         const codes = videos
@@ -393,8 +402,8 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
           .join("");
 
         let metadescription =
-          `**category:${category};subcategory:${subcategory};${codes}**` +
-          stringDescription.slice(0, 120);
+          `**category:${category};subcategory:${subcategory};rating:${rating};${codes}**` +
+          stringDescription.slice(0, 110);
 
         const crowdfundObjectToBase64 = await objectToBase64(playlistObject);
         // Description is obtained from raw data
@@ -448,8 +457,8 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
             .join("");
 
           let metadescription =
-            `**category:${playlistObject.category};subcategory:${playlistObject.subcategory};${codes}**` +
-            playlistObject.description.slice(0, 120);
+            `**category:${playlistObject.category};subcategory:${playlistObject.subcategory};rating:${playlistObject.rating};${codes}**` +
+            playlistObject.description.slice(0, 110);
 
           const crowdfundObjectToBase64 = await objectToBase64(playlistObject);
           // Description is obtained from raw data
@@ -531,6 +540,11 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
     );
     setSelectedSubCategory(selectedOption || null);
   };
+  const handleOptionRatingChange = (event: SelectChangeEvent<string>) => {
+    const optionId = event.target.value;
+    const selectedOption = ratings.find(option => option.id === +optionId);
+    setSelectedRating(selectedOption || null);
+  };
 
   const handleOptionCategoryChangeVideos = (
     event: SelectChangeEvent<string>
@@ -549,6 +563,13 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
     );
     setSelectedSubCategoryVideos(selectedOption || null);
   };
+  const handleOptionRatingChangeVideos = (
+    event: SelectChangeEvent<string>
+  ) => {
+    const optionId = event.target.value;
+    const selectedOption = ratings.find(option => option.id === +optionId);
+    setSelectedRatingVideos(selectedOption || null);
+  };
 
   const next = () => {
     try {
@@ -557,6 +578,7 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
       if (files?.length === 0)
         throw new Error("Please select at least one file");
       if (!selectedCategoryVideos) throw new Error("Please select a category");
+      if (!selectedRatingVideos) throw new Error("Please select a rating");
       files.forEach(file => {
         if (!file.title) throw new Error("Please enter a title");
         if (!isCheckTitleByFile && !file.description)
@@ -786,6 +808,21 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
                           </Select>
                         </FormControl>
                       )}
+                    <FormControl fullWidth sx={{ marginBottom: 2 }}>
+                      <InputLabel id="Rating">Select a Rating</InputLabel>
+                      <Select
+                        labelId="Rating"
+                        input={<OutlinedInput label="Select a Rating" />}
+                        value={selectedRatingVideos?.id || ""}
+                        onChange={handleOptionRatingChangeVideos}
+                      >
+                        {ratings.map(option => (
+                          <MenuItem key={option.id} value={option.id}>
+                            {option.name}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
                   </>
                 )}
               </Box>
@@ -1203,6 +1240,21 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
                       </Select>
                     </FormControl>
                   )}
+                  <FormControl fullWidth sx={{ marginBottom: 2, marginTop: 2 }}>
+                    <InputLabel id="Rating">Select a Rating</InputLabel>
+                    <Select
+                      labelId="Rating"
+                      input={<OutlinedInput label="Select a Rating" />}
+                      value={selectedRating?.id || ""}
+                      onChange={handleOptionRatingChange}
+                    >
+                      {ratings.map(option => (
+                        <MenuItem key={option.id} value={option.id}>
+                          {option.name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
                 </>
               )}
             </>
@@ -1297,8 +1349,10 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
             setSelectedCategory(null);
             setCoverImageForAll(null);
             setSelectedSubCategory(null);
+            setSelectedRating(null);
             setSelectedCategoryVideos(null);
             setSelectedSubCategoryVideos(null);
+            setSelectedRatingVideos(null);
             setPlaylistSetting(null);
             dispatch(
               setNotification({

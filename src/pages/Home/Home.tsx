@@ -31,6 +31,7 @@ import { SubtitleContainer } from "./Home-styles";
 import {
   changeSelectedCategoryVideos,
   changeSelectedSubCategoryVideos,
+  changeSelectedRatingVideos,
   changefilterName,
   changefilterSearch,
 } from "../../state/features/videoSlice";
@@ -40,6 +41,7 @@ import {
   VideoListType,
 } from "../../state/features/persistSlice.ts";
 import { categories, subCategories } from "../../constants/Categories.ts";
+import { ratings } from "../../constants/Ratings.ts";
 import { ListSuperLikeContainer } from "../../components/common/ListSuperLikes/ListSuperLikeContainer.tsx";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import VideoList from "./VideoList.tsx";
@@ -107,6 +109,13 @@ export const Home = ({ mode }: HomeProps) => {
     dispatch(changeSelectedSubCategoryVideos(payload));
   };
 
+  const selectedRatingVideos = useSelector(
+    (state: RootState) => state.video.selectedRatingVideos
+  ) || { id: 1, name: "General" };
+  const setSelectedRatingVideos = payload => {
+    dispatch(changeSelectedRatingVideos(payload));
+  };
+
   const dispatch = useDispatch();
   const filteredVideos = useSelector(
     (state: RootState) => state.video.filteredVideos
@@ -131,6 +140,7 @@ export const Home = ({ mode }: HomeProps) => {
           name: filterName,
           category: selectedCategoryVideos?.id,
           subcategory: selectedSubCategoryVideos?.id,
+          rating: selectedRatingVideos?.id,
           keywords: filterSearch,
           contentType: filterType,
         },
@@ -149,6 +159,7 @@ export const Home = ({ mode }: HomeProps) => {
       filterName,
       selectedCategoryVideos,
       selectedSubCategoryVideos,
+      selectedRatingVideos,
       filterSearch,
       filterType,
       tabValue,
@@ -172,6 +183,7 @@ export const Home = ({ mode }: HomeProps) => {
         name: "",
         category: "",
         subcategory: "",
+        rating: "",
         keywords: "",
         contentType: filterType,
       },
@@ -240,6 +252,7 @@ export const Home = ({ mode }: HomeProps) => {
     setFilterName("");
     setSelectedCategoryVideos(null);
     setSelectedSubCategoryVideos(null);
+    setSelectedRatingVideos({ id: 1, name: "General" });
 
     ReactDOM.flushSync(() => {
       getVideosHandler(true, true);
@@ -262,6 +275,13 @@ export const Home = ({ mode }: HomeProps) => {
       option => option.id === +optionId
     );
     setSelectedSubCategoryVideos(selectedOption || null);
+  };
+  const handleOptionRatingChangeVideos = (
+    event: SelectChangeEvent<string>
+  ) => {
+    const optionId = event.target.value;
+    const selectedOption = ratings.find(option => option.id === +optionId);
+    setSelectedRatingVideos(selectedOption || null);
   };
 
   const handleInputKeyDown = (event: any) => {
@@ -441,6 +461,58 @@ export const Home = ({ mode }: HomeProps) => {
                         </Select>
                       </FormControl>
                     )}
+                </Box>
+              </FormControl>
+            </FiltersSubContainer>
+            <FiltersSubContainer>
+              <FormControl sx={{ width: "100%", marginTop: "30px" }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    gap: "20px",
+                    alignItems: "center",
+                    flexDirection: "column",
+                  }}
+                >
+                  <FormControl fullWidth sx={{ marginBottom: 1 }}>
+                    <InputLabel
+                      sx={{
+                        fontSize: "16px",
+                      }}
+                      id="Rating"
+                    >
+                      Rating
+                    </InputLabel>
+                    <Select
+                      labelId="Rating"
+                      input={<OutlinedInput label="Rating" />}
+                      value={selectedRatingVideos?.id || ""}
+                      onChange={handleOptionRatingChangeVideos}
+                      sx={{
+                        // Target the input field
+                        ".MuiSelect-select": {
+                          fontSize: "16px", // Change font size for the selected value
+                          padding: "10px 5px 15px 15px;",
+                        },
+                        // Target the dropdown icon
+                        ".MuiSelect-icon": {
+                          fontSize: "20px", // Adjust if needed
+                        },
+                        // Target the dropdown menu
+                        "& .MuiMenu-paper": {
+                          ".MuiMenuItem-root": {
+                            fontSize: "14px", // Change font size for the menu items
+                          },
+                        },
+                      }}
+                    >
+                      {ratings.map(option => (
+                        <MenuItem key={option.id} value={option.id}>
+                          {option.name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
                 </Box>
               </FormControl>
             </FiltersSubContainer>

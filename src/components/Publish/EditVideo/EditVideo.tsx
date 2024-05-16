@@ -47,6 +47,7 @@ import {
 } from "../../../state/features/videoSlice.ts";
 import ImageUploader from "../../common/ImageUploader.tsx";
 import { categories, subCategories } from "../../../constants/Categories.ts";
+import { ratings } from "../../../constants/Ratings.ts";
 import { MultiplePublish } from "../MultiplePublish/MultiplePublishAll.tsx";
 import { TextEditor } from "../../common/TextEditor/TextEditor.tsx";
 import { extractTextFromHTML } from "../../common/TextEditor/utils.ts";
@@ -95,6 +96,8 @@ export const EditVideo = () => {
   const [selectedCategoryVideos, setSelectedCategoryVideos] =
     useState<any>(null);
   const [selectedSubCategoryVideos, setSelectedSubCategoryVideos] =
+    useState<any>(null);
+  const [selectedRatingVideos, setSelectedRatingVideos] =
     useState<any>(null);
   const [imageExtracts, setImageExtracts] = useState<any>([]);
 
@@ -148,8 +151,8 @@ export const EditVideo = () => {
   //     // Split the extracted string into key-value pairs
   //     const keyValuePairs = extractedString.split(";");
 
-  //     // Initialize variables to hold the category and subcategory values
-  //     let category, subcategory;
+  //     // Initialize variables to hold the category, subcategory, and rating values
+  //     let category, subcategory, rating;
 
   //     // Loop through each key-value pair
   //     keyValuePairs.forEach((pair) => {
@@ -160,6 +163,8 @@ export const EditVideo = () => {
   //         category = value;
   //       } else if (key === "subcategory") {
   //         subcategory = value;
+  //       } else if (key === "rating") {
+  //         rating = value;
   //       }
   //     });
 
@@ -171,6 +176,11 @@ export const EditVideo = () => {
   //     if(subcategory){
   //       const selectedOption = categories.find((option) => option.id === +subcategory);
   //   setSelectedCategoryVideos(selectedOption || null);
+  //     }
+
+  //     if(rating){
+  //       const selectedOption = ratings.find((option) => option.id === +rating);
+  //   setSelectedRatingVideos(selectedOption || null);
   //     }
 
   //   }
@@ -204,6 +214,13 @@ export const EditVideo = () => {
         ]?.find(option => option.id === +editVideoProperties.subcategory);
         setSelectedSubCategoryVideos(selectedOption || null);
       }
+
+      if (editVideoProperties?.rating) {
+        const selectedOption = ratings.find(
+          option => option.id === +editVideoProperties.rating
+        );
+        setSelectedRatingVideos(selectedOption || null);
+      }
     }
   }, [editVideoProperties]);
 
@@ -223,6 +240,7 @@ export const EditVideo = () => {
       if (!description) throw new Error("Please enter a description");
       if (!coverImage) throw new Error("Please select cover image");
       if (!selectedCategoryVideos) throw new Error("Please select a category");
+      if (!selectedRatingVideos) throw new Error("Please select a rating");
       if (!editVideoProperties) return;
       if (!userAddress) throw new Error("Unable to locate user address");
       let errorMsg = "";
@@ -251,6 +269,7 @@ export const EditVideo = () => {
       let listOfPublishes = [];
       const category = selectedCategoryVideos.id;
       const subcategory = selectedSubCategoryVideos?.id || "";
+      const rating = selectedRatingVideos.id;
 
       const fullDescription = extractTextFromHTML(description);
       let fileExtension = "mp4";
@@ -282,14 +301,15 @@ export const EditVideo = () => {
         commentsId: editVideoProperties.commentsId,
         category,
         subcategory,
+        rating,
         code: editVideoProperties.code,
         videoType: file?.type || "video/mp4",
         filename: `${alphanumericString.trim()}.${fileExtension}`,
       };
 
       let metadescription =
-        `**category:${category};subcategory:${subcategory};code:${editVideoProperties.code}**` +
-        description.slice(0, 150);
+        `**category:${category};subcategory:${subcategory};rating:${rating};code:${editVideoProperties.code}**` +
+        description.slice(0, 140);
 
       const crowdfundObjectToBase64 = await objectToBase64(videoObject);
       // Description is obtained from raw data
@@ -373,6 +393,13 @@ export const EditVideo = () => {
       option => option.id === +optionId
     );
     setSelectedSubCategoryVideos(selectedOption || null);
+  };
+  const handleOptionRatingChangeVideos = (
+    event: SelectChangeEvent<string>
+  ) => {
+    const optionId = event.target.value;
+    const selectedOption = ratings.find(option => option.id === +optionId);
+    setSelectedRatingVideos(selectedOption || null);
   };
 
   const onFramesExtracted = async imgs => {
@@ -493,6 +520,21 @@ export const EditVideo = () => {
                     </Select>
                   </FormControl>
                 )}
+              <FormControl fullWidth sx={{ marginBottom: 2 }}>
+                <InputLabel id="Rating">Select a Rating</InputLabel>
+                <Select
+                  labelId="Rating"
+                  input={<OutlinedInput label="Select a Rating" />}
+                  value={selectedRatingVideos?.id || ""}
+                  onChange={handleOptionRatingChangeVideos}
+                >
+                  {ratings.map(option => (
+                    <MenuItem key={option.id} value={option.id}>
+                      {option.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
             </Box>
             {file && (
               <FrameExtractor

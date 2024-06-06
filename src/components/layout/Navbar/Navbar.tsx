@@ -65,7 +65,7 @@ const NavBar: React.FC<Props> = ({
   const [openUserDropdown, setOpenUserDropdown] = useState<boolean>(false);
   const [isOpenBlockedNamesModal, setIsOpenBlockedNamesModal] =
     useState<boolean>(false);
-
+    
   const [anchorElNotification, setAnchorElNotification] =
     React.useState<HTMLButtonElement | null>(null);
   const filterValue = useSelector(
@@ -92,6 +92,10 @@ const NavBar: React.FC<Props> = ({
   const handleCloseUserDropdown = () => {
     setAnchorEl(null);
     setOpenUserDropdown(false);
+  };
+
+  const handleMyChannelLink = () => {
+    navigate(`/channel/${userName}`);
   };
 
   const onCloseBlockedNames = () => {
@@ -415,6 +419,31 @@ const NavBar: React.FC<Props> = ({
             horizontal: "left",
           }}
         >
+          <DropdownContainer
+            onClick={() => {
+              handleMyChannelLink();
+              handleCloseUserDropdown();
+            }}
+          >
+            {!userAvatar ? (
+                <AccountCircleSVG
+                  color={theme.palette.text.primary}
+                  width="32"
+                  height="32"
+                />
+              ) : (
+                <img
+                  src={userAvatar}
+                  alt="User Avatar"
+                  width="32"
+                  height="32"
+                  style={{
+                    borderRadius: "50%",
+                  }}
+                />
+              )}
+            <DropdownText>My Channel</DropdownText>
+          </DropdownContainer>
           <DropdownContainer
             onClick={() => {
               setIsOpenBlockedNamesModal(true);

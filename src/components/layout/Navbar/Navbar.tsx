@@ -66,7 +66,7 @@ const NavBar: React.FC<Props> = ({
   const [isOpenBlockedNamesModal, setIsOpenBlockedNamesModal] =
     useState<boolean>(false);
     
-   const [anchorElNotification, setAnchorElNotification] =
+  const [anchorElNotification, setAnchorElNotification] =
     React.useState<HTMLButtonElement | null>(null);
   const filterValue = useSelector(
     (state: RootState) => state.video.filterValue

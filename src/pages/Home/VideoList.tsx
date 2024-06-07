@@ -119,15 +119,17 @@ export const VideoList = ({ videos }: VideoListProps) => {
                   </Tooltip>
                 )}
 
-                <Tooltip title="Block user content" placement="top">
-                  <BlockIconContainer>
-                    <BlockIcon
-                      onClick={() => {
-                        blockUserFunc(videoObj?.user);
-                      }}
-                    />
-                  </BlockIconContainer>
-                </Tooltip>
+                {videoObj?.user !== username && (
+                  <Tooltip title="Block user content" placement="top">
+                    <BlockIconContainer>
+                      <BlockIcon
+                        onClick={() => {
+                          blockUserFunc(videoObj?.user);
+                        }}
+                      />
+                    </BlockIconContainer>
+                  </Tooltip>
+                )}
               </IconsBox>
               <VideoCard
                 sx={{
@@ -219,15 +221,17 @@ export const VideoList = ({ videos }: VideoListProps) => {
                 </Tooltip>
               )}
 
-              <Tooltip title="Block user content" placement="top">
-                <BlockIconContainer>
-                  <BlockIcon
-                    onClick={() => {
-                      blockUserFunc(videoObj?.user);
-                    }}
-                  />
-                </BlockIconContainer>
-              </Tooltip>
+              {videoObj?.user !== username && (
+                <Tooltip title="Block user content" placement="top">
+                  <BlockIconContainer>
+                    <BlockIcon
+                      onClick={() => {
+                        blockUserFunc(videoObj?.user);
+                      }}
+                    />
+                  </BlockIconContainer>
+                </Tooltip>
+              )}
             </IconsBox>
             <VideoCard
               onClick={() => {

@@ -68,6 +68,7 @@ export const VideoListComponentLevel = ({ mode }: VideoListProps) => {
           title: video?.metadata?.title,
           category: video?.metadata?.category,
           categoryName: video?.metadata?.categoryName,
+          rating: video?.metadata?.rating,
           tags: video?.metadata?.tags || [],
           description: video?.metadata?.description,
           created: video?.created,

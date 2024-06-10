@@ -13,6 +13,7 @@ interface GlobalState {
   filterName: string;
   selectedCategoryVideos: any;
   selectedSubCategoryVideos: any;
+  selectedRatingVideos: any;
   editVideoProperties: any;
   editPlaylistProperties: any;
   filteredSubscriptionList: SubscriptionData[];
@@ -30,6 +31,7 @@ const initialState: GlobalState = {
   filterName: "",
   selectedCategoryVideos: null,
   selectedSubCategoryVideos: null,
+  selectedRatingVideos: null,
   editVideoProperties: null,
   editPlaylistProperties: null,
   filteredSubscriptionList: [],
@@ -45,6 +47,7 @@ export interface Video {
   id: string;
   category?: string;
   categoryName?: string;
+  rating?: string;
   tags?: string[];
   updated?: number | string;
   isValid?: boolean;
@@ -73,6 +76,9 @@ export const videoSlice = createSlice({
     },
     changeSelectedSubCategoryVideos: (state, action) => {
       state.selectedSubCategoryVideos = action.payload;
+    },
+    changeSelectedRatingVideos: (state, action) => {
+      state.selectedRatingVideos = action.payload;
     },
     setCountNewVideos: (state, action) => {
       state.countNewVideos = action.payload;
@@ -202,6 +208,7 @@ export const {
   changefilterName,
   changeSelectedCategoryVideos,
   changeSelectedSubCategoryVideos,
+  changeSelectedRatingVideos,
   blockUser,
   setEditVideo,
   setEditPlaylist,

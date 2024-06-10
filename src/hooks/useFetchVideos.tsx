@@ -157,6 +157,7 @@ export const useFetchVideos = () => {
           title: video?.metadata?.title,
           category: video?.metadata?.category,
           categoryName: video?.metadata?.categoryName,
+          rating: video?.metadata?.rating,
           tags: video?.metadata?.tags || [],
           description: video?.metadata?.description,
           created: video?.created,
@@ -193,6 +194,7 @@ export const useFetchVideos = () => {
     name?: string;
     category?: string;
     subcategory?: string;
+    rating?: string;
     keywords?: string;
     contentType?: ContentType;
   };
@@ -201,6 +203,7 @@ export const useFetchVideos = () => {
     name: "",
     category: "",
     subcategory: "",
+    rating: "",
     keywords: "",
     contentType: "videos",
   };
@@ -218,6 +221,7 @@ export const useFetchVideos = () => {
           name = "",
           category = "",
           subcategory = "",
+          rating = "",
           keywords = "",
           contentType = filters.contentType,
         }: FilterType = resetFilters ? emptyFilters : filters;
@@ -246,6 +250,11 @@ export const useFetchVideos = () => {
               defaultUrl +
               `&description=category:${category};subcategory:${subcategory}`;
           }
+        }
+        if (rating) {
+          defaultUrl += (category ? ';' : '&description=') + `rating:${rating}`;
+        } else {
+          defaultUrl += (category ? ';' : '&description=') + `rating:1;`;
         }
         if (keywords) {
           defaultUrl = defaultUrl + `&query=${keywords}`;
@@ -287,6 +296,7 @@ export const useFetchVideos = () => {
             service: video?.service,
             category: video?.metadata?.category,
             categoryName: video?.metadata?.categoryName,
+            rating: video?.metadata?.rating,
             tags: video?.metadata?.tags || [],
             description: video?.metadata?.description,
             created: video?.created,
@@ -351,6 +361,7 @@ export const useFetchVideos = () => {
             title: video?.metadata?.title,
             category: video?.metadata?.category,
             categoryName: video?.metadata?.categoryName,
+            rating: video?.metadata?.rating,
             tags: video?.metadata?.tags || [],
             description: video?.metadata?.description,
             created: video?.created,

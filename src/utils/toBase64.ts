@@ -46,6 +46,14 @@ export function objectToBase64(obj: any) {
   })
 }
 
+export function objectToFile(obj: any) {
+  // Step 1: Convert the object to a JSON string
+  const jsonString = JSON.stringify(obj)
+
+  // Step 2: Create a Blob from the JSON string
+  const blob = new Blob([jsonString], { type: 'application/json' })
+  return blob
+}
 export function objectToUint8Array(obj: any) {
   // Convert the object to a JSON string
   const jsonString = JSON.stringify(obj)

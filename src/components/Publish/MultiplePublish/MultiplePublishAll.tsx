@@ -125,6 +125,7 @@ export const MultiplePublish = ({
           );
           return (
             <Box
+              key={publish?.identifier}
               sx={{
                 display: "flex",
                 gap: "20px",

@@ -14,7 +14,7 @@ export const getCurrentLikeType = async (
     });
     return response?.likeType;
   } catch (e) {
-    console.log("liketype error: ", e);
+    // console.log("liketype error: ", e);
     return NEUTRAL;
   }
 };

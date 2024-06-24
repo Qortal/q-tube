@@ -51,9 +51,9 @@ export function objectToFile(obj: any) {
   const jsonString = JSON.stringify(obj)
 
   // Step 2: Create a Blob from the JSON string
-  const blob = new Blob([jsonString], { type: 'application/json' })
-  return blob
+  return new Blob([jsonString], { type: 'application/json' })
 }
+
 export function objectToUint8Array(obj: any) {
   // Convert the object to a JSON string
   const jsonString = JSON.stringify(obj)

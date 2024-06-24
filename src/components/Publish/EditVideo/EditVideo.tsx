@@ -318,7 +318,6 @@ export const EditVideo = () => {
           tag1: QTUBE_VIDEO_BASE,
           filename: `${alphanumericString.trim()}.${fileExtension}`,
         };
-console.log('edit file is: ', file)
         listOfPublishes.push(requestBodyVideo);
       }
 

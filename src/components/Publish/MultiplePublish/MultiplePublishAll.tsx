@@ -78,7 +78,7 @@ export const MultiplePublish = ({
   );
 
   const retry = () => {
-    let newlistOfMultiplePublishes: any[] = [];
+    const newlistOfMultiplePublishes: any[] = [];
     listOfUnsuccessfulPublishes?.forEach(item => {
       const findPub = publishes?.resources.find(
         (res: any) => res?.identifier === item.identifier

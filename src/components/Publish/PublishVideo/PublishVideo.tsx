@@ -146,7 +146,6 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
     maxSize,
     onDrop: (acceptedFiles, rejectedFiles) => {
       const formatArray = acceptedFiles.map(item => {
-        console.log('file: ', item)
         let filteredTitle = "";
 
         if (isCheckTitleByFile) {
@@ -288,7 +287,6 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
           /[^a-zA-Z0-9_]/g,
           ""
         );
-console.log('file size: ', file.size)
         const videoObject: any = {
           title,
           version: 1,

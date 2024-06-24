@@ -7,7 +7,7 @@ import {
   upsertVideos,
   upsertVideosBeginning,
   Video,
-  upsertFilteredVideos,
+  upsertFilteredVideos, removeFromHashMap,
 } from "../state/features/videoSlice";
 import {
   setIsLoadingGlobal,
@@ -100,8 +100,11 @@ export const useFetchVideos = () => {
         videoId,
         content,
       });
-
-      dispatch(addToHashMap(res));
+      if (res?.isValid) {
+        dispatch(addToHashMap(res));
+      } else {
+        dispatch(removeFromHashMap(videoId));
+      }
     } catch (error) {
       retries = retries + 1;
       if (retries < 2) {

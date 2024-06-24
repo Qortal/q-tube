@@ -35,7 +35,7 @@ import AddBoxIcon from "@mui/icons-material/AddBox";
 import { useDropzone } from "react-dropzone";
 
 import { setNotification } from "../../../state/features/notificationsSlice.ts";
-import { objectToBase64, objectToFile, uint8ArrayToBase64 } from "../../../utils/toBase64.ts";
+import { objectToBase64, objectToFile, uint8ArrayToBase64 } from "../../../utils/PublishFormatter.ts";
 import { RootState } from "../../../state/store.ts";
 import {
   upsertVideosBeginning,

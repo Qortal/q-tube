@@ -1,4 +1,4 @@
-export const toBase64 = (file: File): Promise<string | ArrayBuffer | null> =>
+export const publishFormatter = (file: File): Promise<string | ArrayBuffer | null> =>
   new Promise((resolve, reject) => {
     const reader = new FileReader()
     reader.readAsDataURL(file)

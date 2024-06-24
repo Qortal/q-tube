@@ -21,7 +21,7 @@ import { MultiplePublish } from "../../Publish/MultiplePublish/MultiplePublishAl
 import { useDispatch, useSelector } from "react-redux";
 import { setNotification } from "../../../state/features/notificationsSlice.ts";
 import ShortUniqueId from "short-unique-id";
-import { objectToBase64 } from "../../../utils/toBase64.ts";
+import { objectToBase64 } from "../../../utils/PublishFormatter.ts";
 import { minPriceSuperlike } from "../../../constants/Misc.ts";
 import { CommentInput } from "../Comments/Comments-styles.tsx";
 import {

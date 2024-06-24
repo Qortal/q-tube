@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../state/store";
 import ShortUniqueId from "short-unique-id";
 import { setNotification } from "../../../state/features/notificationsSlice";
-import { toBase64 } from "../../../utils/toBase64";
+import { publishFormatter } from "../../../utils/PublishFormatter.ts";
 import localforage from "localforage";
 import {
   CommentInput,

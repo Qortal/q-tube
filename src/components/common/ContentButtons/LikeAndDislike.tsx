@@ -7,7 +7,7 @@ import { Box, Tooltip } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { setNotification } from "../../../state/features/notificationsSlice.ts";
 import ShortUniqueId from "short-unique-id";
-import { objectToBase64 } from "../../../utils/toBase64.ts";
+import { objectToBase64 } from "../../../utils/PublishFormatter.ts";
 import { RootState } from "../../../state/store.ts";
 import { FOR, FOR_LIKE, LIKE_BASE } from "../../../constants/Identifiers.ts";
 import {

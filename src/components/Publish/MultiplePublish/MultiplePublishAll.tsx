@@ -78,7 +78,7 @@ export const MultiplePublish = ({
   );
 
   const retry = () => {
-    let newlistOfMultiplePublishes: any[] = [];
+    const newlistOfMultiplePublishes: any[] = [];
     listOfUnsuccessfulPublishes?.forEach(item => {
       const findPub = publishes?.resources.find(
         (res: any) => res?.identifier === item.identifier
@@ -125,6 +125,7 @@ export const MultiplePublish = ({
           );
           return (
             <Box
+              key={publish?.identifier}
               sx={{
                 display: "flex",
                 gap: "20px",

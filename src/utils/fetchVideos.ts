@@ -18,7 +18,7 @@ export const fetchAndEvaluateVideos = async (data: any) => {
         service: content?.service || 'DOCUMENT',
         identifier: videoId
       })
-      if (checkStructure(responseData)) {
+      if (responseData) {
         obj = {
           ...content,
           ...responseData,

@@ -1,3 +1,15 @@
+import BlockIcon from "@mui/icons-material/Block";
+import EditIcon from "@mui/icons-material/Edit";
+import { Avatar, Box, Tooltip, useTheme } from "@mui/material";
+import React, { useMemo, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { PlaylistSVG } from "../../assets/svgs/PlaylistSVG.tsx";
+import ResponsiveImage from "../../components/ResponsiveImage.tsx";
+import { blockUser, setEditPlaylist, setEditVideo, Video } from "../../state/features/videoSlice.ts";
+import { RootState } from "../../state/store.ts";
+import { formatDate } from "../../utils/time.ts";
+import { VideoCardImageContainer } from "./VideoCardImageContainer.tsx";
 import {
   BlockIconContainer,
   BottomParent,
@@ -10,23 +22,7 @@ import {
   VideoCardTitle,
   VideoUploadDate,
 } from "./VideoList-styles.tsx";
-import { Avatar, Box, Tooltip, useTheme } from "@mui/material";
-import EditIcon from "@mui/icons-material/Edit";
-import {
-  blockUser,
-  setEditPlaylist,
-  setEditVideo,
-} from "../../state/features/videoSlice.ts";
-import BlockIcon from "@mui/icons-material/Block";
-import ResponsiveImage from "../../components/ResponsiveImage.tsx";
-import { formatDate } from "../../utils/time.ts";
-import { PlaylistSVG } from "../../assets/svgs/PlaylistSVG.tsx";
-import { VideoCardImageContainer } from "./VideoCardImageContainer.tsx";
-import React, { useState } from "react";
-import { Video } from "../../state/features/videoSlice.ts";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../state/store.ts";
-import { useNavigate } from "react-router-dom";
+
 interface VideoListProps {
   videos: Video[];
 }
@@ -59,12 +55,16 @@ export const VideoList = ({ videos }: VideoListProps) => {
       if (response === true) {
         dispatch(blockUser(user));
       }
-    } catch (error) {}
+    } catch (error) {console.log(error)}
   };
+
+  const filteredVideos = useMemo(() => {
+    return videos.filter((video: Video) => hashMapVideos[`${video.id}-${video.user}`]?.isValid);
+  }, [videos, hashMapVideos]);
 
   return (
     <VideoCardContainer>
-      {videos.map((video: any) => {
+      {filteredVideos.map((video: any) => {
         const fullId = video ? `${video.id}-${video.user}` : undefined;
         const existingVideo = hashMapVideos[fullId];
         let hasHash = false;

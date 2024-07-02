@@ -35,7 +35,11 @@ import AddBoxIcon from "@mui/icons-material/AddBox";
 import { useDropzone } from "react-dropzone";
 
 import { setNotification } from "../../../state/features/notificationsSlice.ts";
-import { objectToBase64, uint8ArrayToBase64 } from "../../../utils/toBase64.ts";
+import {
+  objectToBase64,
+  objectToFile,
+  uint8ArrayToBase64,
+} from "../../../utils/PublishFormatter.ts";
 import { RootState } from "../../../state/store.ts";
 import {
   upsertVideosBeginning,
@@ -53,7 +57,11 @@ import { extractTextFromHTML } from "../../common/TextEditor/utils.ts";
 import { toBase64 } from "../PublishVideo/PublishVideo.tsx";
 import { FrameExtractor } from "../../common/FrameExtractor/FrameExtractor.tsx";
 import { QTUBE_VIDEO_BASE } from "../../../constants/Identifiers.ts";
-import { titleFormatter } from "../../../constants/Misc.ts";
+import {
+  maxSize,
+  titleFormatter,
+  videoMaxSize,
+} from "../../../constants/Misc.ts";
 
 const uid = new ShortUniqueId();
 const shortuid = new ShortUniqueId({ length: 5 });
@@ -103,7 +111,7 @@ export const EditVideo = () => {
       "video/*": [],
     },
     maxFiles: 1,
-    maxSize: 419430400, // 400 MB in bytes
+    maxSize,
     onDrop: (acceptedFiles, rejectedFiles) => {
       const firstFile = acceptedFiles[0];
 
@@ -114,7 +122,7 @@ export const EditVideo = () => {
       rejectedFiles.forEach(({ file, errors }) => {
         errors.forEach(error => {
           if (error.code === "file-too-large") {
-            errorString = "File must be under 400mb";
+            errorString = `File must be under ${videoMaxSize}MB`;
           }
           console.log(`Error with file ${file.name}: ${error.message}`);
         });
@@ -248,7 +256,7 @@ export const EditVideo = () => {
         );
         return;
       }
-      let listOfPublishes = [];
+      const listOfPublishes = [];
       const category = selectedCategoryVideos.id;
       const subcategory = selectedSubCategoryVideos?.id || "";
 
@@ -259,14 +267,14 @@ export const EditVideo = () => {
         fileExtension = fileExtensionSplit?.pop() || "mp4";
       }
 
-      let filename = title.slice(0, 15);
+      const filename = title.slice(0, 15);
       // Step 1: Replace all white spaces with underscores
 
       // Replace all forms of whitespace (including non-standard ones) with underscores
-      let stringWithUnderscores = filename.replace(/[\s\uFEFF\xA0]+/g, "_");
+      const stringWithUnderscores = filename.replace(/[\s\uFEFF\xA0]+/g, "_");
 
       // Remove all non-alphanumeric characters (except underscores)
-      let alphanumericString = stringWithUnderscores.replace(
+      const alphanumericString = stringWithUnderscores.replace(
         /[^a-zA-Z0-9_]/g,
         ""
       );
@@ -287,17 +295,16 @@ export const EditVideo = () => {
         filename: `${alphanumericString.trim()}.${fileExtension}`,
       };
 
-      let metadescription =
+      const metadescription =
         `**category:${category};subcategory:${subcategory};code:${editVideoProperties.code}**` +
         description.slice(0, 150);
 
-      const crowdfundObjectToBase64 = await objectToBase64(videoObject);
       // Description is obtained from raw data
       const requestBodyJson: any = {
         action: "PUBLISH_QDN_RESOURCE",
         name: username,
         service: "DOCUMENT",
-        data64: crowdfundObjectToBase64,
+        file: objectToFile(videoObject),
         title: title.slice(0, 50),
         description: metadescription,
         identifier: editVideoProperties.id,
@@ -318,7 +325,6 @@ export const EditVideo = () => {
           tag1: QTUBE_VIDEO_BASE,
           filename: `${alphanumericString.trim()}.${fileExtension}`,
         };
-
         listOfPublishes.push(requestBodyVideo);
       }
 
@@ -377,7 +383,7 @@ export const EditVideo = () => {
 
   const onFramesExtracted = async imgs => {
     try {
-      let imagesExtracts = [];
+      const imagesExtracts = [];
 
       for (const img of imgs) {
         try {
@@ -395,7 +401,9 @@ export const EditVideo = () => {
                 compressedFile = file;
                 resolve();
               },
-              error(err) {},
+              error(error) {
+                console.log(error);
+              },
             });
           });
           if (!compressedFile) continue;
@@ -407,7 +415,9 @@ export const EditVideo = () => {
       }
 
       setImageExtracts(imagesExtracts);
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (

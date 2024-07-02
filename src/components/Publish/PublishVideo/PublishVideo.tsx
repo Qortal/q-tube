@@ -38,7 +38,7 @@ import { useDropzone } from "react-dropzone";
 import AddIcon from "@mui/icons-material/Add";
 
 import { setNotification } from "../../../state/features/notificationsSlice.ts";
-import { objectToBase64, uint8ArrayToBase64 } from "../../../utils/toBase64.ts";
+import { objectToBase64, objectToFile, uint8ArrayToBase64 } from "../../../utils/PublishFormatter.ts";
 import { RootState } from "../../../state/store.ts";
 import {
   upsertVideosBeginning,
@@ -65,7 +65,7 @@ import {
   QTUBE_PLAYLIST_BASE,
   QTUBE_VIDEO_BASE,
 } from "../../../constants/Identifiers.ts";
-import { titleFormatter } from "../../../constants/Misc.ts";
+import { maxSize, titleFormatter, videoMaxSize } from "../../../constants/Misc.ts";
 import { getFileName } from "../../../utils/stringFunctions.ts";
 
 export const toBase64 = (file: File): Promise<string | ArrayBuffer | null> =>
@@ -137,11 +137,13 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
   const [isCheckDescriptionIsTitle, setIsCheckDescriptionIsTitle] =
     useState(false);
   const [imageExtracts, setImageExtracts] = useState<any>({});
+
+
   const { getRootProps, getInputProps } = useDropzone({
     accept: {
       "video/*": [],
     },
-    maxSize: 419430400, // 400 MB in bytes
+    maxSize,
     onDrop: (acceptedFiles, rejectedFiles) => {
       const formatArray = acceptedFiles.map(item => {
         let filteredTitle = "";
@@ -164,7 +166,7 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
       rejectedFiles.forEach(({ file, errors }) => {
         errors.forEach(error => {
           if (error.code === "file-too-large") {
-            errorString = "File must be under 400mb";
+            errorString = `File must be under ${videoMaxSize}MB`;
           }
           console.log(`Error with file ${file.name}: ${error.message}`);
         });
@@ -180,10 +182,10 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
     },
   });
 
-  useEffect(() => {
-    if (editContent) {
-    }
-  }, [editContent]);
+  // useEffect(() => {
+  //   if (editContent) {
+  //   }
+  // }, [editContent]);
 
   const onClose = () => {
     setIsOpen(false);
@@ -238,7 +240,7 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
         return;
       }
 
-      let listOfPublishes = [];
+      const listOfPublishes = [];
 
       for (let i = 0; i < files.length; i++) {
         const publish = files[i];
@@ -274,18 +276,17 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
           fileExtension = fileExtensionSplit?.pop() || "mp4";
         }
 
-        let filename = title.slice(0, 15);
+        const filename = title.slice(0, 15);
         // Step 1: Replace all white spaces with underscores
 
         // Replace all forms of whitespace (including non-standard ones) with underscores
-        let stringWithUnderscores = filename.replace(/[\s\uFEFF\xA0]+/g, "_");
+        const stringWithUnderscores = filename.replace(/[\s\uFEFF\xA0]+/g, "_");
 
         // Remove all non-alphanumeric characters (except underscores)
-        let alphanumericString = stringWithUnderscores.replace(
+        const alphanumericString = stringWithUnderscores.replace(
           /[^a-zA-Z0-9_]/g,
           ""
         );
-
         const videoObject: any = {
           title,
           version: 1,
@@ -306,17 +307,16 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
           filename: `${alphanumericString.trim()}.${fileExtension}`,
         };
 
-        let metadescription =
+        const metadescription =
           `**category:${category};subcategory:${subcategory};code:${code}**` +
           fullDescription.slice(0, 150);
 
-        const crowdfundObjectToBase64 = await objectToBase64(videoObject);
         // Description is obtained from raw data
         const requestBodyJson: any = {
           action: "PUBLISH_QDN_RESOURCE",
           name: name,
           service: "DOCUMENT",
-          data64: crowdfundObjectToBase64,
+          file: objectToFile(videoObject),
           title: title.slice(0, 50),
           description: metadescription,
           identifier: identifier + "_metadata",
@@ -392,17 +392,17 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
           .slice(0, 10)
           .join("");
 
-        let metadescription =
+        const metadescription =
           `**category:${category};subcategory:${subcategory};${codes}**` +
           stringDescription.slice(0, 120);
 
-        const crowdfundObjectToBase64 = await objectToBase64(playlistObject);
+
         // Description is obtained from raw data
         const requestBodyJson: any = {
           action: "PUBLISH_QDN_RESOURCE",
           name: name,
           service: "PLAYLIST",
-          data64: crowdfundObjectToBase64,
+          file: objectToFile(playlistObject),
           title: title.slice(0, 50),
           description: metadescription,
           identifier: identifier + "_metadata",
@@ -447,17 +447,17 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
             .slice(0, 10)
             .join("");
 
-          let metadescription =
+          const metadescription =
             `**category:${playlistObject.category};subcategory:${playlistObject.subcategory};${codes}**` +
             playlistObject.description.slice(0, 120);
 
-          const crowdfundObjectToBase64 = await objectToBase64(playlistObject);
+
           // Description is obtained from raw data
           const requestBodyJson: any = {
             action: "PUBLISH_QDN_RESOURCE",
             name: name,
             service: "PLAYLIST",
-            data64: crowdfundObjectToBase64,
+            file: objectToFile( playlistObject),
             title: playlistObject.title.slice(0, 50),
             description: metadescription,
             identifier: selectExistingPlaylist.identifier,
@@ -480,24 +480,24 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
       let notificationObj: any = null;
       if (typeof error === "string") {
         notificationObj = {
-          msg: error || "Failed to publish crowdfund",
+          msg: error || "Failed to publish video",
           alertType: "error",
         };
       } else if (typeof error?.error === "string") {
         notificationObj = {
-          msg: error?.error || "Failed to publish crowdfund",
+          msg: error?.error || "Failed to publish video",
           alertType: "error",
         };
       } else {
         notificationObj = {
-          msg: error?.message || "Failed to publish crowdfund",
+          msg: error?.message || "Failed to publish video",
           alertType: "error",
         };
       }
       if (!notificationObj) return;
       dispatch(setNotification(notificationObj));
 
-      throw new Error("Failed to publish crowdfund");
+      throw new Error("Failed to publish video");
     }
   }
 
@@ -578,7 +578,7 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
 
   const onFramesExtracted = async (imgs, index) => {
     try {
-      let imagesExtracts = [];
+      const imagesExtracts = [];
 
       for (const img of imgs) {
         try {
@@ -596,7 +596,7 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
                 compressedFile = file;
                 resolve();
               },
-              error(err) {},
+              error(error) {console.log(error)},
             });
           });
           if (!compressedFile) continue;
@@ -613,7 +613,7 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
           [index]: imagesExtracts,
         };
       });
-    } catch (error) {}
+    } catch (error) {console.log(error)}
   };
 
   return (

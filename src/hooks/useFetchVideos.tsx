@@ -7,7 +7,7 @@ import {
   upsertVideos,
   upsertVideosBeginning,
   Video,
-  upsertFilteredVideos,
+  upsertFilteredVideos, removeFromHashMap,
 } from "../state/features/videoSlice";
 import {
   setIsLoadingGlobal,
@@ -72,7 +72,7 @@ export const useFetchVideos = () => {
 
   const getAvatar = React.useCallback(async (author: string) => {
     try {
-      let url = await qortalRequest({
+      const url = await qortalRequest({
         action: "GET_QDN_RESOURCE_URL",
         name: author,
         service: "THUMBNAIL",
@@ -85,14 +85,14 @@ export const useFetchVideos = () => {
           url,
         })
       );
-    } catch (error) {}
+    } catch (error) {console.log(error)}
   }, []);
 
   const getVideo = async (
     user: string,
     videoId: string,
     content: any,
-    retries: number = 0
+    retries = 0
   ) => {
     try {
       const res = await fetchAndEvaluateVideos({
@@ -100,8 +100,11 @@ export const useFetchVideos = () => {
         videoId,
         content,
       });
-
-      dispatch(addToHashMap(res));
+      if (res?.isValid) {
+        dispatch(addToHashMap(res));
+      } else {
+        dispatch(removeFromHashMap(videoId));
+      }
     } catch (error) {
       retries = retries + 1;
       if (retries < 2) {
@@ -183,7 +186,7 @@ export const useFetchVideos = () => {
           }
         }
       }
-    } catch (error) {
+    } catch (error) {console.log(error)
     } finally {
       dispatch(setIsLoadingGlobal(false));
     }
@@ -311,7 +314,6 @@ export const useFetchVideos = () => {
         }
       } catch (error) {
         console.log({ error });
-      } finally {
       }
     },
     [videos, hashMapVideos]
@@ -370,8 +372,7 @@ export const useFetchVideos = () => {
             }
           }
         }
-      } catch (error) {
-      } finally {
+      } catch (error) {console.log(error)
       }
     },
     [filteredVideos, hashMapVideos]
@@ -411,12 +412,12 @@ export const useFetchVideos = () => {
       const newArray = responseData.slice(0, findVideo);
       dispatch(setCountNewVideos(newArray.length));
       return;
-    } catch (error) {}
+    } catch (error) {console.log(error)}
   }, [videos]);
 
   const getVideosCount = React.useCallback(async () => {
     try {
-      let url = `/arbitrary/resources/search?mode=ALL&includemetadata=false&limit=0&service=DOCUMENT&identifier=${QTUBE_VIDEO_BASE}`;
+      const url = `/arbitrary/resources/search?mode=ALL&includemetadata=false&limit=0&service=DOCUMENT&identifier=${QTUBE_VIDEO_BASE}`;
 
       const response = await fetch(url, {
         method: "GET",
@@ -436,7 +437,6 @@ export const useFetchVideos = () => {
       dispatch(setVideosPerNamePublished(videosPerNamePublished));
     } catch (error) {
       console.log({ error });
-    } finally {
     }
   }, []);
 

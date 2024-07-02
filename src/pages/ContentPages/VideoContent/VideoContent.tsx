@@ -65,10 +65,10 @@ import { LikeAndDislike } from "../../../components/common/ContentButtons/LikeAn
 
 export function isTimestampWithinRange(resTimestamp, resCreated) {
   // Calculate the absolute difference in milliseconds
-  var difference = Math.abs(resTimestamp - resCreated);
+  const difference = Math.abs(resTimestamp - resCreated);
 
   // 2 minutes in milliseconds
-  var twoMinutesInMilliseconds = 3 * 60 * 1000;
+  const twoMinutesInMilliseconds = 3 * 60 * 1000;
 
   // Check if the difference is within 2 minutes
   return difference <= twoMinutesInMilliseconds;
@@ -282,6 +282,7 @@ export const VideoContent = () => {
         }
       }
     } catch (error) {
+      console.log(error);
     } finally {
       dispatch(setIsLoadingGlobal(false));
     }
@@ -356,7 +357,9 @@ export const VideoContent = () => {
                 },
               ];
             }
-          } catch (error) {}
+          } catch (error) {
+            console.log(error);
+          }
         }
       }
 

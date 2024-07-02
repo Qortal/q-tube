@@ -35,7 +35,11 @@ import AddBoxIcon from "@mui/icons-material/AddBox";
 import { useDropzone } from "react-dropzone";
 
 import { setNotification } from "../../../state/features/notificationsSlice.ts";
-import { objectToBase64, objectToFile, uint8ArrayToBase64 } from "../../../utils/PublishFormatter.ts";
+import {
+  objectToBase64,
+  objectToFile,
+  uint8ArrayToBase64,
+} from "../../../utils/PublishFormatter.ts";
 import { RootState } from "../../../state/store.ts";
 import {
   upsertVideosBeginning,
@@ -53,7 +57,11 @@ import { extractTextFromHTML } from "../../common/TextEditor/utils.ts";
 import { toBase64 } from "../PublishVideo/PublishVideo.tsx";
 import { FrameExtractor } from "../../common/FrameExtractor/FrameExtractor.tsx";
 import { QTUBE_VIDEO_BASE } from "../../../constants/Identifiers.ts";
-import { maxSize, titleFormatter, videoMaxSize } from "../../../constants/Misc.ts";
+import {
+  maxSize,
+  titleFormatter,
+  videoMaxSize,
+} from "../../../constants/Misc.ts";
 
 const uid = new ShortUniqueId();
 const shortuid = new ShortUniqueId({ length: 5 });
@@ -291,13 +299,12 @@ export const EditVideo = () => {
         `**category:${category};subcategory:${subcategory};code:${editVideoProperties.code}**` +
         description.slice(0, 150);
 
-      const videoObjectToFile =  objectToFile(videoObject);
       // Description is obtained from raw data
       const requestBodyJson: any = {
         action: "PUBLISH_QDN_RESOURCE",
         name: username,
         service: "DOCUMENT",
-        file: videoObjectToFile,
+        file: objectToFile(videoObject),
         title: title.slice(0, 50),
         description: metadescription,
         identifier: editVideoProperties.id,
@@ -394,7 +401,9 @@ export const EditVideo = () => {
                 compressedFile = file;
                 resolve();
               },
-              error(error) {console.log(error)},
+              error(error) {
+                console.log(error);
+              },
             });
           });
           if (!compressedFile) continue;
@@ -406,7 +415,9 @@ export const EditVideo = () => {
       }
 
       setImageExtracts(imagesExtracts);
-    } catch (error) {console.log(error)}
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (

@@ -4,7 +4,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../state/store";
 import ShortUniqueId from "short-unique-id";
 import { setNotification } from "../../../state/features/notificationsSlice";
-import { publishFormatter } from "../../../utils/PublishFormatter.ts";
+import {
+  publishFormatter,
+  stringToFile,
+} from "../../../utils/PublishFormatter.ts";
 import localforage from "localforage";
 import {
   CommentInput,
@@ -30,11 +33,13 @@ export interface Item {
 
 export async function addItem(item: Item): Promise<void> {
   // Get all items
-  let notificationComments: Item[] =
+  const notificationComments: Item[] =
     (await notification.getItem("comments")) || [];
 
   // Find the item with the same id, if it exists
-  let existingItemIndex = notificationComments.findIndex(i => i.id === item.id);
+  const existingItemIndex = notificationComments.findIndex(
+    i => i.id === item.id
+  );
 
   if (existingItemIndex !== -1) {
     // If the item exists, update its date
@@ -55,10 +60,10 @@ export async function addItem(item: Item): Promise<void> {
 }
 export async function updateItemDate(item: any): Promise<void> {
   // Get all items
-  let notificationComments: Item[] =
+  const notificationComments: Item[] =
     (await notification.getItem("comments")) || [];
 
-  let notificationCreatorComment: any =
+  const notificationCreatorComment: any =
     (await notification.getItem("post-comments")) || {};
   const findPostId = notificationCreatorComment[item.postId];
   if (findPostId) {
@@ -121,12 +126,9 @@ export const CommentEditor = ({
     identifier: string,
     idForNotification?: string
   ) => {
-    let address;
-    let name;
+    const address = user?.address;
+    const name = user?.name || "";
     let errorMsg = "";
-
-    address = user?.address;
-    name = user?.name || "";
 
     if (!address) {
       errorMsg = "Cannot post: your address isn't available";
@@ -150,12 +152,11 @@ export const CommentEditor = ({
     }
 
     try {
-      const base64 = utf8ToBase64(value);
       const resourceResponse = await qortalRequest({
         action: "PUBLISH_QDN_RESOURCE",
         name: name,
         service: "BLOG_COMMENT",
-        data64: base64,
+        file: stringToFile(value),
         identifier: identifier,
       });
       dispatch(

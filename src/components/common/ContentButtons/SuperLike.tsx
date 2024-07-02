@@ -21,7 +21,10 @@ import { MultiplePublish } from "../../Publish/MultiplePublish/MultiplePublishAl
 import { useDispatch, useSelector } from "react-redux";
 import { setNotification } from "../../../state/features/notificationsSlice.ts";
 import ShortUniqueId from "short-unique-id";
-import { objectToBase64 } from "../../../utils/PublishFormatter.ts";
+import {
+  objectToBase64,
+  objectToFile,
+} from "../../../utils/PublishFormatter.ts";
 import { minPriceSuperlike } from "../../../constants/Misc.ts";
 import { CommentInput } from "../Comments/Comments-styles.tsx";
 import {
@@ -55,9 +58,7 @@ export const SuperLike = ({
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const [superlikeDonationAmount, setSuperlikeDonationAmount] =
-    useState<number>(10);
-  const [qortalDevDonationAmount, setQortalDevDonationAmount] =
-    useState<number>(0);
+    useState<number>(minPriceSuperlike);
   const [currentBalance, setCurrentBalance] = useState<string>("");
 
   const [comment, setComment] = useState<string>("");
@@ -82,15 +83,12 @@ export const SuperLike = ({
       if (!name) throw new Error("Could not retrieve content creator's name");
       const estimatedTransactionFees = 0.1;
       const donationExceedsBalance =
-        superlikeDonationAmount +
-          qortalDevDonationAmount +
-          estimatedTransactionFees >=
-        +currentBalance;
+        superlikeDonationAmount + estimatedTransactionFees >= +currentBalance;
       if (donationExceedsBalance) {
         throw new Error("Total donations exceeds current balance");
       }
 
-      let resName = await qortalRequest({
+      const resName = await qortalRequest({
         action: "GET_NAME_DATA",
         name: name,
       });
@@ -106,10 +104,10 @@ export const SuperLike = ({
         superlikeDonationAmount < minPriceSuperlike
       )
         throw new Error(
-          `The amount needs to be at least ${minPriceSuperlike} QORT`
+          `The amount is ${superlikeDonationAmount}, but it needs to be at least ${minPriceSuperlike} QORT`
         );
 
-      let listOfPublishes = [];
+      const listOfPublishes = [];
 
       const res = await qortalRequest({
         action: "SEND_COIN",
@@ -118,24 +116,7 @@ export const SuperLike = ({
         amount: superlikeDonationAmount,
       });
 
-      const devDonation = qortalDevDonationAmount > 0;
-      if (devDonation) {
-        const devFundName = "DevFund";
-
-        let devFundNameData = await qortalRequest({
-          action: "GET_NAME_DATA",
-          name: devFundName,
-        });
-
-        const devFundAddress = devFundNameData.owner;
-        const resDevFund = await qortalRequest({
-          action: "SEND_COIN",
-          coin: "QORT",
-          destinationAddress: devFundAddress,
-          amount: qortalDevDonationAmount,
-        });
-      }
-      let metadescription = `**sig:${
+      const metadescription = `**sig:${
         res.signature
       };${FOR}:${name}_${FOR_SUPER_LIKE};nm:${name.slice(
         0,
@@ -148,7 +129,7 @@ export const SuperLike = ({
         39
       )}_${id}`;
 
-      const superLikeToBase64 = await objectToBase64({
+      const superLikeToFile = objectToFile({
         comment,
         transactionReference: res.signature,
         notificationInformation: {
@@ -166,7 +147,7 @@ export const SuperLike = ({
         action: "PUBLISH_QDN_RESOURCE",
         name: username,
         service: "BLOG_COMMENT",
-        data64: superLikeToBase64,
+        file: superLikeToFile,
         title: "",
         description: metadescription,
         identifier: identifierSuperLike,
@@ -187,9 +168,9 @@ export const SuperLike = ({
       dispatch(
         setNotification({
           msg:
-            error ||
             error?.error ||
             error?.message ||
+            error ||
             "Failed to publish Super Like",
           alertType: "error",
         })
@@ -338,36 +319,6 @@ export const SuperLike = ({
                 }}
                 InputLabelProps={{ style: { fontSize: "18px" } }}
                 onChange={e => setComment(e.target.value)}
-              />
-              <Spacer height="50px" />
-              <InputLabel
-                htmlFor="standard-adornment-amount"
-                style={{ paddingBottom: "10px" }}
-              >
-                Would you like to donate to Qortal Development?
-              </InputLabel>
-              <BoundedNumericTextField
-                minValue={0}
-                initialValue={""}
-                maxValue={numberToInt(+currentBalance)}
-                allowDecimals={false}
-                value={superlikeDonationAmount}
-                afterChange={(e: string) => setQortalDevDonationAmount(+e)}
-                InputProps={{
-                  style: { fontSize: 30, width: textFieldWidth },
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <img
-                        style={{
-                          height: "40px",
-                          width: "40px",
-                        }}
-                        src={qortImg}
-                        alt={"Qort Icon"}
-                      />
-                    </InputAdornment>
-                  ),
-                }}
               />
             </Box>
           </DialogContent>

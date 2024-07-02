@@ -31,7 +31,11 @@ import AddBoxIcon from "@mui/icons-material/AddBox";
 import { useDropzone } from "react-dropzone";
 
 import { setNotification } from "../../../state/features/notificationsSlice.ts";
-import { objectToBase64, uint8ArrayToBase64 } from "../../../utils/PublishFormatter.ts";
+import {
+  objectToBase64,
+  objectToFile,
+  uint8ArrayToBase64,
+} from "../../../utils/PublishFormatter.ts";
 import { RootState } from "../../../state/store.ts";
 import {
   upsertVideosBeginning,
@@ -165,14 +169,16 @@ export const EditPlaylist = () => {
           const responseDataSearchVid = await response.json();
 
           if (responseDataSearchVid?.length > 0) {
-            let resourceData2 = responseDataSearchVid[0];
+            const resourceData2 = responseDataSearchVid[0];
             videos.push(resourceData2);
           }
         }
       }
       combinedData.videos = videos;
       setPlaylistData(combinedData);
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
   }, []);
 
   useEffect(() => {
@@ -263,13 +269,13 @@ export const EditPlaylist = () => {
         if (!descriptionVid) throw new Error("cannot find video code");
 
         // Split the string by ';'
-        let parts = descriptionVid.split(";");
+        const parts = descriptionVid.split(";");
 
         // Initialize a variable to hold the code value
         let codeValue = "";
 
         // Loop through the parts to find the one that starts with 'code:'
-        for (let part of parts) {
+        for (const part of parts) {
           if (part.startsWith("code:")) {
             codeValue = part.split(":")[1];
             break;
@@ -309,11 +315,10 @@ export const EditPlaylist = () => {
         .map(item => `c:${item.code};`)
         .slice(0, 10)
         .join("");
-      let metadescription =
+      const metadescription =
         `**category:${category};subcategory:${subcategory};${codes}**` +
         stringDescription.slice(0, 120);
 
-      const crowdfundObjectToBase64 = await objectToBase64(playlistObject);
       // Description is obtained from raw data
 
       let identifier = editVideoProperties?.id;
@@ -333,7 +338,7 @@ export const EditPlaylist = () => {
         action: "PUBLISH_QDN_RESOURCE",
         name: username,
         service: "PLAYLIST",
-        data64: crowdfundObjectToBase64,
+        file: objectToFile(playlistObject),
         title: title.slice(0, 50),
         description: metadescription,
         identifier: identifier,

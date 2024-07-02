@@ -4,7 +4,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../state/store";
 import ShortUniqueId from "short-unique-id";
 import { setNotification } from "../../../state/features/notificationsSlice";
-import { objectToBase64, publishFormatter } from "../../../utils/PublishFormatter.ts";
+import {
+  objectToBase64,
+  objectToFile,
+  publishFormatter,
+  stringToFile,
+} from "../../../utils/PublishFormatter.ts";
 import localforage from "localforage";
 import {
   CommentInput,
@@ -30,11 +35,13 @@ export interface Item {
 
 export async function addItem(item: Item): Promise<void> {
   // Get all items
-  let notificationComments: Item[] =
+  const notificationComments: Item[] =
     (await notification.getItem("comments")) || [];
 
   // Find the item with the same id, if it exists
-  let existingItemIndex = notificationComments.findIndex(i => i.id === item.id);
+  const existingItemIndex = notificationComments.findIndex(
+    i => i.id === item.id
+  );
 
   if (existingItemIndex !== -1) {
     // If the item exists, update its date
@@ -55,10 +62,10 @@ export async function addItem(item: Item): Promise<void> {
 }
 export async function updateItemDate(item: any): Promise<void> {
   // Get all items
-  let notificationComments: Item[] =
+  const notificationComments: Item[] =
     (await notification.getItem("comments")) || [];
 
-  let notificationCreatorComment: any =
+  const notificationCreatorComment: any =
     (await notification.getItem("post-comments")) || {};
   const findPostId = notificationCreatorComment[item.postId];
   if (findPostId) {
@@ -127,12 +134,9 @@ export const CommentEditor = ({
     identifier: string,
     idForNotification?: string
   ) => {
-    let address;
-    let name;
+    const address = user?.address;
+    const name = user?.name || "";
     let errorMsg = "";
-
-    address = user?.address;
-    name = user?.name || "";
 
     if (!address) {
       errorMsg = "Cannot post: your address isn't available";
@@ -156,7 +160,7 @@ export const CommentEditor = ({
     }
 
     try {
-      let data64 = null;
+      let dataFile = null;
       let description = "";
       let tag1 = "";
       let superObj = {};
@@ -177,17 +181,18 @@ export const CommentEditor = ({
           notificationInformation: comment.notificationInformation,
           about: comment.about,
         };
-        const superLikeToBase64 = await objectToBase64(superObj);
-        data64 = superLikeToBase64;
+        const superLikeToFile = await objectToFile(superObj);
+        dataFile = superLikeToFile;
       }
-      if (isSuperLike && !data64) throw new Error("unable to edit Super like");
+      if (isSuperLike && !dataFile)
+        throw new Error("unable to edit Super like");
 
-      const base64 = utf8ToBase64(value);
+      const stringFile = stringToFile(value);
       const resourceResponse = await qortalRequest({
         action: "PUBLISH_QDN_RESOURCE",
         name: name,
         service: "BLOG_COMMENT",
-        data64: isSuperLike ? data64 : base64,
+        file: isSuperLike ? dataFile : stringFile,
         identifier: identifier,
         description,
         tag1,
@@ -248,7 +253,7 @@ export const CommentEditor = ({
 
       let identifier = `${COMMENT_BASE}${postId.slice(-12)}_base_${id}`;
       let idForNotification = identifier;
-      let service = "BLOG_COMMENT";
+      const service = "BLOG_COMMENT";
       if (isReply && commentId) {
         const removeBaseCommentId = commentId;
         removeBaseCommentId.replace("_base_", "");

@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Compressor from "compressorjs";
+
+
 import {
   AddCoverImageButton,
   AddLogoIcon,
@@ -30,12 +32,14 @@ import {
   SelectChangeEvent,
   Typography,
   useTheme,
+  
 } from "@mui/material";
 import ShortUniqueId from "short-unique-id";
 import { useDispatch, useSelector } from "react-redux";
 import AddBoxIcon from "@mui/icons-material/AddBox";
 import { useDropzone } from "react-dropzone";
 import AddIcon from "@mui/icons-material/Add";
+
 
 import { setNotification } from "../../../state/features/notificationsSlice.ts";
 import { objectToBase64, objectToFile, uint8ArrayToBase64 } from "../../../utils/PublishFormatter.ts";
@@ -67,6 +71,8 @@ import {
 } from "../../../constants/Identifiers.ts";
 import { maxSize, titleFormatter, videoMaxSize } from "../../../constants/Misc.ts";
 import { getFileName } from "../../../utils/stringFunctions.ts";
+import TextField from '@mui/material/TextField';
+
 
 export const toBase64 = (file: File): Promise<string | ArrayBuffer | null> =>
   new Promise((resolve, reject) => {
@@ -698,6 +704,10 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
                 }
                 inputProps={{ maxLength: 180 }}
               />
+               <TextField id="standard-basic" label="Publish Video Link" variant="standard"> 
+                  
+               </TextField>
+
               <Box
                 {...getRootProps()}
                 sx={{
@@ -709,6 +719,9 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
                 }}
               >
                 <input {...getInputProps()} />
+              
+                
+                
                 <Typography>
                   Drag and drop a video files here or click to select files
                 </Typography>

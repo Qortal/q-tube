@@ -181,18 +181,17 @@ export const CommentEditor = ({
           notificationInformation: comment.notificationInformation,
           about: comment.about,
         };
-        const superLikeToFile = await objectToFile(superObj);
+        const superLikeToFile = objectToFile(superObj);
         dataFile = superLikeToFile;
       }
       if (isSuperLike && !dataFile)
         throw new Error("unable to edit Super like");
 
-      const stringFile = stringToFile(value);
       const resourceResponse = await qortalRequest({
         action: "PUBLISH_QDN_RESOURCE",
         name: name,
         service: "BLOG_COMMENT",
-        file: isSuperLike ? dataFile : stringFile,
+        file: isSuperLike ? dataFile : stringToFile(value),
         identifier: identifier,
         description,
         tag1,

@@ -7,6 +7,7 @@ import React, {
 } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
+import ResponsiveImage from "../../../components/ResponsiveImage.tsx";
 import { setIsLoadingGlobal } from "../../../state/features/globalSlice.ts";
 import { Avatar, Box, Typography, useTheme } from "@mui/material";
 import {
@@ -17,6 +18,7 @@ import { RootState } from "../../../state/store.ts";
 import { addToHashMap } from "../../../state/features/videoSlice.ts";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
 import DownloadIcon from "@mui/icons-material/Download";
+import DeletedVideo from "../../../assets/img/DeletedVideo.jpg";
 
 import mockImg from "../../../test/mockimg.jpg";
 import {
@@ -403,7 +405,7 @@ export const VideoContent = () => {
           width: "70vw",
         }}
       >
-        {videoReference && (
+        {videoReference ? (
           <VideoPlayer
             name={videoReference?.name}
             service={videoReference?.service}
@@ -414,6 +416,8 @@ export const VideoContent = () => {
             customStyle={{ aspectRatio: "16/9" }}
             ref={containerRef}
           />
+        ) : (
+          <img src={DeletedVideo} width={"100%"} height={"100%"} />
         )}
         <Box
           sx={{
@@ -630,6 +634,7 @@ export const VideoContent = () => {
         </Box>
       </VideoPlayerContainer>
       <SuperLikesSection
+        /* eslint-disable-next-line @typescript-eslint/no-empty-function */
         getMore={() => {}}
         loadingSuperLikes={loadingSuperLikes}
         superlikes={superlikeList}

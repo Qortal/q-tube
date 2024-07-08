@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import notificationsReducer from "./features/notificationsSlice";
 import authReducer from "./features/authSlice";

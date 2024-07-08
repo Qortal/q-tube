@@ -6,7 +6,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { PlaylistSVG } from "../../assets/svgs/PlaylistSVG.tsx";
 import ResponsiveImage from "../../components/ResponsiveImage.tsx";
-import { blockUser, setEditPlaylist, setEditVideo, Video } from "../../state/features/videoSlice.ts";
+import {
+  blockUser,
+  setEditPlaylist,
+  setEditVideo,
+  Video,
+} from "../../state/features/videoSlice.ts";
 import { RootState } from "../../state/store.ts";
 import { formatDate } from "../../utils/time.ts";
 import { VideoCardImageContainer } from "./VideoCardImageContainer.tsx";
@@ -55,16 +60,14 @@ export const VideoList = ({ videos }: VideoListProps) => {
       if (response === true) {
         dispatch(blockUser(user));
       }
-    } catch (error) {console.log(error)}
+    } catch (error) {
+      console.log(error);
+    }
   };
-
-  const filteredVideos = useMemo(() => {
-    return videos.filter((video: Video) => hashMapVideos[`${video.id}-${video.user}`]?.isValid);
-  }, [videos, hashMapVideos]);
 
   return (
     <VideoCardContainer>
-      {filteredVideos.map((video: any) => {
+      {videos.map((video: any) => {
         const fullId = video ? `${video.id}-${video.user}` : undefined;
         const existingVideo = hashMapVideos[fullId];
         let hasHash = false;
@@ -244,11 +247,6 @@ export const VideoList = ({ videos }: VideoListProps) => {
                 videoImage={videoObj.videoImage}
                 frameImages={videoObj?.extracts || []}
               />
-              {/* <ResponsiveImage
-                      src={videoObj.videoImage}
-                      width={266}
-                      height={150}
-                    /> */}
               <VideoCardTitle>{videoObj.title}</VideoCardTitle>
               <BottomParent>
                 <NameContainer

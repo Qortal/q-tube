@@ -1,36 +1,35 @@
-import { checkStructure } from './checkStructure'
+import { checkStructure } from "./checkStructure";
 
 export const fetchAndEvaluateVideos = async (data: any) => {
   const getVideo = async () => {
-    const { user, videoId, content } = data
+    const { user, videoId, content } = data;
     let obj: any = {
       ...content,
-      isValid: false
-    }
+    };
 
-    if (!user || !videoId) return obj
+    if (!user || !videoId) return obj;
 
     try {
-
       const responseData = await qortalRequest({
-        action: 'FETCH_QDN_RESOURCE',
+        action: "FETCH_QDN_RESOURCE",
         name: user,
-        service: content?.service || 'DOCUMENT',
-        identifier: videoId
-      })
+        service: content?.service || "DOCUMENT",
+        identifier: videoId,
+      });
       if (responseData) {
         obj = {
           ...content,
           ...responseData,
-          isValid: true
-        }
+          isValid: true,
+          isDeleted: false,
+        };
       }
-      return obj
+      return obj;
     } catch (error: any) {
-      throw new Error(error?.message || 'error')
+      throw new Error(error?.message || "error");
     }
-  }
+  };
 
-  const res = await getVideo()
-  return res
-}
+  const res = await getVideo();
+  return res;
+};

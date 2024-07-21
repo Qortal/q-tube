@@ -103,7 +103,7 @@ let helpFetch : any;
 
 
 
-
+let doesExist = false;
 const array = [];
 //const label = [];
 const top100Films = array;
@@ -131,11 +131,14 @@ async function helpGrab(){
   const fetchArr = JSON.stringify(fetchVideos);
   //console.log(fetchVideos);
   //if fetchArr contains our desired identifier then the identifier is stored to an autocomplete component
+ 
   if (fetchArr.includes(ident)) {
     array[0] = String(ident);
   console.log(fetchArr);
+  doesExist = true;
   }
 
+  
 
 }
 
@@ -159,7 +162,7 @@ async function helpGrab(){
   
 
   
-
+    
 
 
 
@@ -273,7 +276,32 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
       }
     },
   });
-
+  function changeDisplay(){
+    if (doesExist === false){
+      return (
+      <Box
+      {...getRootProps()}
+      sx={{
+        border: "1px dashed gray",
+        padding: 2,
+        textAlign: "center",
+        marginBottom: 2,
+        cursor: "pointer",
+      }}
+    >
+      <input {...getInputProps()} />
+    
+      
+      
+      <Typography>
+        Drag and drop a video files here or click to select files
+      </Typography>
+    </Box>
+      )
+    } else {
+      return (<Box sx={{display: 'none'}}></Box>)
+    }
+  }
   // useEffect(() => {
   //   if (editContent) {
   //   }
@@ -807,27 +835,10 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
                 <MyAutocomplete />
                 </div>
                   
-               
+                
                
 
-              <Box
-                {...getRootProps()}
-                sx={{
-                  border: "1px dashed gray",
-                  padding: 2,
-                  textAlign: "center",
-                  marginBottom: 2,
-                  cursor: "pointer",
-                }}
-              >
-                <input {...getInputProps()} />
-              
-                
-                
-                <Typography>
-                  Drag and drop a video files here or click to select files
-                </Typography>
-              </Box>
+              {changeDisplay()}
               <Box>
                 <CodecTypography>
                   Supported File Containers:{" "}

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Compressor from "compressorjs";
-
+import VideoCallIcon from '@mui/icons-material/VideoCall';
+import { ReactNode } from 'react';
 
 import {
   AddCoverImageButton,
@@ -48,6 +49,7 @@ import {
   upsertVideosBeginning,
   addToHashMap,
   upsertVideos,
+  setFilterValue,
 } from "../../../state/features/videoSlice.ts";
 import ImageUploader from "../../common/ImageUploader.tsx";
 import { categories, subCategories } from "../../../constants/Categories.ts";
@@ -72,7 +74,10 @@ import {
 import { maxSize, titleFormatter, videoMaxSize } from "../../../constants/Misc.ts";
 import { getFileName } from "../../../utils/stringFunctions.ts";
 import TextField from '@mui/material/TextField';
-
+import Autocomplete from '@mui/material/Autocomplete';
+import { useFetchVideos } from "../../../hooks/useFetchVideos.tsx";
+import Stack from '@mui/material/Stack';
+import { fetchAndEvaluateVideos } from "../../../utils/fetchVideos.ts";
 
 export const toBase64 = (file: File): Promise<string | ArrayBuffer | null> =>
   new Promise((resolve, reject) => {
@@ -84,8 +89,88 @@ export const toBase64 = (file: File): Promise<string | ArrayBuffer | null> =>
     };
   });
 
+
 const uid = new ShortUniqueId();
 const shortuid = new ShortUniqueId({ length: 5 });
+let linkFinal : any;
+let userFinal : any;
+var ident : any;
+
+let helpFetch : any;
+
+
+
+
+
+
+
+const array = [];
+//const label = [];
+const top100Films = array;
+
+
+  const handleClick = e => {
+    console.log(e.target.value);
+    setFilterValue(e.target.value);
+    linkFinal = e.target.value;
+    userFinal = linkFinal.substring(linkFinal.indexOf('o/')+2, linkFinal.lastIndexOf('/'));
+    ident = linkFinal.substring(linkFinal.lastIndexOf('/')+1, linkFinal.lastIndexOf(''));
+    console.log('test:' + ident);
+    
+  };
+ 
+async function helpGrab(){
+ 
+  const fetchVideos = await qortalRequest({
+    action: 'LIST_QDN_RESOURCES',
+    service: 'VIDEO',
+    identifier: ident,
+    
+  });
+ 
+  const fetchArr = JSON.stringify(fetchVideos);
+  //console.log(fetchVideos);
+  //if fetchArr contains our desired identifier then the identifier is stored to an autocomplete component
+  if (fetchArr.includes(ident)) {
+    array[0] = String(ident);
+  console.log(fetchArr);
+  }
+
+
+}
+
+
+
+
+  function MyAutocomplete() {
+
+    return (
+      <Autocomplete
+        id="combo-box-demo"
+        options={top100Films}
+        freeSolo
+        style={{ width: 815}}
+        renderInput={(params) => <TextField {...params} label="Publish Video Link" onChange={handleClick} {...helpGrab()} />}
+        
+      />
+    );
+    
+  };
+  
+
+  
+
+
+
+
+
+
+
+
+
+  
+  
+
 
 interface NewCrowdfundProps {
   editId?: string;
@@ -95,6 +180,7 @@ interface NewCrowdfundProps {
     coverImage: string | null;
   };
 }
+
 
 interface VideoFile {
   file: File;
@@ -420,6 +506,9 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
         if (!selectExistingPlaylist) {
           throw new Error("select a playlist");
         }
+        
+        
+
 
         // get raw data for playlist
         const responseData = await qortalRequest({
@@ -428,6 +517,9 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
           service: selectExistingPlaylist.service,
           identifier: selectExistingPlaylist.identifier,
         });
+        // fetch videos functionality for textfield autocomplete
+        
+        
         if (responseData && !responseData.error) {
           const videos = listOfPublishes
             .filter(
@@ -581,7 +673,9 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
       );
     }
   };
-
+ 
+  
+ 
   const onFramesExtracted = async (imgs, index) => {
     try {
       const imagesExtracts = [];
@@ -623,6 +717,7 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
   };
 
   return (
+    
     <>
       {username && (
         <>
@@ -639,6 +734,7 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
           )}
         </>
       )}
+
 
       <Modal
         open={isOpen}
@@ -693,6 +789,7 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
                     inputProps={{ "aria-label": "controlled" }}
                   />
                 </FiltersRow>
+                
               </FiltersSubContainer>
               <CustomInputField
                 name="prefix"
@@ -704,9 +801,14 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
                 }
                 inputProps={{ maxLength: 180 }}
               />
-               <TextField id="standard-basic" label="Publish Video Link" variant="standard"> 
                   
-               </TextField>
+                  <div>
+                {MyAutocomplete}
+                <MyAutocomplete />
+                </div>
+                  
+               
+               
 
               <Box
                 {...getRootProps()}
@@ -875,7 +977,7 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
                         )}
                       </>
                     )}
-
+                    
                     <CustomInputField
                       name="title"
                       label="Title of video"
@@ -1109,6 +1211,7 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
                   </CardContentContainerComment>
                 </Box>
               )}
+              
               {playlistSetting === "new" && (
                 <>
                   {!playlistCoverImage ? (
@@ -1220,7 +1323,7 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
               )}
             </>
           )}
-
+        
           <CrowdfundActionButtonRow>
             <CrowdfundActionButton
               onClick={() => {
@@ -1324,5 +1427,7 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
         />
       )}
     </>
+    
   );
+  
 };

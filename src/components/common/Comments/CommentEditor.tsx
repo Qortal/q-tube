@@ -156,7 +156,7 @@ export const CommentEditor = ({
         action: "PUBLISH_QDN_RESOURCE",
         name: name,
         service: "BLOG_COMMENT",
-        file: stringToFile(value),
+        data64: utf8ToBase64(value),
         identifier: identifier,
       });
       dispatch(

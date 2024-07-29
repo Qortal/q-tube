@@ -304,7 +304,7 @@ export const EditVideo = () => {
         action: "PUBLISH_QDN_RESOURCE",
         name: username,
         service: "DOCUMENT",
-        file: objectToFile(videoObject),
+        data64: await objectToBase64(videoObject),
         title: title.slice(0, 50),
         description: metadescription,
         identifier: editVideoProperties.id,

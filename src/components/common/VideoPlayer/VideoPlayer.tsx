@@ -147,7 +147,7 @@ export const VideoPlayer = React.forwardRef<refType, VideoPlayerProps>(
 
     const increaseSpeed = (wrapOverflow = true) => {
       const changedSpeed = playbackRate + speedChange;
-      let newSpeed = wrapOverflow
+      const newSpeed = wrapOverflow
         ? changedSpeed
         : Math.min(changedSpeed, maxSpeed);
 
@@ -194,6 +194,7 @@ export const VideoPlayer = React.forwardRef<refType, VideoPlayerProps>(
           identifier,
         });
       } catch (error) {
+        console.log(error);
       } finally {
         isFetchingProperties.current = false;
       }
@@ -201,8 +202,10 @@ export const VideoPlayer = React.forwardRef<refType, VideoPlayerProps>(
 
     const toggleRef = useRef<any>(null);
     const { downloadVideo } = useContext(MyContext);
-    const togglePlay = async (event?: any, isPlay?: boolean) => {
+
+    const togglePlay = (event?: any, isPlay?: boolean) => {
       if (!videoRef.current) return;
+
       setStartPlay(true);
       if (!src || resourceStatus?.status !== "READY") {
         const el = document.getElementById("videoWrapper");
@@ -429,7 +432,7 @@ export const VideoPlayer = React.forwardRef<refType, VideoPlayerProps>(
 
     function formatTime(seconds: number): string {
       seconds = Math.floor(seconds);
-      let minutes: number | string = Math.floor(seconds / 60);
+      const minutes: number | string = Math.floor(seconds / 60);
       let hours: number | string = Math.floor(minutes / 60);
 
       let remainingSeconds: number | string = seconds % 60;
@@ -473,7 +476,9 @@ export const VideoPlayer = React.forwardRef<refType, VideoPlayerProps>(
             clearInterval(interval);
           }
         }, 7500);
-      } catch (error) {}
+      } catch (error) {
+        console.log(error);
+      }
     };
 
     useEffect(() => {

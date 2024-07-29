@@ -38,7 +38,11 @@ import { useDropzone } from "react-dropzone";
 import AddIcon from "@mui/icons-material/Add";
 
 import { setNotification } from "../../../state/features/notificationsSlice.ts";
-import { objectToBase64, objectToFile, uint8ArrayToBase64 } from "../../../utils/PublishFormatter.ts";
+import {
+  objectToBase64,
+  objectToFile,
+  uint8ArrayToBase64,
+} from "../../../utils/PublishFormatter.ts";
 import { RootState } from "../../../state/store.ts";
 import {
   upsertVideosBeginning,
@@ -65,7 +69,11 @@ import {
   QTUBE_PLAYLIST_BASE,
   QTUBE_VIDEO_BASE,
 } from "../../../constants/Identifiers.ts";
-import { maxSize, titleFormatter, videoMaxSize } from "../../../constants/Misc.ts";
+import {
+  maxSize,
+  titleFormatter,
+  videoMaxSize,
+} from "../../../constants/Misc.ts";
 import { getFileName } from "../../../utils/stringFunctions.ts";
 
 export const toBase64 = (file: File): Promise<string | ArrayBuffer | null> =>
@@ -137,7 +145,6 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
   const [isCheckDescriptionIsTitle, setIsCheckDescriptionIsTitle] =
     useState(false);
   const [imageExtracts, setImageExtracts] = useState<any>({});
-
 
   const { getRootProps, getInputProps } = useDropzone({
     accept: {
@@ -316,7 +323,7 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
           action: "PUBLISH_QDN_RESOURCE",
           name: name,
           service: "DOCUMENT",
-          file: objectToFile(videoObject),
+          data64: await objectToBase64(videoObject),
           title: title.slice(0, 50),
           description: metadescription,
           identifier: identifier + "_metadata",
@@ -396,13 +403,12 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
           `**category:${category};subcategory:${subcategory};${codes}**` +
           stringDescription.slice(0, 120);
 
-
         // Description is obtained from raw data
         const requestBodyJson: any = {
           action: "PUBLISH_QDN_RESOURCE",
           name: name,
           service: "PLAYLIST",
-          file: objectToFile(playlistObject),
+          data64: await objectToBase64(playlistObject),
           title: title.slice(0, 50),
           description: metadescription,
           identifier: identifier + "_metadata",
@@ -451,13 +457,12 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
             `**category:${playlistObject.category};subcategory:${playlistObject.subcategory};${codes}**` +
             playlistObject.description.slice(0, 120);
 
-
           // Description is obtained from raw data
           const requestBodyJson: any = {
             action: "PUBLISH_QDN_RESOURCE",
             name: name,
             service: "PLAYLIST",
-            file: objectToFile( playlistObject),
+            data64: await objectToBase64(playlistObject),
             title: playlistObject.title.slice(0, 50),
             description: metadescription,
             identifier: selectExistingPlaylist.identifier,
@@ -596,7 +601,9 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
                 compressedFile = file;
                 resolve();
               },
-              error(error) {console.log(error)},
+              error(error) {
+                console.log(error);
+              },
             });
           });
           if (!compressedFile) continue;
@@ -613,7 +620,9 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
           [index]: imagesExtracts,
         };
       });
-    } catch (error) {console.log(error)}
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (

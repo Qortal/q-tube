@@ -1,23 +1,22 @@
-import { Box, Button, TextField } from "@mui/material";
+import localforage from "localforage";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../../state/store";
 import ShortUniqueId from "short-unique-id";
+import { COMMENT_BASE } from "../../../constants/Identifiers.ts";
 import { setNotification } from "../../../state/features/notificationsSlice";
+import { addtoHashMapSuperlikes } from "../../../state/features/videoSlice";
+import { RootState } from "../../../state/store";
 import {
   objectToBase64,
   objectToFile,
-  publishFormatter,
   stringToFile,
 } from "../../../utils/PublishFormatter.ts";
-import localforage from "localforage";
 import {
   CommentInput,
   CommentInputContainer,
   SubmitCommentButton,
 } from "./Comments-styles";
-import { addtoHashMapSuperlikes } from "../../../state/features/videoSlice";
-import { COMMENT_BASE } from "../../../constants/Identifiers.ts";
+
 const uid = new ShortUniqueId();
 
 const notification = localforage.createInstance({
@@ -160,7 +159,7 @@ export const CommentEditor = ({
     }
 
     try {
-      let dataFile = null;
+      let dataFile: string = null;
       let description = "";
       let tag1 = "";
       let superObj = {};
@@ -181,8 +180,7 @@ export const CommentEditor = ({
           notificationInformation: comment.notificationInformation,
           about: comment.about,
         };
-        const superLikeToFile = objectToFile(superObj);
-        dataFile = superLikeToFile;
+        dataFile = await objectToBase64(superObj);
       }
       if (isSuperLike && !dataFile)
         throw new Error("unable to edit Super like");
@@ -191,7 +189,7 @@ export const CommentEditor = ({
         action: "PUBLISH_QDN_RESOURCE",
         name: name,
         service: "BLOG_COMMENT",
-        file: isSuperLike ? dataFile : stringToFile(value),
+        data64: isSuperLike ? dataFile : utf8ToBase64(value),
         identifier: identifier,
         description,
         tag1,

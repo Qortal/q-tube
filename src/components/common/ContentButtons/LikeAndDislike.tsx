@@ -85,7 +85,7 @@ export const LikeAndDislike = ({ name, identifier }: LikeAndDislikeProps) => {
         break;
     }
   };
-  function publishLike(chosenLikeType: LikeType) {
+  const publishLike = async (chosenLikeType: LikeType) => {
     if (isLoading) {
       dispatch(
         setNotification({
@@ -118,21 +118,17 @@ export const LikeAndDislike = ({ name, identifier }: LikeAndDislikeProps) => {
           throw new Error("Could not retrieve content creator's address");
       });
 
-      objectToBase64({
-        likeType: chosenLikeType,
-      }).then(likeToBase64 => {
-        qortalRequest({
-          action: "PUBLISH_QDN_RESOURCE",
-          name: username,
-          service: "CHAIN_COMMENT",
-          data64: likeToBase64,
-          title: "",
-          identifier: likeIdentifier,
-          filename: `like_metadata.json`,
-        }).then(() => {
-          updateLikeDataState(chosenLikeType);
-        });
+      await qortalRequest({
+        action: "PUBLISH_QDN_RESOURCE",
+        name: username,
+        service: "CHAIN_COMMENT",
+        data64: await objectToBase64({ likeType: chosenLikeType }),
+        title: "",
+        identifier: likeIdentifier,
+        filename: `like_metadata.json`,
       });
+
+      updateLikeDataState(chosenLikeType);
     } catch (error: any) {
       dispatch(
         setNotification({
@@ -146,7 +142,7 @@ export const LikeAndDislike = ({ name, identifier }: LikeAndDislikeProps) => {
       );
       throw new Error("Failed to publish Super Like");
     }
-  }
+  };
 
   return (
     <>

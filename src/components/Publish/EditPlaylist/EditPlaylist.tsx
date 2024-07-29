@@ -338,7 +338,7 @@ export const EditPlaylist = () => {
         action: "PUBLISH_QDN_RESOURCE",
         name: username,
         service: "PLAYLIST",
-        file: objectToFile(playlistObject),
+        data64: await objectToBase64(playlistObject),
         title: title.slice(0, 50),
         description: metadescription,
         identifier: identifier,

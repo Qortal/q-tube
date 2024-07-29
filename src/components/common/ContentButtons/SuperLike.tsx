@@ -129,7 +129,7 @@ export const SuperLike = ({
         39
       )}_${id}`;
 
-      const superLikeToFile = objectToFile({
+      const superLikeToBase64 = await objectToBase64({
         comment,
         transactionReference: res.signature,
         notificationInformation: {
@@ -147,7 +147,7 @@ export const SuperLike = ({
         action: "PUBLISH_QDN_RESOURCE",
         name: username,
         service: "BLOG_COMMENT",
-        file: superLikeToFile,
+        data64: superLikeToBase64,
         title: "",
         description: metadescription,
         identifier: identifierSuperLike,

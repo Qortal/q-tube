@@ -14,25 +14,21 @@ export const CustomAppBar = styled(AppBar)(({ theme }) => ({
   borderBottom: `1px solid ${theme.palette.primary.light}`,
   backgroundColor: theme.palette.background.default,
   [theme.breakpoints.only("xs")]: {
-    gap: "15px"
+    gap: "15px",
   },
-  height: '55px'
+  height: "40px",
 }));
 export const LogoContainer = styled("div")({
-  cursor: 'pointer',
-  height: '100%',
-  display: 'flex',
-  alignItems: 'center'
+  cursor: "pointer",
+  height: "100%",
+  display: "flex",
+  alignItems: "center",
 });
-
-
-
 
 export const CustomTitle = styled(Typography)({
   fontWeight: 600,
-  color: "#000000"
+  color: "#000000",
 });
-
 
 export const AuthenticateButton = styled(Button)(({ theme }) => ({
   display: "flex",
@@ -50,8 +46,8 @@ export const AuthenticateButton = styled(Button)(({ theme }) => ({
     cursor: "pointer",
     boxShadow: "rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;",
     backgroundColor: theme.palette.secondary.dark,
-    filter: "brightness(1.1)"
-  }
+    filter: "brightness(1.1)",
+  },
 }));
 
 export const AvatarContainer = styled(Box)({
@@ -61,9 +57,9 @@ export const AvatarContainer = styled(Box)({
     cursor: "pointer",
     "& #expand-icon": {
       transition: "all 0.3s ease-in-out",
-      filter: "brightness(0.7)"
-    }
-  }
+      filter: "brightness(0.7)",
+    },
+  },
 });
 
 export const DropdownContainer = styled(Box)(({ theme }) => ({
@@ -76,22 +72,22 @@ export const DropdownContainer = styled(Box)(({ theme }) => ({
   "&:hover": {
     cursor: "pointer",
     filter:
-      theme.palette.mode === "light" ? "brightness(0.95)" : "brightness(1.1)"
-  }
+      theme.palette.mode === "light" ? "brightness(0.95)" : "brightness(1.1)",
+  },
 }));
 
 export const DropdownText = styled(Typography)(({ theme }) => ({
   fontFamily: "Raleway",
   fontSize: "16px",
   color: theme.palette.text.primary,
-  userSelect: "none"
+  userSelect: "none",
 }));
 
 export const NavbarName = styled(Typography)(({ theme }) => ({
   fontFamily: "Raleway",
   fontSize: "18px",
   color: theme.palette.text.primary,
-  margin: "0 10px"
+  margin: "0 10px",
 }));
 
 export const ThemeSelectRow = styled(Box)({
@@ -99,7 +95,7 @@ export const ThemeSelectRow = styled(Box)({
   alignItems: "center",
   gap: "5px",
   flexBasis: 0,
-  height: '100%'
+  height: "100%",
 });
 
 export const LightModeIcon = styled(LightModeSVG)(({ theme }) => ({
@@ -109,8 +105,8 @@ export const LightModeIcon = styled(LightModeSVG)(({ theme }) => ({
     filter:
       theme.palette.mode === "dark"
         ? "drop-shadow(0px 4px 6px rgba(255, 255, 255, 0.6))"
-        : "drop-shadow(0px 4px 6px rgba(99, 88, 88, 0.1))"
-  }
+        : "drop-shadow(0px 4px 6px rgba(99, 88, 88, 0.1))",
+  },
 }));
 
 export const DarkModeIcon = styled(DarkModeSVG)(({ theme }) => ({
@@ -120,6 +116,6 @@ export const DarkModeIcon = styled(DarkModeSVG)(({ theme }) => ({
     filter:
       theme.palette.mode === "dark"
         ? "drop-shadow(0px 4px 6px rgba(255, 255, 255, 0.6))"
-        : "drop-shadow(0px 4px 6px rgba(99, 88, 88, 0.1))"
-  }
+        : "drop-shadow(0px 4px 6px rgba(99, 88, 88, 0.1))",
+  },
 }));

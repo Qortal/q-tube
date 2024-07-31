@@ -12,6 +12,7 @@ import { Avatar, Box, Typography, useTheme } from "@mui/material";
 import {
   refType,
   VideoPlayer,
+  VideoStyles,
 } from "../../../components/common/VideoPlayer/VideoPlayer.tsx";
 import { RootState } from "../../../state/store.ts";
 import { addToHashMap } from "../../../state/features/videoSlice.ts";
@@ -199,6 +200,7 @@ export const PlaylistContent = () => {
         }
       }
     } catch (error) {
+      console.log(error);
     } finally {
       dispatch(setIsLoadingGlobal(false));
     }
@@ -261,7 +263,7 @@ export const PlaylistContent = () => {
                 const responseDataSearchVid = await response.json();
 
                 if (responseDataSearchVid?.length > 0) {
-                  let resourceData2 = responseDataSearchVid[0];
+                  const resourceData2 = responseDataSearchVid[0];
                   videos.push(resourceData2);
                 }
               }
@@ -282,6 +284,7 @@ export const PlaylistContent = () => {
           }
         }
       } catch (error) {
+        console.log(error);
       } finally {
         dispatch(setIsLoadingGlobal(false));
       }
@@ -387,7 +390,9 @@ export const PlaylistContent = () => {
                 },
               ];
             }
-          } catch (error) {}
+          } catch (error) {
+            console.log(error);
+          }
         }
       }
       setSuperlikelist(comments);
@@ -417,7 +422,7 @@ export const PlaylistContent = () => {
         display: "flex",
         alignItems: "center",
         flexDirection: "column",
-        padding: "20px 10px",
+        padding: "0px 10px",
       }}
       onClick={focusVideo}
     >
@@ -442,8 +447,9 @@ export const PlaylistContent = () => {
             <Box
               sx={{
                 display: "grid",
-                gridTemplateColumns: "70vw 30vw",
+                gridTemplateColumns: "55vw 30vw",
                 width: "100vw",
+                gap: "5vw",
               }}
             >
               {videoReference && (
@@ -457,7 +463,6 @@ export const PlaylistContent = () => {
                   nextVideo={nextVideo}
                   onEnd={onEndVideo}
                   autoPlay={doAutoPlay}
-                  customStyle={{ aspectRatio: "16/9" }}
                   ref={containerRef}
                 />
               )}
@@ -584,7 +589,7 @@ export const PlaylistContent = () => {
                 justifyContent: "space-between",
                 alignItems: "center",
                 width: "100%",
-                marginTop: "20px",
+                marginTop: "10px",
                 gap: "10px",
               }}
             >

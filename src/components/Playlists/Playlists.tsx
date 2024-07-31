@@ -22,7 +22,6 @@ export const Playlists = ({
         flexDirection: "column",
         width: "100%",
         maxWidth: "25vw",
-        maxHeight: "70vh",
       }}
     >
       <CardContentContainerComment

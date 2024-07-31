@@ -395,14 +395,13 @@ export const VideoContent = () => {
         display: "flex",
         alignItems: "center",
         flexDirection: "column",
-        padding: "20px 10px",
+        padding: "0px 10px",
       }}
       onClick={focusVideo}
     >
       <VideoPlayerContainer
         sx={{
-          marginBottom: "30px",
-          width: "70vw",
+          width: "55vw",
         }}
       >
         {videoReference ? (
@@ -413,7 +412,6 @@ export const VideoContent = () => {
             user={channelName}
             jsonId={id}
             poster={videoCover || ""}
-            customStyle={{ aspectRatio: "16/9" }}
             ref={containerRef}
           />
         ) : (

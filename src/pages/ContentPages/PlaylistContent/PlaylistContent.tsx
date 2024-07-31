@@ -447,24 +447,34 @@ export const PlaylistContent = () => {
             <Box
               sx={{
                 display: "grid",
-                gridTemplateColumns: "55vw 30vw",
+                gridTemplateColumns: "55vw 35vw",
                 width: "100vw",
-                gap: "5vw",
+                gap: "3vw",
               }}
             >
               {videoReference && (
-                <VideoPlayer
-                  name={videoReference?.name}
-                  service={videoReference?.service}
-                  identifier={videoReference?.identifier}
-                  user={channelName}
-                  jsonId={id}
-                  poster={videoCover || ""}
-                  nextVideo={nextVideo}
-                  onEnd={onEndVideo}
-                  autoPlay={doAutoPlay}
-                  ref={containerRef}
-                />
+                <Box
+                  sx={{
+                    aspectRatio: "16/9",
+                  }}
+                >
+                  <VideoPlayer
+                    name={videoReference?.name}
+                    service={videoReference?.service}
+                    identifier={videoReference?.identifier}
+                    user={channelName}
+                    jsonId={id}
+                    poster={videoCover || ""}
+                    nextVideo={nextVideo}
+                    onEnd={onEndVideo}
+                    autoPlay={doAutoPlay}
+                    ref={containerRef}
+                    videoStyles={{
+                      videoContainer: { aspectRatio: "16 / 9" },
+                      video: { aspectRatio: "16 / 9" },
+                    }}
+                  />
+                </Box>
               )}
               {playlistData && (
                 <Playlists

@@ -402,18 +402,29 @@ export const VideoContent = () => {
       <VideoPlayerContainer
         sx={{
           width: "55vw",
+          aspectRatio: "16/9",
         }}
       >
         {videoReference ? (
-          <VideoPlayer
-            name={videoReference?.name}
-            service={videoReference?.service}
-            identifier={videoReference?.identifier}
-            user={channelName}
-            jsonId={id}
-            poster={videoCover || ""}
-            ref={containerRef}
-          />
+          <Box
+            sx={{
+              aspectRatio: "16/9",
+            }}
+          >
+            <VideoPlayer
+              name={videoReference?.name}
+              service={videoReference?.service}
+              identifier={videoReference?.identifier}
+              user={channelName}
+              jsonId={id}
+              poster={videoCover || ""}
+              ref={containerRef}
+              videoStyles={{
+                videoContainer: { aspectRatio: "16 / 9" },
+                video: { aspectRatio: "16 / 9" },
+              }}
+            />
+          </Box>
         ) : (
           <img src={DeletedVideo} width={"100%"} height={"100%"} />
         )}

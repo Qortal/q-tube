@@ -36,6 +36,11 @@ import {
 import CSS from "csstype";
 import { setReduxPlaybackRate } from "../../../state/features/persistSlice.ts";
 
+export interface VideoStyles {
+  videoContainer?: CSS.Properties;
+  video?: CSS.Properties;
+  controls?: CSS.Properties;
+}
 interface VideoPlayerProps {
   src?: string;
   poster?: string;
@@ -44,7 +49,7 @@ interface VideoPlayerProps {
   service?: string;
   autoplay?: boolean;
   from?: string | null;
-  customStyle?: any;
+  videoStyles?: VideoStyles;
   user?: string;
   jsonId?: string;
   nextVideo?: any;
@@ -66,7 +71,7 @@ export const VideoPlayer = React.forwardRef<refType, VideoPlayerProps>(
       service,
       autoplay = true,
       from = null,
-      customStyle = {},
+      videoStyles = {},
       user = "",
       jsonId = "",
       nextVideo,
@@ -701,7 +706,7 @@ export const VideoPlayer = React.forwardRef<refType, VideoPlayerProps>(
         onKeyDown={keyboardShortcutsDown}
         style={{
           padding: from === "create" ? "8px" : 0,
-          ...customStyle,
+          ...videoStyles?.videoContainer,
         }}
         ref={containerRef}
       >
@@ -721,6 +726,7 @@ export const VideoPlayer = React.forwardRef<refType, VideoPlayerProps>(
               display: "flex",
               flexDirection: "column",
               gap: "10px",
+              height: "100%",
             }}
           >
             <CircularProgress color="secondary" />
@@ -818,11 +824,10 @@ export const VideoPlayer = React.forwardRef<refType, VideoPlayerProps>(
           style={
             startPlay
               ? {
-                  ...customStyle,
+                  ...videoStyles?.video,
                   objectFit: persistSelector.stretchVideoSetting,
-                  height: "calc(100% - 80px)",
                 }
-              : { ...customStyle, height: "100%" }
+              : { height: "100%", ...videoStyles }
           }
         />
 

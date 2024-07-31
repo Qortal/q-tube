@@ -65,7 +65,7 @@ const NavBar: React.FC<Props> = ({
   const [openUserDropdown, setOpenUserDropdown] = useState<boolean>(false);
   const [isOpenBlockedNamesModal, setIsOpenBlockedNamesModal] =
     useState<boolean>(false);
-    
+
   const [anchorElNotification, setAnchorElNotification] =
     React.useState<HTMLButtonElement | null>(null);
   const filterValue = useSelector(
@@ -374,15 +374,15 @@ const NavBar: React.FC<Props> = ({
               {!userAvatar ? (
                 <AccountCircleSVG
                   color={theme.palette.text.primary}
-                  width="32"
-                  height="32"
+                  width="30"
+                  height="30"
                 />
               ) : (
                 <img
                   src={userAvatar}
                   alt="User Avatar"
-                  width="32"
-                  height="32"
+                  width="30"
+                  height="30"
                   style={{
                     borderRadius: "50%",
                   }}
@@ -426,22 +426,22 @@ const NavBar: React.FC<Props> = ({
             }}
           >
             {!userAvatar ? (
-                <AccountCircleSVG
-                  color={theme.palette.text.primary}
-                  width="32"
-                  height="32"
-                />
-              ) : (
-                <img
-                  src={userAvatar}
-                  alt="User Avatar"
-                  width="32"
-                  height="32"
-                  style={{
-                    borderRadius: "50%",
-                  }}
-                />
-              )}
+              <AccountCircleSVG
+                color={theme.palette.text.primary}
+                width="28"
+                height="28"
+              />
+            ) : (
+              <img
+                src={userAvatar}
+                alt="User Avatar"
+                width="28"
+                height="28"
+                style={{
+                  borderRadius: "50%",
+                }}
+              />
+            )}
             <DropdownText>My Channel</DropdownText>
           </DropdownContainer>
           <DropdownContainer

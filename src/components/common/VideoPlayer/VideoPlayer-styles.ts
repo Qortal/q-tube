@@ -11,16 +11,15 @@ export const VideoContainer = styled(Box)(({ theme }) => ({
   height: "100%",
   margin: 0,
   padding: 0,
-  maxHeight: "70vh",
+
   "&:focus": { outline: "none" },
 }));
 
-export const VideoElement = styled("video")`
-  width: 100%;
-  background: rgb(33, 33, 33);
-  max-height: 70vh;
-`;
-
+export const VideoElement = styled("video")(({ theme }) => ({
+  width: "100%",
+  background: "rgb(33, 33, 33)",
+}));
+//1075 x 604
 export const ControlsContainer = styled(Box)`
   position: absolute;
   display: flex;

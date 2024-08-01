@@ -19,7 +19,7 @@ import {
   TimesIcon,
 } from "./PublishVideo-styles.tsx";
 import { CircularProgress } from "@mui/material";
-
+import { Buffer } from 'buffer';
 import {
   Box,
   Button,
@@ -92,17 +92,19 @@ export const toBase64 = (file: File): Promise<string | ArrayBuffer | null> =>
 
 const uid = new ShortUniqueId();
 const shortuid = new ShortUniqueId({ length: 5 });
+
 let linkFinal : any;
 let userFinal : any;
 var ident : any;
-
+let videoInfo : any;
 let helpFetch : any;
+let finalTitle : any;
+let finalCateg : any;
+let finalCatName : any;
+let finalDesc : any;
 
 
-
-
-
-
+let isOkay = false;
 let doesExist = false;
 const array = [];
 //const label = [];
@@ -113,37 +115,96 @@ const top100Films = array;
     console.log(e.target.value);
     setFilterValue(e.target.value);
     linkFinal = e.target.value;
-    userFinal = linkFinal.substring(linkFinal.indexOf('o/')+2, linkFinal.lastIndexOf('/'));
+    userFinal = linkFinal.substring(linkFinal.indexOf('O/')+2, linkFinal.lastIndexOf('/'));
     ident = linkFinal.substring(linkFinal.lastIndexOf('/')+1, linkFinal.lastIndexOf(''));
     console.log('test:' + ident);
-    
+    //helpMeta();
   };
  
 async function helpGrab(){
- 
-  const fetchVideos = await qortalRequest({
-    action: 'LIST_QDN_RESOURCES',
-    service: 'VIDEO',
-    identifier: ident,
-    
+  
+  helpPull();
+  const fetchResp  = await fetch(linkFinal, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "Accept": "application/json"
+    },
   });
- 
-  const fetchArr = JSON.stringify(fetchVideos);
+  //console.log(linkFinal);
+  //const fetchArr = JSON.stringify(fetchVideos);
+  if (fetchResp.ok) {
+    isOkay = true;
+  }
   //console.log(fetchVideos);
   //if fetchArr contains our desired identifier then the identifier is stored to an autocomplete component
  
-  if (fetchArr.includes(ident)) {
-    array[0] = String(ident);
-  console.log(fetchArr);
+  if (isOkay === true) {
   doesExist = true;
+  array[0] = String(ident);
+  console.log(fetchResp);
+  
+    
+ }
+  helpMeta();
+}
+ 
+async function helpPull() {
+  const fetchVideos = await qortalRequest({
+    action: "FETCH_QDN_RESOURCE",
+    name: userFinal,
+    service: "VIDEO",
+    identifier: ident,
+    //encoding: "base64"
+  });
+  
+  videoInfo = await fetchVideos;
+  //console.log(videoInfo);
+  //callback(videoInfo);
+  }
+ 
+  async function helpMeta(){
+    
+   
+    const response =  await qortalRequest({
+      action: "SEARCH_QDN_RESOURCES",
+      service: "BLOG_POST", 
+      //name: userFinal,
+      includeMetadata: true,
+      query: userFinal,
+      mode: "ALL",
+      title: "my first test video",
+  });
+  
+  //finalTitle = await response.map(person => person.metadata.title);
+  //finalCateg = response.map(person => person.metadata.category);
+  //finalCatName = response.map(person => person.metadata.categoryName);
+  //const arrayList = [];
+
+  // Assign the response data to the ArrayList
+  //rrayList.push(response);
+  
+  // Check if the ArrayList contains the string "ident"
+  //const jsonString = JSON.stringify(response);
+
+//if (jsonString.includes("test1")) {
+  ///console.log(`Response contains the string "ident"`);
+//} else {
+  //console.log(`Response does not contain the string "ident"`);
+//}
+  console.log(response);
+  finalTitle = await response.map(person => person.metadata.title);
+  finalCateg = await response.map(person => person.metadata.category);
+ finalCatName = await response.map(person => person.metadata.categoryName);
+  finalDesc = await response.map(person => person.metadata.description);
+  //finalTitle = 'my first test video';
+  console.log(finalTitle);
+  console.log(finalCateg);
+  console.log(finalCatName);
+  console.log(finalDesc);
   }
 
   
-
-}
-
-
-
 
   function MyAutocomplete() {
 
@@ -199,13 +260,13 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
   const userAddress = useSelector(
     (state: RootState) => state.auth?.user?.address
   );
-  const [files, setFiles] = useState<VideoFile[]>([]);
+  
 
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [coverImageForAll, setCoverImageForAll] = useState<null | string>("");
-
+  let [files, setFiles] = useState<VideoFile[]>([]);
   const [step, setStep] = useState<string>("videos");
   const [playlistCoverImage, setPlaylistCoverImage] = useState<null | string>(
     null
@@ -232,8 +293,10 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
   const [isCheckDescriptionIsTitle, setIsCheckDescriptionIsTitle] =
     useState(false);
   const [imageExtracts, setImageExtracts] = useState<any>({});
+  
 
-
+  
+  
   const { getRootProps, getInputProps } = useDropzone({
     accept: {
       "video/*": [],
@@ -255,7 +318,7 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
         };
       });
 
-      setFiles(prev => [...prev, ...formatArray]);
+     //setFiles(prev => [...prev, ...formatArray]);
 
       let errorString = null;
       rejectedFiles.forEach(({ file, errors }) => {
@@ -276,7 +339,34 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
       }
     },
   });
+  
+  
+  
+  console.log(finalTitle + "lastline");
+  console.log(finalCateg + "lastline");
+  console.log(finalCatName + "lastline");
+  console.log(finalDesc + "lastline");
+  //console.log(videoInfo);
+  const handleBase64 = (base64: string) => {
+    const file = new File([base64], 'video.mp4', {
+      type: 'video/mp4', });
+      const newVideoFile: VideoFile = {
+        file, 
+        title: finalTitle,
+        description: "",
+        coverImage: "",
+      };
+    setFiles(prev => [...prev, newVideoFile]);
+    console.dir(files);
+  //console.log(base64);
+     
+    
+    };
+  
+
+// changes File upload button and drag drop if ident is found in QDN
   function changeDisplay(){
+    
     if (doesExist === false){
       return (
       <Box
@@ -299,9 +389,14 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
     </Box>
       )
     } else {
-      return (<Box sx={{display: 'none'}}></Box>)
+     
+      return (<Box 
+         sx={{display: 'none'}}> </Box>);
     }
+
   }
+
+
   // useEffect(() => {
   //   if (editContent) {
   //   }
@@ -324,6 +419,8 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
   };
 
   async function publishQDNResource() {
+    
+    
     try {
       if (playlistSetting === "new") {
         if (!playlistTitle) throw new Error("Please enter a title");
@@ -331,7 +428,7 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
         if (!playlistCoverImage) throw new Error("Please select cover image");
         if (!selectedCategory) throw new Error("Please select a category");
       }
-      if (files?.length === 0)
+      if (files?.length === 0 && !doesExist)
         throw new Error("Please select at least one file");
       if (isCheckSameCoverImage && !coverImageForAll)
         throw new Error("Please select cover image");
@@ -361,13 +458,16 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
       }
 
       const listOfPublishes = [];
-
+      
+      if (files.length > 0 ) {
+        console.log('why are we here');
+     try {
       for (let i = 0; i < files.length; i++) {
         const publish = files[i];
-        const title = publish.title;
+        const title = finalTitle;
         const description = isCheckDescriptionIsTitle
-          ? publish.title
-          : publish.description;
+          ? finalTitle
+          : finalDesc;
         const category = selectedCategoryVideos.id;
         const subcategory = selectedSubCategoryVideos?.id || "";
         const coverImage = isCheckSameCoverImage
@@ -410,8 +510,8 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
         const videoObject: any = {
           title,
           version: 1,
-          fullDescription,
-          htmlDescription: description,
+          fullDescription: "",
+          htmlDescription: "",
           videoImage: coverImage,
           videoReference: {
             name,
@@ -426,7 +526,7 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
           videoType: file?.type || "video/mp4",
           filename: `${alphanumericString.trim()}.${fileExtension}`,
         };
-
+        
         const metadescription =
           `**category:${category};subcategory:${subcategory};code:${code}**` +
           fullDescription.slice(0, 150);
@@ -443,6 +543,8 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
           tag1: QTUBE_VIDEO_BASE,
           filename: `video_metadata.json`,
           code,
+          //link: linkFinal,
+          
         };
         const requestBodyVideo: any = {
           action: "PUBLISH_QDN_RESOURCE",
@@ -458,7 +560,110 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
         listOfPublishes.push(requestBodyJson);
         listOfPublishes.push(requestBodyVideo);
       }
+    } catch (Error){
+      
+    }
+      } else if (files.length === 0 && doesExist) {
+        console.log('we have an existing link');
+        const publish = videoInfo;
+        const title = finalTitle;
+        const description = isCheckDescriptionIsTitle
+          ? finalTitle
+          : finalDesc;
+        const category = selectedCategoryVideos.id;
+        const subcategory = selectedSubCategoryVideos?.id || "";
+        const coverImage = isCheckSameCoverImage
+          ? coverImageForAll
+          : publish.coverImage;
+        //const file = videoInfo;
+        
+        
+        const id = uid();
 
+        const identifier = editId
+          ? editId
+          : `${QTUBE_VIDEO_BASE}${title}_${id}`;
+         
+        //const fullDescription = extractTextFromHTML(description);
+        const code = shortuid();
+        //const fullDescription = extractTextFromHTML(description);
+         
+        let fileExtension = "mp4";
+        const fileExtensionSplit = finalTitle;
+        if (fileExtensionSplit?.length > 1) {
+          fileExtension = fileExtensionSplit?.pop() || "mp4";
+        }
+        
+        //const filename = title.slice(0, 15);
+        // Step 1: Replace all white spaces with underscores
+
+        // Replace all forms of whitespace (including non-standard ones) with underscores
+        //const stringWithUnderscores = filename.replace(/[\s\uFEFF\xA0]+/g, "_");
+
+        // Remove all non-alphanumeric characters (except underscores)
+        //const alphanumericString = stringWithUnderscores.replace(
+          ///[^a-zA-Z0-9_]/g,
+          //""
+        //);
+        const videoObject: any = {
+          title: finalTitle,
+          version: 1,
+          fullDescription: "",
+          htmlDescription: "",
+          videoImage: coverImage,
+          videoReference: {
+            name: name,
+            identifier: identifier,
+            service: "VIDEO",
+          },
+          extracts: imageExtracts[0],
+          commentsId: `${QTUBE_VIDEO_BASE}_cm_${id}`,
+          category,
+          subcategory,
+          code,
+          videoType: "video/mp4",
+          filename: `${fileExtension}`,
+          link: linkFinal,
+        };
+        
+       // const metadescription =
+       //   `**category:${category};subcategory:${subcategory};code:${code}**` +
+       //   fullDescription.slice(0, 150);
+
+        // Description is obtained from raw data
+        const requestBodyJson: any = {
+          action: "PUBLISH_QDN_RESOURCE",
+          name:name,
+          service: "DOCUMENT",
+          //base64: objectToBase64(videoObject),
+          //data64: await objectToBase64(videoObject),
+          file: objectToFile(videoObject),
+          title: finalTitle,
+          description: finalDesc,
+          identifier: identifier + "_metadata",
+          tag1: QTUBE_VIDEO_BASE,
+          filename: `video_metadata.json`,
+          code,
+          link: linkFinal,
+          
+        };
+        const requestBodyVideo: any = {
+          action: "PUBLISH_QDN_RESOURCE",
+          name: name,
+          service: "VIDEO",
+          //base64: videoInfo,
+          file: objectToFile(videoInfo),
+          //data64: videoInfo,
+          title: finalTitle,
+          description: finalDesc,
+          identifier,
+          filename: `${fileExtension}`,
+          tag1: QTUBE_VIDEO_BASE,
+          //link: linkFinal,
+        };
+        listOfPublishes.push(requestBodyJson);
+        listOfPublishes.push(requestBodyVideo);
+      }
       const isNewPlaylist = playlistSetting === "new";
 
       if (isNewPlaylist) {
@@ -468,18 +673,11 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
         const category = selectedCategory.id;
         const subcategory = selectedSubCategory?.id || "";
         const coverImage = playlistCoverImage;
-        const sanitizeTitle = title
-          .replace(/[^a-zA-Z0-9\s-]/g, "")
-          .replace(/\s+/g, "-")
-          .replace(/-+/g, "-")
-          .trim()
-          .toLowerCase();
+        
 
         const id = uid();
 
-        const identifier = editId
-          ? editId
-          : `${QTUBE_PLAYLIST_BASE}${sanitizeTitle.slice(0, 30)}_${id}`;
+        
 
         const videos = listOfPublishes
           .filter(
@@ -525,7 +723,7 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
           file: objectToFile(playlistObject),
           title: title.slice(0, 50),
           description: metadescription,
-          identifier: identifier + "_metadata",
+          identifier: selectExistingPlaylist.identifier,
           tag1: QTUBE_VIDEO_BASE,
         };
 
@@ -595,7 +793,7 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
           throw new Error("cannot get playlist data");
         }
       }
-
+    
       const multiplePublish = {
         action: "PUBLISH_MULTIPLE_QDN_RESOURCES",
         resources: [...listOfPublishes],
@@ -626,7 +824,7 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
       throw new Error("Failed to publish video");
     }
   }
-
+  
   const handleOnchange = (index: number, type: string, value: string) => {
     setFiles(prev => {
       let formattedValue = value;
@@ -675,19 +873,19 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
     );
     setSelectedSubCategoryVideos(selectedOption || null);
   };
-
+  
   const next = () => {
     try {
       if (isCheckSameCoverImage && !coverImageForAll)
         throw new Error("Please select cover image");
-      if (files?.length === 0)
+      if (files?.length === 0 && !doesExist) //might revert
         throw new Error("Please select at least one file");
       if (!selectedCategoryVideos) throw new Error("Please select a category");
       files.forEach(file => {
-        if (!file.title) throw new Error("Please enter a title");
-        if (!isCheckTitleByFile && !file.description)
+        if (!file.title && finalTitle === null) throw new Error("Please enter a title");
+        if (!isCheckTitleByFile && !file.description && !finalDesc)
           throw new Error("Please enter a description");
-        if (!isCheckSameCoverImage && !file.coverImage)
+        if (!isCheckSameCoverImage && !file.coverImage && !doesExist)
           throw new Error("Please select cover image");
       });
 
@@ -866,7 +1064,7 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
                   alignItems: "center",
                 }}
               >
-                {files?.length > 0 && (
+                {(files?.length > 0 || doesExist) && (
                   <>
                     <FormControl fullWidth sx={{ marginBottom: 2 }}>
                       <InputLabel id="Category">Select a Category</InputLabel>
@@ -915,7 +1113,7 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
                   </>
                 )}
               </Box>
-              {files?.length > 0 && isCheckSameCoverImage && (
+              {(files?.length > 0 || doesExist) && isCheckSameCoverImage && (
                 <>
                   {!coverImageForAll ? (
                     <ImageUploader

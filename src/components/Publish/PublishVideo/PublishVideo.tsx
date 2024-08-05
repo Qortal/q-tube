@@ -107,13 +107,14 @@ let finalDesc : any;
 let isOkay = false;
 let doesExist = false;
 const array = [];
-//const label = [];
+
 
 //autocomplete is where the existing identifiers are stored
 const autocomplete = array;
 
 //structure for user inputed link should look like: /arbitrary/VIDEO/userame/identifier
 //handles user input and grabs relevant parts to plug into qortal requests
+//
   const handleClick = e => {
     console.log(e.target.value);
     setFilterValue(e.target.value);

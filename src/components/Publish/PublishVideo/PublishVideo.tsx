@@ -108,9 +108,12 @@ let isOkay = false;
 let doesExist = false;
 const array = [];
 //const label = [];
-const top100Films = array;
 
+//autocomplete is where the existing identifiers are stored
+const autocomplete = array;
 
+//structure for user inputed link should look like: /arbitrary/VIDEO/userame/identifier
+//handles user input and grabs relevant parts to plug into qortal requests
   const handleClick = e => {
     console.log(e.target.value);
     setFilterValue(e.target.value);
@@ -120,7 +123,7 @@ const top100Films = array;
     console.log('test:' + ident);
     //helpMeta();
   };
- 
+ // main request function
 async function helpGrab(){
   
   helpPull();
@@ -148,7 +151,7 @@ async function helpGrab(){
  }
   helpMeta();
 }
- 
+ // function that handles fetching the video
 async function helpPull() {
   const fetchVideos = await qortalRequest({
     action: "FETCH_QDN_RESOURCE",
@@ -162,7 +165,8 @@ async function helpPull() {
   //console.log(videoInfo);
   //callback(videoInfo);
   }
- 
+
+ //function that handles components from Q-blog
   async function helpMeta(){
     
    
@@ -205,13 +209,13 @@ async function helpPull() {
   }
 
   
-
+  // user interface textfield and autocomplte
   function MyAutocomplete() {
 
     return (
       <Autocomplete
         id="combo-box-demo"
-        options={top100Films}
+        options={autocomplete}
         freeSolo
         style={{ width: 815}}
         renderInput={(params) => <TextField {...params} label="Publish Video Link" onChange={handleClick} {...helpGrab()} />}
@@ -341,12 +345,13 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
   });
   
   
-  
+  // test cases for grabbing category and description from Q-blog (only finalTitle is necessary)
   console.log(finalTitle + "lastline");
   console.log(finalCateg + "lastline");
   console.log(finalCatName + "lastline");
   console.log(finalDesc + "lastline");
   //console.log(videoInfo);
+  /** 
   const handleBase64 = (base64: string) => {
     const file = new File([base64], 'video.mp4', {
       type: 'video/mp4', });
@@ -362,7 +367,7 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
      
     
     };
-  
+  */
 
 // changes File upload button and drag drop if ident is found in QDN
   function changeDisplay(){
@@ -562,7 +567,7 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
       }
     } catch (Error){
       
-    }
+    } //doesExist signifies a link to a video on QDN that exists
       } else if (files.length === 0 && doesExist) {
         console.log('we have an existing link');
         const publish = videoInfo;
@@ -625,7 +630,7 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
           filename: `${fileExtension}`,
           link: linkFinal,
         };
-        
+       
        // const metadescription =
        //   `**category:${category};subcategory:${subcategory};code:${code}**` +
        //   fullDescription.slice(0, 150);

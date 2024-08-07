@@ -93,7 +93,7 @@ export const StyledCardComment = styled(Typography)(({ theme }) => ({
   fontWeight: 400,
   color: theme.palette.text.primary,
   fontSize: "19px",
-  wordBreak: "break-word"
+  wordBreak: "break-word",
 }));
 
 export const TitleText = styled(Typography)({
@@ -159,7 +159,7 @@ export const BlockIconContainer = styled(Box)({
 });
 
 export const CommentsContainer = styled(Box)({
-  width: "90%",
+  width: "70%",
   maxWidth: "1000px",
   display: "flex",
   flexDirection: "column",
@@ -180,7 +180,7 @@ export const CommentContainer = styled(Box)({
 export const NoCommentsRow = styled(Box)({
   display: "flex",
   alignItems: "center",
-  justifyContent: "center",
+  justifyContent: "start",
   flex: "1",
   padding: "10px 0px",
   fontFamily: "Mulish",

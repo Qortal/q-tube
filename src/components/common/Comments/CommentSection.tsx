@@ -28,8 +28,8 @@ interface CommentSectionProps {
 const Panel = styled("div")`
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  justify-content: start;
+  align-items: start;
   width: 100%;
   padding-bottom: 10px;
   height: 100%;
@@ -57,7 +57,7 @@ export const CommentSection = ({ postId, postName }: CommentSectionProps) => {
   const { user } = useSelector((state: RootState) => state.auth);
   const [newMessages, setNewMessages] = useState(0);
   const [loadingComments, setLoadingComments] = useState<boolean>(false);
-
+  // console.log("postId is: ", postId, " postName is: ", postName);
   const onSubmit = (obj?: any, isEdit?: boolean) => {
     if (isEdit) {
       setListComments((prev: any[]) => {
@@ -113,6 +113,7 @@ export const CommentSection = ({ postId, postName }: CommentSectionProps) => {
       )}_reply_${removeBaseCommentId.slice(
         -6
       )}&limit=0&includemetadata=false&offset=${offset}&reverse=false&excludeblocked=true`;
+
       const response = await fetch(url, {
         method: "GET",
         headers: {
@@ -120,6 +121,7 @@ export const CommentSection = ({ postId, postName }: CommentSectionProps) => {
         },
       });
       const responseData = await response.json();
+
       const comments: any[] = [];
       for (const comment of responseData) {
         if (comment.identifier && comment.name) {
@@ -163,6 +165,9 @@ export const CommentSection = ({ postId, postName }: CommentSectionProps) => {
           },
         });
         const responseData = await response.json();
+        // console.log("url is: ", url);
+        // console.log("response is: ", responseData);
+
         let comments: any[] = [];
         for (const comment of responseData) {
           if (comment.identifier && comment.name) {
@@ -222,18 +227,13 @@ export const CommentSection = ({ postId, postName }: CommentSectionProps) => {
   return (
     <>
       <Panel>
-        <CrowdfundSubTitleRow>
-          <CrowdfundSubTitle>Comments</CrowdfundSubTitle>
-        </CrowdfundSubTitleRow>
         <CommentsContainer>
           {loadingComments ? (
             <NoCommentsRow>
               <CircularProgress />
             </NoCommentsRow>
           ) : listComments.length === 0 ? (
-            <NoCommentsRow>
-              There are no comments yet. Be the first to comment!
-            </NoCommentsRow>
+            <></>
           ) : (
             <CommentContainer>
               {structuredCommentList.map((comment: any) => {

@@ -77,6 +77,7 @@ export const persistSlice = createSlice({
 
 export const {
   setHomePageSelectedTab,
+  setStretchVideoSetting,
   subscribe,
   unSubscribe,
   setReduxPlaybackRate,

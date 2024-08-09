@@ -1,12 +1,15 @@
 import { styled } from "@mui/system";
 import { Box, Grid, Typography, Checkbox } from "@mui/material";
 
-export const VideoPlayerContainer = styled(Box)(({ theme }) => ({
-  maxWidth: "95%",
-  width: "1000px",
+export const VideoContentContainer = styled(Box)(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
-  alignItems: "flex-start",
+  alignItems: "start",
+}));
+
+export const VideoPlayerContainer = styled(Box)(({ theme }) => ({
+  width: "55vw",
+  marginLeft: "5%",
 }));
 
 export const VideoTitle = styled(Typography)(({ theme }) => ({

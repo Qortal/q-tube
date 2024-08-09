@@ -16,15 +16,15 @@ import React, {
   useState,
 } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../../state/store";
-import NotificationsIcon from "@mui/icons-material/Notifications";
-import { formatDate } from "../../../utils/time";
-import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import {
   extractSigValue,
   getPaymentInfo,
   isTimestampWithinRange,
-} from "../../../pages/ContentPages/VideoContent/VideoContent";
+} from "../../../pages/ContentPages/VideoContent/VideoContent-functions.ts";
+import { RootState } from "../../../state/store";
+import NotificationsIcon from "@mui/icons-material/Notifications";
+import { formatDate } from "../../../utils/time";
+import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import { useNavigate } from "react-router-dom";
 import localForage from "localforage";
 import moment from "moment";
@@ -148,7 +148,7 @@ export const Notifications = () => {
             ) {
               let urlReference = null;
               try {
-                let idForUrl = extractIdValue(comment?.metadata?.description);
+                const idForUrl = extractIdValue(comment?.metadata?.description);
                 const url = `/arbitrary/resources/search?mode=ALL&service=DOCUMENT&identifier=${idForUrl}&limit=1&includemetadata=false&reverse=false&excludeblocked=true&offset=0&name=${username}`;
                 const response2 = await fetch(url, {
                   method: "GET",
@@ -160,7 +160,9 @@ export const Notifications = () => {
                 if (responseSearch.length > 0) {
                   urlReference = responseSearch[0];
                 }
-              } catch (error) {}
+              } catch (error) {
+                console.log(error);
+              }
               //   const url = `/arbitrary/BLOG_COMMENT/${comment.name}/${comment.identifier}`;
               //   const response = await fetch(url, {
               //     method: "GET",
@@ -180,7 +182,9 @@ export const Notifications = () => {
                 },
               ];
             }
-          } catch (error) {}
+          } catch (error) {
+            console.log(error);
+          }
         }
       }
       setNotifications(prev => {

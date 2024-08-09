@@ -6,6 +6,11 @@ import React, {
   useMemo,
 } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import {
+  extractSigValue,
+  getPaymentInfo,
+  isTimestampWithinRange,
+} from "../pages/ContentPages/VideoContent/VideoContent-functions.ts";
 
 import { addUser } from "../state/features/authSlice";
 import NavBar from "../components/layout/Navbar/Navbar";
@@ -21,11 +26,6 @@ import { RequestQueue } from "../utils/queue";
 import { EditVideo } from "../components/Publish/EditVideo/EditVideo";
 import { EditPlaylist } from "../components/Publish/EditPlaylist/EditPlaylist";
 import ConsentModal from "../components/common/ConsentModal";
-import {
-  extractSigValue,
-  getPaymentInfo,
-  isTimestampWithinRange,
-} from "../pages/ContentPages/VideoContent/VideoContent";
 import { useFetchSuperLikes } from "../hooks/useFetchSuperLikes";
 import { SUPER_LIKE_BASE } from "../constants/Identifiers.ts";
 import { minPriceSuperlike } from "../constants/Misc.ts";
@@ -185,7 +185,9 @@ const GlobalWrapper: React.FC<Props> = ({ children, setTheme }) => {
                   ];
                   validCount++;
                 }
-              } catch (error) {}
+              } catch (error) {
+                console.log(error);
+              }
             }
           }
         }
@@ -194,7 +196,6 @@ const GlobalWrapper: React.FC<Props> = ({ children, setTheme }) => {
       dispatch(setSuperlikesAll(comments));
     } catch (error) {
       console.error(error);
-    } finally {
     }
   }, []);
 

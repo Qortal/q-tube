@@ -21,6 +21,11 @@ import DownloadIcon from "@mui/icons-material/Download";
 
 import mockImg from "../../../test/mockimg.jpg";
 import {
+  extractSigValue,
+  getPaymentInfo,
+  isTimestampWithinRange,
+} from "../VideoContent/VideoContent-functions.ts";
+import {
   AuthorTextComment,
   FileAttachmentContainer,
   FileAttachmentFont,
@@ -48,11 +53,6 @@ import { DisplayHtml } from "../../../components/common/TextEditor/DisplayHtml.t
 import FileElement from "../../../components/common/FileElement.tsx";
 import { SuperLike } from "../../../components/common/ContentButtons/SuperLike.tsx";
 import { useFetchSuperLikes } from "../../../hooks/useFetchSuperLikes.tsx";
-import {
-  extractSigValue,
-  getPaymentInfo,
-  isTimestampWithinRange,
-} from "../VideoContent/VideoContent.tsx";
 import { SuperLikesSection } from "../../../components/common/SuperLikesList/SuperLikesSection.tsx";
 import {
   QTUBE_VIDEO_BASE,
@@ -196,6 +196,7 @@ export const PlaylistContent = () => {
 
           setVideoData(combinedData);
           dispatch(addToHashMap(combinedData));
+
           checkforPlaylist(name, id);
         }
       }
@@ -275,11 +276,8 @@ export const PlaylistContent = () => {
               const fullId = vid ? `${vid.identifier}-${vid.name}` : undefined;
               const existingVideo = hashMapVideos[fullId];
 
-              if (existingVideo) {
-                setVideoData(existingVideo);
-              } else {
-                getVideoData(vid?.name, vid?.identifier);
-              }
+              if (existingVideo) setVideoData(existingVideo);
+              else getVideoData(vid?.name, vid?.identifier);
             }
           }
         }
@@ -298,13 +296,12 @@ export const PlaylistContent = () => {
     }
   }, [id, channelName]);
 
+  const descriptionThreshold = 200;
   useEffect(() => {
     if (contentRef.current) {
       const height = contentRef.current.offsetHeight;
-      if (height > 100) {
-        // Assuming 100px is your threshold
-        setDescriptionHeight(100);
-      }
+      if (height > descriptionThreshold)
+        setDescriptionHeight(descriptionThreshold);
     }
   }, [videoData]);
 
@@ -409,13 +406,27 @@ export const PlaylistContent = () => {
   }, [getComments, videoData?.id, nameAddress]);
 
   const focusVideo = (e: React.MouseEvent<HTMLDivElement>) => {
-    const focusRef = containerRef.current?.getContainerRef()?.current;
-    const isCorrectTarget = e.currentTarget == e.target;
-    if (focusRef && isCorrectTarget) {
+    console.log("in focusVideo");
+    const target = e.target as Element;
+
+    const textTagNames = ["TEXTAREA", "P", "H[1-6]", "STRONG", "svg", "A"];
+    const noText =
+      textTagNames.findIndex(s => {
+        return target?.tagName.match(s);
+      }) < 0;
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    const clickOnEmptySpace = !target?.onclick && noText;
+
+    console.log("tagName is: ", target?.tagName);
+
+    if (target == e.currentTarget || clickOnEmptySpace) {
+      console.log("in correctTarget");
+      const focusRef = containerRef.current?.getContainerRef()?.current;
       focusRef.focus({ preventScroll: true });
     }
   };
-
   return (
     <Box
       sx={{
@@ -423,6 +434,7 @@ export const PlaylistContent = () => {
         alignItems: "center",
         flexDirection: "column",
         padding: "0px 10px",
+        marginLeft: "5%",
       }}
       onClick={focusVideo}
     >
@@ -492,7 +504,6 @@ export const PlaylistContent = () => {
                 gridTemplateColumns: "1fr 1fr",
               }}
             >
-              {" "}
               <Box>
                 <StyledCardHeaderComment
                   sx={{
@@ -627,108 +638,104 @@ export const PlaylistContent = () => {
             )}
 
             <Spacer height="30px" />
-            <Box
-              sx={{
-                background: "#333333",
-                borderRadius: "5px",
-                padding: "5px",
-                width: "100%",
-                cursor: !descriptionHeight
-                  ? "default"
-                  : isExpandedDescription
-                  ? "default"
-                  : "pointer",
-                position: "relative",
-              }}
-              className={
-                !descriptionHeight
-                  ? ""
-                  : isExpandedDescription
-                  ? ""
-                  : "hover-click"
-              }
-            >
-              {descriptionHeight && !isExpandedDescription && (
-                <Box
-                  sx={{
-                    position: "absolute",
-                    top: "0px",
-                    right: "0px",
-                    left: "0px",
-                    bottom: "0px",
-                    cursor: "pointer",
-                  }}
-                  onClick={() => {
-                    if (isExpandedDescription) return;
-                    setIsExpandedDescription(true);
-                  }}
-                />
-              )}
+            {videoData?.fullDescription && (
               <Box
-                ref={contentRef}
                 sx={{
-                  height: !descriptionHeight
-                    ? "auto"
+                  background: "#333333",
+                  borderRadius: "5px",
+                  padding: "5px",
+                  width: "100%",
+                  cursor: !descriptionHeight
+                    ? "default"
                     : isExpandedDescription
-                    ? "auto"
-                    : "100px",
-                  overflow: "hidden",
+                    ? "default"
+                    : "pointer",
+                  position: "relative",
                 }}
+                className={
+                  !descriptionHeight
+                    ? ""
+                    : isExpandedDescription
+                    ? ""
+                    : "hover-click"
+                }
               >
-                {videoData?.htmlDescription ? (
-                  <DisplayHtml html={videoData?.htmlDescription} />
-                ) : (
-                  <VideoDescription
-                    variant="body1"
-                    color="textPrimary"
+                {descriptionHeight && !isExpandedDescription && (
+                  <Box
                     sx={{
-                      cursor: "default",
+                      position: "absolute",
+                      top: "0px",
+                      right: "0px",
+                      left: "0px",
+                      bottom: "0px",
+                      cursor: "pointer",
                     }}
-                  >
-                    {videoData?.fullDescription}
-                  </VideoDescription>
+                    onClick={() => {
+                      if (isExpandedDescription) return;
+                      setIsExpandedDescription(true);
+                    }}
+                  />
                 )}
-              </Box>
-              {descriptionHeight && (
-                <Typography
-                  onClick={() => {
-                    setIsExpandedDescription(prev => !prev);
-                  }}
+                <Box
+                  ref={contentRef}
                   sx={{
-                    fontWeight: "bold",
-                    fontSize: "16px",
-                    cursor: "pointer",
-                    paddingLeft: "15px",
-                    paddingTop: "15px",
+                    height: !descriptionHeight
+                      ? "auto"
+                      : isExpandedDescription
+                      ? "auto"
+                      : `${descriptionHeight}px`,
+                    overflow: "hidden",
                   }}
                 >
-                  {isExpandedDescription ? "Show less" : "...more"}
-                </Typography>
-              )}
-            </Box>
+                  {videoData?.htmlDescription ? (
+                    <DisplayHtml html={videoData?.htmlDescription} />
+                  ) : (
+                    <VideoDescription
+                      variant="body1"
+                      color="textPrimary"
+                      sx={{
+                        cursor: "default",
+                      }}
+                    >
+                      {videoData?.fullDescription}
+                    </VideoDescription>
+                  )}
+                </Box>
+                {descriptionHeight >= descriptionThreshold && (
+                  <Typography
+                    onClick={() => {
+                      setIsExpandedDescription(prev => !prev);
+                    }}
+                    sx={{
+                      fontWeight: "bold",
+                      fontSize: "16px",
+                      cursor: "pointer",
+                      paddingLeft: "15px",
+                      paddingTop: "15px",
+                    }}
+                  >
+                    {isExpandedDescription ? "Show less" : "...more"}
+                  </Typography>
+                )}
+              </Box>
+            )}
           </>
         )}
+        {videoData?.id && videoData?.user && (
+          <SuperLikesSection
+            loadingSuperLikes={loadingSuperLikes}
+            superlikes={superlikeList}
+            postId={videoData?.id || ""}
+            postName={videoData?.user || ""}
+          />
+        )}
+        {videoData?.id && channelName && (
+          <CommentSection
+            postId={videoData?.id || ""}
+            postName={channelName || ""}
+          />
+        )}
       </VideoPlayerContainer>
-      <SuperLikesSection
-        getMore={() => {}}
-        loadingSuperLikes={loadingSuperLikes}
-        superlikes={superlikeList}
-        postId={videoData?.id || ""}
-        postName={videoData?.user || ""}
-      />
-      <Box
-        sx={{
-          display: "flex",
-          gap: "20px",
-          width: "100%",
-          maxWidth: "1200px",
-        }}
-      >
-        <CommentSection
-          postId={videoData?.id || ""}
-          postName={channelName || ""}
-        />
-      </Box>
     </Box>
   );
 };

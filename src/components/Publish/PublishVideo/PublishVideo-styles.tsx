@@ -175,8 +175,7 @@ export const CrowdfundTitle = styled(Typography)(({ theme }) => ({
 export const CrowdfundSubTitleRow = styled(Box)({
   display: "flex",
   alignItems: "center",
-  justifyContent: "center",
-  width: "100%",
+  justifyContent: "start",
   flexDirection: "row",
 });
 

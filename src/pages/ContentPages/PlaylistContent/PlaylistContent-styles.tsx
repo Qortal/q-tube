@@ -2,7 +2,6 @@ import { styled } from "@mui/system";
 import { Box, Grid, Typography, Checkbox } from "@mui/material";
 
 export const VideoPlayerContainer = styled(Box)(({ theme }) => ({
-  maxWidth: "95%",
   display: "flex",
   flexDirection: "column",
   alignItems: "flex-start",

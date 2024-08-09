@@ -24,15 +24,15 @@ interface CommentSectionProps {
   postId: string;
   postName: string;
   superlikes: any[];
-  getMore: () => void;
+  getMore?: () => void;
   loadingSuperLikes: boolean;
 }
 
 const Panel = styled("div")`
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  justify-content: start;
+  align-items: start;
   width: 100%;
   padding-bottom: 10px;
   height: 100%;
@@ -199,30 +199,18 @@ export const SuperLikesSection = ({
   return (
     <>
       <Panel>
-        <CrowdfundSubTitleRow>
-          <CrowdfundSubTitle
-            sx={{
-              fontSize: "18px",
-              color: "gold",
-            }}
-          >
-            Super Likes
-          </CrowdfundSubTitle>
-        </CrowdfundSubTitleRow>
         <CommentsContainer>
           {loadingComments || loadingSuperLikes ? (
             <NoCommentsRow>
               <CircularProgress />
             </NoCommentsRow>
           ) : listComments.length === 0 ? (
-            <NoCommentsRow>
-              There are no super likes yet. Be the first!
-            </NoCommentsRow>
+            <></>
           ) : (
             <CommentContainer>
               {structuredCommentList.map((comment: any) => {
                 let hasHash = false;
-                let message = { ...comment };
+                const message = { ...comment };
                 let hash = {};
                 if (hashMapSuperlikes[comment?.identifier]) {
                   message.message =
@@ -249,7 +237,7 @@ export const SuperLikesSection = ({
             <LoadMoreCommentsButtonRow>
               <LoadMoreCommentsButton
                 onClick={() => {
-                  getMore();
+                  if (getMore) getMore();
                 }}
                 variant="contained"
                 size="small"

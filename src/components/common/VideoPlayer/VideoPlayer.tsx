@@ -34,7 +34,11 @@ import {
   VideoElement,
 } from "./VideoPlayer-styles.ts";
 import CSS from "csstype";
-import { setReduxPlaybackRate } from "../../../state/features/persistSlice.ts";
+import {
+  setReduxPlaybackRate,
+  setStretchVideoSetting,
+  StretchVideoType,
+} from "../../../state/features/persistSlice.ts";
 
 export interface VideoStyles {
   videoContainer?: CSS.Properties;
@@ -101,6 +105,10 @@ export const VideoPlayer = React.forwardRef<refType, VideoPlayerProps>(
     const [anchorEl, setAnchorEl] = useState(null);
     const [showControlsFullScreen, setShowControlsFullScreen] =
       useState<boolean>(true);
+    const [videoObjectFit, setVideoObjectFit] = useState<StretchVideoType>(
+      persistSelector.stretchVideoSetting
+    );
+
     const videoPlaying = useSelector(
       (state: RootState) => state.global.videoPlaying
     );
@@ -597,10 +605,21 @@ export const VideoPlayer = React.forwardRef<refType, VideoPlayerProps>(
       }
     };
 
+    const toggleStretchVideoSetting = () => {
+      const newStretchVideoSetting =
+        persistSelector.stretchVideoSetting === "contain" ? "fill" : "contain";
+
+      setVideoObjectFit(newStretchVideoSetting);
+      dispatch(setStretchVideoSetting(newStretchVideoSetting));
+    };
     const keyboardShortcutsDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
       e.preventDefault();
 
       switch (e.key) {
+        case "o":
+          toggleStretchVideoSetting();
+          break;
+
         case Key.Add:
           increaseSpeed(false);
           break;
@@ -825,7 +844,7 @@ export const VideoPlayer = React.forwardRef<refType, VideoPlayerProps>(
             startPlay
               ? {
                   ...videoStyles?.video,
-                  objectFit: persistSelector.stretchVideoSetting,
+                  objectFit: videoObjectFit,
                 }
               : { height: "100%", ...videoStyles }
           }

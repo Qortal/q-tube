@@ -1,26 +1,45 @@
+import DownloadIcon from "@mui/icons-material/Download";
+import { Avatar, Box, Typography, useTheme } from "@mui/material";
 import React, {
-  useState,
+  useCallback,
+  useEffect,
   useMemo,
   useRef,
-  useEffect,
-  useCallback,
+  useState,
 } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import ResponsiveImage from "../../../components/ResponsiveImage.tsx";
-import { setIsLoadingGlobal } from "../../../state/features/globalSlice.ts";
-import { Avatar, Box, Typography, useTheme } from "@mui/material";
+import DeletedVideo from "../../../assets/img/DeletedVideo.jpg";
+import { CommentSection } from "../../../components/common/Comments/CommentSection.tsx";
+import { FollowButton } from "../../../components/common/ContentButtons/FollowButton.tsx";
+import { LikeAndDislike } from "../../../components/common/ContentButtons/LikeAndDislike.tsx";
+import { SubscribeButton } from "../../../components/common/ContentButtons/SubscribeButton.tsx";
+import { SuperLike } from "../../../components/common/ContentButtons/SuperLike.tsx";
+import FileElement from "../../../components/common/FileElement.tsx";
+import { SuperLikesSection } from "../../../components/common/SuperLikesList/SuperLikesSection.tsx";
+import { DisplayHtml } from "../../../components/common/TextEditor/DisplayHtml.tsx";
 import {
   refType,
   VideoPlayer,
 } from "../../../components/common/VideoPlayer/VideoPlayer.tsx";
-import { RootState } from "../../../state/store.ts";
+import {
+  QTUBE_VIDEO_BASE,
+  SUPER_LIKE_BASE,
+} from "../../../constants/Identifiers.ts";
+import {
+  minPriceSuperlike,
+  titleFormatterOnSave,
+} from "../../../constants/Misc.ts";
+import { useFetchSuperLikes } from "../../../hooks/useFetchSuperLikes.tsx";
+import { setIsLoadingGlobal } from "../../../state/features/globalSlice.ts";
 import { addToHashMap } from "../../../state/features/videoSlice.ts";
-import AttachFileIcon from "@mui/icons-material/AttachFile";
-import DownloadIcon from "@mui/icons-material/Download";
-import DeletedVideo from "../../../assets/img/DeletedVideo.jpg";
-
-import mockImg from "../../../test/mockimg.jpg";
+import { RootState } from "../../../state/store.ts";
+import { formatDate } from "../../../utils/time.ts";
+import {
+  extractSigValue,
+  getPaymentInfo,
+  isTimestampWithinRange,
+} from "./VideoContent-functions.ts";
 import {
   AuthorTextComment,
   FileAttachmentContainer,
@@ -29,98 +48,10 @@ import {
   StyledCardColComment,
   StyledCardHeaderComment,
   VideoDescription,
-  VideoPlayerContainer,
+  VideoContentContainer,
   VideoTitle,
+  VideoPlayerContainer,
 } from "./VideoContent-styles.tsx";
-import { setUserAvatarHash } from "../../../state/features/globalSlice.ts";
-import {
-  formatDate,
-  formatDateSeconds,
-  formatTimestampSeconds,
-} from "../../../utils/time.ts";
-import { NavbarName } from "../../../components/layout/Navbar/Navbar-styles.tsx";
-import { CommentSection } from "../../../components/common/Comments/CommentSection.tsx";
-import {
-  CrowdfundSubTitle,
-  CrowdfundSubTitleRow,
-} from "../../../components/Publish/PublishVideo/PublishVideo-styles.tsx";
-import { Playlists } from "../../../components/Playlists/Playlists.tsx";
-import { DisplayHtml } from "../../../components/common/TextEditor/DisplayHtml.tsx";
-import FileElement from "../../../components/common/FileElement.tsx";
-import { SuperLike } from "../../../components/common/ContentButtons/SuperLike.tsx";
-import { CommentContainer } from "../../../components/common/Comments/Comments-styles.tsx";
-import { Comment } from "../../../components/common/Comments/Comment.tsx";
-import { SuperLikesSection } from "../../../components/common/SuperLikesList/SuperLikesSection.tsx";
-import { useFetchSuperLikes } from "../../../hooks/useFetchSuperLikes.tsx";
-import {
-  FOR_SUPER_LIKE,
-  QTUBE_VIDEO_BASE,
-  SUPER_LIKE_BASE,
-} from "../../../constants/Identifiers.ts";
-import {
-  minPriceSuperlike,
-  titleFormatterOnSave,
-} from "../../../constants/Misc.ts";
-import { SubscribeButton } from "../../../components/common/ContentButtons/SubscribeButton.tsx";
-import { FollowButton } from "../../../components/common/ContentButtons/FollowButton.tsx";
-import { LikeAndDislike } from "../../../components/common/ContentButtons/LikeAndDislike.tsx";
-
-export function isTimestampWithinRange(resTimestamp, resCreated) {
-  // Calculate the absolute difference in milliseconds
-  const difference = Math.abs(resTimestamp - resCreated);
-
-  // 2 minutes in milliseconds
-  const twoMinutesInMilliseconds = 3 * 60 * 1000;
-
-  // Check if the difference is within 2 minutes
-  return difference <= twoMinutesInMilliseconds;
-}
-
-export function extractSigValue(metadescription) {
-  // Function to extract the substring within double asterisks
-  function extractSubstring(str) {
-    const match = str.match(/\*\*(.*?)\*\*/);
-    return match ? match[1] : null;
-  }
-
-  // Function to extract the 'sig' value
-  function extractSig(str) {
-    const regex = /sig:(.*?)(;|$)/;
-    const match = str.match(regex);
-    return match ? match[1] : null;
-  }
-
-  // Extracting the relevant substring
-  const relevantSubstring = extractSubstring(metadescription);
-
-  if (relevantSubstring) {
-    // Extracting the 'sig' value
-    return extractSig(relevantSubstring);
-  } else {
-    return null;
-  }
-}
-
-export const getPaymentInfo = async (signature: string) => {
-  try {
-    const url = `/transactions/signature/${signature}`;
-    const response = await fetch(url, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    // Coin payment info must be added to responseData so we can display it to the user
-    const responseData = await response.json();
-    if (responseData && !responseData.error) {
-      return responseData;
-    } else {
-      throw new Error("unable to get payment");
-    }
-  } catch (error) {
-    throw new Error("unable to get payment");
-  }
-};
 
 export const VideoContent = () => {
   const { name: channelName, id } = useParams();
@@ -130,6 +61,7 @@ export const VideoContent = () => {
     useState<boolean>(false);
   const [superlikeList, setSuperlikelist] = useState<any[]>([]);
   const [loadingSuperLikes, setLoadingSuperLikes] = useState<boolean>(false);
+
   const { addSuperlikeRawDataGetToList } = useFetchSuperLikes();
   const containerRef = useRef<refType>(null);
 
@@ -149,6 +81,8 @@ export const VideoContent = () => {
   const [descriptionHeight, setDescriptionHeight] = useState<null | number>(
     null
   );
+  const [videoData, setVideoData] = useState<any>(null);
+  const [isVideoLoaded, setIsVideoLoaded] = useState<boolean>(false);
 
   const userAvatarHash = useSelector(
     (state: RootState) => state.global.userAvatarHash
@@ -182,8 +116,6 @@ export const VideoContent = () => {
   }, [userAvatarHash, channelName]);
   const navigate = useNavigate();
   const theme = useTheme();
-
-  const [videoData, setVideoData] = useState<any>(null);
 
   const saveAsFilename = useMemo(() => {
     // nb. we prefer to construct the local filename to use for
@@ -224,6 +156,7 @@ export const VideoContent = () => {
       videoReference?.name &&
       videoReference?.service
     ) {
+      setIsVideoLoaded(true);
       return videoReference;
     } else {
       return null;
@@ -302,13 +235,12 @@ export const VideoContent = () => {
     }
   }, [id, channelName]);
 
+  const descriptionThreshold = 200;
   useEffect(() => {
     if (contentRef.current) {
       const height = contentRef.current.offsetHeight;
-      if (height > 100) {
-        // Assuming 100px is your threshold
-        setDescriptionHeight(100);
-      }
+      if (height > descriptionThreshold)
+        setDescriptionHeight(descriptionThreshold);
     }
   }, [videoData]);
 
@@ -382,35 +314,42 @@ export const VideoContent = () => {
   );
 
   const focusVideo = (e: React.MouseEvent<HTMLDivElement>) => {
-    const focusRef = containerRef.current?.getContainerRef()?.current;
-    const isCorrectTarget = e.currentTarget == e.target;
-    if (focusRef && isCorrectTarget) {
+    console.log("in focusVideo");
+    const target = e.target as Element;
+
+    const textTagNames = ["TEXTAREA", "P", "H[1-6]", "STRONG", "svg", "A"];
+    const noText =
+      textTagNames.findIndex(s => {
+        return target?.tagName.match(s);
+      }) < 0;
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    const clickOnEmptySpace = !target?.onclick && noText;
+
+    console.log("tagName is: ", target?.tagName);
+    // clicking on link in superlikes bar shows deleted video when loading
+
+    if (target == e.currentTarget || clickOnEmptySpace) {
+      console.log("in correctTarget");
+      const focusRef = containerRef.current?.getContainerRef()?.current;
       focusRef.focus({ preventScroll: true });
     }
   };
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        alignItems: "center",
-        flexDirection: "column",
-        padding: "0px 10px",
-      }}
-      onClick={focusVideo}
-    >
-      <VideoPlayerContainer
+    <>
+      <Box
         sx={{
-          width: "55vw",
-          aspectRatio: "16/9",
+          display: "flex",
+          marginLeft: "5%",
+          flexDirection: "column",
+          padding: "0px 10px",
         }}
+        onClick={focusVideo}
       >
         {videoReference ? (
-          <Box
-            sx={{
-              aspectRatio: "16/9",
-            }}
-          >
+          <VideoPlayerContainer>
             <VideoPlayer
               name={videoReference?.name}
               service={videoReference?.service}
@@ -424,46 +363,35 @@ export const VideoContent = () => {
                 video: { aspectRatio: "16 / 9" },
               }}
             />
-          </Box>
+          </VideoPlayerContainer>
+        ) : isVideoLoaded ? (
+          <img
+            src={DeletedVideo}
+            width={"70%"}
+            height={"37%"}
+            style={{ marginLeft: "5%" }}
+          />
         ) : (
-          <img src={DeletedVideo} width={"100%"} height={"100%"} />
+          <Box sx={{ width: "55vw", aspectRatio: "16/9" }}></Box>
         )}
-        <Box
-          sx={{
-            width: "100%",
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            marginTop: "15px",
-          }}
-        >
-          <Box>
-            <StyledCardHeaderComment
-              sx={{
-                "& .MuiCardHeader-content": {
-                  overflow: "hidden",
-                },
-              }}
-            >
-              <Box
+        <VideoContentContainer>
+          <Box
+            sx={{
+              width: "80%",
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr",
+              marginTop: "15px",
+            }}
+          >
+            <Box>
+              <StyledCardHeaderComment
                 sx={{
-                  cursor: "pointer",
-                }}
-                onClick={() => {
-                  navigate(`/channel/${channelName}`);
+                  "& .MuiCardHeader-content": {
+                    overflow: "hidden",
+                  },
                 }}
               >
-                <Avatar
-                  src={`/arbitrary/THUMBNAIL/${channelName}/qortal_avatar`}
-                  alt={`${channelName}'s avatar`}
-                />
-              </Box>
-              <StyledCardColComment>
-                <AuthorTextComment
-                  color={
-                    theme.palette.mode === "light"
-                      ? theme.palette.text.secondary
-                      : "#d6e8ff"
-                  }
+                <Box
                   sx={{
                     cursor: "pointer",
                   }}
@@ -471,196 +399,223 @@ export const VideoContent = () => {
                     navigate(`/channel/${channelName}`);
                   }}
                 >
-                  {channelName}
-                  {channelName !== userName && (
-                    <>
-                      <SubscribeButton
-                        subscriberName={channelName}
-                        sx={{ marginLeft: "20px" }}
-                      />
-                      <FollowButton
-                        followerName={channelName}
-                        sx={{ marginLeft: "20px" }}
-                      />
-                    </>
-                  )}
-                </AuthorTextComment>
-              </StyledCardColComment>
-            </StyledCardHeaderComment>
+                  <Avatar
+                    src={`/arbitrary/THUMBNAIL/${channelName}/qortal_avatar`}
+                    alt={`${channelName}'s avatar`}
+                  />
+                </Box>
+                <StyledCardColComment>
+                  <AuthorTextComment
+                    color={
+                      theme.palette.mode === "light"
+                        ? theme.palette.text.secondary
+                        : "#d6e8ff"
+                    }
+                    sx={{
+                      cursor: "pointer",
+                    }}
+                    onClick={() => {
+                      navigate(`/channel/${channelName}`);
+                    }}
+                  >
+                    {channelName}
+                    {channelName !== userName && (
+                      <>
+                        <SubscribeButton
+                          subscriberName={channelName}
+                          sx={{ marginLeft: "20px" }}
+                        />
+                        <FollowButton
+                          followerName={channelName}
+                          sx={{ marginLeft: "20px" }}
+                        />
+                      </>
+                    )}
+                  </AuthorTextComment>
+                </StyledCardColComment>
+              </StyledCardHeaderComment>
+            </Box>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "row",
+              }}
+            >
+              {videoData && (
+                <>
+                  <LikeAndDislike
+                    name={videoData?.user}
+                    identifier={videoData?.id}
+                  />
+                  <SuperLike
+                    numberOfSuperlikes={numberOfSuperlikes}
+                    totalAmount={calculateAmountSuperlike}
+                    name={videoData?.user}
+                    service={videoData?.service}
+                    identifier={videoData?.id}
+                    onSuccess={val => {
+                      setSuperlikelist(prev => [val, ...prev]);
+                    }}
+                  />
+                </>
+              )}
+              {videoData?.filename && (
+                <FileAttachmentContainer>
+                  <FileAttachmentFont>Save to Disk</FileAttachmentFont>
+                  <FileElement
+                    fileInfo={{
+                      ...videoReference,
+                      filename: saveAsFilename,
+                      mimeType: videoData?.videoType || '"video/mp4',
+                    }}
+                    title={
+                      videoData?.filename || videoData?.title?.slice(0, 20)
+                    }
+                    customStyles={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "flex-end",
+                    }}
+                  >
+                    <DownloadIcon />
+                  </FileElement>
+                </FileAttachmentContainer>
+              )}
+            </Box>
           </Box>
           <Box
             sx={{
               display: "flex",
-              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+              width: "100%",
+              marginTop: "20px",
+              gap: "10px",
             }}
           >
-            {videoData && (
-              <>
-                <LikeAndDislike
-                  name={videoData?.user}
-                  identifier={videoData?.id}
-                />
-                <SuperLike
-                  numberOfSuperlikes={numberOfSuperlikes}
-                  totalAmount={calculateAmountSuperlike}
-                  name={videoData?.user}
-                  service={videoData?.service}
-                  identifier={videoData?.id}
-                  onSuccess={val => {
-                    setSuperlikelist(prev => [val, ...prev]);
-                  }}
-                />
-              </>
-            )}
-            <FileAttachmentContainer>
-              <FileAttachmentFont>Save to Disk</FileAttachmentFont>
-              <FileElement
-                fileInfo={{
-                  ...videoReference,
-                  filename: saveAsFilename,
-                  mimeType: videoData?.videoType || '"video/mp4',
-                }}
-                title={videoData?.filename || videoData?.title?.slice(0, 20)}
-                customStyles={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "flex-end",
-                }}
-              >
-                <DownloadIcon />
-              </FileElement>
-            </FileAttachmentContainer>
-          </Box>
-        </Box>
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            width: "100%",
-            marginTop: "20px",
-            gap: "10px",
-          }}
-        >
-          <VideoTitle
-            variant="h1"
-            color="textPrimary"
-            sx={{
-              textAlign: "start",
-            }}
-          >
-            {videoData?.title}
-          </VideoTitle>
-        </Box>
-
-        {videoData?.created && (
-          <Typography
-            variant="h6"
-            sx={{
-              fontSize: "16px",
-            }}
-            color={theme.palette.text.primary}
-          >
-            {formatDate(videoData.created)}
-          </Typography>
-        )}
-
-        <Spacer height="30px" />
-        <Box
-          sx={{
-            background: "#333333",
-            borderRadius: "5px",
-            padding: "5px",
-            width: "100%",
-            cursor: !descriptionHeight
-              ? "default"
-              : isExpandedDescription
-              ? "default"
-              : "pointer",
-            position: "relative",
-          }}
-          className={
-            !descriptionHeight ? "" : isExpandedDescription ? "" : "hover-click"
-          }
-        >
-          {descriptionHeight && !isExpandedDescription && (
-            <Box
+            <VideoTitle
+              variant="h1"
+              color="textPrimary"
               sx={{
-                position: "absolute",
-                top: "0px",
-                right: "0px",
-                left: "0px",
-                bottom: "0px",
-                cursor: "pointer",
-              }}
-              onClick={() => {
-                if (isExpandedDescription) return;
-                setIsExpandedDescription(true);
-              }}
-            />
-          )}
-          <Box
-            ref={contentRef}
-            sx={{
-              height: !descriptionHeight
-                ? "auto"
-                : isExpandedDescription
-                ? "auto"
-                : "100px",
-              overflow: "hidden",
-            }}
-          >
-            {videoData?.htmlDescription ? (
-              <DisplayHtml html={videoData?.htmlDescription} />
-            ) : (
-              <VideoDescription
-                variant="body1"
-                color="textPrimary"
-                sx={{
-                  cursor: "default",
-                }}
-              >
-                {videoData?.fullDescription}
-              </VideoDescription>
-            )}
-          </Box>
-          {descriptionHeight && (
-            <Typography
-              onClick={() => {
-                setIsExpandedDescription(prev => !prev);
-              }}
-              sx={{
-                fontWeight: "bold",
-                fontSize: "16px",
-                cursor: "pointer",
-                paddingLeft: "15px",
-                paddingTop: "15px",
+                textAlign: "start",
               }}
             >
-              {isExpandedDescription ? "Show less" : "...more"}
+              {videoData?.title}
+            </VideoTitle>
+          </Box>
+
+          {videoData?.created && (
+            <Typography
+              variant="h6"
+              sx={{
+                fontSize: "16px",
+              }}
+              color={theme.palette.text.primary}
+            >
+              {formatDate(videoData.created)}
             </Typography>
           )}
-        </Box>
-      </VideoPlayerContainer>
-      <SuperLikesSection
-        /* eslint-disable-next-line @typescript-eslint/no-empty-function */
-        getMore={() => {}}
-        loadingSuperLikes={loadingSuperLikes}
-        superlikes={superlikeList}
-        postId={id || ""}
-        postName={channelName || ""}
-      />
 
-      <Box
-        sx={{
-          display: "flex",
-          gap: "20px",
-          width: "100%",
-          maxWidth: "1200px",
-        }}
-      >
-        <CommentSection postId={id || ""} postName={channelName || ""} />
+          <Spacer height="30px" />
+          {videoData?.fullDescription && (
+            <Box
+              sx={{
+                background: "#333333",
+                borderRadius: "5px",
+                padding: "5px",
+                width: "70%",
+                cursor: !descriptionHeight
+                  ? "default"
+                  : isExpandedDescription
+                  ? "default"
+                  : "pointer",
+                position: "relative",
+
+                marginBottom: "30px",
+              }}
+              className={
+                !descriptionHeight
+                  ? ""
+                  : isExpandedDescription
+                  ? ""
+                  : "hover-click"
+              }
+            >
+              {descriptionHeight && !isExpandedDescription && (
+                <Box
+                  sx={{
+                    position: "absolute",
+                    top: "0px",
+                    right: "0px",
+                    left: "0px",
+                    bottom: "0px",
+                    cursor: "pointer",
+                  }}
+                  onClick={() => {
+                    if (isExpandedDescription) return;
+                    setIsExpandedDescription(true);
+                  }}
+                />
+              )}
+              <Box
+                ref={contentRef}
+                sx={{
+                  height: !descriptionHeight
+                    ? "auto"
+                    : isExpandedDescription
+                    ? "auto"
+                    : "200px",
+                  overflow: "hidden",
+                }}
+              >
+                {videoData?.htmlDescription ? (
+                  <DisplayHtml html={videoData?.htmlDescription} />
+                ) : (
+                  <VideoDescription
+                    variant="body1"
+                    color="textPrimary"
+                    sx={{
+                      cursor: "default",
+                    }}
+                  >
+                    {videoData?.fullDescription}
+                  </VideoDescription>
+                )}
+              </Box>
+              {descriptionHeight >= descriptionThreshold && (
+                <Typography
+                  onClick={() => {
+                    setIsExpandedDescription(prev => !prev);
+                  }}
+                  sx={{
+                    fontWeight: "bold",
+                    fontSize: "16px",
+                    cursor: "pointer",
+                    paddingLeft: "15px",
+                    paddingTop: "15px",
+                  }}
+                >
+                  {isExpandedDescription ? "Show less" : "...more"}
+                </Typography>
+              )}
+            </Box>
+          )}
+
+          {id && channelName && (
+            <>
+              <SuperLikesSection
+                /* eslint-disable-next-line @typescript-eslint/no-empty-function */
+                getMore={() => {}}
+                loadingSuperLikes={loadingSuperLikes}
+                superlikes={superlikeList}
+                postId={id || ""}
+                postName={channelName || ""}
+              />
+              <CommentSection postId={id || ""} postName={channelName || ""} />
+            </>
+          )}
+        </VideoContentContainer>
       </Box>
-    </Box>
+    </>
   );
 };

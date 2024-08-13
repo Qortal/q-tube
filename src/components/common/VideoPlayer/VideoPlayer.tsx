@@ -216,7 +216,7 @@ export const VideoPlayer = React.forwardRef<refType, VideoPlayerProps>(
     const toggleRef = useRef<any>(null);
     const { downloadVideo } = useContext(MyContext);
 
-    const togglePlay = (event?: any, isPlay?: boolean) => {
+    const togglePlay = async (event?: any, isPlay?: boolean) => {
       if (!videoRef.current) return;
 
       setStartPlay(true);
@@ -233,7 +233,7 @@ export const VideoPlayer = React.forwardRef<refType, VideoPlayerProps>(
       if (playing && !isPlay) {
         videoRef.current.pause();
       } else {
-        videoRef.current.play();
+        await videoRef.current.play();
       }
       if (isPlay) {
         setPlaying(true);
@@ -249,12 +249,12 @@ export const VideoPlayer = React.forwardRef<refType, VideoPlayerProps>(
       setIsMuted(false);
     };
 
-    const onProgressChange = (_: any, value: number | number[]) => {
+    const onProgressChange = async (_: any, value: number | number[]) => {
       if (!videoRef.current) return;
       videoRef.current.currentTime = value as number;
       setProgress(value as number);
       if (!playing) {
-        videoRef.current.play();
+        await videoRef.current.play();
         setPlaying(true);
       }
     };
@@ -322,10 +322,11 @@ export const VideoPlayer = React.forwardRef<refType, VideoPlayerProps>(
         handleCanPlay();
         videoRef.current.volume = videoPlaying.volume;
         videoRef.current.currentTime = videoPlaying.currentTime;
-        videoRef.current.play();
-        setPlaying(true);
-        setStartPlay(true);
-        dispatch(setVideoPlaying(null));
+        videoRef.current.play().then(() => {
+          setPlaying(true);
+          setStartPlay(true);
+          dispatch(setVideoPlaying(null));
+        });
       }
     }, [videoPlaying, identifier, src]);
 
@@ -468,14 +469,14 @@ export const VideoPlayer = React.forwardRef<refType, VideoPlayerProps>(
       return hours + remainingMinutes + ":" + remainingSeconds;
     }
 
-    const reloadVideo = () => {
+    const reloadVideo = async () => {
       if (!videoRef.current) return;
       const currentTime = videoRef.current.currentTime;
       videoRef.current.src = src;
       videoRef.current.load();
       videoRef.current.currentTime = currentTime;
       if (playing) {
-        videoRef.current.play();
+        await videoRef.current.play();
       }
     };
 

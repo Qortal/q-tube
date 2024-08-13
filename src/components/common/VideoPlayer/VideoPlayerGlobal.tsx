@@ -123,7 +123,7 @@ export const VideoPlayerGlobal: React.FC<VideoPlayerProps> = ({
 
   const increaseSpeed = (wrapOverflow = true) => {
     const changedSpeed = playbackRate + speedChange;
-    let newSpeed = wrapOverflow
+    const newSpeed = wrapOverflow
       ? changedSpeed
       : Math.min(changedSpeed, maxSpeed);
 
@@ -146,7 +146,7 @@ export const VideoPlayerGlobal: React.FC<VideoPlayerProps> = ({
     if (playing) {
       videoRef.current.pause();
     } else {
-      videoRef.current.play();
+      await videoRef.current.play();
     }
     setPlaying(prev => !prev);
   };
@@ -158,12 +158,12 @@ export const VideoPlayerGlobal: React.FC<VideoPlayerProps> = ({
     setIsMuted(false);
   };
 
-  const onProgressChange = (_: any, value: number | number[]) => {
+  const onProgressChange = async (_: any, value: number | number[]) => {
     if (!videoRef.current) return;
     videoRef.current.currentTime = value as number;
     setProgress(value as number);
     if (!playing) {
-      videoRef.current.play();
+      await videoRef.current.play();
       setPlaying(true);
     }
   };
@@ -252,7 +252,7 @@ export const VideoPlayerGlobal: React.FC<VideoPlayerProps> = ({
 
   function formatTime(seconds: number): string {
     seconds = Math.floor(seconds);
-    let minutes: number | string = Math.floor(seconds / 60);
+    const minutes: number | string = Math.floor(seconds / 60);
     let hours: number | string = Math.floor(minutes / 60);
 
     let remainingSeconds: number | string = seconds % 60;
@@ -275,7 +275,7 @@ export const VideoPlayerGlobal: React.FC<VideoPlayerProps> = ({
     return hours + remainingMinutes + ":" + remainingSeconds;
   }
 
-  const reloadVideo = () => {
+  const reloadVideo = async () => {
     if (!videoRef.current) return;
     const src = videoRef.current.src;
     const currentTime = videoRef.current.currentTime;
@@ -283,7 +283,7 @@ export const VideoPlayerGlobal: React.FC<VideoPlayerProps> = ({
     videoRef.current.load();
     videoRef.current.currentTime = currentTime;
     if (playing) {
-      videoRef.current.play();
+      await videoRef.current.play();
     }
   };
 
@@ -466,14 +466,14 @@ export const VideoPlayerGlobal: React.FC<VideoPlayerProps> = ({
 
   useEffect(() => {
     if (element) {
-      let oldElement = document.getElementById("videoPlayer");
+      const oldElement = document.getElementById("videoPlayer");
       if (oldElement && oldElement?.parentNode) {
         oldElement?.parentNode.replaceChild(element, oldElement);
         videoRef.current = element;
         setPlaying(true);
         setCanPlay(true);
         setStartPlay(true);
-        videoRef?.current?.addEventListener("click", () => {});
+        //videoRef?.current?.addEventListener("click", () => {});
         videoRef?.current?.addEventListener("timeupdate", updateProgress);
         videoRef?.current?.addEventListener("ended", handleEnded);
       }

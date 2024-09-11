@@ -191,7 +191,7 @@ export const VideoPlayer = React.forwardRef<refType, VideoPlayerProps>(
       if (autoPlay && identifier) {
         setStartPlay(true);
         setPlaying(true);
-        togglePlay(undefined, true);
+        togglePlay(true);
       }
     }, [autoPlay, startPlay, identifier]);
 
@@ -216,7 +216,7 @@ export const VideoPlayer = React.forwardRef<refType, VideoPlayerProps>(
     const toggleRef = useRef<any>(null);
     const { downloadVideo } = useContext(MyContext);
 
-    const togglePlay = async (event?: any, isPlay?: boolean) => {
+    const togglePlay = async (isPlay?: boolean) => {
       if (!videoRef.current) return;
 
       setStartPlay(true);
@@ -230,16 +230,12 @@ export const VideoPlayer = React.forwardRef<refType, VideoPlayerProps>(
         });
         getSrc();
       }
-      if (playing && !isPlay) {
-        videoRef.current.pause();
-      } else {
-        await videoRef.current.play();
-      }
-      if (isPlay) {
-        setPlaying(true);
-      } else {
-        setPlaying(!playing);
-      }
+
+      if (isPlay) setPlaying(true);
+      else setPlaying(prevState => !prevState);
+
+      if (playing && !isPlay) videoRef.current.pause();
+      else await videoRef.current.play();
     };
 
     const onVolumeChange = (_: any, value: number | number[]) => {
@@ -475,20 +471,15 @@ export const VideoPlayer = React.forwardRef<refType, VideoPlayerProps>(
       videoRef.current.src = src;
       videoRef.current.load();
       videoRef.current.currentTime = currentTime;
-      if (playing) {
-        await videoRef.current.play();
-      }
+      if (playing) await videoRef.current.play();
+      setPlaying(true);
     };
 
     const refetchInInterval = () => {
       try {
         const interval = setInterval(() => {
-          if (status?.current === "DOWNLOADED") {
-            refetch();
-          }
-          if (status?.current === "READY") {
-            clearInterval(interval);
-          }
+          if (status?.current === "DOWNLOADED") refetch();
+          if (status?.current === "READY") clearInterval(interval);
         }, 7500);
       } catch (error) {
         console.log(error);
@@ -830,7 +821,7 @@ export const VideoPlayer = React.forwardRef<refType, VideoPlayerProps>(
           poster={!startPlay ? poster : ""}
           onTimeUpdate={updateProgress}
           autoPlay={autoplay}
-          onClick={togglePlay}
+          onClick={() => togglePlay()}
           onEnded={handleEnded}
           // onLoadedMetadata={handleLoadedMetadata}
           onCanPlay={handleCanPlay}
@@ -861,7 +852,7 @@ export const VideoPlayer = React.forwardRef<refType, VideoPlayerProps>(
                 sx={{
                   color: "rgba(255, 255, 255, 0.7)",
                 }}
-                onClick={togglePlay}
+                onClick={() => togglePlay()}
               >
                 {playing ? <Pause /> : <PlayArrow />}
               </IconButton>
@@ -935,7 +926,7 @@ export const VideoPlayer = React.forwardRef<refType, VideoPlayerProps>(
                 sx={{
                   color: "rgba(255, 255, 255, 0.7)",
                 }}
-                onClick={togglePlay}
+                onClick={() => togglePlay()}
               >
                 {playing ? <Pause /> : <PlayArrow />}
               </IconButton>

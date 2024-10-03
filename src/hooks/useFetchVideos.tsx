@@ -7,7 +7,8 @@ import {
   upsertVideos,
   upsertVideosBeginning,
   Video,
-  upsertFilteredVideos, removeFromHashMap,
+  upsertFilteredVideos,
+  removeFromHashMap,
 } from "../state/features/videoSlice";
 import {
   setIsLoadingGlobal,
@@ -85,7 +86,9 @@ export const useFetchVideos = () => {
           url,
         })
       );
-    } catch (error) {console.log(error)}
+    } catch (error) {
+      console.log(error);
+    }
   }, []);
 
   const getVideo = async (
@@ -186,7 +189,8 @@ export const useFetchVideos = () => {
           }
         }
       }
-    } catch (error) {console.log(error)
+    } catch (error) {
+      console.log(error);
     } finally {
       dispatch(setIsLoadingGlobal(false));
     }
@@ -231,7 +235,7 @@ export const useFetchVideos = () => {
         const videoLimit = limit || 20;
 
         let defaultUrl = `/arbitrary/resources/search?mode=ALL&includemetadata=false&reverse=true&excludeblocked=true&exactmatchnames=true&offset=${offset}&limit=${videoLimit}`;
-
+        
         if (name) {
           defaultUrl = defaultUrl + `&name=${name}`;
         } else if (videoListType === "subscriptions") {
@@ -372,7 +376,8 @@ export const useFetchVideos = () => {
             }
           }
         }
-      } catch (error) {console.log(error)
+      } catch (error) {
+        console.log(error);
       }
     },
     [filteredVideos, hashMapVideos]
@@ -412,7 +417,9 @@ export const useFetchVideos = () => {
       const newArray = responseData.slice(0, findVideo);
       dispatch(setCountNewVideos(newArray.length));
       return;
-    } catch (error) {console.log(error)}
+    } catch (error) {
+      console.log(error);
+    }
   }, [videos]);
 
   const getVideosCount = React.useCallback(async () => {

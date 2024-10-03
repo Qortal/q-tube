@@ -37,6 +37,7 @@ import CSS from "csstype";
 import {
   setReduxPlaybackRate,
   setStretchVideoSetting,
+  setVolumeSetting,
   StretchVideoType,
 } from "../../../state/features/persistSlice.ts";
 
@@ -87,12 +88,13 @@ export const VideoPlayer = React.forwardRef<refType, VideoPlayerProps>(
   ) => {
     const videoSelector = useSelector((state: RootState) => state.video);
     const persistSelector = useSelector((state: RootState) => state.persist);
+
     const dispatch = useDispatch();
     const videoRef = useRef<HTMLVideoElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
     const [playing, setPlaying] = useState(false);
-    const [volume, setVolume] = useState(1);
-    const [mutedVolume, setMutedVolume] = useState(1);
+    const [volume, setVolume] = useState(persistSelector.volume);
+    const [mutedVolume, setMutedVolume] = useState(persistSelector.volume);
     const [isMuted, setIsMuted] = useState(false);
     const [progress, setProgress] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
@@ -240,9 +242,11 @@ export const VideoPlayer = React.forwardRef<refType, VideoPlayerProps>(
 
     const onVolumeChange = (_: any, value: number | number[]) => {
       if (!videoRef.current) return;
-      videoRef.current.volume = value as number;
-      setVolume(value as number);
+      const newVolume = value as number;
+      videoRef.current.volume = newVolume;
+      setVolume(newVolume);
       setIsMuted(false);
+      dispatch(setVolumeSetting(newVolume));
     };
 
     const onProgressChange = async (_: any, value: number | number[]) => {
@@ -309,6 +313,7 @@ export const VideoPlayer = React.forwardRef<refType, VideoPlayerProps>(
     }, []);
 
     useEffect(() => {
+      videoRef.current.volume = volume;
       if (
         videoPlaying &&
         videoPlaying.id === identifier &&
@@ -316,7 +321,7 @@ export const VideoPlayer = React.forwardRef<refType, VideoPlayerProps>(
         videoRef?.current
       ) {
         handleCanPlay();
-        videoRef.current.volume = videoPlaying.volume;
+
         videoRef.current.currentTime = videoPlaying.currentTime;
         videoRef.current.play().then(() => {
           setPlaying(true);
@@ -571,6 +576,7 @@ export const VideoPlayer = React.forwardRef<refType, VideoPlayerProps>(
         setMutedVolume(newVolume);
         videoRef.current.volume = newVolume;
         setVolume(newVolume);
+        dispatch(setVolumeSetting(newVolume));
       }
     };
     const setProgressRelative = (secondsChange: number) => {

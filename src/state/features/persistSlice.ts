@@ -18,6 +18,7 @@ interface settingsState {
   playbackRate: number;
   subscriptionListFilter: SubscriptionListFilterType;
   showStats: boolean;
+  volume: number;
 }
 
 const initialState: settingsState = {
@@ -28,6 +29,7 @@ const initialState: settingsState = {
   playbackRate: 1,
   subscriptionListFilter: "currentNameOnly",
   showStats: true,
+  volume: 0.5,
 };
 
 export const persistSlice = createSlice({
@@ -72,6 +74,9 @@ export const persistSlice = createSlice({
     changeFilterType: (state, action) => {
       state.filterType = action.payload;
     },
+    setVolumeSetting: (state, action: PayloadAction<number>) => {
+      state.volume = action.payload;
+    },
   },
 });
 
@@ -83,6 +88,7 @@ export const {
   setReduxPlaybackRate,
   changeFilterType,
   resetSubscriptions,
+  setVolumeSetting,
 } = persistSlice.actions;
 
 export default persistSlice.reducer;

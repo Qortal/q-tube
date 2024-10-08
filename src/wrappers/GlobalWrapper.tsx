@@ -10,7 +10,7 @@ import {
   extractSigValue,
   getPaymentInfo,
   isTimestampWithinRange,
-} from "../pages/ContentPages/VideoContent/VideoContent-functions.ts";
+} from "../pages/ContentPages/VideoContent/VideoContent-State.tsx";
 
 import { addUser } from "../state/features/authSlice";
 import NavBar from "../components/layout/Navbar/Navbar";

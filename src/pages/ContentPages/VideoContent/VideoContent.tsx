@@ -1,14 +1,7 @@
 import DownloadIcon from "@mui/icons-material/Download";
 import { Avatar, Box, Typography, useTheme } from "@mui/material";
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router-dom";
+import React from "react";
+
 import DeletedVideo from "../../../assets/img/DeletedVideo.jpg";
 import { CommentSection } from "../../../components/common/Comments/CommentSection.tsx";
 import { FollowButton } from "../../../components/common/ContentButtons/FollowButton.tsx";
@@ -39,7 +32,8 @@ import {
   extractSigValue,
   getPaymentInfo,
   isTimestampWithinRange,
-} from "./VideoContent-functions.ts";
+  useVideoContentState,
+} from "./VideoContent-State.tsx";
 import {
   AuthorTextComment,
   FileAttachmentContainer,
@@ -54,288 +48,30 @@ import {
 } from "./VideoContent-styles.tsx";
 
 export const VideoContent = () => {
-  const { name: channelName, id } = useParams();
-  const userName = useSelector((state: RootState) => state.auth.user?.name);
-
-  const [isExpandedDescription, setIsExpandedDescription] =
-    useState<boolean>(false);
-  const [superlikeList, setSuperlikelist] = useState<any[]>([]);
-  const [loadingSuperLikes, setLoadingSuperLikes] = useState<boolean>(false);
-
-  const { addSuperlikeRawDataGetToList } = useFetchSuperLikes();
-  const containerRef = useRef<refType>(null);
-
-  const calculateAmountSuperlike = useMemo(() => {
-    const totalQort = superlikeList?.reduce((acc, curr) => {
-      if (curr?.amount && !isNaN(parseFloat(curr.amount)))
-        return acc + parseFloat(curr.amount);
-      else return acc;
-    }, 0);
-    return totalQort?.toFixed(2);
-  }, [superlikeList]);
-  const numberOfSuperlikes = useMemo(() => {
-    return superlikeList?.length ?? 0;
-  }, [superlikeList]);
-
-  const [nameAddress, setNameAddress] = useState<string>("");
-  const [descriptionHeight, setDescriptionHeight] = useState<null | number>(
-    null
-  );
-  const [videoData, setVideoData] = useState<any>(null);
-  const [isVideoLoaded, setIsVideoLoaded] = useState<boolean>(false);
-
-  const userAvatarHash = useSelector(
-    (state: RootState) => state.global.userAvatarHash
-  );
-
-  const contentRef = useRef(null);
-
-  const getAddressName = async name => {
-    const response = await qortalRequest({
-      action: "GET_NAME_DATA",
-      name: name,
-    });
-
-    if (response?.owner) {
-      setNameAddress(response.owner);
-    }
-  };
-
-  useEffect(() => {
-    if (channelName) {
-      getAddressName(channelName);
-    }
-  }, [channelName]);
-  const avatarUrl = useMemo(() => {
-    let url = "";
-    if (channelName && userAvatarHash[channelName]) {
-      url = userAvatarHash[channelName];
-    }
-
-    return url;
-  }, [userAvatarHash, channelName]);
-  const navigate = useNavigate();
-  const theme = useTheme();
-
-  const saveAsFilename = useMemo(() => {
-    // nb. we prefer to construct the local filename to use for
-    // saving, from the video "title" when possible
-    if (videoData?.title) {
-      // figure out filename extension
-      let ext = ".mp4";
-      if (videoData?.filename) {
-        // nb. this regex copied from https://stackoverflow.com/a/680982
-        const re = /(?:\.([^.]+))?$/;
-        const match = re.exec(videoData.filename);
-        if (match[1]) {
-          ext = "." + match[1];
-        }
-      }
-
-      return (videoData.title + ext).replace(titleFormatterOnSave, "");
-    }
-
-    // otherwise use QDN filename if applicable
-    if (videoData?.filename) {
-      return videoData.filename.replace(titleFormatterOnSave, "");
-    }
-
-    // TODO: this was the previous value, leaving here as the
-    // fallback for now even though it probably is not needed..?
-    return videoData?.filename || videoData?.title?.slice(0, 20) + ".mp4";
-  }, [videoData]);
-
-  const hashMapVideos = useSelector(
-    (state: RootState) => state.video.hashMapVideos
-  );
-  const videoReference = useMemo(() => {
-    if (!videoData) return null;
-    const { videoReference } = videoData;
-    if (
-      videoReference?.identifier &&
-      videoReference?.name &&
-      videoReference?.service
-    ) {
-      setIsVideoLoaded(true);
-      return videoReference;
-    } else {
-      return null;
-    }
-  }, [videoData]);
-
-  const videoCover = useMemo(() => {
-    if (!videoData) return null;
-    const { videoImage } = videoData;
-    return videoImage || null;
-  }, [videoData]);
-  const dispatch = useDispatch();
-
-  const getVideoData = React.useCallback(async (name: string, id: string) => {
-    try {
-      if (!name || !id) return;
-      dispatch(setIsLoadingGlobal(true));
-
-      const url = `/arbitrary/resources/search?mode=ALL&service=DOCUMENT&query=${QTUBE_VIDEO_BASE}&limit=1&includemetadata=true&reverse=true&excludeblocked=true&name=${name}&exactmatchnames=true&offset=0&identifier=${id}`;
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      const responseDataSearch = await response.json();
-
-      if (responseDataSearch?.length > 0) {
-        let resourceData = responseDataSearch[0];
-        resourceData = {
-          title: resourceData?.metadata?.title,
-          category: resourceData?.metadata?.category,
-          categoryName: resourceData?.metadata?.categoryName,
-          tags: resourceData?.metadata?.tags || [],
-          description: resourceData?.metadata?.description,
-          created: resourceData?.created,
-          updated: resourceData?.updated,
-          user: resourceData.name,
-          videoImage: "",
-          id: resourceData.identifier,
-        };
-
-        const responseData = await qortalRequest({
-          action: "FETCH_QDN_RESOURCE",
-          name: name,
-          service: "DOCUMENT",
-          identifier: id,
-        });
-
-        if (responseData && !responseData.error) {
-          const combinedData = {
-            ...resourceData,
-            ...responseData,
-          };
-
-          setVideoData(combinedData);
-          dispatch(addToHashMap(combinedData));
-        }
-      }
-    } catch (error) {
-      console.log(error);
-    } finally {
-      dispatch(setIsLoadingGlobal(false));
-    }
-  }, []);
-
-  React.useEffect(() => {
-    if (channelName && id) {
-      const existingVideo = hashMapVideos[id + "-" + channelName];
-
-      if (existingVideo) {
-        setVideoData(existingVideo);
-      } else {
-        getVideoData(channelName, id);
-      }
-    }
-  }, [id, channelName]);
-
-  const descriptionThreshold = 200;
-  useEffect(() => {
-    if (contentRef.current) {
-      const height = contentRef.current.offsetHeight;
-      if (height > descriptionThreshold)
-        setDescriptionHeight(descriptionThreshold);
-    }
-  }, [videoData]);
-
-  const getComments = useCallback(async (id, nameAddressParam) => {
-    if (!id) return;
-    try {
-      setLoadingSuperLikes(true);
-
-      const url = `/arbitrary/resources/search?mode=ALL&service=BLOG_COMMENT&query=${SUPER_LIKE_BASE}${id.slice(
-        0,
-        39
-      )}&limit=100&includemetadata=true&reverse=true&excludeblocked=true`;
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      const responseData = await response.json();
-      let comments: any[] = [];
-      for (const comment of responseData) {
-        if (
-          comment.identifier &&
-          comment.name &&
-          comment?.metadata?.description
-        ) {
-          try {
-            const result = extractSigValue(comment?.metadata?.description);
-            if (!result) continue;
-            const res = await getPaymentInfo(result);
-            if (
-              +res?.amount >= minPriceSuperlike &&
-              res.recipient === nameAddressParam &&
-              isTimestampWithinRange(res?.timestamp, comment.created)
-            ) {
-              addSuperlikeRawDataGetToList({
-                name: comment.name,
-                identifier: comment.identifier,
-                content: comment,
-              });
-
-              comments = [
-                ...comments,
-                {
-                  ...comment,
-                  message: "",
-                  amount: res.amount,
-                },
-              ];
-            }
-          } catch (error) {
-            console.log(error);
-          }
-        }
-      }
-
-      setSuperlikelist(comments);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoadingSuperLikes(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (!nameAddress || !id) return;
-    getComments(id, nameAddress);
-  }, [getComments, id, nameAddress]);
-  const subList = useSelector(
-    (state: RootState) => state.persist.subscriptionList
-  );
-
-  const focusVideo = (e: React.MouseEvent<HTMLDivElement>) => {
-    console.log("in focusVideo");
-    const target = e.target as Element;
-
-    const textTagNames = ["TEXTAREA", "P", "H[1-6]", "STRONG", "svg", "A"];
-    const noText =
-      textTagNames.findIndex(s => {
-        return target?.tagName.match(s);
-      }) < 0;
-
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    const clickOnEmptySpace = !target?.onclick && noText;
-
-    console.log("tagName is: ", target?.tagName);
-    // clicking on link in superlikes bar shows deleted video when loading
-
-    if (target == e.currentTarget || clickOnEmptySpace) {
-      console.log("in correctTarget");
-      const focusRef = containerRef.current?.getContainerRef()?.current;
-      focusRef.focus({ preventScroll: true });
-    }
-  };
+  const {
+    focusVideo,
+    videoReference,
+    channelName,
+    id,
+    videoCover,
+    containerRef,
+    isVideoLoaded,
+    navigate,
+    theme,
+    userName,
+    videoData,
+    numberOfSuperlikes,
+    calculateAmountSuperlike,
+    setSuperlikelist,
+    saveAsFilename,
+    descriptionHeight,
+    isExpandedDescription,
+    setIsExpandedDescription,
+    contentRef,
+    descriptionThreshold,
+    loadingSuperLikes,
+    superlikeList,
+  } = useVideoContentState();
 
   return (
     <>

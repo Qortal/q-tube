@@ -1,10 +1,10 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { RootState } from "../../state/store";
+import { RootState } from "../../../state/store.ts";
 import { Avatar, Box, Button, Typography, useTheme } from "@mui/material";
-import { useFetchVideos } from "../../hooks/useFetchVideos";
-import LazyLoad from "../../components/common/LazyLoad";
+import { useFetchVideos } from "../../../hooks/useFetchVideos.tsx";
+import LazyLoad from "../../../components/common/LazyLoad.tsx";
 import {
   BottomParent,
   NameContainer,
@@ -16,13 +16,13 @@ import {
   VideoCardTitle,
   VideoContainer,
   VideoUploadDate,
-} from "./VideoList-styles";
-import ResponsiveImage from "../../components/ResponsiveImage";
-import { formatDate, formatTimestampSeconds } from "../../utils/time";
-import { Video } from "../../state/features/videoSlice";
-import { queue } from "../../wrappers/GlobalWrapper";
-import { VideoCardImageContainer } from "./VideoCardImageContainer";
-import { QTUBE_VIDEO_BASE } from "../../constants/Identifiers.ts";
+} from "./VideoList-styles.tsx";
+import ResponsiveImage from "../../../components/ResponsiveImage.tsx";
+import { formatDate, formatTimestampSeconds } from "../../../utils/time.ts";
+import { Video } from "../../../state/features/videoSlice.ts";
+import { queue } from "../../../wrappers/GlobalWrapper.tsx";
+import { VideoCardImageContainer } from "./VideoCardImageContainer.tsx";
+import { QTUBE_VIDEO_BASE } from "../../../constants/Identifiers.ts";
 
 interface VideoListProps {
   mode?: string;
@@ -133,7 +133,7 @@ export const VideoListComponentLevel = ({ mode }: VideoListProps) => {
       >
         <VideoCardContainer>
           {videos.map((video: any, index: number) => {
-            const existingVideo = hashMapVideos[video.id + '-' + video.user];
+            const existingVideo = hashMapVideos[video.id + "-" + video.user];
             let hasHash = false;
             let videoObj = video;
             if (existingVideo) {

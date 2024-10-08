@@ -63,7 +63,7 @@ import {
   FiltersCheckbox,
   FiltersRow,
   FiltersSubContainer,
-} from "../../../pages/Home/VideoList-styles.tsx";
+} from "../../../pages/Home/Components/VideoList-styles.tsx";
 import { FrameExtractor } from "../../common/FrameExtractor/FrameExtractor.tsx";
 import {
   QTUBE_PLAYLIST_BASE,

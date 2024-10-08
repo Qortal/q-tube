@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { VideoListComponentLevel } from "../../Home/VideoListComponentLevel.tsx";
+import { VideoListComponentLevel } from "../../Home/Components/VideoListComponentLevel.tsx";
 import { HeaderContainer, ProfileContainer } from "./Profile-styles.tsx";
 import {
   AuthorTextComment,

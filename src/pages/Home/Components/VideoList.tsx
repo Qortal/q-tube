@@ -4,16 +4,16 @@ import { Avatar, Box, Tooltip, useTheme } from "@mui/material";
 import React, { useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { PlaylistSVG } from "../../assets/svgs/PlaylistSVG.tsx";
-import ResponsiveImage from "../../components/ResponsiveImage.tsx";
+import { PlaylistSVG } from "../../../assets/svgs/PlaylistSVG.tsx";
+import ResponsiveImage from "../../../components/ResponsiveImage.tsx";
 import {
   blockUser,
   setEditPlaylist,
   setEditVideo,
   Video,
-} from "../../state/features/videoSlice.ts";
-import { RootState } from "../../state/store.ts";
-import { formatDate } from "../../utils/time.ts";
+} from "../../../state/features/videoSlice.ts";
+import { RootState } from "../../../state/store.ts";
+import { formatDate } from "../../../utils/time.ts";
 import { VideoCardImageContainer } from "./VideoCardImageContainer.tsx";
 import {
   BlockIconContainer,
@@ -75,11 +75,6 @@ export const VideoList = ({ videos }: VideoListProps) => {
         if (existingVideo) {
           videoObj = existingVideo;
           hasHash = true;
-        }
-
-        let avatarUrl = "";
-        if (userAvatarHash[videoObj?.user]) {
-          avatarUrl = userAvatarHash[videoObj?.user];
         }
 
         // nb. this prevents showing metadata for a video which

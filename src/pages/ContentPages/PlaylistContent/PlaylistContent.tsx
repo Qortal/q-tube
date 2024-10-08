@@ -24,7 +24,7 @@ import {
   extractSigValue,
   getPaymentInfo,
   isTimestampWithinRange,
-} from "../VideoContent/VideoContent-functions.ts";
+} from "../VideoContent/VideoContent-State.tsx";
 import {
   AuthorTextComment,
   FileAttachmentContainer,

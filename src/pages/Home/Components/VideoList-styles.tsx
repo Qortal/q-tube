@@ -21,25 +21,6 @@ export const VideoContainer = styled(Grid)(({ theme }) => ({
   width: "100%",
 }));
 
-// export const VideoCardContainer = styled(Grid)({
-//   display: "flex",
-//   flexWrap: "wrap",
-//   padding: "5px 35px 15px 35px",
-// });
-
-// export const VideoCardCol = styled(Grid)(({ theme }) => ({
-//   display: "flex",
-//   gap: 1,
-//   alignItems: "center",
-//   width: "auto",
-//   position: "relative",
-//   maxWidth: "100%",
-//   flexGrow: 1,
-//   [theme.breakpoints.down("sm")]: {
-//     width: "100%",
-//   },
-// }));
-
 export const VideoCardContainer = styled("div")(({ theme }) => ({
   display: "grid",
   gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
@@ -54,19 +35,6 @@ export const VideoCardCol = styled("div")({
   maxWidth: "1fr", // Maximum width, allowing the item to fill the column
   // ... other styles
 });
-
-export const StoresRow = styled(Grid)(({ theme }) => ({
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  justifyContent: "flex-start",
-  gap: "15px",
-  width: "auto",
-  position: "relative",
-  "@media (max-width: 450px)": {
-    width: "100%",
-  },
-}));
 
 export const VideoCard = styled(Grid)(({ theme }) => ({
   position: "relative",
@@ -94,25 +62,6 @@ export const VideoCard = styled(Grid)(({ theme }) => ({
         ? "0px 8px 10px 1px hsla(0,0%,0%,0.14), 0px 3px 14px 2px hsla(0,0%,0%,0.12), 0px 5px 5px -3px hsla(0,0%,0%,0.2)"
         : "rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;",
   },
-}));
-
-export const StoreCardInfo = styled(Grid)(({ theme }) => ({
-  display: "flex",
-  flexDirection: "column",
-  gap: "10px",
-  padding: "5px",
-  marginTop: "15px",
-}));
-
-export const VideoImageContainer = styled(Grid)(({ theme }) => ({}));
-
-export const VideoCardImage = styled("img")(({ theme }) => ({
-  maxWidth: "300px",
-  minWidth: "150px",
-  borderRadius: "5px",
-  height: "150px",
-  objectFit: "fill",
-  width: "266px",
 }));
 
 const DoubleLine = styled(Typography)`
@@ -152,43 +101,6 @@ export const BottomParent = styled(Box)(({ theme }) => ({
   alignItems: "flex-start",
   flexDirection: "column",
 }));
-export const VideoCardDescription = styled(Typography)(({ theme }) => ({
-  fontFamily: "Karla",
-  fontSize: "20px",
-  letterSpacing: "0px",
-  color: theme.palette.text.primary,
-  userSelect: "none",
-}));
-
-export const StoreCardOwner = styled(Typography)(({ theme }) => ({
-  fontFamily: "Livvic",
-  color: theme.palette.text.primary,
-  fontSize: "17px",
-  position: "absolute",
-  bottom: "5px",
-  right: "10px",
-  userSelect: "none",
-}));
-
-export const StoreCardYouOwn = styled(Box)(({ theme }) => ({
-  position: "absolute",
-  top: "5px",
-  right: "10px",
-  display: "flex",
-  alignItems: "center",
-  gap: "5px",
-  fontFamily: "Livvic",
-  fontSize: "15px",
-  color: theme.palette.text.primary,
-}));
-
-export const MyStoresRow = styled(Grid)(({ theme }) => ({
-  display: "flex",
-  flexDirection: "row",
-  justifyContent: "flex-end",
-  padding: "5px",
-  width: "100%",
-}));
 
 export const NameContainer = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -197,26 +109,6 @@ export const NameContainer = styled(Box)(({ theme }) => ({
   alignItems: "center",
   gap: "10px",
   marginBottom: "2px",
-}));
-
-export const MyStoresCard = styled(Box)(({ theme }) => ({
-  display: "flex",
-  flexDirection: "row",
-  alignItems: "center",
-  width: "auto",
-  borderRadius: "4px",
-  backgroundColor: theme.palette.background.paper,
-  padding: "5px 10px",
-  fontFamily: "Raleway",
-  fontSize: "18px",
-  color: theme.palette.text.primary,
-}));
-
-export const MyStoresCheckbox = styled(Checkbox)(({ theme }) => ({
-  color: "#c0d4ff",
-  "&.Mui-checked": {
-    color: "#6596ff",
-  },
 }));
 
 export const ProductManagerRow = styled(Box)(({ theme }) => ({
@@ -253,17 +145,6 @@ export const FiltersRow = styled(Box)(({ theme }) => ({
   userSelect: "none",
 }));
 
-export const FiltersTitle = styled(Typography)(({ theme }) => ({
-  display: "flex",
-  alignItems: "center",
-  gap: "5px",
-  margin: "20px 0",
-  fontFamily: "Raleway",
-  fontSize: "17px",
-  color: theme.palette.text.primary,
-  userSelect: "none",
-}));
-
 export const FiltersCheckbox = styled(Checkbox)(({ theme }) => ({
   color: "#c0d4ff",
   "&.Mui-checked": {
@@ -276,31 +157,6 @@ export const FiltersRadioButton = styled(Radio)(({ theme }) => ({
   "&.Mui-checked": {
     color: "#6596ff",
   },
-}));
-
-export const FilterSelect = styled(Autocomplete)(({ theme }) => ({
-  "& #categories-select": {
-    padding: "7px",
-  },
-  "& .MuiSelect-placeholder": {
-    fontFamily: "Raleway",
-    fontSize: "17px",
-    color: theme.palette.text.primary,
-    userSelect: "none",
-  },
-  "& MuiFormLabel-root": {
-    fontFamily: "Raleway",
-    fontSize: "17px",
-    color: theme.palette.text.primary,
-    userSelect: "none",
-  },
-}));
-
-export const FilterSelectMenuItems = styled(TextField)(({ theme }) => ({
-  fontFamily: "Raleway",
-  fontSize: "17px",
-  color: theme.palette.text.primary,
-  userSelect: "none",
 }));
 
 export const FiltersSubContainer = styled(Box)(({ theme }) => ({

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import ResponsiveImage from "../../components/ResponsiveImage";
+import ResponsiveImage from "../../../components/ResponsiveImage.tsx";
 
 export const VideoCardImageContainer = ({
   videoImage,

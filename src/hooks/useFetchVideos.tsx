@@ -35,23 +35,10 @@ export const useFetchVideos = () => {
     (state: RootState) => state.video.hashMapVideos
   );
   const videos = useSelector((state: RootState) => state.video.videos);
-  const userAvatarHash = useSelector(
-    (state: RootState) => state.global.userAvatarHash
-  );
-  const totalVideosPublished = useSelector(
-    (state: RootState) => state.global.totalVideosPublished
-  );
-  const totalNamesPublished = useSelector(
-    (state: RootState) => state.global.totalNamesPublished
-  );
-  const videosPerNamePublished = useSelector(
-    (state: RootState) => state.global.videosPerNamePublished
-  );
+
   const filteredVideos = useSelector(
     (state: RootState) => state.video.filteredVideos
   );
-
-  const videoReducer = useSelector((state: RootState) => state.video);
 
   const checkAndUpdateVideo = React.useCallback(
     (video: Video) => {
@@ -70,26 +57,6 @@ export const useFetchVideos = () => {
     },
     [hashMapVideos]
   );
-
-  const getAvatar = React.useCallback(async (author: string) => {
-    try {
-      const url = await qortalRequest({
-        action: "GET_QDN_RESOURCE_URL",
-        name: author,
-        service: "THUMBNAIL",
-        identifier: "qortal_avatar",
-      });
-
-      dispatch(
-        setUserAvatarHash({
-          name: author,
-          url,
-        })
-      );
-    } catch (error) {
-      console.log(error);
-    }
-  }, []);
 
   const getVideo = async (
     user: string,
@@ -122,17 +89,6 @@ export const useFetchVideos = () => {
   const getNewVideos = React.useCallback(async () => {
     try {
       dispatch(setIsLoadingGlobal(true));
-
-      // const url = `/arbitrary/resources/search?mode=ALL&service=DOCUMENT&query=${QTUBE_VIDEO_BASE}&limit=20&includemetadata=false&reverse=true&exc
-      // ludeblocked=true&exactmatchnames=true`;
-      //
-      // const response = await fetch(url, {
-      //   method: "GET",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //   },
-      // });
-      // const responseData = await response.json();
 
       const responseData = await qortalRequest({
         action: "SEARCH_QDN_RESOURCES",
@@ -235,7 +191,7 @@ export const useFetchVideos = () => {
         const videoLimit = limit || 20;
 
         let defaultUrl = `/arbitrary/resources/search?mode=ALL&includemetadata=false&reverse=true&excludeblocked=true&exactmatchnames=true&offset=${offset}&limit=${videoLimit}`;
-        
+
         if (name) {
           defaultUrl = defaultUrl + `&name=${name}`;
         } else if (videoListType === "subscriptions") {

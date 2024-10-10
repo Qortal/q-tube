@@ -111,7 +111,7 @@ export const NameContainer = styled(Box)(({ theme }) => ({
   marginBottom: "2px",
 }));
 
-export const ProductManagerRow = styled(Box)(({ theme }) => ({
+export const VideoManagerRow = styled(Box)(({ theme }) => ({
   display: "grid",
   gridTemplateColumns: "1fr auto",
   alignItems: "center",

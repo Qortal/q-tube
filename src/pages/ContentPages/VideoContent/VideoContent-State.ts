@@ -25,27 +25,9 @@ import { useNavigate, useParams } from "react-router-dom";
 export const useVideoContentState = () => {
   const { name: channelName, id } = useParams();
 
-  const userName = useSelector((state: RootState) => state.auth.user?.name);
-
   const [isExpandedDescription, setIsExpandedDescription] =
     useState<boolean>(false);
-  const [superlikeList, setSuperlikelist] = useState<any[]>([]);
-  const [loadingSuperLikes, setLoadingSuperLikes] = useState<boolean>(false);
-
-  const { addSuperlikeRawDataGetToList } = useFetchSuperLikes();
   const containerRef = useRef<refType>(null);
-
-  const calculateAmountSuperlike = useMemo(() => {
-    const totalQort = superlikeList?.reduce((acc, curr) => {
-      if (curr?.amount && !isNaN(parseFloat(curr.amount)))
-        return acc + parseFloat(curr.amount);
-      else return acc;
-    }, 0);
-    return totalQort?.toFixed(2);
-  }, [superlikeList]);
-  const numberOfSuperlikes = useMemo(() => {
-    return superlikeList?.length ?? 0;
-  }, [superlikeList]);
 
   const [nameAddress, setNameAddress] = useState<string>("");
   const [descriptionHeight, setDescriptionHeight] = useState<null | number>(
@@ -57,6 +39,9 @@ export const useVideoContentState = () => {
   const userAvatarHash = useSelector(
     (state: RootState) => state.global.userAvatarHash
   );
+  const [loadingSuperLikes, setLoadingSuperLikes] = useState<boolean>(false);
+  const [superLikeList, setSuperLikeList] = useState<any[]>([]);
+  const { addSuperlikeRawDataGetToList } = useFetchSuperLikes();
 
   const contentRef = useRef(null);
 
@@ -87,34 +72,6 @@ export const useVideoContentState = () => {
   const navigate = useNavigate();
   const theme = useTheme();
 
-  const saveAsFilename = useMemo(() => {
-    // nb. we prefer to construct the local filename to use for
-    // saving, from the video "title" when possible
-    if (videoData?.title) {
-      // figure out filename extension
-      let ext = ".mp4";
-      if (videoData?.filename) {
-        // nb. this regex copied from https://stackoverflow.com/a/680982
-        const re = /(?:\.([^.]+))?$/;
-        const match = re.exec(videoData.filename);
-        if (match[1]) {
-          ext = "." + match[1];
-        }
-      }
-
-      return (videoData.title + ext).replace(titleFormatterOnSave, "");
-    }
-
-    // otherwise use QDN filename if applicable
-    if (videoData?.filename) {
-      return videoData.filename.replace(titleFormatterOnSave, "");
-    }
-
-    // TODO: this was the previous value, leaving here as the
-    // fallback for now even though it probably is not needed..?
-    return videoData?.filename || videoData?.title?.slice(0, 20) + ".mp4";
-  }, [videoData]);
-
   const hashMapVideos = useSelector(
     (state: RootState) => state.video.hashMapVideos
   );
@@ -140,7 +97,7 @@ export const useVideoContentState = () => {
   }, [videoData]);
   const dispatch = useDispatch();
 
-  const getVideoData = React.useCallback(async (name: string, id: string) => {
+  const getVideoData = useCallback(async (name: string, id: string) => {
     try {
       if (!name || !id) return;
       dispatch(setIsLoadingGlobal(true));
@@ -193,7 +150,7 @@ export const useVideoContentState = () => {
     }
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (channelName && id) {
       const existingVideo = hashMapVideos[id + "-" + channelName];
 
@@ -267,7 +224,7 @@ export const useVideoContentState = () => {
         }
       }
 
-      setSuperlikelist(comments);
+      setSuperLikeList(comments);
     } catch (error) {
       console.error(error);
     } finally {
@@ -316,19 +273,18 @@ export const useVideoContentState = () => {
     isVideoLoaded,
     navigate,
     theme,
-    userName,
     videoData,
-    numberOfSuperlikes,
-    calculateAmountSuperlike,
-    setSuperlikelist,
-    saveAsFilename,
     descriptionHeight,
     isExpandedDescription,
     setIsExpandedDescription,
     contentRef,
     descriptionThreshold,
     loadingSuperLikes,
-    superlikeList,
+    superLikeList,
+    setSuperLikeList,
+    getComments,
+    getVideoData,
+    setVideoData,
   };
 };
 

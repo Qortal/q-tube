@@ -38,9 +38,6 @@ export const VideoList = ({ videos }: VideoListProps) => {
     (state: RootState) => state.video.hashMapVideos
   );
 
-  const userAvatarHash = useSelector(
-    (state: RootState) => state.global.userAvatarHash
-  );
   const username = useSelector((state: RootState) => state.auth?.user?.name);
 
   const navigate = useNavigate();

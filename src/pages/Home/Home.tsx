@@ -5,12 +5,9 @@ import React from "react";
 import LazyLoad from "../../components/common/LazyLoad";
 import { ListSuperLikeContainer } from "../../components/common/ListSuperLikes/ListSuperLikeContainer.tsx";
 import { SearchSidebar } from "./Components/SearchSidebar.tsx";
-import {
-  FiltersCol,
-  ProductManagerRow,
-} from "./Components/VideoList-styles.tsx";
+import { FiltersCol, VideoManagerRow } from "./Components/VideoList-styles.tsx";
 import VideoList from "./Components/VideoList.tsx";
-import { useHomeState } from "./Home-State.tsx";
+import { useHomeState } from "./Home-State.ts";
 import { SubtitleContainer } from "./Home-styles";
 
 interface HomeProps {
@@ -32,7 +29,7 @@ export const Home = ({ mode }: HomeProps) => {
       <Grid container sx={{ width: "100%" }}>
         <SearchSidebar onSearch={getVideosHandler} />
         <Grid item xs={12} md={10} lg={7} xl={8} sm={9}>
-          <ProductManagerRow>
+          <VideoManagerRow>
             <Box
               sx={{
                 width: "100%",
@@ -93,7 +90,7 @@ export const Home = ({ mode }: HomeProps) => {
                 </TabPanel>
               </TabContext>
             </Box>
-          </ProductManagerRow>
+          </VideoManagerRow>
         </Grid>
         <FiltersCol item xs={0} lg={3} xl={2}>
           <ListSuperLikeContainer />

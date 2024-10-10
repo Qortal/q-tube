@@ -20,7 +20,7 @@ import {
   extractSigValue,
   getPaymentInfo,
   isTimestampWithinRange,
-} from "../../../pages/ContentPages/VideoContent/VideoContent-State.tsx";
+} from "../../../pages/ContentPages/VideoContent/VideoContent-State.ts";
 import { RootState } from "../../../state/store";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import { formatDate } from "../../../utils/time";

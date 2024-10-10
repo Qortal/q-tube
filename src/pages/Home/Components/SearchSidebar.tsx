@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import { StatsData } from "../../../components/StatsData.tsx";
 import { categories, subCategories } from "../../../constants/Categories.ts";
-import { useSidebarState } from "./SearchSidebar-State.tsx";
+import { useSidebarState } from "./SearchSidebar-State.ts";
 import {
   FiltersCol,
   FiltersContainer,

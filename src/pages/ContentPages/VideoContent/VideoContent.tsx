@@ -1,14 +1,8 @@
-import DownloadIcon from "@mui/icons-material/Download";
 import { Avatar, Box, Typography, useTheme } from "@mui/material";
 import React from "react";
 
 import DeletedVideo from "../../../assets/img/DeletedVideo.jpg";
 import { CommentSection } from "../../../components/common/Comments/CommentSection.tsx";
-import { FollowButton } from "../../../components/common/ContentButtons/FollowButton.tsx";
-import { LikeAndDislike } from "../../../components/common/ContentButtons/LikeAndDislike.tsx";
-import { SubscribeButton } from "../../../components/common/ContentButtons/SubscribeButton.tsx";
-import { SuperLike } from "../../../components/common/ContentButtons/SuperLike.tsx";
-import FileElement from "../../../components/common/FileElement.tsx";
 import { SuperLikesSection } from "../../../components/common/SuperLikesList/SuperLikesSection.tsx";
 import { DisplayHtml } from "../../../components/common/TextEditor/DisplayHtml.tsx";
 import {
@@ -28,12 +22,13 @@ import { setIsLoadingGlobal } from "../../../state/features/globalSlice.ts";
 import { addToHashMap } from "../../../state/features/videoSlice.ts";
 import { RootState } from "../../../state/store.ts";
 import { formatDate } from "../../../utils/time.ts";
+import { VideoActionsBar } from "./VideoActionsBar.tsx";
 import {
   extractSigValue,
   getPaymentInfo,
   isTimestampWithinRange,
   useVideoContentState,
-} from "./VideoContent-State.tsx";
+} from "./VideoContent-State.ts";
 import {
   AuthorTextComment,
   FileAttachmentContainer,
@@ -56,21 +51,16 @@ export const VideoContent = () => {
     videoCover,
     containerRef,
     isVideoLoaded,
-    navigate,
     theme,
-    userName,
     videoData,
-    numberOfSuperlikes,
-    calculateAmountSuperlike,
-    setSuperlikelist,
-    saveAsFilename,
     descriptionHeight,
     isExpandedDescription,
     setIsExpandedDescription,
     contentRef,
     descriptionThreshold,
     loadingSuperLikes,
-    superlikeList,
+    superLikeList,
+    setSuperLikeList,
   } = useVideoContentState();
 
   return (
@@ -111,114 +101,14 @@ export const VideoContent = () => {
           <Box sx={{ width: "55vw", aspectRatio: "16/9" }}></Box>
         )}
         <VideoContentContainer>
-          <Box
-            sx={{
-              width: "80%",
-              display: "grid",
-              gridTemplateColumns: "1fr 1fr",
-              marginTop: "15px",
-            }}
-          >
-            <Box>
-              <StyledCardHeaderComment
-                sx={{
-                  "& .MuiCardHeader-content": {
-                    overflow: "hidden",
-                  },
-                }}
-              >
-                <Box
-                  sx={{
-                    cursor: "pointer",
-                  }}
-                  onClick={() => {
-                    navigate(`/channel/${channelName}`);
-                  }}
-                >
-                  <Avatar
-                    src={`/arbitrary/THUMBNAIL/${channelName}/qortal_avatar`}
-                    alt={`${channelName}'s avatar`}
-                  />
-                </Box>
-                <StyledCardColComment>
-                  <AuthorTextComment
-                    color={
-                      theme.palette.mode === "light"
-                        ? theme.palette.text.secondary
-                        : "#d6e8ff"
-                    }
-                    sx={{
-                      cursor: "pointer",
-                    }}
-                    onClick={() => {
-                      navigate(`/channel/${channelName}`);
-                    }}
-                  >
-                    {channelName}
-                    {channelName !== userName && (
-                      <>
-                        <SubscribeButton
-                          subscriberName={channelName}
-                          sx={{ marginLeft: "20px" }}
-                        />
-                        <FollowButton
-                          followerName={channelName}
-                          sx={{ marginLeft: "20px" }}
-                        />
-                      </>
-                    )}
-                  </AuthorTextComment>
-                </StyledCardColComment>
-              </StyledCardHeaderComment>
-            </Box>
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "row",
-              }}
-            >
-              {videoData && (
-                <>
-                  <LikeAndDislike
-                    name={videoData?.user}
-                    identifier={videoData?.id}
-                  />
-                  <SuperLike
-                    numberOfSuperlikes={numberOfSuperlikes}
-                    totalAmount={calculateAmountSuperlike}
-                    name={videoData?.user}
-                    service={videoData?.service}
-                    identifier={videoData?.id}
-                    onSuccess={val => {
-                      setSuperlikelist(prev => [val, ...prev]);
-                    }}
-                  />
-                </>
-              )}
-              {videoData?.filename && (
-                <FileAttachmentContainer>
-                  <FileAttachmentFont>Save to Disk</FileAttachmentFont>
-                  <FileElement
-                    fileInfo={{
-                      ...videoReference,
-                      filename: saveAsFilename,
-                      mimeType: videoData?.videoType || '"video/mp4',
-                    }}
-                    title={
-                      videoData?.filename || videoData?.title?.slice(0, 20)
-                    }
-                    customStyles={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "flex-end",
-                    }}
-                  >
-                    <DownloadIcon />
-                  </FileElement>
-                </FileAttachmentContainer>
-              )}
-            </Box>
-          </Box>
+          <VideoActionsBar
+            channelName={channelName}
+            videoData={videoData}
+            setSuperLikeList={setSuperLikeList}
+            superLikeList={superLikeList}
+            videoReference={videoReference}
+          />
+
           <Box
             sx={{
               display: "flex",
@@ -343,7 +233,7 @@ export const VideoContent = () => {
                 /* eslint-disable-next-line @typescript-eslint/no-empty-function */
                 getMore={() => {}}
                 loadingSuperLikes={loadingSuperLikes}
-                superlikes={superlikeList}
+                superlikes={superLikeList}
                 postId={id || ""}
                 postName={channelName || ""}
               />

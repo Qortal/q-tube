@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { PlaylistSVG } from "../../../assets/svgs/PlaylistSVG.tsx";
 import ResponsiveImage from "../../../components/ResponsiveImage.tsx";
+import { fontSizeSmall } from "../../../constants/Misc.ts";
 import {
   blockUser,
   setEditPlaylist,
@@ -126,6 +127,7 @@ export const VideoList = ({ videos }: VideoListProps) => {
                   </Tooltip>
                 )}
               </IconsBox>
+
               <VideoCard
                 sx={{
                   cursor: !hasHash && "default",
@@ -143,7 +145,9 @@ export const VideoList = ({ videos }: VideoListProps) => {
                     maxHeight: "50%",
                   }}
                 />
+
                 <VideoCardTitle>{videoObj?.title}</VideoCardTitle>
+
                 <BottomParent>
                   <NameContainer
                     onClick={e => {
@@ -239,7 +243,13 @@ export const VideoList = ({ videos }: VideoListProps) => {
                 videoImage={videoObj.videoImage}
                 frameImages={videoObj?.extracts || []}
               />
-              <VideoCardTitle>{videoObj.title}</VideoCardTitle>
+              <Tooltip
+                title={videoObj.title}
+                placement="top"
+                slotProps={{ tooltip: { sx: { fontSize: fontSizeSmall } } }}
+              >
+                <VideoCardTitle>{videoObj.title}</VideoCardTitle>
+              </Tooltip>
               <BottomParent>
                 <NameContainer
                   onClick={e => {

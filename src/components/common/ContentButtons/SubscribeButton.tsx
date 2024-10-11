@@ -1,13 +1,13 @@
 import { Button, ButtonProps, Tooltip } from "@mui/material";
 import { MouseEvent, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { subscriptionListFilter } from "../../../App-State.ts";
 import { RootState } from "../../../state/store.ts";
 import {
   subscribe,
   unSubscribe,
 } from "../../../state/features/persistSlice.ts";
 import { setFilteredSubscriptions } from "../../../state/features/videoSlice.ts";
-import { subscriptionListFilter } from "../../../App.tsx";
 import { styled } from "@mui/material/styles";
 
 interface SubscribeButtonProps extends ButtonProps {

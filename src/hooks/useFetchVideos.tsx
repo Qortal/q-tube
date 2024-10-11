@@ -1,5 +1,6 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { subscriptionListFilter } from "../App-State.ts";
 import {
   addVideos,
   addToHashMap,
@@ -26,7 +27,6 @@ import {
   QTUBE_VIDEO_BASE,
 } from "../constants/Identifiers.ts";
 import { persistReducer } from "redux-persist";
-import { subscriptionListFilter } from "../App.tsx";
 import { ContentType, VideoListType } from "../state/features/persistSlice.ts";
 
 export const useFetchVideos = () => {

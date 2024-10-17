@@ -89,8 +89,14 @@ export const VideoPlayer = forwardRef<refType, VideoPlayerProps>(
         <VideoElement
           id={identifier}
           ref={videoRef}
-          src={!startPlay ? "" : resourceStatus?.status === "READY" ? src : ""}
-          poster={!startPlay ? poster : ""}
+          src={
+            !startPlay.value
+              ? ""
+              : resourceStatus?.status === "READY"
+              ? src
+              : ""
+          }
+          poster={!startPlay.value ? poster : ""}
           onTimeUpdate={updateProgress}
           autoPlay={autoplay}
           onClick={() => togglePlay()}
@@ -105,7 +111,7 @@ export const VideoPlayer = forwardRef<refType, VideoPlayerProps>(
           }}
           preload="metadata"
           style={
-            startPlay
+            startPlay.value
               ? {
                   ...videoStyles?.video,
                   objectFit: videoObjectFit.value,

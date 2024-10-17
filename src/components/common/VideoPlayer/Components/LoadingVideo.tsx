@@ -2,6 +2,7 @@ import { Box, CircularProgress, Typography } from "@mui/material";
 import { setVideoPlaying } from "../../../../state/features/globalSlice.ts";
 import { useDispatch } from "react-redux";
 import { PlayArrow } from "@mui/icons-material";
+import { playing } from "../VideoPlayer-State.ts";
 
 export interface LoadingVideoProps {
   isLoading: boolean;
@@ -9,7 +10,7 @@ export interface LoadingVideoProps {
   src: any;
   startPlay: boolean;
   from: any;
-  togglePlay: (isPlay?: boolean) => void;
+  togglePlay: () => void;
 }
 export const LoadingVideo = ({
   isLoading,
@@ -102,6 +103,7 @@ export const LoadingVideo = ({
           onClick={() => {
             if (from === "create") return;
             dispatch(setVideoPlaying(null));
+            playing.value = true; // makes autoplay after video loaded work properly
             togglePlay();
           }}
           sx={{

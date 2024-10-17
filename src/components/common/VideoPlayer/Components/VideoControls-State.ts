@@ -21,7 +21,7 @@ import {
 } from "../VideoPlayer-State.ts";
 import { useEffect } from "react";
 import { signal, useSignal } from "@preact/signals-react";
-import { useSignals } from "@preact/signals-react/runtime";
+import { useSignalEffect, useSignals } from "@preact/signals-react/runtime";
 import { VideoPlayerProps } from "../VideoPlayer.tsx";
 import ReactDOM from "react-dom";
 import { useSelector } from "react-redux";
@@ -30,7 +30,7 @@ export const showControlsFullScreen = signal(true);
 
 export const useVideoControlsState = (
   props: VideoPlayerProps,
-  videoRef,
+  videoRef: React.MutableRefObject<HTMLVideoElement>,
   videoPlayerState: ReturnType<typeof useVideoPlayerState>
 ) => {
   useSignals();
@@ -142,7 +142,6 @@ export const useVideoControlsState = (
     videoRef.current.src = src;
     videoRef.current.load();
     videoRef.current.currentTime = currentTime;
-
     playing.value = true;
     togglePlay();
   };
@@ -178,8 +177,10 @@ export const useVideoControlsState = (
   };
 
   useEffect(() => {
-    playing.value = true;
-    if (autoPlay && identifier) togglePlay();
+    if (autoPlay && identifier) {
+      console.log("autoplay useEffect");
+      togglePlay();
+    }
   }, [autoPlay, identifier]);
 
   const mute = () => {

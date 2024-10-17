@@ -68,15 +68,15 @@ export default function FileElement({
   customStyles,
 }: IAudioElement) {
   const { downloadVideo } = React.useContext(MyContext);
-  const [startedDownload, setStartedDownload] = React.useState<boolean>(false)
+  const [startedDownload, setStartedDownload] = React.useState<boolean>(false);
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const [fileProperties, setFileProperties] = React.useState<any>(null);
   const [downloadLoader, setDownloadLoader] = React.useState<any>(false);
-  const downloads  = useSelector((state: RootState) => state.global?.downloads);
+  const downloads = useSelector((state: RootState) => state.global?.downloads);
   const hasCommencedDownload = React.useRef(false);
   const dispatch = useDispatch();
-  const reDownload = React.useRef<boolean>(false)
-  const isFetchingProperties = React.useRef<boolean>(false)
+  const reDownload = React.useRef<boolean>(false);
+  const isFetchingProperties = React.useRef<boolean>(false);
   const download = React.useMemo(() => {
     if (!downloads || !fileInfo?.identifier) return {};
     const findDownload = downloads[fileInfo?.identifier];
@@ -94,15 +94,13 @@ export default function FileElement({
   const handlePlay = async () => {
     if (disable) return;
     hasCommencedDownload.current = true;
-    setStartedDownload(true)
-    if (
-      resourceStatus?.status === "READY"
-    ) {
+    setStartedDownload(true);
+    if (resourceStatus?.status === "READY") {
       if (downloadLoader) return;
-     
+
       setDownloadLoader(true);
-      let filename = download?.properties?.filename
-      let mimeType = download?.properties?.type
+      let filename = download?.properties?.filename;
+      let mimeType = download?.properties?.type;
 
       try {
         const { name, service, identifier } = fileInfo;
@@ -122,7 +120,7 @@ export default function FileElement({
         }
         mimeType = res?.mimeType || mimeType;
       } catch (error) {
-        
+        console.log(error);
       }
       try {
         const { name, service, identifier } = fileInfo;
@@ -168,7 +166,7 @@ export default function FileElement({
     }
 
     const { name, service, identifier } = fileInfo;
-   
+
     setIsLoading(true);
     downloadVideo({
       name,
@@ -181,40 +179,37 @@ export default function FileElement({
   };
 
   const refetch = React.useCallback(async () => {
-    if (!fileInfo) return
+    if (!fileInfo) return;
     try {
       const { name, service, identifier } = fileInfo;
-      isFetchingProperties.current = true
+      isFetchingProperties.current = true;
       await qortalRequest({
-        action: 'GET_QDN_RESOURCE_PROPERTIES',
+        action: "GET_QDN_RESOURCE_PROPERTIES",
         name,
         service,
-        identifier
-      })
-      
+        identifier,
+      });
     } catch (error) {
-      
+      console.log(error);
     } finally {
-      isFetchingProperties.current = false
+      isFetchingProperties.current = false;
     }
-   
-  }, [fileInfo])
+  }, [fileInfo]);
 
-  const refetchInInterval = ()=> {
+  const refetchInInterval = () => {
     try {
-      const interval = setInterval(()=> {
-          if(resourceStatus?.current === 'DOWNLOADED'){
-            refetch()
-          }
-          if(resourceStatus?.current === 'READY'){
-            clearInterval(interval);
-          }
-         
-        }, 7500)
+      const interval = setInterval(() => {
+        if (resourceStatus?.current === "DOWNLOADED") {
+          refetch();
+        }
+        if (resourceStatus?.current === "READY") {
+          clearInterval(interval);
+        }
+      }, 7500);
     } catch (error) {
-      
+      console.log(error);
     }
-  }
+  };
 
   React.useEffect(() => {
     if (
@@ -230,12 +225,12 @@ export default function FileElement({
           alertType: "info",
         })
       );
-    } else  if (
-      resourceStatus?.status === 'DOWNLOADED' &&
+    } else if (
+      resourceStatus?.status === "DOWNLOADED" &&
       reDownload?.current === false
     ) {
-      refetchInInterval()
-      reDownload.current = true
+      refetchInInterval();
+      reDownload.current = true;
     }
   }, [resourceStatus, download]);
 
@@ -261,7 +256,8 @@ export default function FileElement({
         >
           {children}{" "}
           {((resourceStatus.status && resourceStatus?.status !== "READY") ||
-          isLoading) && startedDownload ? (
+            isLoading) &&
+          startedDownload ? (
             <>
               <CircularProgress color="secondary" size={14} />
               <Typography variant="body2">{`${Math.round(
@@ -334,38 +330,53 @@ export default function FileElement({
             </Box>
           </Box>
           {((resourceStatus.status && resourceStatus?.status !== "READY") ||
-            isLoading) && startedDownload && (
-            <Box
-              position="absolute"
-              top={0}
-              left={0}
-              right={0}
-              bottom={0}
-              display="flex"
-              justifyContent="center"
-              alignItems="center"
-              zIndex={4999}
-              bgcolor="rgba(0, 0, 0, 0.6)"
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                gap: "10px",
-                padding: "8px",
-                borderRadius: "10px",
-              }}
-            >
-              <CircularProgress color="secondary" />
-              {resourceStatus && (
-                <Typography
-                  variant="subtitle2"
-                  component="div"
-                  sx={{
-                    color: "white",
-                    fontSize: "14px",
-                  }}
-                >
-                  {resourceStatus?.status === "REFETCHING" ? (
-                    <>
+            isLoading) &&
+            startedDownload && (
+              <Box
+                position="absolute"
+                top={0}
+                left={0}
+                right={0}
+                bottom={0}
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+                zIndex={4999}
+                bgcolor="rgba(0, 0, 0, 0.6)"
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "10px",
+                  padding: "8px",
+                  borderRadius: "10px",
+                }}
+              >
+                <CircularProgress color="secondary" />
+                {resourceStatus && (
+                  <Typography
+                    variant="subtitle2"
+                    component="div"
+                    sx={{
+                      color: "white",
+                      fontSize: "14px",
+                    }}
+                  >
+                    {resourceStatus?.status === "REFETCHING" ? (
+                      <>
+                        <>
+                          {(
+                            (resourceStatus?.localChunkCount /
+                              resourceStatus?.totalChunkCount) *
+                            100
+                          )?.toFixed(0)}
+                          %
+                        </>
+
+                        <> Refetching in 2 minutes</>
+                      </>
+                    ) : resourceStatus?.status === "DOWNLOADED" ? (
+                      <>Download Completed: building file...</>
+                    ) : resourceStatus?.status !== "READY" ? (
                       <>
                         {(
                           (resourceStatus?.localChunkCount /
@@ -374,27 +385,13 @@ export default function FileElement({
                         )?.toFixed(0)}
                         %
                       </>
-
-                      <> Refetching in 2 minutes</>
-                    </>
-                  ) : resourceStatus?.status === "DOWNLOADED" ? (
-                    <>Download Completed: building file...</>
-                  ) : resourceStatus?.status !== "READY" ? (
-                    <>
-                      {(
-                        (resourceStatus?.localChunkCount /
-                          resourceStatus?.totalChunkCount) *
-                        100
-                      )?.toFixed(0)}
-                      %
-                    </>
-                  ) : (
-                    <>Download Completed: fetching file...</>
-                  )}
-                </Typography>
-              )}
-            </Box>
-          )}
+                    ) : (
+                      <>Download Completed: fetching file...</>
+                    )}
+                  </Typography>
+                )}
+              </Box>
+            )}
           {resourceStatus?.status === "READY" &&
             download?.url &&
             download?.properties?.filename && (

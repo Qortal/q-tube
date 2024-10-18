@@ -15,6 +15,7 @@
     "@mui/icons-material": "^5.11.11",
     "@mui/lab": "^5.0.0-alpha.163",
     "@mui/material": "^5.11.13",
+    "@preact/signals-react": "^2.2.0",
     "@reduxjs/toolkit": "^1.9.3",
     "compressorjs": "^1.2.1",
     "dompurify": "^3.0.6",

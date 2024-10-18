@@ -76,7 +76,7 @@ export const VideoControls = ({
             }}
             onClick={() => togglePlay()}
           >
-            {!playing.value ? <Pause /> : <PlayArrow />}
+            {playing.value ? <Pause /> : <PlayArrow />}
           </IconButton>
           <IconButton
             sx={{
@@ -150,7 +150,7 @@ export const VideoControls = ({
             }}
             onClick={() => togglePlay()}
           >
-            {!playing.value ? <Pause /> : <PlayArrow />}
+            {playing.value ? <Pause /> : <PlayArrow />}
           </IconButton>
           <IconButton
             sx={{

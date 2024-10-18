@@ -147,8 +147,8 @@ export const useVideoControlsState = (
   };
 
   const togglePlay = async () => {
+    // console.log("in toggleplay playing is: ", playing.value);
     if (!videoRef.current) return;
-
     if (!src || resourceStatus?.status !== "READY") {
       const el = document.getElementById("videoWrapper");
       if (el) {
@@ -159,11 +159,12 @@ export const useVideoControlsState = (
       });
       getSrc();
     }
-
     startPlay.value = true;
+
+    const pause = playing.value;
     playing.value = !playing.value;
 
-    if (playing.value) videoRef.current.pause();
+    if (pause) videoRef.current.pause();
     else await videoRef.current.play();
   };
 
@@ -178,7 +179,6 @@ export const useVideoControlsState = (
 
   useEffect(() => {
     if (autoPlay && identifier) {
-      console.log("autoplay useEffect");
       togglePlay();
     }
   }, [autoPlay, identifier]);

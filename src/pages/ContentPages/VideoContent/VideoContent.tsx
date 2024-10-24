@@ -6,7 +6,7 @@ import { CommentSection } from "../../../components/common/Comments/CommentSecti
 import { SuperLikesSection } from "../../../components/common/SuperLikesList/SuperLikesSection.tsx";
 import { DisplayHtml } from "../../../components/common/TextEditor/DisplayHtml.tsx";
 import {
-  refType,
+  videoRefType,
   VideoPlayer,
 } from "../../../components/common/VideoPlayer/VideoPlayer.tsx";
 import {

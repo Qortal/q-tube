@@ -1,4 +1,4 @@
-import { refType } from "../../../components/common/VideoPlayer/VideoPlayer.tsx";
+import { videoRefType } from "../../../components/common/VideoPlayer/VideoPlayer.tsx";
 import {
   QTUBE_VIDEO_BASE,
   SUPER_LIKE_BASE,
@@ -27,7 +27,7 @@ export const useVideoContentState = () => {
 
   const [isExpandedDescription, setIsExpandedDescription] =
     useState<boolean>(false);
-  const containerRef = useRef<refType>(null);
+  const containerRef = useRef<videoRefType>(null);
 
   const [nameAddress, setNameAddress] = useState<string>("");
   const [descriptionHeight, setDescriptionHeight] = useState<null | number>(

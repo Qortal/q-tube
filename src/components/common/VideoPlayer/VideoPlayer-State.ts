@@ -1,4 +1,4 @@
-import { signal } from "@preact/signals-react";
+import { useSignal, useSignals } from "@preact/signals-react/runtime";
 import React, {
   useContext,
   useEffect,
@@ -10,33 +10,28 @@ import React, {
 import { useDispatch, useSelector } from "react-redux";
 import { setVideoPlaying } from "../../../state/features/globalSlice.ts";
 import { StretchVideoType } from "../../../state/features/persistSlice.ts";
-import { RootState, store } from "../../../state/store.ts";
+import { RootState } from "../../../state/store.ts";
 import { MyContext } from "../../../wrappers/DownloadWrapper.tsx";
 import { VideoPlayerProps } from "./VideoPlayer.tsx";
-import { useSignals } from "@preact/signals-react/runtime";
-
-export const playing = signal(false);
-
-export const isMuted = signal(false);
-export const progress = signal(0);
-export const isLoading = signal(false);
-export const canPlay = signal(false);
-export const startPlay = signal(false);
-export const isMobileView = signal(false);
-
-export const volume = signal(0.5);
-export const mutedVolume = signal(0.5);
-export const playbackRate = signal(1);
-export const anchorEl = signal(null);
-export const videoObjectFit = signal<StretchVideoType>("contain");
 
 export const useVideoPlayerState = (props: VideoPlayerProps, ref: any) => {
   useSignals();
   const persistSelector = useSelector((state: RootState) => state.persist);
-  volume.value = persistSelector.volume;
-  mutedVolume.value = persistSelector.volume;
-  playbackRate.value = persistSelector.playbackRate;
-  videoObjectFit.value = persistSelector.stretchVideoSetting;
+
+  const playing = useSignal(false);
+  const isMuted = useSignal(false);
+  const progress = useSignal(0);
+  const isLoading = useSignal(false);
+  const canPlay = useSignal(false);
+  const startPlay = useSignal(false);
+  const isMobileView = useSignal(false);
+  const volume = useSignal(persistSelector.volume);
+  const mutedVolume = useSignal(persistSelector.volume);
+  const playbackRate = useSignal(persistSelector.playbackRate);
+  const anchorEl = useSignal(null);
+  const videoObjectFit = useSignal<StretchVideoType>(
+    persistSelector.stretchVideoSetting
+  );
 
   const {
     name,
@@ -119,7 +114,8 @@ export const useVideoPlayerState = (props: VideoPlayerProps, ref: any) => {
     if (!videoRef.current) return;
     videoRef.current.currentTime = value as number;
     progress.value = value as number;
-    if (!playing) {
+
+    if (!playing.value) {
       await videoRef.current.play();
       playing.value = true;
     }
@@ -269,5 +265,17 @@ export const useVideoPlayerState = (props: VideoPlayerProps, ref: any) => {
     handleMenuOpen,
     handleMenuClose,
     toggleRef,
+    playing,
+    isMuted,
+    progress,
+    isLoading,
+    canPlay,
+    startPlay,
+    isMobileView,
+    volume,
+    mutedVolume,
+    playbackRate,
+    anchorEl,
+    videoObjectFit,
   };
 };

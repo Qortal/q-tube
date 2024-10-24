@@ -2,17 +2,8 @@ import { useSignals } from "@preact/signals-react/runtime";
 import CSS from "csstype";
 import { forwardRef } from "react";
 import { LoadingVideo } from "./Components/LoadingVideo.tsx";
-import {
-  showControlsFullScreen,
-  useVideoControlsState,
-} from "./Components/VideoControls-State.ts";
+import { useContextData, VideoContext } from "./Components/VideoContext.ts";
 import { VideoControls } from "./Components/VideoControls.tsx";
-import {
-  isLoading,
-  startPlay,
-  useVideoPlayerState,
-  videoObjectFit,
-} from "./VideoPlayer-State.ts";
 import { VideoContainer, VideoElement } from "./VideoPlayer-styles.ts";
 
 export interface VideoStyles {
@@ -37,95 +28,85 @@ export interface VideoPlayerProps {
   style?: CSS.Properties;
 }
 
-export type refType = {
+export type videoRefType = {
   getContainerRef: () => React.MutableRefObject<HTMLDivElement>;
   getVideoRef: () => React.MutableRefObject<HTMLVideoElement>;
 };
-export const VideoPlayer = forwardRef<refType, VideoPlayerProps>(
+export const VideoPlayer = forwardRef<videoRefType, VideoPlayerProps>(
   (props: VideoPlayerProps, ref) => {
     useSignals();
+    const contextData = useContextData(props, ref);
+
     const {
-      poster,
-      identifier,
-      autoplay = true,
-      from = null,
-      videoStyles = {},
-    } = props;
-    const videoState = useVideoPlayerState(props, ref);
-    const {
+      keyboardShortcutsUp,
+      keyboardShortcutsDown,
+      from,
+      videoStyles,
       containerRef,
       resourceStatus,
-      videoRef,
       src,
+      togglePlay,
+      identifier,
+      videoRef,
+      poster,
       updateProgress,
+      autoplay,
       handleEnded,
-      getSrc,
-      toggleRef,
-    } = videoState;
-
-    const controlState = useVideoControlsState(props, videoRef, videoState);
-    const { keyboardShortcutsUp, keyboardShortcutsDown, togglePlay } =
-      controlState;
+      handleCanPlay,
+      startPlay,
+      videoObjectFit,
+      showControlsFullScreen,
+    } = contextData;
 
     return (
-      <VideoContainer
-        tabIndex={0}
-        onKeyUp={keyboardShortcutsUp}
-        onKeyDown={keyboardShortcutsDown}
-        style={{
-          padding: from === "create" ? "8px" : 0,
-          ...videoStyles?.videoContainer,
-        }}
-        ref={containerRef}
-      >
-        <LoadingVideo
-          isLoading={isLoading.value}
-          resourceStatus={resourceStatus}
-          src={src}
-          startPlay={startPlay.value}
-          from={from}
-          togglePlay={togglePlay}
-        />
-        <VideoElement
-          id={identifier}
-          ref={videoRef}
-          src={
-            !startPlay.value
-              ? ""
-              : resourceStatus?.status === "READY"
-              ? src
-              : ""
-          }
-          poster={!startPlay.value ? poster : ""}
-          onTimeUpdate={updateProgress}
-          autoPlay={autoplay}
-          onClick={() => togglePlay()}
-          onEnded={handleEnded}
-          // onLoadedMetadata={handleLoadedMetadata}
-          onCanPlay={controlState.handleCanPlay}
-          onMouseEnter={e => {
-            showControlsFullScreen.value = true;
+      <VideoContext.Provider value={contextData}>
+        <VideoContainer
+          tabIndex={0}
+          onKeyUp={keyboardShortcutsUp}
+          onKeyDown={keyboardShortcutsDown}
+          style={{
+            padding: from === "create" ? "8px" : 0,
+            ...videoStyles?.videoContainer,
           }}
-          onMouseLeave={e => {
-            showControlsFullScreen.value = false;
-          }}
-          preload="metadata"
-          style={
-            startPlay.value
-              ? {
-                  ...videoStyles?.video,
-                  objectFit: videoObjectFit.value,
-                }
-              : { height: "100%", ...videoStyles }
-          }
-        />
-        <VideoControls
-          controlState={controlState}
-          videoState={videoState}
-          props={props}
-          videoRef={videoRef}
-        />
-      </VideoContainer>
+          ref={containerRef}
+        >
+          <LoadingVideo />
+          <VideoElement
+            id={identifier}
+            ref={videoRef}
+            src={
+              !startPlay.value
+                ? ""
+                : resourceStatus?.status === "READY"
+                ? src
+                : ""
+            }
+            poster={!startPlay.value ? poster : ""}
+            onTimeUpdate={updateProgress}
+            autoPlay={autoplay}
+            onClick={() => togglePlay()}
+            onEnded={handleEnded}
+            // onLoadedMetadata={handleLoadedMetadata}
+            onCanPlay={handleCanPlay}
+            onMouseEnter={e => {
+              showControlsFullScreen.value = true;
+            }}
+            onMouseLeave={e => {
+              showControlsFullScreen.value = false;
+            }}
+            preload="metadata"
+            style={
+              startPlay.value
+                ? {
+                    ...videoStyles?.video,
+                    objectFit: videoObjectFit.value,
+                  }
+                : { height: "100%", ...videoStyles }
+            }
+          />
+          <VideoControls />
+        </VideoContainer>
+      </VideoContext.Provider>
     );
   }
 );

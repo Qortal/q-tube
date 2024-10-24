@@ -4,7 +4,7 @@ import { LikeAndDislike } from "../../../components/common/ContentButtons/LikeAn
 import { SubscribeButton } from "../../../components/common/ContentButtons/SubscribeButton.tsx";
 import { SuperLike } from "../../../components/common/ContentButtons/SuperLike.tsx";
 import FileElement from "../../../components/common/FileElement.tsx";
-import { refType } from "../../../components/common/VideoPlayer/VideoPlayer.tsx";
+import { videoRefType } from "../../../components/common/VideoPlayer/VideoPlayer.tsx";
 import { titleFormatterOnSave } from "../../../constants/Misc.ts";
 import { useFetchSuperLikes } from "../../../hooks/useFetchSuperLikes.tsx";
 import DownloadIcon from "@mui/icons-material/Download";

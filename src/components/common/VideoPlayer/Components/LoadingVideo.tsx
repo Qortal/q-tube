@@ -2,23 +2,12 @@ import { Box, CircularProgress, Typography } from "@mui/material";
 import { setVideoPlaying } from "../../../../state/features/globalSlice.ts";
 import { useDispatch } from "react-redux";
 import { PlayArrow } from "@mui/icons-material";
+import { useVideoContext } from "./VideoContext.ts";
 
-export interface LoadingVideoProps {
-  isLoading: boolean;
-  resourceStatus: any;
-  src: any;
-  startPlay: boolean;
-  from: any;
-  togglePlay: () => void;
-}
-export const LoadingVideo = ({
-  isLoading,
-  resourceStatus,
-  src,
-  startPlay,
-  from,
-  togglePlay,
-}: LoadingVideoProps) => {
+export const LoadingVideo = () => {
+  const { isLoading, resourceStatus, src, startPlay, from, togglePlay } =
+    useVideoContext();
+
   const getDownloadProgress = (current: number, total: number) => {
     const progress = (current / total) * 100;
     return Number.isNaN(progress) ? "" : progress.toFixed(0) + "%";
@@ -27,7 +16,7 @@ export const LoadingVideo = ({
   const dispatch = useDispatch();
   return (
     <>
-      {isLoading && (
+      {isLoading.value && (
         <Box
           position="absolute"
           top={0}
@@ -87,7 +76,7 @@ export const LoadingVideo = ({
           )}
         </Box>
       )}
-      {((!src && !isLoading) || !startPlay) && (
+      {((!src && !isLoading.value) || !startPlay.value) && (
         <Box
           position="absolute"
           top={0}

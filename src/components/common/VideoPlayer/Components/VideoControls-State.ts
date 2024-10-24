@@ -1,3 +1,9 @@
+import { useSignal } from "@preact/signals-react";
+import { useSignals } from "@preact/signals-react/runtime";
+
+import { useEffect } from "react";
+import ReactDOM from "react-dom";
+import { useSelector } from "react-redux";
 import { Key } from "ts-key-enum";
 import { setVideoPlaying } from "../../../../state/features/globalSlice.ts";
 import {
@@ -6,36 +12,33 @@ import {
   setVolumeSetting,
 } from "../../../../state/features/persistSlice.ts";
 import { RootState, store } from "../../../../state/store.ts";
-import {
-  canPlay,
-  isLoading,
-  isMuted,
-  mutedVolume,
-  playbackRate,
-  playing,
-  progress,
-  startPlay,
-  useVideoPlayerState,
-  videoObjectFit,
-  volume,
-} from "../VideoPlayer-State.ts";
-import { useEffect } from "react";
-import { signal, useSignal } from "@preact/signals-react";
-import { useSignalEffect, useSignals } from "@preact/signals-react/runtime";
+import { useVideoPlayerState } from "../VideoPlayer-State.ts";
 import { VideoPlayerProps } from "../VideoPlayer.tsx";
-import ReactDOM from "react-dom";
-import { useSelector } from "react-redux";
-
-export const showControlsFullScreen = signal(true);
 
 export const useVideoControlsState = (
   props: VideoPlayerProps,
-  videoRef: React.MutableRefObject<HTMLVideoElement>,
   videoPlayerState: ReturnType<typeof useVideoPlayerState>
 ) => {
   useSignals();
-  const { src, getSrc, resourceStatus } = videoPlayerState;
+  const {
+    src,
+    getSrc,
+    resourceStatus,
+    videoRef,
+    playbackRate,
+    playing,
+    isLoading,
+    startPlay,
+    volume,
+    isMuted,
+    mutedVolume,
+    progress,
+    videoObjectFit,
+    canPlay,
+  } = videoPlayerState;
   const { identifier, autoPlay } = props;
+
+  const showControlsFullScreen = useSignal(true);
   const persistSelector = store.getState().persist;
 
   const videoPlaying = useSelector(
@@ -146,8 +149,19 @@ export const useVideoControlsState = (
     togglePlay();
   };
 
+  const handleCanPlay = () => {
+    isLoading.value = false;
+    canPlay.value = true;
+    updatePlaybackRate(playbackRate.value);
+    setPlaying(true); // makes the video play when fully loaded
+  };
+
+  const setPlaying = async (setPlay: boolean) => {
+    setPlay ? await videoRef.current.play() : videoRef.current.pause();
+    playing.value = setPlay;
+  };
+
   const togglePlay = async () => {
-    // console.log("in toggleplay playing is: ", playing.value);
     if (!videoRef.current) return;
     if (!src || resourceStatus?.status !== "READY") {
       const el = document.getElementById("videoWrapper");
@@ -159,13 +173,9 @@ export const useVideoControlsState = (
       });
       getSrc();
     }
+
     startPlay.value = true;
-
-    const pause = playing.value;
-    playing.value = !playing.value;
-
-    if (pause) videoRef.current.pause();
-    else await videoRef.current.play();
+    setPlaying(!playing.value);
   };
 
   const onVolumeChange = (_: any, value: number | number[]) => {
@@ -178,9 +188,7 @@ export const useVideoControlsState = (
   };
 
   useEffect(() => {
-    if (autoPlay && identifier) {
-      togglePlay();
-    }
+    if (autoPlay && identifier) togglePlay();
   }, [autoPlay, identifier]);
 
   const mute = () => {
@@ -353,12 +361,6 @@ export const useVideoControlsState = (
     }
   };
 
-  const handleCanPlay = () => {
-    isLoading.value = false;
-    canPlay.value = true;
-    updatePlaybackRate(playbackRate.value);
-  };
-
   useEffect(() => {
     videoRef.current.volume = volume.value;
     if (
@@ -390,5 +392,6 @@ export const useVideoControlsState = (
     keyboardShortcutsDown,
     handleCanPlay,
     toggleMute,
+    showControlsFullScreen,
   };
 };

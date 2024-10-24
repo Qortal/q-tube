@@ -41,7 +41,7 @@ export const VideoControls = () => {
   } = useVideoContext();
 
   useSignalEffect(() => {
-    console.log("canPlay is: ", canPlay.value);
+    console.log("canPlay is: ", canPlay.value); // makes the function execute when canPlay changes
     const videoWidth = videoRef?.current?.offsetWidth;
     if (videoWidth && videoWidth <= 600) {
       isMobileView.value = true;

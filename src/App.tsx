@@ -5,6 +5,7 @@ import { Route, Routes } from "react-router-dom";
 import { PersistGate } from "redux-persist/integration/react";
 import { useAppState } from "./App-State.ts";
 import Notification from "./components/common/Notification/Notification";
+import { useIframe } from "./hooks/useIframe.tsx";
 import { IndividualProfile } from "./pages/ContentPages/IndividualProfile/IndividualProfile";
 import { PlaylistContent } from "./pages/ContentPages/PlaylistContent/PlaylistContent";
 import { VideoContent } from "./pages/ContentPages/VideoContent/VideoContent";
@@ -18,6 +19,7 @@ import { ScrollWrapper } from "./wrappers/ScrollWrapper.tsx";
 function App() {
   // const themeColor = window._qdnTheme
   const { persistor, theme, setTheme } = useAppState();
+  useIframe();
 
   return (
     <Provider store={store}>

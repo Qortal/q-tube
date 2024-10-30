@@ -325,6 +325,8 @@ export function extractSigValue(metadescription) {
 }
 
 export const getPaymentInfo = async (signature: string) => {
+  if (signature === "undefined" || !signature) return undefined;
+
   try {
     const url = `/transactions/signature/${signature}`;
     const response = await fetch(url, {
@@ -335,9 +337,8 @@ export const getPaymentInfo = async (signature: string) => {
     });
     // Coin payment info must be added to responseData so we can display it to the user
     const responseData = await response.json();
-    if (responseData && !responseData.error) {
-      return responseData;
-    } else {
+    if (responseData && !responseData.error) return responseData;
+    else {
       throw new Error("unable to get payment");
     }
   } catch (error) {

@@ -14,6 +14,7 @@ interface Props {
 }
 
 const defaultValues: MyContextInterface = {
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   downloadVideo: () => {},
 };
 interface IDownloadVideoParams {

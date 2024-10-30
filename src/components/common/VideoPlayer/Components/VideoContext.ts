@@ -10,7 +10,7 @@ export type VideoContextType = VideoPlayerProps &
 export const VideoContext = createContext<VideoContextType | undefined>(
   undefined
 );
-export const useContextData = (props, ref) => {
+export const useContextData = (props, ref): VideoContextType => {
   const videoState = useVideoPlayerState(props, ref);
   const controlState = useVideoControlsState(props, videoState);
 

@@ -75,13 +75,9 @@ export const VideoPlayer = forwardRef<videoRefType, VideoPlayerProps>(
             id={identifier}
             ref={videoRef}
             src={
-              !startPlay.value
-                ? ""
-                : resourceStatus?.status === "READY"
-                ? src
-                : ""
+              resourceStatus?.status === "READY" && startPlay.value ? src : ""
             }
-            poster={!startPlay.value ? poster : ""}
+            poster={startPlay.value ? "" : poster}
             onTimeUpdate={updateProgress}
             autoPlay={autoplay}
             onClick={() => togglePlay()}

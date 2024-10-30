@@ -1,130 +1,131 @@
-import React from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-
+import React from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 import {
   setAddToDownloads,
-  updateDownloads
-} from '../state/features/globalSlice'
+  updateDownloads,
+} from "../state/features/globalSlice";
 
-import { DownloadTaskManager } from '../components/common/DownloadTaskManager'
-import { RootState } from '../state/store'
+import { DownloadTaskManager } from "../components/common/DownloadTaskManager";
+import { RootState } from "../state/store";
 
 interface Props {
-  children: React.ReactNode
+  children: React.ReactNode;
 }
-
 
 const defaultValues: MyContextInterface = {
-  downloadVideo: () => {}
-}
+  downloadVideo: () => {},
+};
 interface IDownloadVideoParams {
-  name: string
-  service: string
-  identifier: string
-  properties: any
+  name: string;
+  service: string;
+  identifier: string;
+  properties: any;
 }
 interface MyContextInterface {
   downloadVideo: ({
     name,
     service,
     identifier,
-    properties
-  }: IDownloadVideoParams) => void
+    properties,
+  }: IDownloadVideoParams) => void;
 }
-export const MyContext = React.createContext<MyContextInterface>(defaultValues)
+export const MyContext = React.createContext<MyContextInterface>(defaultValues);
 
 const DownloadWrapper: React.FC<Props> = ({ children }) => {
-  const dispatch = useDispatch()
-  const downloads  = useSelector((state: RootState) => state.global?.downloads);
-
+  const dispatch = useDispatch();
+  const downloads = useSelector((state: RootState) => state.global?.downloads);
 
   const fetchResource = async ({ name, service, identifier }: any) => {
     try {
       await qortalRequest({
-        action: 'GET_QDN_RESOURCE_PROPERTIES',
+        action: "GET_QDN_RESOURCE_PROPERTIES",
         name,
         service,
-        identifier
-      })
-    } catch (error) {}
-  }
+        identifier,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const fetchVideoUrl = async ({ name, service, identifier }: any) => {
     try {
-      fetchResource({ name, service, identifier })
-      let url = await qortalRequest({
-        action: 'GET_QDN_RESOURCE_URL',
+      fetchResource({ name, service, identifier });
+      const url = await qortalRequest({
+        action: "GET_QDN_RESOURCE_URL",
         service: service,
         name: name,
-        identifier: identifier
-      })
+        identifier: identifier,
+      });
       if (url) {
         dispatch(
           updateDownloads({
             name,
             service,
             identifier,
-            url
+            url,
           })
-        )
+        );
       }
-    } catch (error) {}
-  }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const performDownload = ({
     name,
     service,
     identifier,
-    properties
+    properties,
   }: IDownloadVideoParams) => {
-    if(downloads[identifier]) return
+    if (downloads[identifier]) return;
     dispatch(
       setAddToDownloads({
         name,
         service,
         identifier,
-        properties
+        properties,
       })
-    )
+    );
 
-    let isCalling = false
-    let percentLoaded = 0
-    let timer = 24
+    let isCalling = false;
+    let percentLoaded = 0;
+    let timer = 24;
     const intervalId = setInterval(async () => {
-      if (isCalling) return
-      isCalling = true
+      if (isCalling) return;
+      isCalling = true;
       const res = await qortalRequest({
-        action: 'GET_QDN_RESOURCE_STATUS',
+        action: "GET_QDN_RESOURCE_STATUS",
         name: name,
         service: service,
-        identifier: identifier
-      })
-      if(res?.status === 'NOT_PUBLISHED'){
+        identifier: identifier,
+      });
+      if (res?.status === "NOT_PUBLISHED") {
         dispatch(
           updateDownloads({
             name,
             service,
             identifier,
-            status: res
+            status: res,
           })
-        )
-        clearInterval(intervalId)
+        );
+        clearInterval(intervalId);
       }
-      isCalling = false
+      isCalling = false;
       if (res.localChunkCount) {
         if (res.percentLoaded) {
           if (
             res.percentLoaded === percentLoaded &&
             res.percentLoaded !== 100
           ) {
-            timer = timer - 5
+            timer = timer - 5;
           } else {
-            timer = 24
+            timer = 24;
           }
           if (timer < 0) {
-            timer = 24
-            isCalling = true
+            timer = 24;
+            isCalling = true;
             dispatch(
               updateDownloads({
                 name,
@@ -132,73 +133,71 @@ const DownloadWrapper: React.FC<Props> = ({ children }) => {
                 identifier,
                 status: {
                   ...res,
-                  status: 'REFETCHING'
-                }
+                  status: "REFETCHING",
+                },
               })
-            )
+            );
             setTimeout(() => {
-              isCalling = false
+              isCalling = false;
               fetchResource({
                 name,
                 service,
-                identifier
-              })
-            }, 25000)
-            return
+                identifier,
+              });
+            }, 25000);
+            return;
           }
-          percentLoaded = res.percentLoaded
+          percentLoaded = res.percentLoaded;
         }
         dispatch(
           updateDownloads({
             name,
             service,
             identifier,
-            status: res
+            status: res,
           })
-        )
+        );
       }
 
       // check if progress is 100% and clear interval if true
-      if (res?.status === 'READY') {
-        clearInterval(intervalId)
+      if (res?.status === "READY") {
+        clearInterval(intervalId);
         dispatch(
           updateDownloads({
             name,
             service,
             identifier,
-            status: res
+            status: res,
           })
-        )
+        );
       }
-    }, 5000) // 1 second interval
+    }, 5000); // 1 second interval
 
     fetchVideoUrl({
       name,
       service,
-      identifier
-    })
-  }
+      identifier,
+    });
+  };
 
   const downloadVideo = async ({
     name,
     service,
     identifier,
-    properties
+    properties,
   }: IDownloadVideoParams) => {
     try {
-
-
       performDownload({
         name,
         service,
         identifier,
-        properties
-      })
-      return 'addedToList'
+        properties,
+      });
+      return "addedToList";
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
-  }
+  };
 
   return (
     <>
@@ -207,7 +206,7 @@ const DownloadWrapper: React.FC<Props> = ({ children }) => {
         {children}
       </MyContext.Provider>
     </>
-  )
-}
+  );
+};
 
-export default DownloadWrapper
+export default DownloadWrapper;

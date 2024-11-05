@@ -2,6 +2,7 @@ import { Box, useTheme } from "@mui/material";
 import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
+import LazyLoad from "../../../components/common/LazyLoad.tsx";
 import { QTUBE_VIDEO_BASE } from "../../../constants/Identifiers.ts";
 import { useFetchVideos } from "../../../hooks/useFetchVideos.tsx";
 import { Video } from "../../../state/features/videoSlice.ts";
@@ -9,6 +10,7 @@ import { RootState } from "../../../state/store.ts";
 import { queue } from "../../../wrappers/GlobalWrapper.tsx";
 import { VideoManagerRow } from "./VideoList-styles.tsx";
 import VideoList from "./VideoList.tsx";
+import { useSignal } from "@preact/signals-react";
 
 interface VideoListProps {
   mode?: string;
@@ -24,10 +26,11 @@ export const VideoListComponentLevel = ({ mode }: VideoListProps) => {
   );
 
   const [videos, setVideos] = React.useState<Video[]>([]);
-
+  const isLoading = useSignal(true);
   const { getVideo, checkAndUpdateVideo } = useFetchVideos();
 
   const getVideos = React.useCallback(async () => {
+    isLoading.value = true;
     try {
       const offset = videos.length;
       const url = `/arbitrary/resources/search?mode=ALL&service=DOCUMENT&query=${QTUBE_VIDEO_BASE}_&limit=20&includemetadata=false&reverse=true&excludeblocked=true&name=${paramName}&exactmatchnames=true&offset=${offset}`;
@@ -73,8 +76,10 @@ export const VideoListComponentLevel = ({ mode }: VideoListProps) => {
           }
         }
       }
+      isLoading.value = false;
     } catch (error) {
       console.log(error);
+      isLoading.value = false;
     }
   }, [videos, hashMapVideos]);
 
@@ -102,6 +107,7 @@ export const VideoListComponentLevel = ({ mode }: VideoListProps) => {
         }}
       >
         <VideoList videos={videos} />
+        <LazyLoad onLoadMore={getVideos} isLoading={isLoading.value}></LazyLoad>
       </Box>
     </VideoManagerRow>
   );

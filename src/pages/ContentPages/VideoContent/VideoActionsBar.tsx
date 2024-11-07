@@ -86,6 +86,7 @@ export const VideoActionsBar = ({
         display: "grid",
         gridTemplateColumns: "1fr 1fr",
         marginTop: "15px",
+        alignItems: "center",
         ...sx,
       }}
     >

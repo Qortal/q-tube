@@ -5,8 +5,15 @@ import { PlayArrow } from "@mui/icons-material";
 import { useVideoContext } from "./VideoContext.ts";
 
 export const LoadingVideo = () => {
-  const { isLoading, resourceStatus, src, startPlay, from, togglePlay } =
-    useVideoContext();
+  const {
+    isLoading,
+    resourceStatus,
+    src,
+    startPlay,
+    canPlay,
+    from,
+    togglePlay,
+  } = useVideoContext();
 
   const getDownloadProgress = (current: number, total: number) => {
     const progress = (current / total) * 100;
@@ -76,7 +83,7 @@ export const LoadingVideo = () => {
           )}
         </Box>
       )}
-      {((!src && !isLoading.value) || !startPlay.value) && (
+      {((!src && !isLoading.value) || (!startPlay.value && !canPlay.value)) && (
         <Box
           position="absolute"
           top={0}

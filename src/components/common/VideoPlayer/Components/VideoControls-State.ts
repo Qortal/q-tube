@@ -140,7 +140,7 @@ export const useVideoControlsState = (
   }
 
   const reloadVideo = async () => {
-    if (!videoRef.current) return;
+    if (!videoRef.current || !src) return;
     const currentTime = videoRef.current.currentTime;
     videoRef.current.src = src;
     videoRef.current.load();
@@ -393,5 +393,6 @@ export const useVideoControlsState = (
     handleCanPlay,
     toggleMute,
     showControlsFullScreen,
+    setPlaying,
   };
 };

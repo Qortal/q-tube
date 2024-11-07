@@ -25,7 +25,7 @@ import { useNavigate } from "react-router-dom";
 import SearchIcon from "@mui/icons-material/Search";
 
 import { DownloadTaskManager } from "../../common/DownloadTaskManager";
-import Logo from "../../../assets/img/logo.png";
+import Logo from "../../../assets/img/logo.webp";
 import { useDispatch, useSelector } from "react-redux";
 import {
   addFilteredVideos,
@@ -120,8 +120,9 @@ const NavBar: React.FC<Props> = ({
             src={Logo}
             style={{
               width: "auto",
-              height: "55px",
+              height: "45px",
               padding: "2px",
+              marginTop: "5px",
             }}
           />
         </LogoContainer>
@@ -133,135 +134,6 @@ const NavBar: React.FC<Props> = ({
           gap: "10px",
         }}
       >
-        {/* {windowSize.width <= 600 ? (
-           <Box
-           sx={{
-             display: 'flex',
-             alignItems: 'center',
-             gap: 1
-           }}
-           className="myClassOver600"
-          
-         
-         >
-         <Box  onClick={openNotificationPopover}>
-         <SearchIcon
-             sx={{
-               cursor: 'pointer',
-               display: 'flex'
-             }}
-             
-           />
-         </Box>
-          {filterValue && (
-             <BackspaceIcon
-             sx={{
-               cursor: 'pointer'
-             }}
-             onClick={() => {
-               dispatch(setIsFiltering(false))
-               dispatch(setFilterValue(''))
-               dispatch(addFilteredVideos([]))
-               searchValRef.current = ''
-               if (!inputRef.current) return
-               inputRef.current.value = ''
-             }}
-           />
-          )}
-         
-         </Box>
-        ): (
-          <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 1
-          }}
-          className="myClassUnder600"
-        >
-          <Input
-            id="standard-adornment-name"
-            inputRef={inputRef}
-            onChange={(e) => {
-              searchValRef.current = e.target.value
-            }}
-            onKeyDown={(event) => {
-              if (event.key === 'Enter' || event.keyCode === 13) {
-                if (!searchValRef.current) {
-                  dispatch(setIsFiltering(false))
-                  dispatch(setFilterValue(''))
-                  dispatch(addFilteredVideos([]))
-                  searchValRef.current = ''
-                  if (!inputRef.current) return
-                  inputRef.current.value = ''
-                  return
-                }
-                navigate('/')
-                dispatch(setIsFiltering(true))
-                dispatch(addFilteredVideos([]))
-                dispatch(setFilterValue(searchValRef.current))
-              }
-            }}
-            placeholder="Search"
-            sx={{
-              '&&:before': {
-                borderBottom: 'none'
-              },
-              '&&:after': {
-                borderBottom: 'none'
-              },
-              '&&:hover:before': {
-                borderBottom: 'none'
-              },
-              '&&.Mui-focused:before': {
-                borderBottom: 'none'
-              },
-              '&&.Mui-focused': {
-                outline: 'none'
-              },
-              fontSize: '18px'
-            }}
-          />
-
-          <SearchIcon
-            sx={{
-              cursor: 'pointer'
-            }}
-            onClick={() => {
-              if (!searchValRef.current) {
-                dispatch(setIsFiltering(false))
-                dispatch(setFilterValue(''))
-                dispatch(addFilteredVideos([]))
-                searchValRef.current = ''
-                if (!inputRef.current) return
-                inputRef.current.value = ''
-                return
-              }
-              navigate('/')
-              dispatch(setIsFiltering(true))
-              dispatch(addFilteredVideos([]))
-              dispatch(setFilterValue(searchValRef.current))
-            }}
-          />
-          {filterValue && (
-             <BackspaceIcon
-             sx={{
-               cursor: 'pointer'
-             }}
-             onClick={() => {
-               dispatch(setIsFiltering(false))
-               dispatch(setFilterValue(''))
-               dispatch(addFilteredVideos([]))
-               searchValRef.current = ''
-               if (!inputRef.current) return
-               inputRef.current.value = ''
-             }}
-           />
-          )}
-         
-        </Box>
-        )} */}
-
         <Popover
           id={idNotification}
           open={openPopover}
@@ -374,15 +246,15 @@ const NavBar: React.FC<Props> = ({
               {!userAvatar ? (
                 <AccountCircleSVG
                   color={theme.palette.text.primary}
-                  width="30"
-                  height="30"
+                  width="40"
+                  height="40"
                 />
               ) : (
                 <img
                   src={userAvatar}
                   alt="User Avatar"
-                  width="30"
-                  height="30"
+                  width="40"
+                  height="40"
                   style={{
                     borderRadius: "50%",
                   }}

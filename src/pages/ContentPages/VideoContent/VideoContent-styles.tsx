@@ -73,6 +73,7 @@ export const FileAttachmentContainer = styled(Box)(({ theme }) => ({
   padding: "5px 10px",
   border: `1px solid ${theme.palette.text.primary}`,
   width: "350px",
+  height: "50px",
 }));
 
 export const FileAttachmentFont = styled(Typography)(({ theme }) => ({

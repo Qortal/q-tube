@@ -16,7 +16,7 @@ export const CustomAppBar = styled(AppBar)(({ theme }) => ({
   [theme.breakpoints.only("xs")]: {
     gap: "15px",
   },
-  height: "40px",
+  height: "50px",
 }));
 export const LogoContainer = styled("div")({
   cursor: "pointer",

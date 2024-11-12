@@ -68,9 +68,8 @@ export const VideoContent = () => {
       <Box
         sx={{
           display: "flex",
-          marginLeft: "5%",
           flexDirection: "column",
-          padding: "0px 10px",
+          padding: "0px 10px 0px 5%",
         }}
         onClick={focusVideo}
       >

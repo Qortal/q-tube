@@ -236,11 +236,17 @@ export const useVideoContentState = () => {
     if (!nameAddress || !id) return;
     getComments(id, nameAddress);
   }, [getComments, id, nameAddress]);
-  const subList = useSelector(
-    (state: RootState) => state.persist.subscriptionList
-  );
 
-  const focusVideo = (e: React.MouseEvent<HTMLDivElement>) => {
+  const focusVideo = () => {
+    const focusRef = containerRef.current?.getContainerRef()?.current;
+    focusRef?.focus({ preventScroll: true });
+  };
+
+  useEffect(() => {
+    focusVideo();
+  });
+
+  const focusVideoOnClick = (e: React.MouseEvent<HTMLDivElement>) => {
     console.log("in focusVideo");
     const target = e.target as Element;
 
@@ -259,12 +265,11 @@ export const useVideoContentState = () => {
 
     if (target == e.currentTarget || clickOnEmptySpace) {
       console.log("in correctTarget");
-      const focusRef = containerRef.current?.getContainerRef()?.current;
-      focusRef.focus({ preventScroll: true });
+      focusVideo();
     }
   };
   return {
-    focusVideo,
+    focusVideo: focusVideoOnClick,
     videoReference,
     channelName,
     id,

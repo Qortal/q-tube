@@ -11,7 +11,6 @@ export const VideoContainer = styled(Box)(({ theme }) => ({
   height: "100%",
   margin: 0,
   padding: 0,
-
   "&:focus": { outline: "none" },
 }));
 

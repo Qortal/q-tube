@@ -149,11 +149,11 @@ export const useVideoControlsState = (
     togglePlay();
   };
 
+  const firstPlay = useSignal(true);
   const handleCanPlay = () => {
+    if (firstPlay.value) setPlaying(true); // makes the video play when fully loaded
+    firstPlay.value = false;
     isLoading.value = false;
-    canPlay.value = true;
-    updatePlaybackRate(playbackRate.value);
-    setPlaying(true); // makes the video play when fully loaded
   };
 
   const setPlaying = async (setPlay: boolean) => {

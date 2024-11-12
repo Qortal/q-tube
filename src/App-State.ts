@@ -9,7 +9,6 @@ export const useAppState = () => {
   const persistor = persistStore(store);
 
   useEffect(() => {
-    const subscriptionList = store.getState().persist.subscriptionList;
     subscriptionListFilter(false).then(filteredList => {
       store.dispatch(setFilteredSubscriptions(filteredList));
     });

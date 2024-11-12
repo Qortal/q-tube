@@ -110,15 +110,6 @@ export const useVideoPlayerState = (props: VideoPlayerProps, ref: any) => {
   const toggleRef = useRef<any>(null);
   const { downloadVideo } = useContext(MyContext);
 
-  if (resourceStatus?.status === "READY") {
-    canPlay.value = true;
-    isLoading.value = false;
-    //startPlay.value = true;
-
-    // playing.value = false;
-    // videoRef.current.pause();
-  }
-
   const onProgressChange = async (_: any, value: number | number[]) => {
     if (!videoRef.current) return;
     videoRef.current.currentTime = value as number;
@@ -141,6 +132,14 @@ export const useVideoPlayerState = (props: VideoPlayerProps, ref: any) => {
     if (!videoRef.current) return;
     progress.value = videoRef.current.currentTime;
   };
+
+  const videoCanPlayIfDownloaded = () => {
+    if (resourceStatus?.status === "READY") {
+      canPlay.value = true;
+    }
+  };
+
+  videoCanPlayIfDownloaded();
 
   const getSrc = React.useCallback(async () => {
     if (!name || !identifier || !service || !jsonId || !user) return;

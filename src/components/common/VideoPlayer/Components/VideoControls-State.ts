@@ -1,5 +1,5 @@
 import { useSignal } from "@preact/signals-react";
-import { useSignals } from "@preact/signals-react/runtime";
+import { useSignalEffect, useSignals } from "@preact/signals-react/runtime";
 
 import { useEffect } from "react";
 import ReactDOM from "react-dom";
@@ -35,6 +35,7 @@ export const useVideoControlsState = (
     progress,
     videoObjectFit,
     canPlay,
+    isMobileView,
   } = videoPlayerState;
   const { identifier, autoPlay } = props;
 
@@ -114,31 +115,6 @@ export const useVideoControlsState = (
     };
   }, []);
 
-  function formatTime(seconds: number): string {
-    seconds = Math.floor(seconds);
-    const minutes: number | string = Math.floor(seconds / 60);
-    let hours: number | string = Math.floor(minutes / 60);
-
-    let remainingSeconds: number | string = seconds % 60;
-    let remainingMinutes: number | string = minutes % 60;
-
-    if (remainingSeconds < 10) {
-      remainingSeconds = "0" + remainingSeconds;
-    }
-
-    if (remainingMinutes < 10) {
-      remainingMinutes = "0" + remainingMinutes;
-    }
-
-    if (hours === 0) {
-      hours = "";
-    } else {
-      hours = hours + ":";
-    }
-
-    return hours + remainingMinutes + ":" + remainingSeconds;
-  }
-
   const reloadVideo = async () => {
     if (!videoRef.current || !src) return;
     const currentTime = videoRef.current.currentTime;
@@ -154,6 +130,7 @@ export const useVideoControlsState = (
     if (firstPlay.value) setPlaying(true); // makes the video play when fully loaded
     firstPlay.value = false;
     isLoading.value = false;
+    updatePlaybackRate(persistSelector.playbackRate);
   };
 
   const setPlaying = async (setPlay: boolean) => {
@@ -380,6 +357,14 @@ export const useVideoControlsState = (
     }
   }, [videoPlaying, identifier, src]);
 
+  useSignalEffect(() => {
+    console.log("canPlay is: ", canPlay.value); // makes the function execute when canPlay changes
+    const videoWidth = videoRef?.current?.offsetWidth;
+    if (videoWidth && videoWidth <= 600) {
+      isMobileView.value = true;
+    }
+  });
+
   return {
     reloadVideo,
     togglePlay,
@@ -387,7 +372,6 @@ export const useVideoControlsState = (
     increaseSpeed,
     togglePictureInPicture,
     toggleFullscreen,
-    formatTime,
     keyboardShortcutsUp,
     keyboardShortcutsDown,
     handleCanPlay,

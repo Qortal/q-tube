@@ -1,6 +1,6 @@
 import BlockIcon from "@mui/icons-material/Block";
 import EditIcon from "@mui/icons-material/Edit";
-import { Avatar, Box, Tooltip, useTheme } from "@mui/material";
+import { Avatar, Box, Tooltip, Typography, useTheme } from "@mui/material";
 import React, { useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
@@ -14,6 +14,7 @@ import {
   Video,
 } from "../../../state/features/videoSlice.ts";
 import { RootState } from "../../../state/store.ts";
+import { formatTime } from "../../../utils/numberFunctions.ts";
 import { formatDate } from "../../../utils/time.ts";
 import { VideoCardImageContainer } from "./VideoCardImageContainer.tsx";
 import {
@@ -74,7 +75,6 @@ export const VideoList = ({ videos }: VideoListProps) => {
           videoObj = existingVideo;
           hasHash = true;
         }
-
         // nb. this prevents showing metadata for a video which
         // belongs to a different user
         if (
@@ -147,7 +147,6 @@ export const VideoList = ({ videos }: VideoListProps) => {
                 />
 
                 <VideoCardTitle>{videoObj?.title}</VideoCardTitle>
-
                 <BottomParent>
                   <NameContainer
                     onClick={e => {
@@ -237,6 +236,19 @@ export const VideoList = ({ videos }: VideoListProps) => {
                 navigate(`/video/${videoObj?.user}/${videoObj?.id}`);
               }}
             >
+              {videoObj?.duration && (
+                <Box
+                  position="absolute"
+                  right={0}
+                  bottom={0}
+                  bgcolor="#202020"
+                  zIndex={999}
+                >
+                  <Typography color="white">
+                    {formatTime(videoObj.duration)}
+                  </Typography>
+                </Box>
+              )}
               <VideoCardImageContainer
                 width={266}
                 height={150}

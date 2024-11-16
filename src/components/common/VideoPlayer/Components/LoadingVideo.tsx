@@ -2,6 +2,7 @@ import { Box, CircularProgress, Typography } from "@mui/material";
 import { setVideoPlaying } from "../../../../state/features/globalSlice.ts";
 import { useDispatch } from "react-redux";
 import { PlayArrow } from "@mui/icons-material";
+import { formatTime } from "../../../../utils/numberFunctions.ts";
 import { useVideoContext } from "./VideoContext.ts";
 
 export const LoadingVideo = () => {
@@ -13,6 +14,7 @@ export const LoadingVideo = () => {
     canPlay,
     from,
     togglePlay,
+    duration,
   } = useVideoContext();
 
   const getDownloadProgress = (current: number, total: number) => {
@@ -83,36 +85,50 @@ export const LoadingVideo = () => {
           )}
         </Box>
       )}
-      {((!src && !isLoading.value) || (!startPlay.value && !canPlay.value)) && (
-        <Box
-          position="absolute"
-          top={0}
-          left={0}
-          right={0}
-          bottom={0}
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
-          zIndex={500}
-          bgcolor="rgba(0, 0, 0, 0.6)"
-          onClick={() => {
-            if (from === "create") return;
-            dispatch(setVideoPlaying(null));
 
-            togglePlay();
-          }}
-          sx={{
-            cursor: "pointer",
-          }}
-        >
-          <PlayArrow
-            sx={{
-              width: "50px",
-              height: "50px",
-              color: "white",
+      {((!src && !isLoading.value) || (!startPlay.value && !canPlay.value)) && (
+        <>
+          {duration && (
+            <Box
+              position="absolute"
+              right={0}
+              bottom={0}
+              bgcolor="#202020"
+              zIndex={999}
+            >
+              <Typography color="white">{formatTime(duration)}</Typography>
+            </Box>
+          )}
+          <Box
+            position="absolute"
+            top={0}
+            left={0}
+            right={0}
+            bottom={0}
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            zIndex={500}
+            bgcolor="rgba(0, 0, 0, 0.6)"
+            onClick={() => {
+              if (from === "create") return;
+              dispatch(setVideoPlaying(null));
+
+              togglePlay();
             }}
-          />
-        </Box>
+            sx={{
+              cursor: "pointer",
+            }}
+          >
+            <PlayArrow
+              sx={{
+                width: "50px",
+                height: "50px",
+                color: "white",
+              }}
+            />
+          </Box>
+        </>
       )}
     </>
   );

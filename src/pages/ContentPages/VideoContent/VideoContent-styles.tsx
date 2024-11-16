@@ -1,5 +1,6 @@
 import { styled } from "@mui/system";
 import { Box, Grid, Typography, Checkbox } from "@mui/material";
+import { fontSizeMedium } from "../../../constants/Misc.ts";
 
 export const VideoContentContainer = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -14,7 +15,7 @@ export const VideoPlayerContainer = styled(Box)(({ theme }) => ({
 
 export const VideoTitle = styled(Typography)(({ theme }) => ({
   fontFamily: "Raleway",
-  fontSize: "20px",
+  fontSize: fontSizeMedium,
   color: theme.palette.text.primary,
   wordBreak: "break-word",
 }));

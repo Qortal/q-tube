@@ -1,4 +1,3 @@
-import { useSignals } from "@preact/signals-react/runtime";
 import CSS from "csstype";
 import { forwardRef } from "react";
 import { LoadingVideo } from "./Components/LoadingVideo.tsx";
@@ -26,6 +25,7 @@ export interface VideoPlayerProps {
   onEnd?: () => void;
   autoPlay?: boolean;
   style?: CSS.Properties;
+  duration?: number;
 }
 
 export type videoRefType = {
@@ -34,7 +34,6 @@ export type videoRefType = {
 };
 export const VideoPlayer = forwardRef<videoRefType, VideoPlayerProps>(
   (props: VideoPlayerProps, ref) => {
-    useSignals();
     const contextData = useContextData(props, ref);
 
     const {
@@ -56,6 +55,7 @@ export const VideoPlayer = forwardRef<videoRefType, VideoPlayerProps>(
       startPlay,
       videoObjectFit,
       showControlsFullScreen,
+      duration,
     } = contextData;
 
     return (

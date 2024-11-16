@@ -8,15 +8,13 @@ import {
   VolumeUp,
 } from "@mui/icons-material";
 import { IconButton, Slider, Typography } from "@mui/material";
-import { useSignalEffect, useSignals } from "@preact/signals-react/runtime";
-import { useEffect } from "react";
+import { formatTime } from "../../../../utils/numberFunctions.ts";
 
 import { ControlsContainer } from "../VideoPlayer-styles.ts";
 import { MobileControls } from "./MobileControls.tsx";
 import { useVideoContext } from "./VideoContext.ts";
 
 export const VideoControls = () => {
-  useSignals();
   const {
     reloadVideo,
     togglePlay,
@@ -24,7 +22,6 @@ export const VideoControls = () => {
     increaseSpeed,
     togglePictureInPicture,
     toggleFullscreen,
-    formatTime,
     toggleMute,
     onProgressChange,
     toggleRef,
@@ -39,14 +36,6 @@ export const VideoControls = () => {
     volume,
     showControlsFullScreen,
   } = useVideoContext();
-
-  useSignalEffect(() => {
-    console.log("canPlay is: ", canPlay.value); // makes the function execute when canPlay changes
-    const videoWidth = videoRef?.current?.offsetWidth;
-    if (videoWidth && videoWidth <= 600) {
-      isMobileView.value = true;
-    }
-  });
 
   const showMobileControls =
     isMobileView.value && canPlay.value && showControlsFullScreen.value;

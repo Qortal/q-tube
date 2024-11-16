@@ -16,7 +16,7 @@ import {
   useTheme,
 } from "@mui/material";
 import Compressor from "compressorjs";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { useDispatch, useSelector } from "react-redux";
 import ShortUniqueId from "short-unique-id";
@@ -38,6 +38,7 @@ import {
 
 import { setNotification } from "../../../state/features/notificationsSlice.ts";
 import { RootState } from "../../../state/store.ts";
+import { formatBytes } from "../../../utils/numberFunctions.ts";
 import { objectToBase64 } from "../../../utils/PublishFormatter.ts";
 import { getFileName } from "../../../utils/stringFunctions.ts";
 import { CardContentContainerComment } from "../../common/Comments/Comments-styles.tsx";
@@ -65,6 +66,8 @@ import {
   StyledButton,
   TimesIcon,
 } from "./PublishVideo-styles.tsx";
+import { signal, Signal, useSignal } from "@preact/signals-react";
+import { useSignals } from "@preact/signals-react/runtime";
 
 export const toBase64 = (file: File): Promise<string | ArrayBuffer | null> =>
   new Promise((resolve, reject) => {
@@ -103,10 +106,8 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
     (state: RootState) => state.auth?.user?.address
   );
   const [files, setFiles] = useState<VideoFile[]>([]);
-
+  const videoDurations = useSignal<number[]>([]);
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [title, setTitle] = useState<string>("");
-  const [description, setDescription] = useState<string>("");
   const [coverImageForAll, setCoverImageForAll] = useState<null | string>("");
 
   const [step, setStep] = useState<string>("videos");
@@ -135,6 +136,14 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
   const [isCheckDescriptionIsTitle, setIsCheckDescriptionIsTitle] =
     useState(false);
   const [imageExtracts, setImageExtracts] = useState<any>({});
+
+  useSignals();
+  const assembleVideoDurations = () => {
+    if (files.length === videoDurations.value.length) return;
+    const newArray: number[] = [];
+    files.map(() => newArray.push(0));
+    videoDurations.value = [...newArray];
+  };
 
   const { getRootProps, getInputProps } = useDropzone({
     accept: {
@@ -302,6 +311,8 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
           code,
           videoType: file?.type || "video/mp4",
           filename: `${alphanumericString.trim()}.${fileExtension}`,
+          fileSize: file?.size || 0,
+          duration: videoDurations.value[i],
         };
 
         const metadescription =
@@ -818,11 +829,14 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
                 </>
               )}
               {files.map((file, index) => {
+                assembleVideoDurations();
                 return (
                   <React.Fragment key={index}>
                     <FrameExtractor
                       videoFile={file.file}
                       onFramesExtracted={imgs => onFramesExtracted(imgs, index)}
+                      videoDurations={videoDurations}
+                      index={index}
                     />
                     <Typography>{file?.file?.name}</Typography>
                     {!isCheckSameCoverImage && (
@@ -1159,7 +1173,7 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
                   </Typography>
                   <TextEditor
                     inlineContent={playlistDescription}
-                    setInlineContent={value => {
+                    setInlineContent={(value: string) => {
                       setPlaylistDescription(value);
                     }}
                   />

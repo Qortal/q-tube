@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Compressor from "compressorjs";
+import { formatBytes } from "../../../utils/numberFunctions.ts";
 
 import {
   AddCoverImageButton,
@@ -62,25 +63,11 @@ import {
   titleFormatter,
   videoMaxSize,
 } from "../../../constants/Misc.ts";
+import { Signal, useSignal } from "@preact/signals-react";
 
 const uid = new ShortUniqueId();
 const shortuid = new ShortUniqueId({ length: 5 });
 
-interface NewCrowdfundProps {
-  editId?: string;
-  editContent?: null | {
-    title: string;
-    user: string;
-    coverImage: string | null;
-  };
-}
-
-interface VideoFile {
-  file: File;
-  title: string;
-  description: string;
-  coverImage?: string;
-}
 export const EditVideo = () => {
   const theme = useTheme();
   const dispatch = useDispatch();
@@ -105,6 +92,10 @@ export const EditVideo = () => {
   const [selectedSubCategoryVideos, setSelectedSubCategoryVideos] =
     useState<any>(null);
   const [imageExtracts, setImageExtracts] = useState<any>([]);
+
+  const videoDuration: Signal<number[]> = useSignal([
+    editVideoProperties?.duration || 0,
+  ]);
 
   const { getRootProps, getInputProps } = useDropzone({
     accept: {
@@ -293,6 +284,8 @@ export const EditVideo = () => {
         code: editVideoProperties.code,
         videoType: file?.type || "video/mp4",
         filename: `${alphanumericString.trim()}.${fileExtension}`,
+        fileSize: file?.size || 0,
+        duration: videoDuration.value[0],
       };
 
       const metadescription =
@@ -508,6 +501,8 @@ export const EditVideo = () => {
               <FrameExtractor
                 videoFile={file}
                 onFramesExtracted={imgs => onFramesExtracted(imgs)}
+                videoDurations={videoDuration}
+                index={0}
               />
             )}
             <React.Fragment>

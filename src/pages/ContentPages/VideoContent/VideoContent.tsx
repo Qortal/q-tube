@@ -14,6 +14,7 @@ import {
   SUPER_LIKE_BASE,
 } from "../../../constants/Identifiers.ts";
 import {
+  fontSizeMedium,
   minPriceSuperlike,
   titleFormatterOnSave,
 } from "../../../constants/Misc.ts";
@@ -21,6 +22,7 @@ import { useFetchSuperLikes } from "../../../hooks/useFetchSuperLikes.tsx";
 import { setIsLoadingGlobal } from "../../../state/features/globalSlice.ts";
 import { addToHashMap } from "../../../state/features/videoSlice.ts";
 import { RootState } from "../../../state/store.ts";
+import { formatBytes } from "../../../utils/numberFunctions.ts";
 import { formatDate } from "../../../utils/time.ts";
 import { VideoActionsBar } from "./VideoActionsBar.tsx";
 import {
@@ -62,7 +64,6 @@ export const VideoContent = () => {
     superLikeList,
     setSuperLikeList,
   } = useVideoContentState();
-
   return (
     <>
       <Box
@@ -87,6 +88,7 @@ export const VideoContent = () => {
                 videoContainer: { aspectRatio: "16 / 9" },
                 video: { aspectRatio: "16 / 9" },
               }}
+              duration={videoData?.duration}
             />
           </VideoPlayerContainer>
         ) : isVideoLoaded ? (
@@ -128,7 +130,17 @@ export const VideoContent = () => {
               {videoData?.title}
             </VideoTitle>
           </Box>
-
+          {videoData?.fileSize && (
+            <Typography
+              variant="h1"
+              sx={{
+                fontSize: "90%",
+              }}
+              color={"green"}
+            >
+              {formatBytes(videoData.fileSize, 2, "Decimal")}
+            </Typography>
+          )}
           {videoData?.created && (
             <Typography
               variant="h6"
@@ -140,7 +152,6 @@ export const VideoContent = () => {
               {formatDate(videoData.created)}
             </Typography>
           )}
-
           <Spacer height="30px" />
           {videoData?.fullDescription && (
             <Box

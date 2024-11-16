@@ -1,6 +1,11 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { subscriptionListFilter } from "../App-State.ts";
+import { subscriptionListFilter } from "../App-Functions.ts";
+import {
+  totalNamesPublished,
+  totalVideosPublished,
+  videosPerNamePublished,
+} from "../components/StatsData.tsx";
 import {
   addVideos,
   addToHashMap,
@@ -11,13 +16,7 @@ import {
   upsertFilteredVideos,
   removeFromHashMap,
 } from "../state/features/videoSlice";
-import {
-  setIsLoadingGlobal,
-  setUserAvatarHash,
-  setTotalVideosPublished,
-  setTotalNamesPublished,
-  setVideosPerNamePublished,
-} from "../state/features/globalSlice";
+import { setIsLoadingGlobal } from "../state/features/globalSlice";
 import { RootState } from "../state/store";
 import { fetchAndEvaluateVideos } from "../utils/fetchVideos";
 import { RequestQueue } from "../utils/queue";
@@ -390,14 +389,11 @@ export const useFetchVideos = () => {
       });
       const responseData = await response.json();
 
-      const totalVideosPublished = responseData.length;
+      totalVideosPublished.value = responseData.length;
       const uniqueNames = new Set(responseData.map(video => video.name));
-      const totalNamesPublished = uniqueNames.size;
-      const videosPerNamePublished = totalVideosPublished / totalNamesPublished;
-
-      dispatch(setTotalVideosPublished(totalVideosPublished));
-      dispatch(setTotalNamesPublished(totalNamesPublished));
-      dispatch(setVideosPerNamePublished(videosPerNamePublished));
+      totalNamesPublished.value = uniqueNames.size;
+      videosPerNamePublished.value =
+        totalVideosPublished.value / totalNamesPublished.value;
     } catch (error) {
       console.log({ error });
     }

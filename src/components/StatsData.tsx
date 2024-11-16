@@ -4,6 +4,12 @@ import { Grid } from "@mui/material";
 import { useFetchVideos } from "../hooks/useFetchVideos.tsx";
 import { useSelector } from "react-redux";
 import { RootState } from "../state/store.ts";
+import { signal } from "@preact/signals-react";
+
+/* eslint-disable react-refresh/only-export-components */
+export const totalVideosPublished = signal(0);
+export const totalNamesPublished = signal(0);
+export const videosPerNamePublished = signal(0);
 
 export const StatsData = () => {
   const StatsCol = styled(Grid)(({ theme }) => ({
@@ -14,44 +20,43 @@ export const StatsData = () => {
     backgroundColor: theme.palette.background.default,
   }));
 
-  const {
-    getVideos,
-    getNewVideos,
-    checkNewVideos,
-    getVideosFiltered,
-    getVideosCount,
-  } = useFetchVideos();
+  const { getVideosCount } = useFetchVideos();
 
-  const persistReducer = useSelector((state: RootState) => state.persist);
-  const totalVideosPublished = useSelector(
-    (state: RootState) => state.global.totalVideosPublished
-  );
-  const totalNamesPublished = useSelector(
-    (state: RootState) => state.global.totalNamesPublished
-  );
-  const videosPerNamePublished = useSelector(
-    (state: RootState) => state.global.videosPerNamePublished
-  );
+  const showValueIfExists = (value: number) => {
+    return value > 0 ? "inline" : "none";
+  };
 
+  const showStats = useSelector((state: RootState) => state.persist.showStats);
+  const showVideoCount = showValueIfExists(totalVideosPublished.value);
+  const showPublisherCount = showValueIfExists(totalNamesPublished.value);
+  const showAverage = showValueIfExists(videosPerNamePublished.value);
   useEffect(() => {
     getVideosCount();
   }, [getVideosCount]);
 
   return (
-    <StatsCol sx={{ display: persistReducer.showStats ? "block" : "none" }}>
+    <StatsCol sx={{ display: showStats ? "block" : "none" }}>
       <div>
         Videos:{" "}
-        <span style={{ fontWeight: "bold" }}>{totalVideosPublished}</span>
+        <span style={{ fontWeight: "bold", display: showVideoCount }}>
+          {totalVideosPublished.value}
+        </span>
       </div>
       <div>
         Publishers:{" "}
-        <span style={{ fontWeight: "bold" }}>{totalNamesPublished}</span>
+        <span style={{ fontWeight: "bold", display: showPublisherCount }}>
+          {totalNamesPublished.value}
+        </span>
       </div>
       <div>
         Average:{" "}
-        <span style={{ fontWeight: "bold" }}>
-          {videosPerNamePublished > 0 &&
-            Number(videosPerNamePublished).toFixed(0)}
+        <span
+          style={{
+            fontWeight: "bold",
+            display: showAverage,
+          }}
+        >
+          {Number(videosPerNamePublished.value).toFixed(0)}
         </span>
       </div>
     </StatsCol>

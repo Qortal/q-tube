@@ -1,20 +1,5 @@
-import { useEffect, useState } from "react";
 import { SubscriptionData } from "./components/common/ContentButtons/SubscribeButton.tsx";
-import { setFilteredSubscriptions } from "./state/features/videoSlice.ts";
 import { store } from "./state/store.ts";
-import { persistStore } from "redux-persist";
-
-export const useAppState = () => {
-  const [theme, setTheme] = useState("dark");
-  const persistor = persistStore(store);
-
-  useEffect(() => {
-    subscriptionListFilter(false).then(filteredList => {
-      store.dispatch(setFilteredSubscriptions(filteredList));
-    });
-  }, []);
-  return { persistor, theme, setTheme };
-};
 
 export const getUserName = async () => {
   const account = await qortalRequest({
@@ -28,6 +13,7 @@ export const getUserName = async () => {
   if (nameData?.length > 0) return nameData[0].name;
   else return "";
 };
+
 export const filterVideosByName = (
   subscriptionList: SubscriptionData[],
   userName: string

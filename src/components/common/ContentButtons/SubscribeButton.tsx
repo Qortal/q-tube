@@ -1,7 +1,7 @@
 import { Button, ButtonProps, Tooltip } from "@mui/material";
 import { MouseEvent, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { subscriptionListFilter } from "../../../App-State.ts";
+import { subscriptionListFilter } from "../../../App-Functions.ts";
 import { RootState } from "../../../state/store.ts";
 import {
   subscribe,

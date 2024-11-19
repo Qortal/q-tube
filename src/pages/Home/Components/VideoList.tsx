@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { PlaylistSVG } from "../../../assets/svgs/PlaylistSVG.tsx";
 import ResponsiveImage from "../../../components/ResponsiveImage.tsx";
-import { fontSizeSmall } from "../../../constants/Misc.ts";
+import { fontSizeSmall, minDuration } from "../../../constants/Misc.ts";
 import {
   blockUser,
   setEditPlaylist,
@@ -236,7 +236,7 @@ export const VideoList = ({ videos }: VideoListProps) => {
                 navigate(`/video/${videoObj?.user}/${videoObj?.id}`);
               }}
             >
-              {videoObj?.duration && (
+              {videoObj?.duration > minDuration && (
                 <Box
                   position="absolute"
                   right={0}

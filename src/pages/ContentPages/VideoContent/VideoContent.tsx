@@ -1,47 +1,22 @@
-import { Avatar, Box, Typography, useTheme } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import React from "react";
 
 import DeletedVideo from "../../../assets/img/DeletedVideo.jpg";
 import { CommentSection } from "../../../components/common/Comments/CommentSection.tsx";
 import { SuperLikesSection } from "../../../components/common/SuperLikesList/SuperLikesSection.tsx";
 import { DisplayHtml } from "../../../components/common/TextEditor/DisplayHtml.tsx";
-import {
-  videoRefType,
-  VideoPlayer,
-} from "../../../components/common/VideoPlayer/VideoPlayer.tsx";
-import {
-  QTUBE_VIDEO_BASE,
-  SUPER_LIKE_BASE,
-} from "../../../constants/Identifiers.ts";
-import {
-  fontSizeMedium,
-  minPriceSuperlike,
-  titleFormatterOnSave,
-} from "../../../constants/Misc.ts";
-import { useFetchSuperLikes } from "../../../hooks/useFetchSuperLikes.tsx";
-import { setIsLoadingGlobal } from "../../../state/features/globalSlice.ts";
-import { addToHashMap } from "../../../state/features/videoSlice.ts";
-import { RootState } from "../../../state/store.ts";
+import { VideoPlayer } from "../../../components/common/VideoPlayer/VideoPlayer.tsx";
+import { minFileSize } from "../../../constants/Misc.ts";
 import { formatBytes } from "../../../utils/numberFunctions.ts";
 import { formatDate } from "../../../utils/time.ts";
 import { VideoActionsBar } from "./VideoActionsBar.tsx";
+import { useVideoContentState } from "./VideoContent-State.ts";
 import {
-  extractSigValue,
-  getPaymentInfo,
-  isTimestampWithinRange,
-  useVideoContentState,
-} from "./VideoContent-State.ts";
-import {
-  AuthorTextComment,
-  FileAttachmentContainer,
-  FileAttachmentFont,
   Spacer,
-  StyledCardColComment,
-  StyledCardHeaderComment,
-  VideoDescription,
   VideoContentContainer,
-  VideoTitle,
+  VideoDescription,
   VideoPlayerContainer,
+  VideoTitle,
 } from "./VideoContent-styles.tsx";
 
 export const VideoContent = () => {
@@ -130,7 +105,7 @@ export const VideoContent = () => {
               {videoData?.title}
             </VideoTitle>
           </Box>
-          {videoData?.fileSize && (
+          {videoData?.fileSize > minFileSize && (
             <Typography
               variant="h1"
               sx={{

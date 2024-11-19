@@ -1,4 +1,5 @@
 import { Box, CircularProgress, Typography } from "@mui/material";
+import { minDuration } from "../../../../constants/Misc.ts";
 import { setVideoPlaying } from "../../../../state/features/globalSlice.ts";
 import { useDispatch } from "react-redux";
 import { PlayArrow } from "@mui/icons-material";
@@ -88,7 +89,7 @@ export const LoadingVideo = () => {
 
       {((!src && !isLoading.value) || (!startPlay.value && !canPlay.value)) && (
         <>
-          {duration && (
+          {duration > minDuration && (
             <Box
               position="absolute"
               right={0}

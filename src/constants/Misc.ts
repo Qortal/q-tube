@@ -12,3 +12,5 @@ export const fontSizeMedium = "100%";
 export const fontSizeLarge = "120%";
 export const fontSizeExLarge = "150%";
 export const maxCommentLength = 10_000;
+export const minFileSize = 1_000;
+export const minDuration = 5;

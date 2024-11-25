@@ -5,6 +5,7 @@ import { useEffect } from "react";
 import ReactDOM from "react-dom";
 import { useSelector } from "react-redux";
 import { Key } from "ts-key-enum";
+import { useIsMobile } from "../../../../hooks/useIsMobile.ts";
 import { setVideoPlaying } from "../../../../state/features/globalSlice.ts";
 import {
   setReduxPlaybackRate,
@@ -39,6 +40,7 @@ export const useVideoControlsState = (
   } = videoPlayerState;
   const { identifier, autoPlay } = props;
 
+  const isMobile = useIsMobile();
   const showControlsFullScreen = useSignal(true);
   const persistSelector = store.getState().persist;
 
@@ -54,7 +56,7 @@ export const useVideoControlsState = (
     if (videoRef.current) {
       if (newSpeed > maxSpeed || newSpeed < minSpeed) newSpeed = minSpeed;
 
-      videoRef.current.playbackRate = playbackRate.value;
+      videoRef.current.playbackRate = newSpeed;
       playbackRate.value = newSpeed;
       store.dispatch(setReduxPlaybackRate(newSpeed));
     }
@@ -66,15 +68,11 @@ export const useVideoControlsState = (
       ? changedSpeed
       : Math.min(changedSpeed, maxSpeed);
 
-    if (videoRef.current) {
-      updatePlaybackRate(newSpeed);
-    }
+    updatePlaybackRate(newSpeed);
   };
 
   const decreaseSpeed = () => {
-    if (videoRef.current) {
-      updatePlaybackRate(playbackRate.value - speedChange);
-    }
+    updatePlaybackRate(playbackRate.value - speedChange);
   };
 
   const isFullscreen = useSignal(false);
@@ -359,10 +357,7 @@ export const useVideoControlsState = (
 
   useSignalEffect(() => {
     console.log("canPlay is: ", canPlay.value); // makes the function execute when canPlay changes
-    const videoWidth = videoRef?.current?.offsetWidth;
-    if (videoWidth && videoWidth <= 600) {
-      isMobileView.value = true;
-    }
+    if (isMobile) isMobileView.value = true;
   });
 
   return {

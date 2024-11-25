@@ -4,6 +4,7 @@ import { Box, Grid, Tab } from "@mui/material";
 import React from "react";
 import LazyLoad from "../../components/common/LazyLoad";
 import { ListSuperLikeContainer } from "../../components/common/ListSuperLikes/ListSuperLikeContainer.tsx";
+import { fontSizeMedium } from "../../constants/Misc.ts";
 import { SearchSidebar } from "./Components/SearchSidebar.tsx";
 import { FiltersCol, VideoManagerRow } from "./Components/VideoList-styles.tsx";
 import VideoList from "./Components/VideoList.tsx";
@@ -23,7 +24,12 @@ export const Home = ({ mode }: HomeProps) => {
     getVideosHandler,
   } = useHomeState(mode);
 
-  const tabFontSize = "100%";
+  const tabPaneSX = {
+    width: "100%",
+    paddingLeft: "0px",
+    paddingRight: "0px",
+  };
+
   return (
     <>
       <Grid container sx={{ width: "100%" }}>
@@ -56,22 +62,22 @@ export const Home = ({ mode }: HomeProps) => {
                   <Tab
                     label="All Videos"
                     value={"all"}
-                    sx={{ fontSize: tabFontSize }}
+                    sx={{ fontSize: fontSizeMedium }}
                   />
                   <Tab
                     label="Subscriptions"
                     value={"subscriptions"}
-                    sx={{ fontSize: tabFontSize }}
+                    sx={{ fontSize: fontSizeMedium }}
                   />
                 </TabList>
-                <TabPanel value={"all"} sx={{ width: "100%" }}>
+                <TabPanel value={"all"} sx={tabPaneSX}>
                   <VideoList videos={videos} />
                   <LazyLoad
                     onLoadMore={getVideosHandler}
                     isLoading={isLoading}
                   ></LazyLoad>
                 </TabPanel>
-                <TabPanel value={"subscriptions"} sx={{ width: "100%" }}>
+                <TabPanel value={"subscriptions"} sx={tabPaneSX}>
                   {filteredSubscriptionList.length > 0 ? (
                     <>
                       <VideoList videos={videos} />

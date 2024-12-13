@@ -1,32 +1,29 @@
-import React, { useEffect, useState } from "react";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import {
   Box,
-  Button,
-  Dialog,
-  DialogActions,
   DialogContent,
-  DialogTitle,
-  FormControl,
-  Input,
   InputAdornment,
   InputLabel,
-  MenuItem,
   Modal,
-  Select,
   Tooltip,
 } from "@mui/material";
-import qortImg from "../../../assets/img/qort.png";
-import { MultiplePublish } from "../../Publish/MultiplePublish/MultiplePublishAll.tsx";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setNotification } from "../../../state/features/notificationsSlice.ts";
 import ShortUniqueId from "short-unique-id";
+import qortImg from "../../../assets/img/qort.png";
 import {
-  objectToBase64,
-  objectToFile,
-} from "../../../utils/PublishFormatter.ts";
+  FOR,
+  FOR_SUPER_LIKE,
+  SUPER_LIKE_BASE,
+} from "../../../constants/Identifiers.ts";
 import { minPriceSuperlike } from "../../../constants/Misc.ts";
-import { CommentInput } from "../Comments/Comments-styles.tsx";
+import { setNotification } from "../../../state/features/notificationsSlice.ts";
+import { RootState } from "../../../state/store.ts";
+import BoundedNumericTextField from "../../../utils/BoundedNumericTextField.tsx";
+import { numberToInt, truncateNumber } from "../../../utils/numberFunctions.ts";
+import { objectToBase64 } from "../../../utils/PublishFormatter.ts";
+import { getUserBalance } from "../../../utils/qortalRequestFunctions.ts";
+import { MultiplePublish } from "../../Publish/MultiplePublish/MultiplePublishAll.tsx";
 import {
   CrowdfundActionButton,
   CrowdfundActionButtonRow,
@@ -34,16 +31,7 @@ import {
   NewCrowdfundTitle,
   Spacer,
 } from "../../Publish/PublishVideo/PublishVideo-styles.tsx";
-import { utf8ToBase64 } from "../SuperLikesList/CommentEditor.tsx";
-import { RootState } from "../../../state/store.ts";
-import {
-  FOR,
-  FOR_SUPER_LIKE,
-  SUPER_LIKE_BASE,
-} from "../../../constants/Identifiers.ts";
-import BoundedNumericTextField from "../../../utils/BoundedNumericTextField.tsx";
-import { numberToInt, truncateNumber } from "../../../utils/numberFunctions.ts";
-import { getUserBalance } from "../../../utils/qortalRequestFunctions.ts";
+import { CommentInput } from "../Comments/Comments-styles.tsx";
 
 const uid = new ShortUniqueId({ length: 4 });
 

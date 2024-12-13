@@ -1,25 +1,18 @@
-import { Avatar, Box, SxProps, Theme, useTheme } from "@mui/material";
-import { FollowButton } from "../../../components/common/ContentButtons/FollowButton.tsx";
+import DownloadIcon from "@mui/icons-material/Download";
+import { Box, SxProps, Theme, useMediaQuery } from "@mui/material";
+import { useMemo } from "react";
 import { LikeAndDislike } from "../../../components/common/ContentButtons/LikeAndDislike.tsx";
-import { SubscribeButton } from "../../../components/common/ContentButtons/SubscribeButton.tsx";
 import { SuperLike } from "../../../components/common/ContentButtons/SuperLike.tsx";
 import FileElement from "../../../components/common/FileElement.tsx";
-import { videoRefType } from "../../../components/common/VideoPlayer/VideoPlayer.tsx";
-import { titleFormatterOnSave } from "../../../constants/Misc.ts";
-import { useFetchSuperLikes } from "../../../hooks/useFetchSuperLikes.tsx";
-import DownloadIcon from "@mui/icons-material/Download";
-import { RootState } from "../../../state/store.ts";
+import {
+  smallScreenSizeString,
+  titleFormatterOnSave,
+} from "../../../constants/Misc.ts";
 import { ChannelActions } from "./ChannelActions.tsx";
 import {
-  AuthorTextComment,
   FileAttachmentContainer,
   FileAttachmentFont,
-  StyledCardColComment,
-  StyledCardHeaderComment,
 } from "./VideoContent-styles.tsx";
-import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { useMemo, useState } from "react";
 
 export interface VideoActionsBarProps {
   channelName: string;
@@ -82,11 +75,12 @@ export const VideoActionsBar = ({
   return (
     <Box
       sx={{
-        width: "80%",
-        display: "grid",
-        gridTemplateColumns: "1fr 1fr",
         marginTop: "15px",
+        display: "flex",
+        flexDirection: "row",
         alignItems: "center",
+        flexWrap: "wrap",
+        gap: "20px",
         ...sx,
       }}
     >
@@ -95,6 +89,8 @@ export const VideoActionsBar = ({
         sx={{
           display: "flex",
           flexDirection: "row",
+          height: "100%",
+          alignItems: "center",
         }}
       >
         {videoData && (
@@ -110,28 +106,30 @@ export const VideoActionsBar = ({
                 setSuperLikeList(prev => [val, ...prev]);
               }}
             />
-
-            <FileAttachmentContainer>
-              <FileAttachmentFont>Save to Disk</FileAttachmentFont>
-              <FileElement
-                fileInfo={{
-                  ...videoReference,
-                  filename: saveAsFilename,
-                  mimeType: videoData?.videoType || '"video/mp4',
-                }}
-                title={videoData?.filename || videoData?.title?.slice(0, 20)}
-                customStyles={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "flex-end",
-                }}
-              >
-                <DownloadIcon />
-              </FileElement>
-            </FileAttachmentContainer>
           </>
         )}
       </Box>
+
+      {videoData && (
+        <FileAttachmentContainer sx={{ width: "100%", maxWidth: "340px" }}>
+          <FileAttachmentFont>Save Video</FileAttachmentFont>
+          <FileElement
+            fileInfo={{
+              ...videoReference,
+              filename: saveAsFilename,
+              mimeType: videoData?.videoType || '"video/mp4',
+            }}
+            title={videoData?.filename || videoData?.title?.slice(0, 20)}
+            customStyles={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "flex-end",
+            }}
+          >
+            <DownloadIcon />
+          </FileElement>
+        </FileAttachmentContainer>
+      )}
     </Box>
   );
 };

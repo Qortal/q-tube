@@ -7,12 +7,14 @@ import {
   VolumeOff,
   VolumeUp,
 } from "@mui/icons-material";
-import { IconButton, Slider, Typography } from "@mui/material";
+import { IconButton, Slider, Typography, useMediaQuery } from "@mui/material";
+import { smallScreenSizeString } from "../../../../constants/Misc.ts";
 import { formatTime } from "../../../../utils/numberFunctions.ts";
 
 import { ControlsContainer } from "../VideoPlayer-styles.ts";
 import { MobileControls } from "./MobileControls.tsx";
 import { useVideoContext } from "./VideoContext.ts";
+import { useSignalEffect } from "@preact/signals-react";
 
 export const VideoControls = () => {
   const {
@@ -28,7 +30,6 @@ export const VideoControls = () => {
     from,
     videoRef,
     canPlay,
-    isMobileView,
     isMuted,
     playbackRate,
     playing,
@@ -37,8 +38,8 @@ export const VideoControls = () => {
     showControlsFullScreen,
   } = useVideoContext();
 
-  const showMobileControls =
-    isMobileView.value && canPlay.value && showControlsFullScreen.value;
+  const isScreenSmall = !useMediaQuery(`(min-width:580px)`);
+  const showMobileControls = isScreenSmall && canPlay.value;
 
   return (
     <ControlsContainer

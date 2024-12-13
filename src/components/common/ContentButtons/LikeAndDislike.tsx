@@ -160,10 +160,10 @@ export const LikeAndDislike = ({ name, identifier }: LikeAndDislikeProps) => {
             sx={{
               padding: "5px",
               borderRadius: "7px",
-              gap: "5px",
+              gap: "10px",
               display: "flex",
               alignItems: "center",
-              marginRight: "10px",
+              marginRight: "20px",
               height: "53px",
             }}
           >

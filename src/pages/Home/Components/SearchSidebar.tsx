@@ -7,9 +7,11 @@ import {
   MenuItem,
   OutlinedInput,
   Select,
+  useMediaQuery,
 } from "@mui/material";
 import { StatsData } from "../../../components/StatsData.tsx";
 import { categories, subCategories } from "../../../constants/Categories.ts";
+import { smallScreenSizeString } from "../../../constants/Misc.ts";
 import { useSidebarState } from "./SearchSidebar-State.ts";
 import {
   FiltersCol,
@@ -38,8 +40,19 @@ export const SearchSidebar = ({ onSearch }: SearchSidebarProps) => {
     filtersToDefault,
   } = useSidebarState(onSearch);
 
+  const filtersStyle = { width: "75px", marginRight: "10px" };
+  const isScreenSmall = !useMediaQuery(`(min-width:600px)`);
+
   return (
-    <FiltersCol item xs={12} md={2} lg={2} xl={2} sm={3}>
+    <Box
+      sx={{
+        marginLeft: "5px",
+        marginRight: isScreenSmall ? "5px" : "0px",
+        alignItems: "center",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
       <FiltersContainer>
         <StatsData />
         <Input
@@ -101,12 +114,11 @@ export const SearchSidebar = ({ onSearch }: SearchSidebarProps) => {
         />
 
         <FiltersSubContainer>
-          <FormControl sx={{ width: "100%", marginTop: "30px" }}>
+          <FormControl sx={{ width: "98%", marginTop: "30px" }}>
             <Box
               sx={{
                 display: "flex",
                 gap: "20px",
-                alignItems: "center",
                 flexDirection: "column",
               }}
             >
@@ -201,7 +213,7 @@ export const SearchSidebar = ({ onSearch }: SearchSidebarProps) => {
         </FiltersSubContainer>
         <FiltersSubContainer>
           <FiltersRow>
-            Videos
+            <span style={filtersStyle}>Videos</span>
             <FiltersRadioButton
               checked={filterType === "videos"}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
@@ -211,7 +223,7 @@ export const SearchSidebar = ({ onSearch }: SearchSidebarProps) => {
             />
           </FiltersRow>
           <FiltersRow>
-            Playlists
+            <span style={filtersStyle}> Playlists</span>
             <FiltersRadioButton
               checked={filterType === "playlists"}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
@@ -221,12 +233,15 @@ export const SearchSidebar = ({ onSearch }: SearchSidebarProps) => {
             />
           </FiltersRow>
         </FiltersSubContainer>
+
         <Button
           onClick={() => {
             filtersToDefault();
           }}
           sx={{
             marginTop: "20px",
+            width: "80%",
+            alignSelf: "center",
           }}
           variant="contained"
         >
@@ -238,12 +253,14 @@ export const SearchSidebar = ({ onSearch }: SearchSidebarProps) => {
           }}
           sx={{
             marginTop: "20px",
+            width: "80%",
+            alignSelf: "center",
           }}
           variant="contained"
         >
           Search
         </Button>
       </FiltersContainer>
-    </FiltersCol>
+    </Box>
   );
 };

@@ -63,9 +63,9 @@ export const StyledCardCol = styled(Box)({
 export const StyledCardColComment = styled(Box)({
   display: "flex",
   overflow: "hidden",
-  flexDirection: "column",
+  flexDirection: "row",
   gap: "2px",
-  alignItems: "flex-start",
+  alignItems: "center",
   width: "100%",
 });
 
@@ -159,7 +159,7 @@ export const BlockIconContainer = styled(Box)({
 });
 
 export const CommentsContainer = styled(Box)({
-  width: "70%",
+  width: "98%",
   maxWidth: "1000px",
   display: "flex",
   flexDirection: "column",

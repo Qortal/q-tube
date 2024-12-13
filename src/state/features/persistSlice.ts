@@ -19,6 +19,8 @@ interface settingsState {
   subscriptionListFilter: SubscriptionListFilterType;
   showStats: boolean;
   volume: number;
+  mutedVolume: number;
+  isMuted: boolean;
 }
 
 const initialState: settingsState = {
@@ -30,6 +32,8 @@ const initialState: settingsState = {
   subscriptionListFilter: "currentNameOnly",
   showStats: true,
   volume: 0.5,
+  mutedVolume: 0,
+  isMuted: false,
 };
 
 export const persistSlice = createSlice({
@@ -77,6 +81,12 @@ export const persistSlice = createSlice({
     setVolumeSetting: (state, action: PayloadAction<number>) => {
       state.volume = action.payload;
     },
+    setMutedVolumeSetting: (state, action: PayloadAction<number>) => {
+      state.mutedVolume = action.payload;
+    },
+    setIsMuted: (state, action: PayloadAction<boolean>) => {
+      state.isMuted = action.payload;
+    },
   },
 });
 
@@ -89,6 +99,8 @@ export const {
   changeFilterType,
   resetSubscriptions,
   setVolumeSetting,
+  setMutedVolumeSetting,
+  setIsMuted,
 } = persistSlice.actions;
 
 export default persistSlice.reducer;

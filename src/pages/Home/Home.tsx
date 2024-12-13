@@ -1,10 +1,15 @@
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 
-import { Box, Grid, Tab } from "@mui/material";
+import { Box, Grid, Tab, useMediaQuery } from "@mui/material";
 import React from "react";
 import LazyLoad from "../../components/common/LazyLoad";
 import { ListSuperLikeContainer } from "../../components/common/ListSuperLikes/ListSuperLikeContainer.tsx";
-import { fontSizeMedium } from "../../constants/Misc.ts";
+import {
+  fontSizeLarge,
+  fontSizeMedium,
+  fontSizeSmall,
+} from "../../constants/Misc.ts";
+import { useIsMobile } from "../../hooks/useIsMobile.ts";
 import { SearchSidebar } from "./Components/SearchSidebar.tsx";
 import { FiltersCol, VideoManagerRow } from "./Components/VideoList-styles.tsx";
 import VideoList from "./Components/VideoList.tsx";
@@ -29,79 +34,77 @@ export const Home = ({ mode }: HomeProps) => {
     paddingLeft: "0px",
     paddingRight: "0px",
   };
+  const isScreenSmall = !useMediaQuery("(min-width:600px)");
+  const isScreenLarge = useMediaQuery("(min-width:1200px)");
+
+  const tabSX = {
+    fontSize: isScreenSmall ? fontSizeSmall : fontSizeLarge,
+    paddingLeft: "0px",
+    paddingRight: "0px",
+  };
+
+  const homeBaseSX = { display: "grid", width: "100%" };
+  const bigGridSX = { gridTemplateColumns: "200px auto 250px" };
+  const mediumGridSX = { gridTemplateColumns: "200px auto" };
+  const smallGridSX = { gridTemplateColumns: "100%", gap: "20px" };
+
+  let homeColumns: object;
+  if (isScreenLarge) homeColumns = bigGridSX;
+  else if (!isScreenSmall) homeColumns = mediumGridSX;
+  else homeColumns = smallGridSX;
 
   return (
     <>
-      <Grid container sx={{ width: "100%" }}>
+      <Box sx={{ ...homeBaseSX, ...homeColumns }}>
         <SearchSidebar onSearch={getVideosHandler} />
-        <Grid item xs={12} md={10} lg={7} xl={8} sm={9}>
-          <VideoManagerRow>
-            <Box
-              sx={{
-                width: "100%",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                marginTop: "20px",
-              }}
+
+        <Box
+          sx={{
+            width: "100%",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          <TabContext value={tabValue}>
+            <TabList
+              onChange={changeTab}
+              textColor={"secondary"}
+              indicatorColor={"secondary"}
+              centered={false}
             >
-              <SubtitleContainer
-                sx={{
-                  justifyContent: "flex-start",
-                  paddingLeft: "15px",
-                  width: "100%",
-                  maxWidth: "1400px",
-                }}
-              ></SubtitleContainer>
-              <TabContext value={tabValue}>
-                <TabList
-                  onChange={changeTab}
-                  textColor={"secondary"}
-                  indicatorColor={"secondary"}
-                >
-                  <Tab
-                    label="All Videos"
-                    value={"all"}
-                    sx={{ fontSize: fontSizeMedium }}
-                  />
-                  <Tab
-                    label="Subscriptions"
-                    value={"subscriptions"}
-                    sx={{ fontSize: fontSizeMedium }}
-                  />
-                </TabList>
-                <TabPanel value={"all"} sx={tabPaneSX}>
+              <Tab label="All" value={"all"} sx={tabSX} />
+              <Tab label="Subscriptions" value={"subscriptions"} sx={tabSX} />
+            </TabList>
+            <TabPanel value={"all"} sx={tabPaneSX}>
+              <VideoList videos={videos} />
+              <LazyLoad
+                onLoadMore={getVideosHandler}
+                isLoading={isLoading}
+              ></LazyLoad>
+            </TabPanel>
+            <TabPanel value={"subscriptions"} sx={tabPaneSX}>
+              {filteredSubscriptionList.length > 0 ? (
+                <>
                   <VideoList videos={videos} />
                   <LazyLoad
                     onLoadMore={getVideosHandler}
                     isLoading={isLoading}
                   ></LazyLoad>
-                </TabPanel>
-                <TabPanel value={"subscriptions"} sx={tabPaneSX}>
-                  {filteredSubscriptionList.length > 0 ? (
-                    <>
-                      <VideoList videos={videos} />
-                      <LazyLoad
-                        onLoadMore={getVideosHandler}
-                        isLoading={isLoading}
-                      ></LazyLoad>
-                    </>
-                  ) : !isLoading ? (
-                    <div style={{ textAlign: "center" }}>
-                      You have no subscriptions
-                    </div>
-                  ) : (
-                    <></>
-                  )}
-                </TabPanel>
-              </TabContext>
-            </Box>
-          </VideoManagerRow>
-        </Grid>
-        <FiltersCol item xs={0} lg={3} xl={2}>
-          <ListSuperLikeContainer />
-        </FiltersCol>
-      </Grid>
+                </>
+              ) : (
+                !isLoading && (
+                  <div style={{ textAlign: "center" }}>
+                    You have no subscriptions
+                  </div>
+                )
+              )}
+            </TabPanel>
+          </TabContext>
+        </Box>
+
+        <ListSuperLikeContainer />
+      </Box>
     </>
   );
 };

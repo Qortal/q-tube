@@ -15,8 +15,10 @@ import {
   Typography,
   useTheme,
 } from "@mui/material";
+import { useSignal } from "@preact/signals-react";
+import { useSignals } from "@preact/signals-react/runtime";
 import Compressor from "compressorjs";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { useDispatch, useSelector } from "react-redux";
 import ShortUniqueId from "short-unique-id";
@@ -27,6 +29,7 @@ import {
 } from "../../../constants/Identifiers.ts";
 import {
   maxSize,
+  menuIconSize,
   titleFormatter,
   videoMaxSize,
 } from "../../../constants/Misc.ts";
@@ -38,7 +41,6 @@ import {
 
 import { setNotification } from "../../../state/features/notificationsSlice.ts";
 import { RootState } from "../../../state/store.ts";
-import { formatBytes } from "../../../utils/numberFunctions.ts";
 import { objectToBase64 } from "../../../utils/PublishFormatter.ts";
 import { getFileName } from "../../../utils/stringFunctions.ts";
 import { CardContentContainerComment } from "../../common/Comments/Comments-styles.tsx";
@@ -66,8 +68,7 @@ import {
   StyledButton,
   TimesIcon,
 } from "./PublishVideo-styles.tsx";
-import { signal, Signal, useSignal } from "@preact/signals-react";
-import { useSignals } from "@preact/signals-react/runtime";
+import VideoLibraryIcon from "@mui/icons-material/VideoLibrary";
 
 export const toBase64 = (file: File): Promise<string | ArrayBuffer | null> =>
   new Promise((resolve, reject) => {
@@ -82,13 +83,14 @@ export const toBase64 = (file: File): Promise<string | ArrayBuffer | null> =>
 const uid = new ShortUniqueId();
 const shortuid = new ShortUniqueId({ length: 5 });
 
-interface NewCrowdfundProps {
+interface PublishVideoProps {
   editId?: string;
   editContent?: null | {
     title: string;
     user: string;
     coverImage: string | null;
   };
+  afterClose?: () => void;
 }
 
 interface VideoFile {
@@ -97,7 +99,11 @@ interface VideoFile {
   description: string;
   coverImage?: string;
 }
-export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
+export const PublishVideo = ({
+  editId,
+  editContent,
+  afterClose,
+}: PublishVideoProps) => {
   const theme = useTheme();
   const dispatch = useDispatch();
   const [isOpenMultiplePublish, setIsOpenMultiplePublish] = useState(false);
@@ -188,13 +194,9 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
     },
   });
 
-  // useEffect(() => {
-  //   if (editContent) {
-  //   }
-  // }, [editContent]);
-
   const onClose = () => {
     setIsOpen(false);
+    if (afterClose) afterClose();
   };
 
   const search = async () => {
@@ -633,12 +635,20 @@ export const PublishVideo = ({ editId, editContent }: NewCrowdfundProps) => {
           {editId ? null : (
             <StyledButton
               color="primary"
-              startIcon={<AddBoxIcon />}
+              startIcon={
+                <VideoLibraryIcon
+                  sx={{
+                    color: "#FF0033",
+                    width: menuIconSize,
+                    height: menuIconSize,
+                  }}
+                />
+              }
               onClick={() => {
                 setIsOpen(true);
               }}
             >
-              add video
+              Video
             </StyledButton>
           )}
         </>

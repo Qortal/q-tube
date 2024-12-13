@@ -64,7 +64,6 @@ export function extractIdValue(metadescription) {
 }
 
 export const Notifications = () => {
-  const dispatch = useDispatch();
   const [anchorElNotification, setAnchorElNotification] =
     useState<HTMLButtonElement | null>(null);
   const [notifications, setNotifications] = useState<any[]>([]);
@@ -238,7 +237,7 @@ export const Notifications = () => {
         badgeContent={notificationBadgeLength}
         color="primary"
         sx={{
-          margin: "0px 12px",
+          margin: "0px",
         }}
       >
         <Button
@@ -267,6 +266,7 @@ export const Notifications = () => {
           vertical: "bottom",
           horizontal: "left",
         }}
+        sx={{ marginTop: "12px" }}
       >
         <Box>
           <List

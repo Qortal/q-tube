@@ -2,20 +2,18 @@ import { AppBar, Button, Typography, Box } from "@mui/material";
 import { styled } from "@mui/system";
 import { LightModeSVG } from "../../../assets/svgs/LightModeSVG";
 import { DarkModeSVG } from "../../../assets/svgs/DarkModeSVG";
+import { fontSizeSmall } from "../../../constants/Misc.ts";
 
 export const CustomAppBar = styled(AppBar)(({ theme }) => ({
   display: "flex",
   flexDirection: "row",
-  justifyContent: "space-between",
+  justifyContent: "start",
   alignItems: "center",
   width: "100%",
-  padding: "5px 16px",
+  padding: "5px 16px 5px 5px",
   backgroundImage: "none",
   borderBottom: `1px solid ${theme.palette.primary.light}`,
   backgroundColor: theme.palette.background.default,
-  [theme.breakpoints.only("xs")]: {
-    gap: "15px",
-  },
   height: "50px",
 }));
 export const LogoContainer = styled("div")({
@@ -85,16 +83,15 @@ export const DropdownText = styled(Typography)(({ theme }) => ({
 
 export const NavbarName = styled(Typography)(({ theme }) => ({
   fontFamily: "Raleway",
-  fontSize: "18px",
+  fontSize: fontSizeSmall,
   color: theme.palette.text.primary,
-  margin: "0 10px",
+  marginRight: "10px",
 }));
 
 export const ThemeSelectRow = styled(Box)({
   display: "flex",
   alignItems: "center",
-  gap: "5px",
-  flexBasis: 0,
+  gap: "10px",
   height: "100%",
 });
 

@@ -1,12 +1,18 @@
-import { Box, Typography } from "@mui/material";
-import React from "react";
+import { Box, Typography, useMediaQuery } from "@mui/material";
+import React, { useEffect, useState } from "react";
 
 import DeletedVideo from "../../../assets/img/DeletedVideo.jpg";
 import { CommentSection } from "../../../components/common/Comments/CommentSection.tsx";
 import { SuperLikesSection } from "../../../components/common/SuperLikesList/SuperLikesSection.tsx";
 import { DisplayHtml } from "../../../components/common/TextEditor/DisplayHtml.tsx";
 import { VideoPlayer } from "../../../components/common/VideoPlayer/VideoPlayer.tsx";
-import { minFileSize } from "../../../constants/Misc.ts";
+import {
+  fontSizeSmall,
+  largeScreenSizeString,
+  minFileSize,
+  smallScreenSizeString,
+} from "../../../constants/Misc.ts";
+import { useIsMobile } from "../../../hooks/useIsMobile.ts";
 import { formatBytes } from "../../../utils/numberFunctions.ts";
 import { formatDate } from "../../../utils/time.ts";
 import { VideoActionsBar } from "./VideoActionsBar.tsx";
@@ -18,6 +24,7 @@ import {
   VideoPlayerContainer,
   VideoTitle,
 } from "./VideoContent-styles.tsx";
+import { useSignal } from "@preact/signals-react";
 
 export const VideoContent = () => {
   const {
@@ -39,18 +46,47 @@ export const VideoContent = () => {
     superLikeList,
     setSuperLikeList,
   } = useVideoContentState();
+
+  const isScreenSmall = !useMediaQuery(`(min-width:${smallScreenSizeString})`);
+  const [screenWidth, setScreenWidth] = useState<number>(
+    window.innerWidth + 120
+  );
+  let videoWidth = 100;
+  const maxWidth = 95;
+  const pixelsPerPercent = 17.5;
+  const smallScreenPixels = 700;
+
+  if (!isScreenSmall)
+    videoWidth =
+      maxWidth - (screenWidth - smallScreenPixels) / pixelsPerPercent;
+
+  const minWidthPercent = 70;
+  if (videoWidth < minWidthPercent) videoWidth = minWidthPercent;
+
+  useEffect(() => {
+    window.addEventListener("resize", e => {
+      setScreenWidth(window.innerWidth + 120);
+    });
+  }, []);
+
   return (
     <>
       <Box
         sx={{
           display: "flex",
           flexDirection: "column",
-          padding: "0px 10px 0px 5%",
+          padding: `0px 0px 0px ${isScreenSmall ? "5px" : "2%"}`,
+          width: "100%",
         }}
         onClick={focusVideo}
       >
         {videoReference ? (
-          <VideoPlayerContainer>
+          <VideoPlayerContainer
+            sx={{
+              width: `${videoWidth}%`,
+              marginLeft: "0%",
+            }}
+          >
             <VideoPlayer
               name={videoReference?.name}
               service={videoReference?.service}
@@ -77,64 +113,61 @@ export const VideoContent = () => {
           <Box sx={{ width: "55vw", aspectRatio: "16/9" }}></Box>
         )}
         <VideoContentContainer>
+          <VideoTitle
+            variant={isScreenSmall ? "h2" : "h1"}
+            color="textPrimary"
+            sx={{
+              textAlign: "start",
+              marginTop: "10px",
+            }}
+          >
+            {videoData?.title}
+          </VideoTitle>
+          <Box>
+            {videoData?.created && (
+              <Typography
+                variant="h2"
+                sx={{
+                  fontSize: fontSizeSmall,
+                  display: "inline",
+                }}
+                color={theme.palette.text.primary}
+              >
+                {formatDate(videoData.created)}
+              </Typography>
+            )}
+
+            {videoData?.fileSize > minFileSize && (
+              <Typography
+                variant="h1"
+                sx={{
+                  fontSize: "90%",
+                  display: "inline",
+                  marginLeft: "20px",
+                }}
+                color={"green"}
+              >
+                {formatBytes(videoData.fileSize, 2, "Decimal")}
+              </Typography>
+            )}
+          </Box>
           <VideoActionsBar
             channelName={channelName}
             videoData={videoData}
             setSuperLikeList={setSuperLikeList}
             superLikeList={superLikeList}
             videoReference={videoReference}
+            sx={{ width: "calc(100% - 5px)" }}
           />
 
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              width: "100%",
-              marginTop: "20px",
-              gap: "10px",
-            }}
-          >
-            <VideoTitle
-              variant="h1"
-              color="textPrimary"
-              sx={{
-                textAlign: "start",
-              }}
-            >
-              {videoData?.title}
-            </VideoTitle>
-          </Box>
-          {videoData?.fileSize > minFileSize && (
-            <Typography
-              variant="h1"
-              sx={{
-                fontSize: "90%",
-              }}
-              color={"green"}
-            >
-              {formatBytes(videoData.fileSize, 2, "Decimal")}
-            </Typography>
-          )}
-          {videoData?.created && (
-            <Typography
-              variant="h6"
-              sx={{
-                fontSize: "16px",
-              }}
-              color={theme.palette.text.primary}
-            >
-              {formatDate(videoData.created)}
-            </Typography>
-          )}
-          <Spacer height="30px" />
+          <Spacer height="15px" />
           {videoData?.fullDescription && (
             <Box
               sx={{
                 background: "#333333",
                 borderRadius: "5px",
                 padding: "5px",
-                width: "70%",
+                width: "95%",
                 cursor: !descriptionHeight
                   ? "default"
                   : isExpandedDescription

@@ -145,7 +145,6 @@ export const VideoList = ({ videos }: VideoListProps) => {
                     maxHeight: "50%",
                   }}
                 />
-
                 <VideoCardTitle>{videoObj?.title}</VideoCardTitle>
                 <BottomParent>
                   <NameContainer

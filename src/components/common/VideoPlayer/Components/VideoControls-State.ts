@@ -3,11 +3,13 @@ import { useSignalEffect, useSignals } from "@preact/signals-react/runtime";
 
 import { useEffect } from "react";
 import ReactDOM from "react-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Key } from "ts-key-enum";
 import { useIsMobile } from "../../../../hooks/useIsMobile.ts";
 import { setVideoPlaying } from "../../../../state/features/globalSlice.ts";
 import {
+  setIsMuted,
+  setMutedVolumeSetting,
   setReduxPlaybackRate,
   setStretchVideoSetting,
   setVolumeSetting,
@@ -36,13 +38,12 @@ export const useVideoControlsState = (
     progress,
     videoObjectFit,
     canPlay,
-    isMobileView,
   } = videoPlayerState;
   const { identifier, autoPlay } = props;
 
-  const isMobile = useIsMobile();
   const showControlsFullScreen = useSignal(true);
-  const persistSelector = store.getState().persist;
+  const dispatch = useDispatch();
+  const persistSelector = useSelector((root: RootState) => root.persist);
 
   const videoPlaying = useSelector(
     (state: RootState) => state.global.videoPlaying
@@ -58,7 +59,6 @@ export const useVideoControlsState = (
 
       videoRef.current.playbackRate = newSpeed;
       playbackRate.value = newSpeed;
-      store.dispatch(setReduxPlaybackRate(newSpeed));
     }
   };
 
@@ -156,10 +156,9 @@ export const useVideoControlsState = (
   const onVolumeChange = (_: any, value: number | number[]) => {
     if (!videoRef.current) return;
     const newVolume = value as number;
-    videoRef.current.volume = newVolume;
-    volume.value = newVolume;
     isMuted.value = false;
-    store.dispatch(setVolumeSetting(newVolume));
+    mutedVolume.value = newVolume;
+    volume.value = newVolume;
   };
 
   useEffect(() => {
@@ -170,12 +169,10 @@ export const useVideoControlsState = (
     isMuted.value = true;
     mutedVolume.value = volume.value;
     volume.value = 0;
-    if (videoRef.current) videoRef.current.volume = 0;
   };
   const unMute = () => {
     isMuted.value = false;
     volume.value = mutedVolume.value;
-    if (videoRef.current) videoRef.current.volume = mutedVolume.value;
   };
 
   const toggleMute = () => {
@@ -191,12 +188,10 @@ export const useVideoControlsState = (
 
       newVolume = Math.max(newVolume, minVolume);
       newVolume = Math.min(newVolume, maxVolume);
-
+      newVolume = +newVolume.toFixed(2);
       isMuted.value = false;
       mutedVolume.value = newVolume;
-      videoRef.current.volume = newVolume;
       volume.value = newVolume;
-      store.dispatch(setVolumeSetting(newVolume));
     }
   };
   const setProgressRelative = (secondsChange: number) => {
@@ -228,7 +223,6 @@ export const useVideoControlsState = (
       persistSelector.stretchVideoSetting === "contain" ? "fill" : "contain";
 
     videoObjectFit.value = newStretchVideoSetting;
-    store.dispatch(setStretchVideoSetting(newStretchVideoSetting));
   };
   const keyboardShortcutsDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -350,14 +344,13 @@ export const useVideoControlsState = (
       videoRef.current.play().then(() => {
         playing.value = true;
         startPlay.value = true;
-        store.dispatch(setVideoPlaying(null));
+        dispatch(setVideoPlaying(null));
       });
     }
   }, [videoPlaying, identifier, src]);
 
   useSignalEffect(() => {
     console.log("canPlay is: ", canPlay.value); // makes the function execute when canPlay changes
-    if (isMobile) isMobileView.value = true;
   });
 
   return {

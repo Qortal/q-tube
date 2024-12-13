@@ -42,7 +42,6 @@ export const MobileControls = () => {
       <IconButton
         sx={{
           color: "rgba(255, 255, 255, 0.7)",
-          marginLeft: "15px",
         }}
         onClick={reloadVideo}
       >
@@ -55,11 +54,26 @@ export const MobileControls = () => {
         max={videoRef.current?.duration || 100}
         sx={{ flexGrow: 1, mx: 2 }}
       />
+      <Typography
+        sx={{
+          color: "rgba(255, 255, 255, 0.7)",
+          fontSize: "14px",
+          userSelect: "none",
+          minWidth: "30px",
+        }}
+        onClick={() => increaseSpeed()}
+      >
+        {playbackRate}x
+      </Typography>
+
+      <Fullscreen onClick={toggleFullscreen} />
+
       <IconButton
         edge="end"
         color="inherit"
         aria-label="menu"
         onClick={handleMenuOpen}
+        sx={{ minWidth: "30px" }}
       >
         <MoreIcon />
       </IconButton>
@@ -85,21 +99,9 @@ export const MobileControls = () => {
             step={0.01}
           />
         </MenuItem>
-        <MenuItem onClick={() => increaseSpeed()}>
-          <Typography
-            sx={{
-              color: "rgba(255, 255, 255, 0.7)",
-              fontSize: "14px",
-            }}
-          >
-            Speed: {playbackRate}x
-          </Typography>
-        </MenuItem>
+
         <MenuItem onClick={togglePictureInPicture}>
           <PictureInPicture />
-        </MenuItem>
-        <MenuItem onClick={toggleFullscreen}>
-          <Fullscreen />
         </MenuItem>
       </Menu>
     </>

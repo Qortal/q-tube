@@ -7,10 +7,15 @@ import {
   DialogContent,
   DialogTitle,
   Typography,
+  useMediaQuery,
   useTheme,
 } from "@mui/material";
 import React, { useCallback, useState, useEffect } from "react";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
+import {
+  fontSizeSmall,
+  smallScreenSizeString,
+} from "../../../constants/Misc.ts";
 
 import { CommentEditor } from "./CommentEditor";
 import {
@@ -36,9 +41,9 @@ interface CommentProps {
   postId: string;
   postName: string;
   onSubmit: (obj?: any, isEdit?: boolean) => void;
-  amount?: null | number
-  isSuperLike?: boolean
-  hasHash?: boolean
+  amount?: null | number;
+  isSuperLike?: boolean;
+  hasHash?: boolean;
 }
 export const Comment = ({
   comment,
@@ -47,7 +52,7 @@ export const Comment = ({
   onSubmit,
   amount,
   isSuperLike,
-  hasHash
+  hasHash,
 }: CommentProps) => {
   const [isReplying, setIsReplying] = useState<boolean>(false);
   const [isEditing, setIsEditing] = useState<boolean>(false);
@@ -199,7 +204,7 @@ export const CommentCard = ({
   children,
   setCurrentEdit,
   isReply,
-  amount
+  amount,
 }: any) => {
   const [avatarUrl, setAvatarUrl] = React.useState<string>("");
   const { user } = useSelector((state: RootState) => state.auth);
@@ -225,6 +230,13 @@ export const CommentCard = ({
     getAvatar(name);
   }, [name]);
 
+  const isScreenSmall = !useMediaQuery(`(min-width:${smallScreenSizeString})`);
+  const superLikeHeaderSX = {
+    display: "flex",
+    flexDirection: isScreenSmall ? "column" : "row",
+    alignItems: "center",
+  };
+
   return (
     <CardContentContainerComment>
       <StyledCardHeaderComment
@@ -234,40 +246,48 @@ export const CommentCard = ({
           },
         }}
       >
-        <Box>
-          <Avatar
-            src={avatarUrl}
-            alt={`${name}'s avatar`}
-            sx={{ width: "35px", height: "35px" }}
-          />
-        </Box>
-        <StyledCardColComment>
-          <Box sx={{
-            display: 'flex',
-            gap: '10px',
-            alignItems: 'center'
-          }}>
-          <AuthorTextComment>{name}</AuthorTextComment>
-          {!isReply && (
-             <ThumbUpIcon
-             style={{
-               color: "gold",
-               cursor: "pointer",
-             }}
-           />
-          )}
-          {amount && (
-            <Typography sx={{
-              fontSize: '20px',
-              color: 'gold'
-            }}>
-              {parseFloat(amount)?.toFixed(2)} QORT
-            </Typography>
-          )}
-         
+        <Box sx={superLikeHeaderSX}>
+          <Box
+            sx={{
+              display: "flex",
+              gap: "10px",
+              alignItems: "center",
+            }}
+          >
+            <Avatar
+              src={avatarUrl}
+              alt={`${name}'s avatar`}
+              sx={{ width: "35px", height: "35px" }}
+            />
+            <AuthorTextComment>{name}</AuthorTextComment>
           </Box>
-          
-        </StyledCardColComment>
+          <StyledCardColComment
+            sx={{
+              marginTop: isScreenSmall ? "10px" : "0px",
+              marginLeft: isScreenSmall ? "0px" : "10px",
+            }}
+          >
+            {!isReply && (
+              <ThumbUpIcon
+                style={{
+                  color: "gold",
+                  cursor: "pointer",
+                  marginRight: "10px",
+                }}
+              />
+            )}
+            {amount && (
+              <Typography
+                sx={{
+                  fontSize: fontSizeSmall,
+                  color: "gold",
+                }}
+              >
+                {parseFloat(amount)?.toFixed(2)} QORT
+              </Typography>
+            )}
+          </StyledCardColComment>
+        </Box>
       </StyledCardHeaderComment>
       <StyledCardContentComment>
         <StyledCardComment>{message}</StyledCardComment>

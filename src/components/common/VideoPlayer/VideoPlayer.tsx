@@ -55,7 +55,6 @@ export const VideoPlayer = forwardRef<videoRefType, VideoPlayerProps>(
       startPlay,
       videoObjectFit,
       showControlsFullScreen,
-      duration,
     } = contextData;
 
     return (

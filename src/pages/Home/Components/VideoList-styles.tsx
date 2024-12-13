@@ -9,6 +9,7 @@ import {
   Autocomplete,
   Radio,
 } from "@mui/material";
+import { fontSizeMedium, fontSizeSmall } from "../../../constants/Misc.ts";
 
 export const VideoContainer = styled(Grid)(({ theme }) => ({
   position: "relative",
@@ -23,7 +24,7 @@ export const VideoContainer = styled(Grid)(({ theme }) => ({
 
 export const VideoCardContainer = styled("div")(({ theme }) => ({
   display: "grid",
-  gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
+  gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
   gap: theme.spacing(2),
   padding: "10px",
   width: "100%",
@@ -31,7 +32,7 @@ export const VideoCardContainer = styled("div")(({ theme }) => ({
 
 export const VideoCardCol = styled("div")({
   position: "relative",
-  minWidth: "250px", // Minimum width of each item
+  minWidth: "200px", // Minimum width of each item
   maxWidth: "1fr", // Maximum width, allowing the item to fill the column
   // ... other styles
 });
@@ -132,16 +133,14 @@ export const FiltersCol = styled(Grid)(({ theme }) => ({
 export const FiltersContainer = styled(Box)(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
-  justifyContent: "space-between",
 }));
 
 export const FiltersRow = styled(Box)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
-  justifyContent: "space-between",
+  justifyContent: "center",
   width: "100%",
-  padding: "0 15px",
-  fontSize: "16px",
+  fontSize: fontSizeSmall,
   userSelect: "none",
 }));
 
@@ -161,7 +160,7 @@ export const FiltersRadioButton = styled(Radio)(({ theme }) => ({
 
 export const FiltersSubContainer = styled(Box)(({ theme }) => ({
   display: "flex",
-  alignItems: "center",
+  alignItems: "start",
   flexDirection: "column",
   gap: "5px",
 }));

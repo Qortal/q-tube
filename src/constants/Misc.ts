@@ -14,3 +14,12 @@ export const fontSizeExLarge = "150%";
 export const maxCommentLength = 10_000;
 export const minFileSize = 1_000;
 export const minDuration = 5;
+
+const newUIWidthDiff = 120;
+const smallScreenSize = 700 - newUIWidthDiff;
+const largeScreenSize = 1400 - newUIWidthDiff;
+export const smallScreenSizeString = `${smallScreenSize}px`;
+export const largeScreenSizeString = `${largeScreenSize}px`;
+
+export const headerIconSize = "40px";
+export const menuIconSize = "28px";

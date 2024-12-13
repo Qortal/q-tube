@@ -1,10 +1,11 @@
 import React from "react";
+import { smallScreenSizeString } from "../../constants/Misc.ts";
 import { CardContentContainerComment } from "../common/Comments/Comments-styles";
 import {
   CrowdfundSubTitle,
   CrowdfundSubTitleRow,
 } from "../Publish/PublishVideo/PublishVideo-styles.tsx";
-import { Box, Typography, useTheme } from "@mui/material";
+import { Box, Typography, useMediaQuery, useTheme } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
 export const Playlists = ({
@@ -13,7 +14,8 @@ export const Playlists = ({
   onClick,
 }) => {
   const theme = useTheme();
-  const navigate = useNavigate();
+  const isScreenSmall = !useMediaQuery(`(min-width:700px)`);
+  const videoPlayerHeight = "33.75vw"; // This is videoplayer width * 9/16 (inverse of aspect ratio)
 
   return (
     <Box
@@ -21,7 +23,7 @@ export const Playlists = ({
         display: "flex",
         flexDirection: "column",
         width: "100%",
-        maxHeight: "30.94vw",
+        height: isScreenSmall ? "200px" : videoPlayerHeight,
       }}
     >
       <CardContentContainerComment
@@ -32,7 +34,7 @@ export const Playlists = ({
         }}
       >
         {playlistData?.videos?.map((vid, index) => {
-          const isCurrentVidPlayling =
+          const isCurrentVidPlaying =
             vid?.identifier === currentVideoIdentifier;
 
           return (
@@ -42,15 +44,15 @@ export const Playlists = ({
                 display: "flex",
                 gap: "10px",
                 width: "100%",
-                background: isCurrentVidPlayling && theme.palette.primary.main,
+                background: isCurrentVidPlaying && theme.palette.primary.main,
                 alignItems: "center",
                 padding: "10px",
                 borderRadius: "5px",
-                cursor: isCurrentVidPlayling ? "default" : "pointer",
+                cursor: isCurrentVidPlaying ? "default" : "pointer",
                 userSelect: "none",
               }}
               onClick={() => {
-                if (isCurrentVidPlayling) return;
+                if (isCurrentVidPlaying) return;
                 onClick(vid.name, vid.identifier);
                 // navigate(`/video/${vid.name}/${vid.identifier}`)
               }}

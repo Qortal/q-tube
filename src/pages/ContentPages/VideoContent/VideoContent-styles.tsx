@@ -1,6 +1,7 @@
 import { styled } from "@mui/system";
 import { Box, Grid, Typography, Checkbox } from "@mui/material";
-import { fontSizeMedium } from "../../../constants/Misc.ts";
+import { fontSizeMedium, fontSizeSmall } from "../../../constants/Misc.ts";
+import { useIsMobile } from "../../../hooks/useIsMobile.ts";
 
 export const VideoContentContainer = styled(Box)(({ theme }) => ({
   display: "flex",
@@ -8,10 +9,7 @@ export const VideoContentContainer = styled(Box)(({ theme }) => ({
   alignItems: "start",
 }));
 
-export const VideoPlayerContainer = styled(Box)(({ theme }) => ({
-  width: "55vw",
-  marginLeft: "5%",
-}));
+export const VideoPlayerContainer = styled(Box)(({ theme }) => ({}));
 
 export const VideoTitle = styled(Typography)(({ theme }) => ({
   fontFamily: "Raleway",
@@ -57,14 +55,14 @@ export const StyledCardCol = styled(Box)({
 export const StyledCardColComment = styled(Box)({
   display: "flex",
   overflow: "hidden",
-  flexDirection: "column",
+  flexDirection: "row",
   gap: "2px",
   alignItems: "flex-start",
 });
 
 export const AuthorTextComment = styled(Typography)({
   fontFamily: "Raleway, sans-serif",
-  fontSize: "20px",
+  fontSize: fontSizeMedium,
   lineHeight: "1.2",
 });
 
@@ -73,7 +71,6 @@ export const FileAttachmentContainer = styled(Box)(({ theme }) => ({
   alignItems: "center",
   padding: "5px 10px",
   border: `1px solid ${theme.palette.text.primary}`,
-  width: "350px",
   height: "50px",
 }));
 

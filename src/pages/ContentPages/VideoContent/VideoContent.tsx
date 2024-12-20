@@ -11,6 +11,7 @@ import {
   largeScreenSizeString,
   minFileSize,
   smallScreenSizeString,
+  smallVideoSize,
 } from "../../../constants/Misc.ts";
 import { useIsMobile } from "../../../hooks/useIsMobile.ts";
 import { formatBytes } from "../../../utils/numberFunctions.ts";
@@ -47,7 +48,7 @@ export const VideoContent = () => {
     setSuperLikeList,
   } = useVideoContentState();
 
-  const isScreenSmall = !useMediaQuery(`(min-width:${smallScreenSizeString})`);
+  const isScreenSmall = !useMediaQuery(smallVideoSize);
   const [screenWidth, setScreenWidth] = useState<number>(
     window.innerWidth + 120
   );
@@ -75,7 +76,7 @@ export const VideoContent = () => {
         sx={{
           display: "flex",
           flexDirection: "column",
-          padding: `0px 0px 0px ${isScreenSmall ? "5px" : "2%"}`,
+          padding: `0px 0px 0px ${isScreenSmall ? "0px" : "2%"}`,
           width: "100%",
         }}
         onClick={focusVideo}
@@ -112,7 +113,9 @@ export const VideoContent = () => {
         ) : (
           <Box sx={{ width: "55vw", aspectRatio: "16/9" }}></Box>
         )}
-        <VideoContentContainer>
+        <VideoContentContainer
+          sx={{ paddingLeft: isScreenSmall ? "5px" : "0px" }}
+        >
           <VideoTitle
             variant={isScreenSmall ? "h2" : "h1"}
             color="textPrimary"

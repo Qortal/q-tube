@@ -1,3 +1,4 @@
+import { useMediaQuery } from "@mui/material";
 import {
   useSignal,
   useSignalEffect,
@@ -12,6 +13,7 @@ import React, {
 } from "react";
 
 import { useDispatch, useSelector } from "react-redux";
+import { smallVideoSize } from "../../../constants/Misc.ts";
 import { setVideoPlaying } from "../../../state/features/globalSlice.ts";
 import {
   setIsMuted,
@@ -292,6 +294,7 @@ export const useVideoPlayerState = (props: VideoPlayerProps, ref: any) => {
     anchorEl.value = null;
   };
 
+  const isScreenSmall = !useMediaQuery(smallVideoSize);
   return {
     containerRef,
     resourceStatus,
@@ -315,5 +318,6 @@ export const useVideoPlayerState = (props: VideoPlayerProps, ref: any) => {
     playbackRate,
     anchorEl,
     videoObjectFit,
+    isScreenSmall,
   };
 };

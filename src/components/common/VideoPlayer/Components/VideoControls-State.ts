@@ -5,16 +5,8 @@ import { useEffect } from "react";
 import ReactDOM from "react-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { Key } from "ts-key-enum";
-import { useIsMobile } from "../../../../hooks/useIsMobile.ts";
 import { setVideoPlaying } from "../../../../state/features/globalSlice.ts";
-import {
-  setIsMuted,
-  setMutedVolumeSetting,
-  setReduxPlaybackRate,
-  setStretchVideoSetting,
-  setVolumeSetting,
-} from "../../../../state/features/persistSlice.ts";
-import { RootState, store } from "../../../../state/store.ts";
+import { RootState } from "../../../../state/store.ts";
 import { useVideoPlayerState } from "../VideoPlayer-State.ts";
 import { VideoPlayerProps } from "../VideoPlayer.tsx";
 
@@ -38,6 +30,7 @@ export const useVideoControlsState = (
     progress,
     videoObjectFit,
     canPlay,
+    containerRef,
   } = videoPlayerState;
   const { identifier, autoPlay } = props;
 
@@ -78,16 +71,15 @@ export const useVideoControlsState = (
   const isFullscreen = useSignal(false);
 
   const enterFullscreen = () => {
-    if (!videoRef.current) return;
-    if (videoRef.current.requestFullscreen) {
-      videoRef.current.requestFullscreen();
+    if (!containerRef.current) return;
+
+    if (containerRef.current.requestFullscreen && !isFullscreen.value) {
+      containerRef.current.requestFullscreen();
     }
   };
 
   const exitFullscreen = () => {
-    if (document.exitFullscreen) {
-      document.exitFullscreen();
-    }
+    if (isFullscreen.value) document.exitFullscreen();
   };
 
   const toggleFullscreen = () => {
@@ -218,14 +210,20 @@ export const useVideoControlsState = (
     }
   };
 
-  const toggleStretchVideoSetting = () => {
-    const newStretchVideoSetting =
-      persistSelector.stretchVideoSetting === "contain" ? "fill" : "contain";
-
-    videoObjectFit.value = newStretchVideoSetting;
+  const setStretchVideoSetting = (value: "contain" | "fill") => {
+    videoObjectFit.value = value;
   };
-  const keyboardShortcutsDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+
+  const toggleStretchVideoSetting = () => {
+    videoObjectFit.value =
+      videoObjectFit.value === "contain" ? "fill" : "contain";
+  };
+
+  const keyboardShortcuts = (
+    e: KeyboardEvent | React.KeyboardEvent<HTMLDivElement>
+  ) => {
     e.preventDefault();
+    // console.log("hotkey is: ", '"' + e.key + '"');
 
     switch (e.key) {
       case "o":
@@ -276,13 +274,6 @@ export const useVideoControlsState = (
       case Key.ArrowUp:
         changeVolume(0.05);
         break;
-    }
-  };
-
-  const keyboardShortcutsUp = (e: React.KeyboardEvent<HTMLDivElement>) => {
-    e.preventDefault();
-
-    switch (e.key) {
       case " ":
         togglePlay();
         break;
@@ -291,10 +282,18 @@ export const useVideoControlsState = (
         break;
 
       case "f":
-        enterFullscreen();
+        toggleFullscreen();
         break;
       case Key.Escape:
         exitFullscreen();
+        break;
+
+      case "r":
+        reloadVideo();
+        break;
+
+      case "p":
+        togglePictureInPicture();
         break;
 
       case "0":
@@ -360,11 +359,12 @@ export const useVideoControlsState = (
     increaseSpeed,
     togglePictureInPicture,
     toggleFullscreen,
-    keyboardShortcutsUp,
-    keyboardShortcutsDown,
+    keyboardShortcuts,
     handleCanPlay,
     toggleMute,
     showControlsFullScreen,
     setPlaying,
+    isFullscreen,
+    setStretchVideoSetting,
   };
 };

@@ -1,20 +1,13 @@
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 
-import { Box, Grid, Tab, useMediaQuery } from "@mui/material";
+import { Box, Tab, useMediaQuery } from "@mui/material";
 import React from "react";
 import LazyLoad from "../../components/common/LazyLoad";
 import { ListSuperLikeContainer } from "../../components/common/ListSuperLikes/ListSuperLikeContainer.tsx";
-import {
-  fontSizeLarge,
-  fontSizeMedium,
-  fontSizeSmall,
-} from "../../constants/Misc.ts";
-import { useIsMobile } from "../../hooks/useIsMobile.ts";
+import { fontSizeLarge, fontSizeSmall } from "../../constants/Misc.ts";
 import { SearchSidebar } from "./Components/SearchSidebar.tsx";
-import { FiltersCol, VideoManagerRow } from "./Components/VideoList-styles.tsx";
 import VideoList from "./Components/VideoList.tsx";
 import { useHomeState } from "./Home-State.ts";
-import { SubtitleContainer } from "./Home-styles";
 
 interface HomeProps {
   mode?: string;

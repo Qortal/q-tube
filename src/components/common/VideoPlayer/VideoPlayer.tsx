@@ -1,8 +1,9 @@
 import CSS from "csstype";
 import { forwardRef } from "react";
+import useIdleTimeout from "../../../hooks/useIdleTimeout.ts";
 import { LoadingVideo } from "./Components/LoadingVideo.tsx";
 import { useContextData, VideoContext } from "./Components/VideoContext.ts";
-import { VideoControls } from "./Components/VideoControls.tsx";
+import { VideoControlsBar } from "./Components/VideoControlsBar.tsx";
 import { VideoContainer, VideoElement } from "./VideoPlayer-styles.ts";
 
 export interface VideoStyles {
@@ -37,8 +38,7 @@ export const VideoPlayer = forwardRef<videoRefType, VideoPlayerProps>(
     const contextData = useContextData(props, ref);
 
     const {
-      keyboardShortcutsUp,
-      keyboardShortcutsDown,
+      keyboardShortcuts,
       from,
       videoStyles,
       containerRef,
@@ -55,17 +55,34 @@ export const VideoPlayer = forwardRef<videoRefType, VideoPlayerProps>(
       startPlay,
       videoObjectFit,
       showControlsFullScreen,
+      isFullscreen,
     } = contextData;
+
+    const showControls =
+      !isFullscreen.value ||
+      (isFullscreen.value && showControlsFullScreen.value);
+
+    const idleTime = 5000; // Time in milliseconds
+    useIdleTimeout({
+      onIdle: () => (showControlsFullScreen.value = false),
+      onActive: () => (showControlsFullScreen.value = true),
+      idleTime,
+    });
 
     return (
       <VideoContext.Provider value={contextData}>
         <VideoContainer
           tabIndex={0}
-          onKeyUp={keyboardShortcutsUp}
-          onKeyDown={keyboardShortcutsDown}
+          onKeyDown={keyboardShortcuts}
           style={{
             padding: from === "create" ? "8px" : 0,
             ...videoStyles?.videoContainer,
+          }}
+          onMouseEnter={e => {
+            showControlsFullScreen.value = true;
+          }}
+          onMouseLeave={e => {
+            showControlsFullScreen.value = false;
           }}
           ref={containerRef}
         >
@@ -83,23 +100,17 @@ export const VideoPlayer = forwardRef<videoRefType, VideoPlayerProps>(
             onEnded={handleEnded}
             // onLoadedMetadata={handleLoadedMetadata}
             onCanPlay={handleCanPlay}
-            onMouseEnter={e => {
-              showControlsFullScreen.value = true;
-            }}
-            onMouseLeave={e => {
-              showControlsFullScreen.value = false;
-            }}
             preload="metadata"
-            style={
-              startPlay.value
-                ? {
-                    ...videoStyles?.video,
-                    objectFit: videoObjectFit.value,
-                  }
-                : { height: "100%", ...videoStyles }
-            }
+            style={{
+              ...videoStyles?.video,
+              objectFit: isFullscreen ? "fill" : videoObjectFit.value,
+              height:
+                isFullscreen.value && showControlsFullScreen.value
+                  ? "calc(100vh - 40px)"
+                  : "100%",
+            }}
           />
-          <VideoControls />
+          {showControls && <VideoControlsBar />}
         </VideoContainer>
       </VideoContext.Provider>
     );

@@ -21,5 +21,6 @@ const largeScreenSize = 1400 - newUIWidthDiff;
 export const smallScreenSizeString = `${smallScreenSize}px`;
 export const largeScreenSizeString = `${largeScreenSize}px`;
 
+export const smallVideoSize = `(min-width:720px)`;
 export const headerIconSize = "40px";
 export const menuIconSize = "28px";

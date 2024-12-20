@@ -20,12 +20,9 @@ export const VideoElement = styled("video")(({ theme }) => ({
 }));
 //1075 x 604
 export const ControlsContainer = styled(Box)`
-  position: absolute;
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  bottom: 0;
-  left: 0;
-  right: 0;
   background-color: rgba(0, 0, 0, 0.6);
 `;

@@ -1,6 +1,8 @@
 import { Box, Tooltip, Typography, useMediaQuery } from "@mui/material";
-import React from "react";
-import { PopMenu } from "../PopMenu.tsx";
+import React, { useRef } from "react";
+import { fontSizeSmall } from "../../../constants/Misc.ts";
+import { CrowdfundActionButton } from "../../Publish/PublishVideo/PublishVideo-styles.tsx";
+import { PopMenu, PopMenuRefType } from "../PopMenu.tsx";
 import ListSuperLikes from "./ListSuperLikes";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../state/store";
@@ -11,25 +13,17 @@ export const ListSuperLikeContainer = () => {
   );
 
   const isScreenLarge = useMediaQuery("(min-width:1200px)");
-  const superlikeListComponent = (
-    <>
-      <Typography
-        sx={{
-          fontSize: "18px",
-          color: "gold",
-        }}
-      >
-        Recent Super likes
-      </Typography>
-      <ListSuperLikes superlikes={superlikelist} />
-    </>
-  );
 
-  // @ts-ignore
+  const headerSX = { fontSize: fontSizeSmall, color: "gold" };
+
+  const popoverRef = useRef<PopMenuRefType>(null);
   return (
     <Box sx={{ paddingLeft: "5px" }}>
       {isScreenLarge ? (
-        <>{superlikeListComponent}</>
+        <>
+          <Typography sx={headerSX}>Recent Super likes</Typography>
+          <ListSuperLikes superlikes={superlikelist} />
+        </>
       ) : (
         <PopMenu
           showExpandIcon={false}
@@ -39,9 +33,11 @@ export const ListSuperLikeContainer = () => {
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
+              marginTop: "60px",
             },
             anchorReference: "none",
           }}
+          ref={popoverRef}
           MenuHeader={
             <Tooltip title={"Show recent Superlikes"} placement={"left"} arrow>
               <Box
@@ -66,7 +62,31 @@ export const ListSuperLikeContainer = () => {
             </Tooltip>
           }
         >
-          {superlikeListComponent}
+          <Box
+            sx={{
+              display: "flex",
+              backgroundColor: "#1A1C1E",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <Typography sx={headerSX}>Recent Superlikes</Typography>
+            <CrowdfundActionButton
+              variant="contained"
+              color="error"
+              sx={{
+                height: "25px",
+                width: "75px",
+                marginRight: "5px",
+              }}
+              onClick={() => {
+                if (popoverRef?.current) popoverRef.current.closePopover();
+              }}
+            >
+              CLOSE
+            </CrowdfundActionButton>
+          </Box>
+          <ListSuperLikes superlikes={superlikelist} />
         </PopMenu>
       )}
     </Box>

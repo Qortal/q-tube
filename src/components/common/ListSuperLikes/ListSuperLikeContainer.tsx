@@ -67,6 +67,7 @@ export const ListSuperLikeContainer = () => {
               display: "flex",
               backgroundColor: "#1A1C1E",
               justifyContent: "space-between",
+              alignItems: "center",
             }}
           >
             <Typography sx={headerSX}>Recent Superlikes</Typography>

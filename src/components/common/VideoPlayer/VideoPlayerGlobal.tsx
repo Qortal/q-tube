@@ -1,27 +1,32 @@
-import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
-import ReactDOM from "react-dom";
-import { Box, IconButton, Slider, useTheme } from "@mui/material";
-import { CircularProgress, Typography } from "@mui/material";
-import { Key } from "ts-key-enum";
 import {
-  PlayArrow,
-  Pause,
-  VolumeUp,
   Fullscreen,
+  MoreVert as MoreIcon,
+  Pause,
   PictureInPicture,
+  PlayArrow,
+  Refresh,
   VolumeOff,
+  VolumeUp,
 } from "@mui/icons-material";
+import CloseIcon from "@mui/icons-material/Close";
+import {
+  Box,
+  IconButton,
+  Menu,
+  MenuItem,
+  Slider,
+  Typography,
+  useTheme,
+} from "@mui/material";
 import { styled } from "@mui/system";
+import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Key } from "ts-key-enum";
+import { setVideoPlaying } from "../../../state/features/globalSlice.ts";
+import { RootState } from "../../../state/store.ts";
 import { formatTime } from "../../../utils/numberFunctions.ts";
 import { MyContext } from "../../../wrappers/DownloadWrapper.tsx";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../../state/store.ts";
-import { Refresh } from "@mui/icons-material";
-import CloseIcon from "@mui/icons-material/Close";
 
-import { Menu, MenuItem } from "@mui/material";
-import { MoreVert as MoreIcon } from "@mui/icons-material";
-import { setVideoPlaying } from "../../../state/features/globalSlice.ts";
 const VideoContainer = styled(Box)`
   position: relative;
   display: flex;

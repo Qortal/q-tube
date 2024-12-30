@@ -13,6 +13,7 @@ import {
   PERSIST,
   PURGE,
   REGISTER,
+  persistStore,
 } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 
@@ -46,3 +47,5 @@ export type RootState = ReturnType<typeof store.getState>;
 // Define the AppDispatch type, which is the type of the Redux store's dispatch function.
 // This is useful when you need to dispatch an action in a component or elsewhere.
 export type AppDispatch = typeof store.dispatch;
+
+export const persistor = persistStore(store);

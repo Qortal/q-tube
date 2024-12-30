@@ -14,7 +14,6 @@ export const useVideoControlsState = (
   props: VideoPlayerProps,
   videoPlayerState: ReturnType<typeof useVideoPlayerState>
 ) => {
-  useSignals();
   const {
     src,
     getSrc,

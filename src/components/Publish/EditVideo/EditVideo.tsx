@@ -1,25 +1,6 @@
-import React, { useEffect, useState } from "react";
-import Compressor from "compressorjs";
-import { formatBytes } from "../../../utils/numberFunctions.ts";
-
-import {
-  AddCoverImageButton,
-  AddLogoIcon,
-  CoverImagePreview,
-  CrowdfundActionButton,
-  CrowdfundActionButtonRow,
-  CustomInputField,
-  CustomSelect,
-  LogoPreviewRow,
-  ModalBody,
-  NewCrowdfundTitle,
-  StyledButton,
-  TimesIcon,
-} from "./EditVideo-styles.tsx";
-import { CircularProgress } from "@mui/material";
-
 import {
   Box,
+  CircularProgress,
   FormControl,
   InputLabel,
   MenuItem,
@@ -30,40 +11,47 @@ import {
   Typography,
   useTheme,
 } from "@mui/material";
-import ShortUniqueId from "short-unique-id";
-import { useDispatch, useSelector } from "react-redux";
-import AddBoxIcon from "@mui/icons-material/AddBox";
+import { Signal, useSignal } from "@preact/signals-react";
+import Compressor from "compressorjs";
+import React, { useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
-
-import { setNotification } from "../../../state/features/notificationsSlice.ts";
-import {
-  objectToBase64,
-  objectToFile,
-  uint8ArrayToBase64,
-} from "../../../utils/PublishFormatter.ts";
-import { RootState } from "../../../state/store.ts";
-import {
-  upsertVideosBeginning,
-  addToHashMap,
-  upsertVideos,
-  setEditVideo,
-  updateVideo,
-  updateInHashMap,
-} from "../../../state/features/videoSlice.ts";
-import ImageUploader from "../../common/ImageUploader.tsx";
+import { useDispatch, useSelector } from "react-redux";
+import ShortUniqueId from "short-unique-id";
 import { categories, subCategories } from "../../../constants/Categories.ts";
-import { MultiplePublish } from "../MultiplePublish/MultiplePublishAll.tsx";
-import { TextEditor } from "../../common/TextEditor/TextEditor.tsx";
-import { extractTextFromHTML } from "../../common/TextEditor/utils.ts";
-import { toBase64 } from "../PublishVideo/PublishVideo.tsx";
-import { FrameExtractor } from "../../common/FrameExtractor/FrameExtractor.tsx";
 import { QTUBE_VIDEO_BASE } from "../../../constants/Identifiers.ts";
 import {
   maxSize,
   titleFormatter,
   videoMaxSize,
 } from "../../../constants/Misc.ts";
-import { Signal, useSignal } from "@preact/signals-react";
+
+import { setNotification } from "../../../state/features/notificationsSlice.ts";
+import {
+  setEditVideo,
+  updateInHashMap,
+  updateVideo,
+} from "../../../state/features/videoSlice.ts";
+import { RootState } from "../../../state/store.ts";
+import { objectToBase64 } from "../../../utils/PublishFormatter.ts";
+import { FrameExtractor } from "../../common/FrameExtractor/FrameExtractor.tsx";
+import ImageUploader from "../../common/ImageUploader.tsx";
+import { TextEditor } from "../../common/TextEditor/TextEditor.tsx";
+import { extractTextFromHTML } from "../../common/TextEditor/utils.ts";
+import { MultiplePublish } from "../MultiplePublish/MultiplePublishAll.tsx";
+import { toBase64 } from "../PublishVideo/PublishVideo.tsx";
+
+import {
+  AddCoverImageButton,
+  AddLogoIcon,
+  CoverImagePreview,
+  CrowdfundActionButton,
+  CrowdfundActionButtonRow,
+  CustomInputField,
+  LogoPreviewRow,
+  ModalBody,
+  NewCrowdfundTitle,
+  TimesIcon,
+} from "./EditVideo-styles.tsx";
 
 const uid = new ShortUniqueId();
 const shortuid = new ShortUniqueId({ length: 5 });

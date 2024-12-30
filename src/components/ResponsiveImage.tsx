@@ -54,7 +54,7 @@ const ResponsiveImage: React.FC<ResponsiveImageProps> = ({
 
       <img
         onLoad={() => setLoading(false)}
-        src={!src && !loading ? DeletedVideo : src}
+        src={!src && !loading ? DeletedVideo : src || null}
         style={{
           width: "100%",
           height: "100%",

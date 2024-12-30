@@ -246,7 +246,7 @@ export const CommentEditor = ({
   };
   const handleSubmit = async () => {
     try {
-      const id = uid();
+      const id = uid.rnd();
 
       let identifier = `${COMMENT_BASE}${postId.slice(-12)}_base_${id}`;
       let idForNotification = identifier;

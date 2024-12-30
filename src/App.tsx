@@ -13,7 +13,7 @@ import { PlaylistContent } from "./pages/ContentPages/PlaylistContent/PlaylistCo
 import { VideoContent } from "./pages/ContentPages/VideoContent/VideoContent";
 import { Home } from "./pages/Home/Home";
 import { setFilteredSubscriptions } from "./state/features/videoSlice.ts";
-import { store } from "./state/store";
+import { store, persistor } from "./state/store";
 import { darkTheme, lightTheme } from "./styles/theme";
 import DownloadWrapper from "./wrappers/DownloadWrapper";
 import GlobalWrapper from "./wrappers/GlobalWrapper";
@@ -21,7 +21,7 @@ import { ScrollWrapper } from "./wrappers/ScrollWrapper.tsx";
 
 function App() {
   // const themeColor = window._qdnTheme
-  const persistor = persistStore(store);
+
   const [theme, setTheme] = useState("dark");
   useIframe();
 

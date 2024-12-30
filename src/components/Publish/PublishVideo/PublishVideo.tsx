@@ -269,13 +269,13 @@ export const PublishVideo = ({
           .trim()
           .toLowerCase();
 
-        const id = uid();
+        const id = uid.rnd();
 
         const identifier = editId
           ? editId
           : `${QTUBE_VIDEO_BASE}${sanitizeTitle.slice(0, 30)}_${id}`;
 
-        const code = shortuid();
+        const code = shortuid.rnd();
         const fullDescription = extractTextFromHTML(description);
 
         let fileExtension = "mp4";
@@ -365,7 +365,7 @@ export const PublishVideo = ({
           .trim()
           .toLowerCase();
 
-        const id = uid();
+        const id = uid.rnd();
 
         const identifier = editId
           ? editId

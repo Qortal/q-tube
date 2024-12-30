@@ -111,7 +111,7 @@ export const SuperLike = ({
         20
       )};id:${identifier.slice(-30)}**`;
 
-      const id = uid();
+      const id = uid.rnd();
       const identifierSuperLike = `${SUPER_LIKE_BASE}${identifier.slice(
         0,
         39

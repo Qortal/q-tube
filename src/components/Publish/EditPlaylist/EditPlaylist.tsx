@@ -290,7 +290,7 @@ export const EditPlaylist = () => {
           code: codeValue,
         };
       });
-      const id = uid();
+      const id = uid.rnd();
 
       let commentsId = editVideoProperties?.id;
 

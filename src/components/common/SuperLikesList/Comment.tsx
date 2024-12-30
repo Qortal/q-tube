@@ -259,7 +259,9 @@ export const CommentCard = ({
               alt={`${name}'s avatar`}
               sx={{ width: "35px", height: "35px" }}
             />
-            <AuthorTextComment>{name}</AuthorTextComment>
+            <AuthorTextComment sx={{ width: "max-content" }}>
+              {name}
+            </AuthorTextComment>
           </Box>
           <StyledCardColComment
             sx={{

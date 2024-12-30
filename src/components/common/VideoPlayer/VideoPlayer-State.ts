@@ -94,7 +94,7 @@ export const useVideoPlayerState = (props: VideoPlayerProps, ref: any) => {
   }, [downloads, identifier]);
 
   const src = useMemo(() => {
-    return download?.url || "";
+    return download?.url || null;
   }, [download?.url]);
 
   const resourceStatus = useMemo(() => {

@@ -33,7 +33,7 @@ export const ListSuperLikeContainer = () => {
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
-              marginTop: "60px",
+              marginTop: "40px",
             },
             anchorReference: "none",
           }}

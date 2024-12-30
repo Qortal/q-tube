@@ -91,7 +91,7 @@ export const VideoPlayer = forwardRef<videoRefType, VideoPlayerProps>(
             id={identifier}
             ref={videoRef}
             src={
-              resourceStatus?.status === "READY" && startPlay.value ? src : ""
+              resourceStatus?.status === "READY" && startPlay.value ? src : null
             }
             poster={startPlay.value ? "" : poster}
             onTimeUpdate={updateProgress}

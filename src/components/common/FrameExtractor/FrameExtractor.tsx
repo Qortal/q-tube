@@ -15,7 +15,6 @@ export const FrameExtractor = ({
   videoDurations,
   index,
 }: FrameExtractorProps) => {
-  useSignals();
   const videoRef = useRef(null);
   const [durations, setDurations] = useState([]);
   const canvasRef = useRef(null);
@@ -30,7 +29,6 @@ export const FrameExtractor = ({
         const newVideoDurations = [...videoDurations.value];
         newVideoDurations[index] = duration;
         videoDurations.value = [...newVideoDurations];
-
         const section = duration / 4;
         const timestamps = [];
 

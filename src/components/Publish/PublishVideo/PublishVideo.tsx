@@ -147,7 +147,12 @@ export const PublishVideo = ({
   const assembleVideoDurations = () => {
     if (files.length === videoDurations.value.length) return;
     const newArray: number[] = [];
-    files.map(() => newArray.push(0));
+
+    files.map((file, index) =>
+      newArray.push(
+        videoDurations.value[index] ? videoDurations.value[index] : 0
+      )
+    );
     videoDurations.value = [...newArray];
   };
 

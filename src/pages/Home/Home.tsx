@@ -50,7 +50,6 @@ export const Home = ({ mode }: HomeProps) => {
     <>
       <Box sx={{ ...homeBaseSX, ...homeColumns }}>
         <SearchSidebar onSearch={getVideosHandler} />
-
         <Box
           sx={{
             width: "100%",
@@ -95,7 +94,6 @@ export const Home = ({ mode }: HomeProps) => {
             </TabPanel>
           </TabContext>
         </Box>
-
         <ListSuperLikeContainer />
       </Box>
     </>

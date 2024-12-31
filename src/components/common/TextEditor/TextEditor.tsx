@@ -12,7 +12,8 @@ Quill.register("modules/imageResize", ImageResize);
 
 const modules = {
   imageResize: {
-    parchment: Quill.import("parchment"),
+    // This line crashes on release build, but NOT Dev Mode for some reason.  <_<
+    // parchment: Quill.import("parchment"),
     modules: ["Resize", "DisplaySize"],
   },
   toolbar: [

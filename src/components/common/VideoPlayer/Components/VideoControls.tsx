@@ -3,6 +3,7 @@ import { fontSizeExSmall, fontSizeSmall } from "../../../../constants/Misc.ts";
 import { CustomFontTooltip } from "../../../../utils/CustomFontTooltip.tsx";
 import { formatTime } from "../../../../utils/numberFunctions.ts";
 import { useVideoContext } from "./VideoContext.ts";
+import AspectRatioIcon from "@mui/icons-material/AspectRatio";
 import {
   Fullscreen,
   Pause,
@@ -48,7 +49,6 @@ export const ReloadButton = () => {
 
 export const ProgressSlider = () => {
   const { progress, onProgressChange, videoRef } = useVideoContext();
-  const sliderThumbSize = "16px";
   return (
     <Slider
       value={progress.value}
@@ -65,9 +65,10 @@ export const ProgressSlider = () => {
 
         "& .MuiSlider-thumb": {
           backgroundColor: "#fff",
-          width: sliderThumbSize,
-          height: sliderThumbSize,
+          width: "16px",
+          height: "16px",
         },
+        "& .MuiSlider-thumb::after": { width: "20px", height: "20px" },
         "& .MuiSlider-rail": { opacity: 0.5 },
       }}
     />
@@ -112,6 +113,7 @@ export const VolumeButton = () => {
       <IconButton
         sx={{
           color: "white",
+          marginRight: "10px",
         }}
         onClick={toggleMute}
       >
@@ -121,7 +123,7 @@ export const VolumeButton = () => {
   );
 };
 
-export const VolumeSlider = () => {
+export const VolumeSlider = ({ width }: { width: string }) => {
   const { volume, onVolumeChange } = useVideoContext();
   return (
     <Slider
@@ -131,7 +133,9 @@ export const VolumeSlider = () => {
       max={1}
       step={0.01}
       sx={{
-        width: "100px",
+        width,
+        marginRight: "10px",
+        "& .MuiSlider-thumb::after": { width: "25px", height: "25px" },
       }}
     />
   );
@@ -180,6 +184,23 @@ export const PictureInPictureButton = () => {
         </CustomFontTooltip>
       )}
     </>
+  );
+};
+
+export const ObjectFitButton = () => {
+  const { toggleObjectFit } = useVideoContext();
+  return (
+    <CustomFontTooltip title="Toggle Aspect Ratio (O)" placement="top" arrow>
+      <IconButton
+        sx={{
+          color: "white",
+          paddingRight: "0px",
+        }}
+        onClick={() => toggleObjectFit()}
+      >
+        <AspectRatioIcon />
+      </IconButton>
+    </CustomFontTooltip>
   );
 };
 

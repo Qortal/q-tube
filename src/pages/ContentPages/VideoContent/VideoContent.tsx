@@ -174,18 +174,17 @@ export const VideoContent = () => {
                 cursor: !descriptionHeight
                   ? "default"
                   : isExpandedDescription
-                  ? "default"
-                  : "pointer",
+                    ? "default"
+                    : "pointer",
                 position: "relative",
-
                 marginBottom: "30px",
               }}
               className={
                 !descriptionHeight
                   ? ""
                   : isExpandedDescription
-                  ? ""
-                  : "hover-click"
+                    ? ""
+                    : "hover-click"
               }
             >
               {descriptionHeight && !isExpandedDescription && (
@@ -210,8 +209,8 @@ export const VideoContent = () => {
                   height: !descriptionHeight
                     ? "auto"
                     : isExpandedDescription
-                    ? "auto"
-                    : "200px",
+                      ? "auto"
+                      : "200px",
                   overflow: "hidden",
                 }}
               >

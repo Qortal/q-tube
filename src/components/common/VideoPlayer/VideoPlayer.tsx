@@ -103,7 +103,7 @@ export const VideoPlayer = forwardRef<videoRefType, VideoPlayerProps>(
             preload="metadata"
             style={{
               ...videoStyles?.video,
-              objectFit: isFullscreen ? "fill" : videoObjectFit.value,
+              objectFit: videoObjectFit.value,
               height:
                 isFullscreen.value && showControlsFullScreen.value
                   ? "calc(100vh - 40px)"

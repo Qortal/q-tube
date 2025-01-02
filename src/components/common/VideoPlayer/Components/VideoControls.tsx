@@ -113,7 +113,6 @@ export const VolumeButton = () => {
       <IconButton
         sx={{
           color: "white",
-          marginRight: "10px",
         }}
         onClick={toggleMute}
       >

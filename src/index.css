@@ -67,7 +67,7 @@
   height: 100%;
 }
 
-
+a:link { color: #8AB4F8}
 
 .test-grid {
   display: grid;

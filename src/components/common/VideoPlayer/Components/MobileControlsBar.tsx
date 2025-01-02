@@ -3,6 +3,7 @@ import { Box, IconButton, Menu, MenuItem } from "@mui/material";
 import { useVideoContext } from "./VideoContext.ts";
 import {
   FullscreenButton,
+  ObjectFitButton,
   PictureInPictureButton,
   PlaybackRate,
   PlayButton,
@@ -55,7 +56,10 @@ export const MobileControlsBar = () => {
       >
         <MenuItem>
           <VolumeButton />
-          <VolumeSlider />
+          <VolumeSlider width={"100%"} />
+        </MenuItem>
+        <MenuItem>
+          <ObjectFitButton />
         </MenuItem>
         <MenuItem>
           <PictureInPictureButton />

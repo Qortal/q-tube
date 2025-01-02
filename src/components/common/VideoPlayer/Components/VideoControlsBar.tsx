@@ -4,6 +4,7 @@ import { MobileControlsBar } from "./MobileControlsBar.tsx";
 import { useVideoContext } from "./VideoContext.ts";
 import {
   FullscreenButton,
+  ObjectFitButton,
   PictureInPictureButton,
   PlaybackRate,
   PlayButton,
@@ -46,12 +47,13 @@ export const VideoControlsBar = () => {
             <ProgressSlider />
 
             <VolumeButton />
-            <VolumeSlider />
+            <VolumeSlider width={"100px"} />
             <VideoTime />
           </Box>
 
           <Box sx={controlGroupSX}>
             <PlaybackRate />
+            <ObjectFitButton />
             <PictureInPictureButton />
             <FullscreenButton />
           </Box>

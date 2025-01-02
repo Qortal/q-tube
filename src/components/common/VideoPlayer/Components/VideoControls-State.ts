@@ -209,11 +209,11 @@ export const useVideoControlsState = (
     }
   };
 
-  const setStretchVideoSetting = (value: "contain" | "fill") => {
+  const setObjectFit = (value: "contain" | "fill") => {
     videoObjectFit.value = value;
   };
 
-  const toggleStretchVideoSetting = () => {
+  const toggleObjectFit = () => {
     videoObjectFit.value =
       videoObjectFit.value === "contain" ? "fill" : "contain";
   };
@@ -226,7 +226,7 @@ export const useVideoControlsState = (
 
     switch (e.key) {
       case "o":
-        toggleStretchVideoSetting();
+        toggleObjectFit();
         break;
 
       case Key.Add:
@@ -364,6 +364,7 @@ export const useVideoControlsState = (
     showControlsFullScreen,
     setPlaying,
     isFullscreen,
-    setStretchVideoSetting,
+    toggleObjectFit,
+    setObjectFit,
   };
 };

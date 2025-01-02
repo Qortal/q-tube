@@ -110,6 +110,7 @@ export const NameContainer = styled(Box)(({ theme }) => ({
   alignItems: "center",
   gap: "10px",
   marginBottom: "2px",
+  width: "100%",
 }));
 
 export const VideoManagerRow = styled(Box)(({ theme }) => ({

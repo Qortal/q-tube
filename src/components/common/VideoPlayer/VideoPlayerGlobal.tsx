@@ -445,21 +445,21 @@ export const VideoPlayerGlobal: React.FC<VideoPlayerProps> = ({
     }
   };
 
-  useEffect(() => {
-    if (element) {
-      const oldElement = document.getElementById("videoPlayer");
-      if (oldElement && oldElement?.parentNode) {
-        oldElement?.parentNode.replaceChild(element, oldElement);
-        videoRef.current = element;
-        setPlaying(true);
-        setCanPlay(true);
-        setStartPlay(true);
-        //videoRef?.current?.addEventListener("click", () => {});
-        videoRef?.current?.addEventListener("timeupdate", updateProgress);
-        videoRef?.current?.addEventListener("ended", handleEnded);
-      }
-    }
-  }, [element]);
+  // useEffect(() => {
+  //   if (element) {
+  //     const oldElement = document.getElementById("videoPlayer");
+  //     if (oldElement && oldElement?.parentNode) {
+  //       oldElement?.parentNode.replaceChild(element, oldElement);
+  //       videoRef.current = element;
+  //       setPlaying(true);
+  //       setCanPlay(true);
+  //       setStartPlay(true);
+  //       //videoRef?.current?.addEventListener("click", () => {});
+  //       videoRef?.current?.addEventListener("timeupdate", updateProgress);
+  //       videoRef?.current?.addEventListener("ended", handleEnded);
+  //     }
+  //   }
+  // }, [element]);
 
   return (
     <VideoContainer
@@ -483,9 +483,9 @@ export const VideoPlayerGlobal: React.FC<VideoPlayerProps> = ({
           }}
         ></CloseIcon>
       </div>
-      <div onClick={togglePlay}>
-        <VideoElement id="videoPlayer" />
-      </div>
+      {/*<div onClick={togglePlay}>*/}
+      {/*  <VideoElement id="videoPlayer" />*/}
+      {/*</div>*/}
       <ControlsContainer
         style={{
           bottom: from === "create" ? "15px" : 0,

@@ -10,8 +10,7 @@ import {
   ProgressSlider,
   ReloadButton,
   VideoTime,
-  VolumeButton,
-  VolumeSlider,
+  VolumeControl,
 } from "./VideoControls.tsx";
 
 export const MobileControlsBar = () => {
@@ -54,10 +53,6 @@ export const MobileControlsBar = () => {
           },
         }}
       >
-        <MenuItem>
-          <VolumeButton />
-          <VolumeSlider width={"100%"} />
-        </MenuItem>
         <MenuItem>
           <ObjectFitButton />
         </MenuItem>

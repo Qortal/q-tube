@@ -121,7 +121,7 @@ export const VideoContent = () => {
             color="textPrimary"
             sx={{
               textAlign: "start",
-              marginTop: "10px",
+              marginTop: isScreenSmall ? "20px" : "10px",
             }}
           >
             {videoData?.title}

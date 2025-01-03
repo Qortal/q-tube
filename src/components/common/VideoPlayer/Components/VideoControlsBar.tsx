@@ -11,17 +11,15 @@ import {
   ProgressSlider,
   ReloadButton,
   VideoTime,
-  VolumeButton,
-  VolumeSlider,
+  VolumeControl,
 } from "./VideoControls.tsx";
-import { useSignalEffect } from "@preact/signals-react";
 
 export const VideoControlsBar = () => {
   const { from, canPlay, showControlsFullScreen, isScreenSmall, progress } =
     useVideoContext();
 
   const showMobileControls = isScreenSmall && canPlay.value;
-  const controlsHeight = "40px";
+  const controlsHeight = "42px";
   const controlGroupSX = {
     display: "flex",
     gap: "5px",
@@ -46,8 +44,7 @@ export const VideoControlsBar = () => {
 
             <ProgressSlider />
 
-            <VolumeButton />
-            <VolumeSlider width={"100px"} />
+            <VolumeControl sliderWidth={"100px"} />
             <VideoTime />
           </Box>
 

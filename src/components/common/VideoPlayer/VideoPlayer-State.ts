@@ -147,11 +147,6 @@ export const useVideoPlayerState = (props: VideoPlayerProps, ref: any) => {
     if (!videoRef.current) return;
     videoRef.current.currentTime = value as number;
     progress.value = value as number;
-
-    if (!playing.value) {
-      await videoRef.current.play();
-      playing.value = true;
-    }
   };
 
   const handleEnded = () => {
@@ -198,9 +193,7 @@ export const useVideoPlayerState = (props: VideoPlayerProps, ref: any) => {
       const target = event?.target;
       if (target) {
         target.pause();
-        if (playing.value) {
-          playing.value = false;
-        }
+        if (playing.value) playing.value = false;
       }
     };
 

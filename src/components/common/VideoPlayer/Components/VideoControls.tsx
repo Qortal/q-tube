@@ -1,4 +1,4 @@
-import { IconButton, Slider, Typography } from "@mui/material";
+import { Box, IconButton, Slider, Typography } from "@mui/material";
 import { fontSizeExSmall, fontSizeSmall } from "../../../../constants/Misc.ts";
 import { CustomFontTooltip } from "../../../../utils/CustomFontTooltip.tsx";
 import { formatTime } from "../../../../utils/numberFunctions.ts";
@@ -18,7 +18,7 @@ import { useSignalEffect } from "@preact/signals-react";
 export const PlayButton = () => {
   const { togglePlay, playing } = useVideoContext();
   return (
-    <CustomFontTooltip title="Pause/Play (Spacebar)" placement="top" arrow>
+    <CustomFontTooltip title="Pause/Play (Spacebar)" placement="bottom" arrow>
       <IconButton
         sx={{
           color: "white",
@@ -34,7 +34,7 @@ export const PlayButton = () => {
 export const ReloadButton = () => {
   const { reloadVideo } = useVideoContext();
   return (
-    <CustomFontTooltip title="Reload Video (R)" placement="top" arrow>
+    <CustomFontTooltip title="Reload Video (R)" placement="bottom" arrow>
       <IconButton
         sx={{
           color: "white",
@@ -57,7 +57,7 @@ export const ProgressSlider = () => {
       max={videoRef.current?.duration || 100}
       sx={{
         position: "absolute",
-        bottom: "40px",
+        bottom: "42px",
         color: "#00abff",
         padding: "0px",
         // prevents the slider from jumping up 20px in certain mobile conditions
@@ -69,7 +69,8 @@ export const ProgressSlider = () => {
           height: "16px",
         },
         "& .MuiSlider-thumb::after": { width: "20px", height: "20px" },
-        "& .MuiSlider-rail": { opacity: 0.5 },
+        "& .MuiSlider-rail": { opacity: 0.5, height: "6px" },
+        "& .MuiSlider-track": { height: "6px", border: "0px" },
       }}
     />
   );
@@ -81,7 +82,7 @@ export const VideoTime = () => {
   return (
     <CustomFontTooltip
       title="Seek video in 10% increments (0-9)"
-      placement="top"
+      placement="bottom"
       arrow
     >
       <Typography
@@ -102,12 +103,12 @@ export const VideoTime = () => {
   );
 };
 
-export const VolumeButton = () => {
+const VolumeButton = () => {
   const { isMuted, toggleMute } = useVideoContext();
   return (
     <CustomFontTooltip
       title="Toggle Mute (M), Raise (UP), Lower (DOWN)"
-      placement="top"
+      placement="bottom"
       arrow
     >
       <IconButton
@@ -122,8 +123,13 @@ export const VolumeButton = () => {
   );
 };
 
-export const VolumeSlider = ({ width }: { width: string }) => {
+const VolumeSlider = ({ width }: { width: string }) => {
   const { volume, onVolumeChange } = useVideoContext();
+  let color = "";
+  if (volume.value <= 0.5) color = "green";
+  else if (volume.value <= 0.75) color = "yellow";
+  else color = "red";
+
   return (
     <Slider
       value={volume.value}
@@ -134,18 +140,36 @@ export const VolumeSlider = ({ width }: { width: string }) => {
       sx={{
         width,
         marginRight: "10px",
-        "& .MuiSlider-thumb::after": { width: "25px", height: "25px" },
+        color,
+        "& .MuiSlider-thumb": {
+          backgroundColor: "#fff",
+          width: "16px",
+          height: "16px",
+        },
+        "& .MuiSlider-thumb::after": { width: "16px", height: "16px" },
+        "& .MuiSlider-rail": { opacity: 0.5, height: "6px" },
+        "& .MuiSlider-track": { height: "6px", border: "0px" },
       }}
     />
   );
 };
 
+export const VolumeControl = ({ sliderWidth }: { sliderWidth: string }) => {
+  return (
+    <Box
+      sx={{ display: "flex", gap: "5px", alignItems: "center", width: "100%" }}
+    >
+      <VolumeButton />
+      <VolumeSlider width={sliderWidth} />
+    </Box>
+  );
+};
 export const PlaybackRate = () => {
   const { playbackRate, increaseSpeed, isScreenSmall } = useVideoContext();
   return (
     <CustomFontTooltip
       title="Video Speed. Increase (+ or >), Decrease (- or <)"
-      placement="top"
+      placement="bottom"
       arrow
     >
       <IconButton
@@ -170,7 +194,11 @@ export const PictureInPictureButton = () => {
   return (
     <>
       {!isFullscreen.value && (
-        <CustomFontTooltip title="Picture in Picture (P)" placement="top" arrow>
+        <CustomFontTooltip
+          title="Picture in Picture (P)"
+          placement="bottom"
+          arrow
+        >
           <IconButton
             sx={{
               color: "white",
@@ -189,7 +217,7 @@ export const PictureInPictureButton = () => {
 export const ObjectFitButton = () => {
   const { toggleObjectFit } = useVideoContext();
   return (
-    <CustomFontTooltip title="Toggle Aspect Ratio (O)" placement="top" arrow>
+    <CustomFontTooltip title="Toggle Aspect Ratio (O)" placement="bottom" arrow>
       <IconButton
         sx={{
           color: "white",
@@ -206,7 +234,7 @@ export const ObjectFitButton = () => {
 export const FullscreenButton = () => {
   const { toggleFullscreen } = useVideoContext();
   return (
-    <CustomFontTooltip title="Toggle Fullscreen (F)" placement="top" arrow>
+    <CustomFontTooltip title="Toggle Fullscreen (F)" placement="bottom" arrow>
       <IconButton
         sx={{
           color: "white",

@@ -228,30 +228,30 @@ const GlobalWrapper: React.FC<Props> = ({ children, setTheme }) => {
       />
       <EditVideo />
       <EditPlaylist />
-      <Rnd
-        onDragStart={onDragStart}
-        onDragStop={onDragStop}
-        style={{
-          display: videoPlaying ? "block" : "none",
-          position: "fixed",
-          height: "auto",
-          width: 350,
-          zIndex: 1000,
-          maxWidth: 800,
-        }}
-        default={{
-          x: 0,
-          y: 60,
-          width: 350,
-          height: "auto",
-        }}
-        // eslint-disable-next-line @typescript-eslint/no-empty-function
-        onDrag={() => {}}
-      >
-        {videoPlaying && (
-          <VideoPlayerGlobal checkIfDrag={checkIfDrag} element={videoPlaying} />
-        )}
-      </Rnd>
+      {/*<Rnd*/}
+      {/*  onDragStart={onDragStart}*/}
+      {/*  onDragStop={onDragStop}*/}
+      {/*  style={{*/}
+      {/*    display: videoPlaying ? "block" : "none",*/}
+      {/*    position: "fixed",*/}
+      {/*    height: "auto",*/}
+      {/*    width: 350,*/}
+      {/*    zIndex: 1000,*/}
+      {/*    maxWidth: 800,*/}
+      {/*  }}*/}
+      {/*  default={{*/}
+      {/*    x: 0,*/}
+      {/*    y: 60,*/}
+      {/*    width: 350,*/}
+      {/*    height: "auto",*/}
+      {/*  }}*/}
+      {/*  // eslint-disable-next-line @typescript-eslint/no-empty-function*/}
+      {/*  onDrag={() => {}}*/}
+      {/*>*/}
+      {/*  {videoPlaying && (*/}
+      {/*    <VideoPlayerGlobal checkIfDrag={checkIfDrag} element={videoPlaying} />*/}
+      {/*  )}*/}
+      {/*</Rnd>*/}
 
       {children}
     </>

@@ -6,6 +6,8 @@ import {
   InputLabel,
   Modal,
   Tooltip,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -16,7 +18,11 @@ import {
   FOR_SUPER_LIKE,
   SUPER_LIKE_BASE,
 } from "../../../constants/Identifiers.ts";
-import { minPriceSuperlike } from "../../../constants/Misc.ts";
+import {
+  fontSizeLarge,
+  fontSizeMedium,
+  minPriceSuperlike,
+} from "../../../constants/Misc.ts";
 import { setNotification } from "../../../state/features/notificationsSlice.ts";
 import { RootState } from "../../../state/store.ts";
 import BoundedNumericTextField from "../../../utils/BoundedNumericTextField.tsx";
@@ -173,7 +179,8 @@ export const SuperLike = ({
     });
   }, []);
 
-  const textFieldWidth = "350px";
+  const isScreenSmall = !useMediaQuery(`(min-width:400px)`);
+  const theme = useTheme();
   return (
     <>
       <Box
@@ -249,7 +256,16 @@ export const SuperLike = ({
         aria-labelledby="alert-dialog-title"
         aria-describedby="alert-dialog-description"
       >
-        <ModalBody>
+        <ModalBody
+          sx={{
+            width: "90%",
+            backgroundColor: "#A58700",
+            boxShadow: "none",
+            gap: "0px",
+            padding: "0px",
+            border: 0,
+          }}
+        >
           <Box
             sx={{
               display: "flex",
@@ -260,12 +276,16 @@ export const SuperLike = ({
           >
             <NewCrowdfundTitle>Super Like</NewCrowdfundTitle>
           </Box>
-          <DialogContent>
+          <DialogContent sx={{ padding: "10px 12px" }}>
             <Box>
-              <InputLabel htmlFor="standard-adornment-amount">
-                Amount in QORT (min 1 QORT)
+              <InputLabel
+                sx={{ color: "white" }}
+                htmlFor="standard-adornment-amount"
+              >
+                Amount
               </InputLabel>
               <BoundedNumericTextField
+                addIconButtons={!isScreenSmall}
                 minValue={+minPriceSuperlike}
                 initialValue={minPriceSuperlike.toString()}
                 maxValue={numberToInt(+currentBalance)}
@@ -275,7 +295,11 @@ export const SuperLike = ({
                 value={superlikeDonationAmount}
                 afterChange={(e: string) => setSuperlikeDonationAmount(+e)}
                 InputProps={{
-                  style: { fontSize: 30, width: textFieldWidth },
+                  style: {
+                    fontSize: fontSizeMedium,
+                    width: "80%",
+                    border: `1px solid ${theme.palette.primary.main}`,
+                  },
                   startAdornment: (
                     <InputAdornment position="start">
                       <img
@@ -291,51 +315,68 @@ export const SuperLike = ({
                 }}
               />
 
-              <div>Current QORT Balance is: {currentBalance}</div>
+              <Box sx={{ display: "flex", gap: "5px", alignItems: "center" }}>
+                <img
+                  style={{
+                    height: "25px",
+                    width: "25px",
+                  }}
+                  src={qortImg}
+                  alt={"Qort Icon"}
+                />
+                Balance: {currentBalance}
+              </Box>
               <Spacer height="25px" />
 
               <CommentInput
                 id="standard-multiline-flexible"
-                label="Your comment"
+                label="Comment Here"
                 multiline
                 minRows={8}
                 maxRows={8}
                 variant="filled"
                 value={comment}
+                InputLabelProps={{
+                  style: { fontSize: fontSizeMedium, color: "white" },
+                }}
                 inputProps={{
                   maxLength: 500,
+                  style: { fontSize: fontSizeLarge },
                 }}
-                InputLabelProps={{ style: { fontSize: "18px" } }}
                 onChange={e => setComment(e.target.value)}
+                sx={{ border: `1px solid ${theme.palette.primary.main}` }}
               />
             </Box>
           </DialogContent>
           <CrowdfundActionButtonRow>
-            <CrowdfundActionButton
-              onClick={() => {
-                setIsOpen(false);
-                resetValues();
-                onClose();
-              }}
-              variant="contained"
-              color="error"
-            >
-              Cancel
-            </CrowdfundActionButton>
             <Box
               sx={{
                 display: "flex",
-                gap: "20px",
                 alignItems: "center",
+                justifyContent: "space-between",
+                margin: "10px",
+                width: "100%",
               }}
             >
+              <CrowdfundActionButton
+                onClick={() => {
+                  setIsOpen(false);
+                  resetValues();
+                  onClose();
+                }}
+                variant="contained"
+                color="error"
+              >
+                Cancel
+              </CrowdfundActionButton>
+
               <CrowdfundActionButton
                 variant="contained"
                 onClick={() => {
                   publishSuperLike();
                 }}
               >
-                Publish Super Like
+                Publish
               </CrowdfundActionButton>
             </Box>
           </CrowdfundActionButtonRow>

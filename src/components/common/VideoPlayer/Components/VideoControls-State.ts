@@ -30,6 +30,7 @@ export const useVideoControlsState = (
     videoObjectFit,
     canPlay,
     containerRef,
+    alwaysShowControls,
   } = videoPlayerState;
   const { identifier, autoPlay } = props;
 
@@ -218,6 +219,9 @@ export const useVideoControlsState = (
       videoObjectFit.value === "contain" ? "fill" : "contain";
   };
 
+  const toggleAlwaysShowControls = () => {
+    alwaysShowControls.value = !alwaysShowControls.value;
+  };
   const keyboardShortcuts = (
     e: KeyboardEvent | React.KeyboardEvent<HTMLDivElement>
   ) => {
@@ -228,7 +232,9 @@ export const useVideoControlsState = (
       case "o":
         toggleObjectFit();
         break;
-
+      case "c":
+        toggleAlwaysShowControls();
+        break;
       case Key.Add:
         increaseSpeed(false);
         break;

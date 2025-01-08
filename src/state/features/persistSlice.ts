@@ -21,6 +21,7 @@ interface settingsState {
   volume: number;
   mutedVolume: number;
   isMuted: boolean;
+  alwaysShowControls: boolean;
 }
 
 const initialState: settingsState = {
@@ -34,6 +35,7 @@ const initialState: settingsState = {
   volume: 0.5,
   mutedVolume: 0,
   isMuted: false,
+  alwaysShowControls: false,
 };
 
 export const persistSlice = createSlice({
@@ -87,6 +89,9 @@ export const persistSlice = createSlice({
     setIsMuted: (state, action: PayloadAction<boolean>) => {
       state.isMuted = action.payload;
     },
+    setAlwaysShowControls: (state, action: PayloadAction<boolean>) => {
+      state.alwaysShowControls = action.payload;
+    },
   },
 });
 
@@ -101,6 +106,7 @@ export const {
   setVolumeSetting,
   setMutedVolumeSetting,
   setIsMuted,
+  setAlwaysShowControls,
 } = persistSlice.actions;
 
 export default persistSlice.reducer;

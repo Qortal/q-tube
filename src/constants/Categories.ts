@@ -34,6 +34,7 @@ export const categories = [
   { id: 19, name: "Nature & Environment" },
   { id: 20, name: "Business & Finance" },
   { id: 21, name: "Personal Development" },
+  { id: 22, name: "Religion" },
   { id: 23, name: "History" },
   { id: 24, name: "Anime" },
   { id: 25, name: "Cartoons" },

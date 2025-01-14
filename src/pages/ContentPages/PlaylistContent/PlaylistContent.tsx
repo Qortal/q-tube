@@ -1,15 +1,11 @@
-import { Box, Grid, Typography, useMediaQuery } from "@mui/material";
+import { Box, SxProps, Theme, Typography, useMediaQuery } from "@mui/material";
 import React from "react";
 import { CommentSection } from "../../../components/common/Comments/CommentSection.tsx";
 import { SuperLikesSection } from "../../../components/common/SuperLikesList/SuperLikesSection.tsx";
 import { DisplayHtml } from "../../../components/common/TextEditor/DisplayHtml.tsx";
 import { VideoPlayer } from "../../../components/common/VideoPlayer/VideoPlayer.tsx";
 import { Playlists } from "../../../components/Playlists/Playlists.tsx";
-import {
-  fontSizeSmall,
-  minFileSize,
-  smallScreenSizeString,
-} from "../../../constants/Misc.ts";
+import { fontSizeSmall, minFileSize } from "../../../constants/Misc.ts";
 import { formatBytes } from "../../../utils/numberFunctions.ts";
 import { formatDate } from "../../../utils/time.ts";
 import { VideoActionsBar } from "../VideoContent/VideoActionsBar.tsx";
@@ -46,7 +42,11 @@ export const PlaylistContent = () => {
     loadingSuperLikes,
   } = usePlaylistContentState();
 
-  const isScreenSmall = !useMediaQuery(`(min-width:700px)`);
+  const isScreenSmall = !useMediaQuery(`(min-width:950px)`);
+
+  const playlistsSX: SxProps<Theme> = isScreenSmall
+    ? { width: "100%", marginTop: "10px" }
+    : { width: "35%", position: "absolute", right: "20px" };
 
   return videoData && videoData?.videos?.length === 0 ? (
     <Box
@@ -70,41 +70,36 @@ export const PlaylistContent = () => {
     >
       <VideoPlayerContainer
         sx={{
-          width: "100%",
-          display: "grid",
-          gridTemplateColumns: isScreenSmall ? "1fr" : "60vw auto",
-          gap: "20px",
+          width: isScreenSmall ? "100%" : "60%",
+          alignSelf: "start",
+          paddingRight: isScreenSmall ? "10px" : "0px",
+          marginBottom: "20px",
         }}
       >
         {videoReference && (
-          <Box
-            sx={{
-              aspectRatio: "16/9",
+          <VideoPlayer
+            name={videoReference?.name}
+            service={videoReference?.service}
+            identifier={videoReference?.identifier}
+            user={channelName}
+            jsonId={id}
+            poster={videoCover || ""}
+            nextVideo={nextVideo}
+            onEnd={onEndVideo}
+            autoPlay={doAutoPlay}
+            ref={containerRef}
+            videoStyles={{
+              video: { aspectRatio: "16 / 9" },
             }}
-          >
-            <VideoPlayer
-              name={videoReference?.name}
-              service={videoReference?.service}
-              identifier={videoReference?.identifier}
-              user={channelName}
-              jsonId={id}
-              poster={videoCover || ""}
-              nextVideo={nextVideo}
-              onEnd={onEndVideo}
-              autoPlay={doAutoPlay}
-              ref={containerRef}
-              videoStyles={{
-                videoContainer: { aspectRatio: "16 / 9" },
-                video: { aspectRatio: "16 / 9" },
-              }}
-            />
-          </Box>
+            duration={videoData?.duration}
+          />
         )}
         {playlistData && (
           <Playlists
             playlistData={playlistData}
             currentVideoIdentifier={videoData?.id}
             onClick={getVideoData}
+            sx={playlistsSX}
           />
         )}
       </VideoPlayerContainer>
@@ -179,8 +174,8 @@ export const PlaylistContent = () => {
             cursor: !descriptionHeight
               ? "default"
               : isExpandedDescription
-              ? "default"
-              : "pointer",
+                ? "default"
+                : "pointer",
           }}
           className={
             !descriptionHeight ? "" : isExpandedDescription ? "" : "hover-click"
@@ -208,8 +203,8 @@ export const PlaylistContent = () => {
               height: !descriptionHeight
                 ? "auto"
                 : isExpandedDescription
-                ? "auto"
-                : `${descriptionHeight}px`,
+                  ? "auto"
+                  : `${descriptionHeight}px`,
               overflow: "hidden",
             }}
           >

@@ -56,11 +56,13 @@ export const VideoPlayer = forwardRef<videoRefType, VideoPlayerProps>(
       videoObjectFit,
       showControlsFullScreen,
       isFullscreen,
+      alwaysShowControls,
     } = contextData;
 
     const showControls =
       !isFullscreen.value ||
-      (isFullscreen.value && showControlsFullScreen.value);
+      (isFullscreen.value && showControlsFullScreen.value) ||
+      alwaysShowControls.value;
 
     const idleTime = 5000; // Time in milliseconds
     useIdleTimeout({
@@ -76,6 +78,10 @@ export const VideoPlayer = forwardRef<videoRefType, VideoPlayerProps>(
           onKeyDown={keyboardShortcuts}
           style={{
             padding: from === "create" ? "8px" : 0,
+            cursor:
+              !showControlsFullScreen.value && isFullscreen.value
+                ? "none"
+                : "auto",
             ...videoStyles?.videoContainer,
           }}
           onMouseEnter={e => {
@@ -105,7 +111,7 @@ export const VideoPlayer = forwardRef<videoRefType, VideoPlayerProps>(
               ...videoStyles?.video,
               objectFit: videoObjectFit.value,
               height:
-                isFullscreen.value && showControlsFullScreen.value
+                isFullscreen.value && showControls
                   ? "calc(100vh - 40px)"
                   : "100%",
             }}

@@ -1,29 +1,38 @@
-import React from "react";
-import { smallScreenSizeString } from "../../constants/Misc.ts";
-import { CardContentContainerComment } from "../common/Comments/Comments-styles";
 import {
-  CrowdfundSubTitle,
-  CrowdfundSubTitleRow,
-} from "../Publish/PublishVideo/PublishVideo-styles.tsx";
-import { Box, Typography, useMediaQuery, useTheme } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+  Box,
+  SxProps,
+  Theme,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
+import React from "react";
+import { CardContentContainerComment } from "../common/Comments/Comments-styles";
 
+interface PlaylistsProps {
+  playlistData;
+  currentVideoIdentifier;
+  onClick;
+  sx?: SxProps<Theme>;
+}
 export const Playlists = ({
   playlistData,
   currentVideoIdentifier,
   onClick,
-}) => {
+  sx,
+}: PlaylistsProps) => {
   const theme = useTheme();
   const isScreenSmall = !useMediaQuery(`(min-width:700px)`);
-  const videoPlayerHeight = "33.75vw"; // This is videoplayer width * 9/16 (inverse of aspect ratio)
+  const PlaylistsHeight = "36vw"; // This is videoplayer width * 9/16 (inverse of aspect ratio)
 
   return (
     <Box
       sx={{
+        width: "100%",
+        height: isScreenSmall ? "200px" : PlaylistsHeight,
+        ...sx,
         display: "flex",
         flexDirection: "column",
-        width: "100%",
-        height: isScreenSmall ? "200px" : videoPlayerHeight,
       }}
     >
       <CardContentContainerComment

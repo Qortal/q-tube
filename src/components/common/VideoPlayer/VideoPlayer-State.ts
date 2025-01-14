@@ -16,6 +16,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { smallVideoSize } from "../../../constants/Misc.ts";
 import { setVideoPlaying } from "../../../state/features/globalSlice.ts";
 import {
+  setAlwaysShowControls,
   setIsMuted,
   setMutedVolumeSetting,
   setReduxPlaybackRate,
@@ -44,6 +45,9 @@ export const useVideoPlayerState = (props: VideoPlayerProps, ref: any) => {
   const videoObjectFit = useSignal<StretchVideoType>(
     persistSelector.stretchVideoSetting
   );
+  const alwaysShowControls = useSignal<boolean>(
+    persistSelector.alwaysShowControls
+  );
 
   useSignalEffect(() => {
     dispatch(setIsMuted(isMuted.value));
@@ -62,6 +66,9 @@ export const useVideoPlayerState = (props: VideoPlayerProps, ref: any) => {
   });
   useSignalEffect(() => {
     dispatch(setStretchVideoSetting(videoObjectFit.value));
+  });
+  useSignalEffect(() => {
+    dispatch(setAlwaysShowControls(alwaysShowControls.value));
   });
 
   const anchorEl = useSignal(null);
@@ -312,5 +319,6 @@ export const useVideoPlayerState = (props: VideoPlayerProps, ref: any) => {
     anchorEl,
     videoObjectFit,
     isScreenSmall,
+    alwaysShowControls,
   };
 };

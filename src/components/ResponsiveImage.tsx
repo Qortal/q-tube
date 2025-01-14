@@ -28,7 +28,7 @@ const ResponsiveImage: React.FC<ResponsiveImageProps> = ({
     }, endTimeMilliSeconds);
   };
 
-  useEffect(() => endLoading(30), [endLoading]);
+  useEffect(() => endLoading(60), [endLoading]);
 
   return (
     <Box

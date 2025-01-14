@@ -8,12 +8,9 @@ import { DisplayHtml } from "../../../components/common/TextEditor/DisplayHtml.t
 import { VideoPlayer } from "../../../components/common/VideoPlayer/VideoPlayer.tsx";
 import {
   fontSizeSmall,
-  largeScreenSizeString,
   minFileSize,
-  smallScreenSizeString,
   smallVideoSize,
 } from "../../../constants/Misc.ts";
-import { useIsMobile } from "../../../hooks/useIsMobile.ts";
 import { formatBytes } from "../../../utils/numberFunctions.ts";
 import { formatDate } from "../../../utils/time.ts";
 import { VideoActionsBar } from "./VideoActionsBar.tsx";
@@ -25,7 +22,6 @@ import {
   VideoPlayerContainer,
   VideoTitle,
 } from "./VideoContent-styles.tsx";
-import { useSignal } from "@preact/signals-react";
 
 export const VideoContent = () => {
   const {

@@ -110,6 +110,7 @@ export const VideoPlayer = forwardRef<videoRefType, VideoPlayerProps>(
             style={{
               ...videoStyles?.video,
               objectFit: videoObjectFit.value,
+              backgroundColor: "#000000",
               height:
                 isFullscreen.value && showControls
                   ? "calc(100vh - 40px)"

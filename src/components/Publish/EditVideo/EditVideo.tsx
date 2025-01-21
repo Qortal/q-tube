@@ -11,7 +11,7 @@ import {
   Typography,
   useTheme,
 } from "@mui/material";
-import { Signal, useSignal } from "@preact/signals-react";
+import { Signal, useSignal, useSignalEffect } from "@preact/signals-react";
 import Compressor from "compressorjs";
 import React, { useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
@@ -32,6 +32,7 @@ import {
   updateVideo,
 } from "../../../state/features/videoSlice.ts";
 import { RootState } from "../../../state/store.ts";
+import BoundedNumericTextField from "../../../utils/BoundedNumericTextField.tsx";
 import { objectToBase64 } from "../../../utils/PublishFormatter.ts";
 import { FrameExtractor } from "../../common/FrameExtractor/FrameExtractor.tsx";
 import ImageUploader from "../../common/ImageUploader.tsx";
@@ -84,6 +85,10 @@ export const EditVideo = () => {
   const videoDuration: Signal<number[]> = useSignal([
     editVideoProperties?.duration || 0,
   ]);
+
+  useEffect(() => {
+    videoDuration.value[0] = Math.floor(editVideoProperties?.duration);
+  }, [editVideoProperties]);
 
   const { getRootProps, getInputProps } = useDropzone({
     accept: {
@@ -273,9 +278,9 @@ export const EditVideo = () => {
         videoType: file?.type || "video/mp4",
         filename: `${alphanumericString.trim()}.${fileExtension}`,
         fileSize: file?.size || 0,
-        duration: videoDuration.value[0],
+        duration: videoDuration.value[0] || editVideoProperties?.duration || 0,
       };
-
+      console.log("edit publish duration: ", videoObject?.duration);
       const metadescription =
         `**category:${category};subcategory:${subcategory};code:${editVideoProperties.code}**` +
         description.slice(0, 150);
@@ -408,7 +413,7 @@ export const EditVideo = () => {
         aria-labelledby="modal-title"
         aria-describedby="modal-description"
       >
-        <ModalBody>
+        <ModalBody sx={{ maxHeight: "98vh" }}>
           <Box
             sx={{
               display: "flex",
@@ -517,6 +522,17 @@ export const EditVideo = () => {
                   ></TimesIcon>
                 </LogoPreviewRow>
               )}
+              <BoundedNumericTextField
+                minValue={1}
+                maxValue={Number.MAX_SAFE_INTEGER}
+                label="Video Duration in Seconds"
+                addIconButtons={false}
+                allowDecimals={false}
+                initialValue={videoDuration.value[0].toString()}
+                afterChange={s => {
+                  videoDuration.value[0] = +s;
+                }}
+              />
               <CustomInputField
                 name="title"
                 label="Title of video"

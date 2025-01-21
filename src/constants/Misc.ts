@@ -13,7 +13,7 @@ export const fontSizeLarge = "120%";
 export const fontSizeExLarge = "150%";
 export const maxCommentLength = 10_000;
 export const minFileSize = 1_000;
-export const minDuration = 5;
+export const minDuration = 1;
 
 const newUIWidthDiff = 120;
 const smallScreenSize = 700 - newUIWidthDiff;

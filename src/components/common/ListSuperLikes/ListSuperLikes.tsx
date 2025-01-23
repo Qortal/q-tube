@@ -1,17 +1,20 @@
-import * as React from "react";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import Divider from "@mui/material/Divider";
-import ListItemText from "@mui/material/ListItemText";
-import ListItemAvatar from "@mui/material/ListItemAvatar";
-import Avatar from "@mui/material/Avatar";
-import Typography from "@mui/material/Typography";
+import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import { Box } from "@mui/material";
+import Avatar from "@mui/material/Avatar";
+import Divider from "@mui/material/Divider";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemAvatar from "@mui/material/ListItemAvatar";
+import ListItemText from "@mui/material/ListItemText";
+import Typography from "@mui/material/Typography";
+import * as React from "react";
 import { useSelector } from "react-redux";
-import { RootState } from "../../../state/store";
 import { useNavigate } from "react-router-dom";
-import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
+import { fontSizeSmall } from "../../../constants/Misc.ts";
+import { RootState } from "../../../state/store";
+import { formatDate } from "../../../utils/time.ts";
+
 const truncateMessage = message => {
   return message.length > 40 ? message.slice(0, 40) + "..." : message;
 };
@@ -139,6 +142,9 @@ export default function ListSuperLikes({ superlikes }) {
                     {forName}
                   </Box>
                 )}
+                <span style={{ fontSize: fontSizeSmall }}>
+                  {formatDate(superlike.created)}
+                </span>
               </Box>
             </ListItem>
             <Box

@@ -4,7 +4,7 @@ import {
   SUPER_LIKE_BASE,
 } from "../../../constants/Identifiers.ts";
 import {
-  minPriceSuperlike,
+  minPriceSuperLike,
   titleFormatterOnSave,
 } from "../../../constants/Misc.ts";
 import { useFetchSuperLikes } from "../../../hooks/useFetchSuperLikes.tsx";
@@ -199,7 +199,7 @@ export const useVideoContentState = () => {
             if (!result) continue;
             const res = await getPaymentInfo(result);
             if (
-              +res?.amount >= minPriceSuperlike &&
+              +res?.amount >= minPriceSuperLike &&
               res.recipient === nameAddressParam &&
               isTimestampWithinRange(res?.timestamp, comment.created)
             ) {

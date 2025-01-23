@@ -33,7 +33,7 @@ import {
   FOR_SUPER_LIKE,
   SUPER_LIKE_BASE,
 } from "../../../constants/Identifiers.ts";
-import { minPriceSuperlike } from "../../../constants/Misc.ts";
+import { minPriceSuperLike } from "../../../constants/Misc.ts";
 
 const generalLocal = localForage.createInstance({
   name: "q-tube-general",
@@ -141,7 +141,7 @@ export const Notifications = () => {
             if (!result) continue;
             const res = await getPaymentInfo(result);
             if (
-              +res?.amount >= minPriceSuperlike &&
+              +res?.amount >= minPriceSuperLike &&
               res.recipient === usernameAddress &&
               isTimestampWithinRange(res?.timestamp, comment.created)
             ) {

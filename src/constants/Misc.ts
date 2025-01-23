@@ -1,4 +1,7 @@
-export const minPriceSuperlike = 1;
+import { useTestIdentifiers } from "./Identifiers.ts";
+
+export const minPriceSuperLike = 1;
+export const minPriceSuperDislike = 1;
 
 export const titleFormatter = /[\r\n]+/g;
 export const titleFormatterOnSave = /[\r\n/<>:"'\\*|?]+/g;

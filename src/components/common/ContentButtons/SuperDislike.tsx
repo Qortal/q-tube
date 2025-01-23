@@ -1,4 +1,4 @@
-import ThumbUpIcon from "@mui/icons-material/ThumbUp";
+import ThumbDownIcon from "@mui/icons-material/ThumbDown";
 import {
   Box,
   DialogContent,
@@ -21,7 +21,7 @@ import {
 import {
   fontSizeLarge,
   fontSizeMedium,
-  minPriceSuperLike,
+  minPriceSuperDislike,
 } from "../../../constants/Misc.ts";
 import { setNotification } from "../../../state/features/notificationsSlice.ts";
 import { RootState } from "../../../state/store.ts";
@@ -41,18 +41,18 @@ import { CommentInput } from "../Comments/Comments-styles.tsx";
 
 const uid = new ShortUniqueId({ length: 4 });
 
-export const SuperLike = ({
+export const SuperDislike = ({
   onSuccess,
   name,
   service,
   identifier,
   totalAmount,
-  numberOfSuperlikes,
+  numberOfSuperdislikes,
 }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
-  const [superlikeDonationAmount, setSuperlikeDonationAmount] =
-    useState<number>(minPriceSuperLike);
+  const [superDislikeDonationAmount, setSuperdislikeDonationAmount] =
+    useState<number>(minPriceSuperDislike);
   const [currentBalance, setCurrentBalance] = useState<string>("");
 
   const [comment, setComment] = useState<string>("");
@@ -62,7 +62,7 @@ export const SuperLike = ({
   const dispatch = useDispatch();
 
   const resetValues = () => {
-    setSuperlikeDonationAmount(0);
+    setSuperdislikeDonationAmount(0);
     setComment("");
     setPublishes(null);
   };
@@ -71,13 +71,14 @@ export const SuperLike = ({
     setIsOpen(false);
   };
 
-  async function publishSuperLike() {
+  async function publishSuperDislike() {
     try {
       if (!username) throw new Error("You need a name to publish");
       if (!name) throw new Error("Could not retrieve content creator's name");
       const estimatedTransactionFees = 0.1;
       const donationExceedsBalance =
-        superlikeDonationAmount + estimatedTransactionFees >= +currentBalance;
+        superDislikeDonationAmount + estimatedTransactionFees >=
+        +currentBalance;
       if (donationExceedsBalance) {
         throw new Error("Total donations exceeds current balance");
       }
@@ -94,11 +95,11 @@ export const SuperLike = ({
       if (!address)
         throw new Error("Could not retrieve content creator's address");
       if (
-        !superlikeDonationAmount ||
-        superlikeDonationAmount < minPriceSuperLike
+        !superDislikeDonationAmount ||
+        superDislikeDonationAmount < minPriceSuperDislike
       )
         throw new Error(
-          `The amount is ${superlikeDonationAmount}, but it needs to be at least ${minPriceSuperLike} QORT`
+          `The amount is ${superDislikeDonationAmount}, but it needs to be at least ${minPriceSuperDislike} QORT`
         );
 
       const listOfPublishes = [];
@@ -107,7 +108,7 @@ export const SuperLike = ({
         action: "SEND_COIN",
         coin: "QORT",
         destinationAddress: address,
-        amount: superlikeDonationAmount,
+        amount: superDislikeDonationAmount,
       });
 
       const metadescription = `**sig:${
@@ -118,7 +119,7 @@ export const SuperLike = ({
       )};id:${identifier.slice(-30)}**`;
 
       const id = uid.rnd();
-      const identifierSuperLike = `${SUPER_LIKE_BASE}${identifier.slice(
+      const identifierSuperDislike = `${SUPER_LIKE_BASE}${identifier.slice(
         0,
         39
       )}_${id}`;
@@ -144,9 +145,9 @@ export const SuperLike = ({
         data64: superLikeToBase64,
         title: "",
         description: metadescription,
-        identifier: identifierSuperLike,
+        identifier: identifierSuperDislike,
         tag1: SUPER_LIKE_BASE,
-        filename: `superlike_metadata.json`,
+        filename: `superDislike_metadata.json`,
       };
 
       listOfPublishes.push(requestBodyJson);
@@ -212,18 +213,18 @@ export const SuperLike = ({
               gap: "5px",
               display: "flex",
               alignItems: "center",
-              outline: "1px gold solid",
+              outline: "1px red solid",
               marginRight: "10px",
               height: "53px",
             }}
           >
-            <ThumbUpIcon
+            <ThumbDownIcon
               style={{
-                color: "gold",
+                color: "red",
               }}
             />
 
-            {numberOfSuperlikes === 0 ? null : (
+            {numberOfSuperdislikes === 0 ? null : (
               <div
                 style={{
                   display: "flex",
@@ -233,7 +234,7 @@ export const SuperLike = ({
                 }}
               >
                 <span style={{ marginRight: "10px", paddingBottom: "4px" }}>
-                  {numberOfSuperlikes}
+                  {numberOfSuperdislikes}
                 </span>
                 <img
                   style={{
@@ -286,14 +287,14 @@ export const SuperLike = ({
               </InputLabel>
               <BoundedNumericTextField
                 addIconButtons={!isScreenSmall}
-                minValue={+minPriceSuperLike}
-                initialValue={minPriceSuperLike.toString()}
+                minValue={+minPriceSuperDislike}
+                initialValue={minPriceSuperDislike.toString()}
                 maxValue={numberToInt(+currentBalance)}
                 allowDecimals={false}
                 allowNegatives={false}
                 id="standard-adornment-amount"
-                value={superlikeDonationAmount}
-                afterChange={(e: string) => setSuperlikeDonationAmount(+e)}
+                value={superDislikeDonationAmount}
+                afterChange={(e: string) => setSuperdislikeDonationAmount(+e)}
                 InputProps={{
                   style: {
                     fontSize: fontSizeMedium,
@@ -373,7 +374,7 @@ export const SuperLike = ({
               <CrowdfundActionButton
                 variant="contained"
                 onClick={() => {
-                  publishSuperLike();
+                  publishSuperDislike();
                 }}
               >
                 Publish
@@ -403,7 +404,7 @@ export const SuperLike = ({
               message: comment,
               service,
               identifier,
-              amount: +superlikeDonationAmount,
+              amount: +superDislikeDonationAmount,
               created: Date.now(),
             });
             setIsOpenMultiplePublish(false);

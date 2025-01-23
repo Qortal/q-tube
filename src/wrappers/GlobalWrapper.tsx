@@ -28,7 +28,7 @@ import { EditPlaylist } from "../components/Publish/EditPlaylist/EditPlaylist";
 import ConsentModal from "../components/common/ConsentModal";
 import { useFetchSuperLikes } from "../hooks/useFetchSuperLikes";
 import { SUPER_LIKE_BASE } from "../constants/Identifiers.ts";
-import { minPriceSuperlike } from "../constants/Misc.ts";
+import { minPriceSuperLike } from "../constants/Misc.ts";
 
 interface Props {
   children: React.ReactNode;
@@ -167,7 +167,7 @@ const GlobalWrapper: React.FC<Props> = ({ children, setTheme }) => {
                 if (!result) continue;
                 const res = await getPaymentInfo(result);
                 if (
-                  +res?.amount >= minPriceSuperlike &&
+                  +res?.amount >= minPriceSuperLike &&
                   isTimestampWithinRange(res?.timestamp, comment.created)
                 ) {
                   addSuperlikeRawDataGetToList({

@@ -41,6 +41,7 @@ export const categories = [
   { id: 26, name: "Qortal" },
   { id: 27, name: "Paranormal" },
   { id: 28, name: "Spirituality" },
+  { id: 29, name: "Privacy" },
   { id: 99, name: "Other" },
 ].sort(sortCategory);
 

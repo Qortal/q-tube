@@ -14,9 +14,15 @@ import {
 } from "./VideoControls.tsx";
 
 export const MobileControlsBar = () => {
-  const { handleMenuOpen, handleMenuClose, anchorEl } = useVideoContext();
+  const { handleMenuOpen, handleMenuClose, anchorEl, controlsHeight } =
+    useVideoContext();
 
-  const controlGroupSX = { display: "flex", gap: "5px", alignItems: "center" };
+  const controlGroupSX = {
+    display: "flex",
+    gap: "5px",
+    alignItems: "center",
+    height: controlsHeight,
+  };
 
   return (
     <>
@@ -36,7 +42,7 @@ export const MobileControlsBar = () => {
           color="inherit"
           aria-label="menu"
           onClick={handleMenuOpen}
-          sx={{ minWidth: "30px", paddingLeft: "0px" }}
+          sx={{ paddingLeft: "0px", marginRight: "0px" }}
         >
           <MoreIcon />
         </IconButton>

@@ -15,13 +15,17 @@ import {
 } from "@mui/icons-material";
 import { useSignalEffect } from "@preact/signals-react";
 
+const buttonPaddingBig = "6px";
+const buttonPaddingSmall = "4px";
+
 export const PlayButton = () => {
-  const { togglePlay, playing } = useVideoContext();
+  const { togglePlay, playing, isScreenSmall } = useVideoContext();
   return (
     <CustomFontTooltip title="Pause/Play (Spacebar)" placement="bottom" arrow>
       <IconButton
         sx={{
           color: "white",
+          padding: isScreenSmall ? buttonPaddingSmall : buttonPaddingBig,
         }}
         onClick={() => togglePlay()}
       >
@@ -32,12 +36,13 @@ export const PlayButton = () => {
 };
 
 export const ReloadButton = () => {
-  const { reloadVideo } = useVideoContext();
+  const { reloadVideo, isScreenSmall } = useVideoContext();
   return (
     <CustomFontTooltip title="Reload Video (R)" placement="bottom" arrow>
       <IconButton
         sx={{
           color: "white",
+          padding: isScreenSmall ? buttonPaddingSmall : buttonPaddingBig,
         }}
         onClick={reloadVideo}
       >
@@ -164,6 +169,7 @@ export const VolumeControl = ({ sliderWidth }: { sliderWidth: string }) => {
     </Box>
   );
 };
+
 export const PlaybackRate = () => {
   const { playbackRate, increaseSpeed, isScreenSmall } = useVideoContext();
   return (
@@ -175,22 +181,37 @@ export const PlaybackRate = () => {
       <IconButton
         sx={{
           color: "white",
-          fontSize: isScreenSmall ? fontSizeExSmall : fontSizeSmall,
-          paddingTop: "0px",
-          paddingBottom: "0px",
+          fontSize: fontSizeSmall,
+          padding: isScreenSmall ? buttonPaddingSmall : buttonPaddingBig,
         }}
         onClick={() => increaseSpeed()}
       >
-        <span style={{ display: "flex", alignItems: "center", height: "40px" }}>
-          {playbackRate}x
-        </span>
+        {playbackRate}x
+      </IconButton>
+    </CustomFontTooltip>
+  );
+};
+
+export const ObjectFitButton = () => {
+  const { toggleObjectFit, isScreenSmall } = useVideoContext();
+  return (
+    <CustomFontTooltip title="Toggle Aspect Ratio (O)" placement="bottom" arrow>
+      <IconButton
+        sx={{
+          color: "white",
+          padding: isScreenSmall ? buttonPaddingSmall : buttonPaddingBig,
+        }}
+        onClick={() => toggleObjectFit()}
+      >
+        <AspectRatioIcon />
       </IconButton>
     </CustomFontTooltip>
   );
 };
 
 export const PictureInPictureButton = () => {
-  const { isFullscreen, toggleRef, togglePictureInPicture } = useVideoContext();
+  const { isFullscreen, toggleRef, togglePictureInPicture, isScreenSmall } =
+    useVideoContext();
   return (
     <>
       {!isFullscreen.value && (
@@ -202,6 +223,7 @@ export const PictureInPictureButton = () => {
           <IconButton
             sx={{
               color: "white",
+              padding: isScreenSmall ? buttonPaddingSmall : buttonPaddingBig,
             }}
             ref={toggleRef}
             onClick={togglePictureInPicture}
@@ -214,31 +236,14 @@ export const PictureInPictureButton = () => {
   );
 };
 
-export const ObjectFitButton = () => {
-  const { toggleObjectFit } = useVideoContext();
-  return (
-    <CustomFontTooltip title="Toggle Aspect Ratio (O)" placement="bottom" arrow>
-      <IconButton
-        sx={{
-          color: "white",
-          paddingRight: "0px",
-        }}
-        onClick={() => toggleObjectFit()}
-      >
-        <AspectRatioIcon />
-      </IconButton>
-    </CustomFontTooltip>
-  );
-};
-
 export const FullscreenButton = () => {
-  const { toggleFullscreen } = useVideoContext();
+  const { toggleFullscreen, isScreenSmall } = useVideoContext();
   return (
     <CustomFontTooltip title="Toggle Fullscreen (F)" placement="bottom" arrow>
       <IconButton
         sx={{
           color: "white",
-          paddingRight: "0px",
+          padding: isScreenSmall ? buttonPaddingSmall : buttonPaddingBig,
         }}
         onClick={() => toggleFullscreen()}
       >

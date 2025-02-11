@@ -42,6 +42,7 @@ export const useVideoControlsState = (
     (state: RootState) => state.global.videoPlaying
   );
 
+  const controlsHeight = "42px";
   const minSpeed = 0.25;
   const maxSpeed = 4.0;
   const speedChange = 0.25;
@@ -372,5 +373,6 @@ export const useVideoControlsState = (
     isFullscreen,
     toggleObjectFit,
     setObjectFit,
+    controlsHeight,
   };
 };

@@ -741,8 +741,8 @@ export const PublishVideo = ({
               <Box>
                 <CodecTypography>
                   Supported File Containers:{" "}
-                  <span style={{ fontWeight: "bold" }}>MP4</span>, Ogg, WebM,
-                  WAV
+                  <span style={{ fontWeight: "bold" }}>MP4</span>, M4V, OGG,
+                  WEBM, WAV
                 </CodecTypography>
                 <CodecTypography>
                   Audio Codecs: <span style={{ fontWeight: "bold" }}>Opus</span>

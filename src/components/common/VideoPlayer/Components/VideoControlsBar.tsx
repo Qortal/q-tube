@@ -15,11 +15,10 @@ import {
 } from "./VideoControls.tsx";
 
 export const VideoControlsBar = () => {
-  const { from, canPlay, showControlsFullScreen, isScreenSmall, progress } =
-    useVideoContext();
+  const { canPlay, isScreenSmall, controlsHeight } = useVideoContext();
 
   const showMobileControls = isScreenSmall && canPlay.value;
-  const controlsHeight = "42px";
+
   const controlGroupSX = {
     display: "flex",
     gap: "5px",

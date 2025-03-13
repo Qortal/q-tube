@@ -69,20 +69,20 @@ export const Home = ({ mode }: HomeProps) => {
               <Tab label="Subscriptions" value={"subscriptions"} sx={tabSX} />
             </TabList>
             <TabPanel value={"all"} sx={tabPaneSX}>
-              <VideoList videos={videos} />
-              <LazyLoad
-                onLoadMore={getVideosHandler}
-                isLoading={isLoading}
-              ></LazyLoad>
+              <VideoList listName={"AllVideos"} />
+              {/*<LazyLoad*/}
+              {/*  onLoadMore={getVideosHandler}*/}
+              {/*  isLoading={isLoading}*/}
+              {/*></LazyLoad>*/}
             </TabPanel>
             <TabPanel value={"subscriptions"} sx={tabPaneSX}>
               {filteredSubscriptionList.length > 0 ? (
                 <>
-                  <VideoList videos={videos} />
-                  <LazyLoad
-                    onLoadMore={getVideosHandler}
-                    isLoading={isLoading}
-                  ></LazyLoad>
+                  <VideoList listName={"SubscribedVideos"} />
+                  {/*<LazyLoad*/}
+                  {/*  onLoadMore={getVideosHandler}*/}
+                  {/*  isLoading={isLoading}*/}
+                  {/*></LazyLoad>*/}
                 </>
               ) : (
                 !isLoading && (

@@ -23,17 +23,19 @@ export const VideoContainer = styled(Grid)(({ theme }) => ({
 }));
 
 export const VideoCardContainer = styled("div")(({ theme }) => ({
-  display: "grid",
-  gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
-  gap: theme.spacing(2),
-  padding: "10px",
+  // display: "grid",
+  // gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
+  // gap: theme.spacing(2),
+  // padding: "10px",
+  // width: "100%",
+  padding: "20px",
   width: "100%",
 }));
 
 export const VideoCardCol = styled("div")({
   position: "relative",
   minWidth: "200px", // Minimum width of each item
-  maxWidth: "1fr", // Maximum width, allowing the item to fill the column
+  maxWidth: "300px", // Maximum width, allowing the item to fill the column
   // ... other styles
 });
 

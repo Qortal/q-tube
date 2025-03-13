@@ -18,6 +18,7 @@ import { darkTheme, lightTheme } from "./styles/theme";
 import DownloadWrapper from "./wrappers/DownloadWrapper";
 import GlobalWrapper from "./wrappers/GlobalWrapper";
 import { ScrollWrapper } from "./wrappers/ScrollWrapper.tsx";
+import { GlobalProvider } from "qapp-core";
 
 function App() {
   // const themeColor = window._qdnTheme
@@ -34,28 +35,30 @@ function App() {
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
-        <ThemeProvider theme={theme === "light" ? lightTheme : darkTheme}>
-          <Notification />
-          <DownloadWrapper>
-            <GlobalWrapper setTheme={(val: string) => setTheme(val)}>
-              <ScrollWrapper>
-                <CssBaseline />
-                <Routes>
-                  <Route path="/" element={<Home />} />
-                  <Route path="/video/:name/:id" element={<VideoContent />} />
-                  <Route
-                    path="/playlist/:name/:id"
-                    element={<PlaylistContent />}
-                  />
-                  <Route
-                    path="/channel/:name"
-                    element={<IndividualProfile />}
-                  />
-                </Routes>
-              </ScrollWrapper>
-            </GlobalWrapper>
-          </DownloadWrapper>
-        </ThemeProvider>
+        <GlobalProvider>
+          <ThemeProvider theme={theme === "light" ? lightTheme : darkTheme}>
+            <Notification />
+            <DownloadWrapper>
+              <GlobalWrapper setTheme={(val: string) => setTheme(val)}>
+                <ScrollWrapper>
+                  <CssBaseline />
+                  <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/video/:name/:id" element={<VideoContent />} />
+                    <Route
+                      path="/playlist/:name/:id"
+                      element={<PlaylistContent />}
+                    />
+                    <Route
+                      path="/channel/:name"
+                      element={<IndividualProfile />}
+                    />
+                  </Routes>
+                </ScrollWrapper>
+              </GlobalWrapper>
+            </DownloadWrapper>
+          </ThemeProvider>
+        </GlobalProvider>
       </PersistGate>
     </Provider>
   );

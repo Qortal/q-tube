@@ -29,11 +29,12 @@ import {
   VideoCardTitle,
   VideoUploadDate,
 } from "./VideoList-styles.tsx";
+import { ResourceListDisplay } from "qapp-core";
 
 interface VideoListProps {
-  videos: Video[];
+  listName: string;
 }
-export const VideoList = ({ videos }: VideoListProps) => {
+export const VideoList = ({ listName }: VideoListProps) => {
   const [showIcons, setShowIcons] = useState(null);
 
   const hashMapVideos = useSelector(
@@ -66,97 +67,110 @@ export const VideoList = ({ videos }: VideoListProps) => {
 
   return (
     <VideoCardContainer>
-      {videos.map((video: any) => {
-        const fullId = video ? `${video.id}-${video.user}` : undefined;
-        const existingVideo = hashMapVideos[fullId];
-        let hasHash = false;
-        let videoObj = video;
-        if (existingVideo) {
-          videoObj = existingVideo;
-          hasHash = true;
-        }
-        // nb. this prevents showing metadata for a video which
-        // belongs to a different user
-        if (
-          videoObj?.user &&
-          videoObj?.videoReference?.name &&
-          videoObj.user != videoObj.videoReference.name
-        ) {
-          return null;
-        }
+      <ResourceListDisplay
+        styles={{
+          gap: 20,
+        }}
+        listName={listName}
+        direction="HORIZONTAL"
+        disableVirtualization
+        params={{
+          identifier: "qtube_vid_",
+          service: "DOCUMENT",
+          offset: 0,
+          reverse: true,
+          limit: 20,
+        }}
+        loaderItem={status => {
+          return <div>{status === "LOADING" ? "is Loading" : "has error"}</div>;
+        }}
+        listItem={(item, index) => {
+          const { qortalMetadata, data: video } = item;
 
-        if (hasHash && !videoObj?.videoImage && !videoObj?.image) {
-          return null;
-        }
-        const isPlaylist = videoObj?.service === "PLAYLIST";
+          const fullId = video
+            ? `${qortalMetadata.identifier}-${qortalMetadata.name}`
+            : undefined;
 
-        if (isPlaylist) {
           return (
             <VideoCardCol
-              onMouseEnter={() => setShowIcons(videoObj.id)}
+              key={qortalMetadata?.identifier}
+              onMouseEnter={() => setShowIcons(qortalMetadata?.identifier)}
               onMouseLeave={() => setShowIcons(null)}
-              key={videoObj.id}
             >
               <IconsBox
                 sx={{
-                  opacity: showIcons === videoObj.id ? 1 : 0,
+                  opacity: showIcons === qortalMetadata.identifier ? 1 : 0,
                   zIndex: 2,
                 }}
               >
-                {videoObj?.user === username && (
-                  <Tooltip title="Edit playlist" placement="top">
+                {qortalMetadata?.name === username && (
+                  <Tooltip title="Edit video properties" placement="top">
                     <BlockIconContainer>
                       <EditIcon
                         onClick={() => {
-                          dispatch(setEditPlaylist(videoObj));
+                          dispatch(setEditVideo(item));
                         }}
                       />
                     </BlockIconContainer>
                   </Tooltip>
                 )}
 
-                {videoObj?.user !== username && (
+                {qortalMetadata?.name !== username && (
                   <Tooltip title="Block user content" placement="top">
                     <BlockIconContainer>
                       <BlockIcon
                         onClick={() => {
-                          blockUserFunc(videoObj?.user);
+                          blockUserFunc(qortalMetadata?.name);
                         }}
                       />
                     </BlockIconContainer>
                   </Tooltip>
                 )}
               </IconsBox>
-
               <VideoCard
-                sx={{
-                  cursor: !hasHash && "default",
-                }}
                 onClick={() => {
-                  if (!hasHash) return;
-                  navigate(`/playlist/${videoObj?.user}/${videoObj?.id}`);
+                  navigate(
+                    `/video/${qortalMetadata?.name}/${qortalMetadata?.identifier}`
+                  );
                 }}
               >
-                <ResponsiveImage
-                  src={videoObj?.image}
+                {video?.duration > minDuration && (
+                  <Box
+                    position="absolute"
+                    right={0}
+                    bottom={0}
+                    bgcolor="#202020"
+                    zIndex={999}
+                  >
+                    <Typography color="white">
+                      {formatTime(video.duration)}
+                    </Typography>
+                  </Box>
+                )}
+                <VideoCardImageContainer
                   width={266}
                   height={150}
-                  style={{
-                    maxHeight: "50%",
-                  }}
+                  videoImage={video.videoImage}
+                  frameImages={video?.extracts || []}
                 />
-                <VideoCardTitle>{videoObj?.title}</VideoCardTitle>
+                <Tooltip
+                  title={video.title}
+                  placement="top"
+                  slotProps={{ tooltip: { sx: { fontSize: fontSizeSmall } } }}
+                >
+                  <VideoCardTitle>{video.title}</VideoCardTitle>
+                </Tooltip>
                 <BottomParent>
                   <NameContainer
                     onClick={e => {
                       e.stopPropagation();
-                      navigate(`/channel/${videoObj?.user}`);
+                      navigate(`/channel/${qortalMetadata?.name}`);
                     }}
                   >
                     <Avatar
                       sx={{ height: 24, width: 24 }}
-                      src={`/arbitrary/THUMBNAIL/${videoObj?.user}/qortal_avatar`}
-                      alt={`${videoObj?.user}'s avatar`}
+                      src={`/arbitrary/THUMBNAIL/${qortalMetadata?.name}/qortal_avatar`}
+                      alt={`${qortalMetadata?.name}'s avatar`}
                     />
                     <VideoCardName
                       sx={{
@@ -165,136 +179,22 @@ export const VideoList = ({ videos }: VideoListProps) => {
                         },
                       }}
                     >
-                      {videoObj?.user}
+                      {qortalMetadata?.name}
                     </VideoCardName>
-
-                    {videoObj?.created && (
-                      <VideoUploadDate>
-                        {formatDate(videoObj.created)}
-                      </VideoUploadDate>
-                    )}
                   </NameContainer>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      position: "absolute",
-                      bottom: "5px",
-                      right: "5px",
-                    }}
-                  >
-                    <PlaylistSVG
-                      color={theme.palette.text.primary}
-                      height="36px"
-                      width="36px"
-                    />
-                  </Box>
+                  {qortalMetadata?.created && (
+                    <Box sx={{ flexDirection: "row", width: "100%" }}>
+                      <VideoUploadDate sx={{ display: "inline" }}>
+                        {formatDate(qortalMetadata.created)}
+                      </VideoUploadDate>
+                    </Box>
+                  )}
                 </BottomParent>
               </VideoCard>
             </VideoCardCol>
           );
-        }
-
-        return (
-          <VideoCardCol
-            key={videoObj.id}
-            onMouseEnter={() => setShowIcons(videoObj.id)}
-            onMouseLeave={() => setShowIcons(null)}
-          >
-            <IconsBox
-              sx={{
-                opacity: showIcons === videoObj.id ? 1 : 0,
-                zIndex: 2,
-              }}
-            >
-              {videoObj?.user === username && (
-                <Tooltip title="Edit video properties" placement="top">
-                  <BlockIconContainer>
-                    <EditIcon
-                      onClick={() => {
-                        dispatch(setEditVideo(videoObj));
-                      }}
-                    />
-                  </BlockIconContainer>
-                </Tooltip>
-              )}
-
-              {videoObj?.user !== username && (
-                <Tooltip title="Block user content" placement="top">
-                  <BlockIconContainer>
-                    <BlockIcon
-                      onClick={() => {
-                        blockUserFunc(videoObj?.user);
-                      }}
-                    />
-                  </BlockIconContainer>
-                </Tooltip>
-              )}
-            </IconsBox>
-            <VideoCard
-              onClick={() => {
-                navigate(`/video/${videoObj?.user}/${videoObj?.id}`);
-              }}
-            >
-              {videoObj?.duration > minDuration && (
-                <Box
-                  position="absolute"
-                  right={0}
-                  bottom={0}
-                  bgcolor="#202020"
-                  zIndex={999}
-                >
-                  <Typography color="white">
-                    {formatTime(videoObj.duration)}
-                  </Typography>
-                </Box>
-              )}
-              <VideoCardImageContainer
-                width={266}
-                height={150}
-                videoImage={videoObj.videoImage}
-                frameImages={videoObj?.extracts || []}
-              />
-              <Tooltip
-                title={videoObj.title}
-                placement="top"
-                slotProps={{ tooltip: { sx: { fontSize: fontSizeSmall } } }}
-              >
-                <VideoCardTitle>{videoObj.title}</VideoCardTitle>
-              </Tooltip>
-              <BottomParent>
-                <NameContainer
-                  onClick={e => {
-                    e.stopPropagation();
-                    navigate(`/channel/${videoObj?.user}`);
-                  }}
-                >
-                  <Avatar
-                    sx={{ height: 24, width: 24 }}
-                    src={`/arbitrary/THUMBNAIL/${videoObj?.user}/qortal_avatar`}
-                    alt={`${videoObj?.user}'s avatar`}
-                  />
-                  <VideoCardName
-                    sx={{
-                      ":hover": {
-                        textDecoration: "underline",
-                      },
-                    }}
-                  >
-                    {videoObj?.user}
-                  </VideoCardName>
-                </NameContainer>
-                {videoObj?.created && (
-                  <Box sx={{ flexDirection: "row", width: "100%" }}>
-                    <VideoUploadDate sx={{ display: "inline" }}>
-                      {formatDate(videoObj.created)}
-                    </VideoUploadDate>
-                  </Box>
-                )}
-              </BottomParent>
-            </VideoCard>
-          </VideoCardCol>
-        );
-      })}
+        }}
+      />
     </VideoCardContainer>
   );
 };

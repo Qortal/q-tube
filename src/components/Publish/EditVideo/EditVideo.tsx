@@ -53,6 +53,7 @@ import {
   NewCrowdfundTitle,
   TimesIcon,
 } from "./EditVideo-styles.tsx";
+import { useGlobal } from "qapp-core";
 
 const uid = new ShortUniqueId();
 const shortuid = new ShortUniqueId({ length: 5 });
@@ -60,6 +61,7 @@ const shortuid = new ShortUniqueId({ length: 5 });
 export const EditVideo = () => {
   const theme = useTheme();
   const dispatch = useDispatch();
+  const resource = useGlobal();
   const username = useSelector((state: RootState) => state.auth?.user?.name);
   const userAddress = useSelector(
     (state: RootState) => state.auth?.user?.address

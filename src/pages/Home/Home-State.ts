@@ -135,13 +135,7 @@ export const useHomeState = (mode: string) => {
     changeTab,
     videos,
     isLoading,
-    getVideosHandler,
-    filterName,
-    filterSearch,
-    filterValue,
-    filterType,
-    selectedCategoryVideos,
-    selectedSubCategoryVideos,
     filteredSubscriptionList,
+    getVideosHandler,
   };
 };

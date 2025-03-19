@@ -1,5 +1,6 @@
 import { useTestIdentifiers } from "./Identifiers.ts";
 
+export const appName = "Q-Tube";
 export const minPriceSuperLike = 1;
 export const minPriceSuperDislike = 1;
 

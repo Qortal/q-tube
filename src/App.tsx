@@ -7,6 +7,7 @@ import { persistStore } from "redux-persist";
 import { PersistGate } from "redux-persist/integration/react";
 import { subscriptionListFilter } from "./App-Functions.ts";
 import Notification from "./components/common/Notification/Notification";
+import { appName } from "./constants/Misc.ts";
 import { useIframe } from "./hooks/useIframe.tsx";
 import { IndividualProfile } from "./pages/ContentPages/IndividualProfile/IndividualProfile";
 import { PlaylistContent } from "./pages/ContentPages/PlaylistContent/PlaylistContent";
@@ -35,7 +36,12 @@ function App() {
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
-        <GlobalProvider>
+        <GlobalProvider
+          config={{
+            appName,
+            publicSalt: "usVbeM9YpjGCbLrTcc78YJS0ap1AxDkHAOMZrp3+wDY=",
+          }}
+        >
           <ThemeProvider theme={theme === "light" ? lightTheme : darkTheme}>
             <Notification />
             <DownloadWrapper>

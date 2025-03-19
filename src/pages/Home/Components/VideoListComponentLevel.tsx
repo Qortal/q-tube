@@ -106,7 +106,17 @@ export const VideoListComponentLevel = ({ mode }: VideoListProps) => {
           alignItems: "center",
         }}
       >
-        <VideoList videos={videos} />
+        <VideoList
+          listName={"ChannelVideos"}
+          searchParameters={{
+            identifier: QTUBE_VIDEO_BASE,
+            name: paramName,
+            service: "DOCUMENT",
+            offset: 0,
+            reverse: true,
+            limit: 20,
+          }}
+        />
         <LazyLoad onLoadMore={getVideos} isLoading={isLoading.value}></LazyLoad>
       </Box>
     </VideoManagerRow>

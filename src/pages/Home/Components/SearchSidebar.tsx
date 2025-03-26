@@ -22,9 +22,10 @@ import {
 } from "./VideoList-styles.tsx";
 
 export interface SearchSidebarProps {
-  onSearch: (reset?: boolean, resetFilters?: boolean) => void;
+  onSearch: () => void;
+  onReset: () => void;
 }
-export const SearchSidebar = ({ onSearch }: SearchSidebarProps) => {
+export const SearchSidebar = ({ onSearch, onReset }: SearchSidebarProps) => {
   const {
     filterSearch,
     filterName,
@@ -237,6 +238,7 @@ export const SearchSidebar = ({ onSearch }: SearchSidebarProps) => {
         <Button
           onClick={() => {
             filtersToDefault();
+            onReset();
           }}
           sx={{
             marginTop: "20px",
@@ -249,7 +251,7 @@ export const SearchSidebar = ({ onSearch }: SearchSidebarProps) => {
         </Button>
         <Button
           onClick={() => {
-            onSearch(true);
+            onSearch();
           }}
           sx={{
             marginTop: "20px",

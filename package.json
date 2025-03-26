@@ -21,7 +21,7 @@
     "dompurify": "^3.2.3",
     "localforage": "^1.10.0",
     "moment": "^2.30.1",
-    "qapp-core": "^1.0.8",
+    "qapp-core": "^1.0.9",
     "quill": "^2.0.2",
     "quill-image-resize-module-react": "^3.0.0",
     "react": "^19.0.0",

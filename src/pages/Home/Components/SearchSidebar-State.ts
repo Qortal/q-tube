@@ -52,7 +52,7 @@ export const useSidebarState = (
     setSelectedSubCategoryVideos(null);
 
     ReactDOM.flushSync(() => {
-      onSearch(true, true);
+      onSearch();
     });
   };
 

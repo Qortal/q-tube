@@ -61,10 +61,10 @@ export const Home = ({ mode }: HomeProps) => {
 
   let description: string = undefined;
   if (selectedCategoryVideos) {
-    description = `category:${selectedCategoryVideos}`;
+    description = `category:${selectedCategoryVideos.id};`;
 
     if (selectedSubCategoryVideos)
-      description += `;subcategory:${selectedSubCategoryVideos}`;
+      description += `subcategory:${selectedSubCategoryVideos.id}`;
   }
   const initialSearchParams = {
     identifier:
@@ -74,6 +74,7 @@ export const Home = ({ mode }: HomeProps) => {
     reverse: true,
     limit: 20,
     excludeBlocked: true,
+    description,
   };
   const [searchParametersBase, setSearchParametersBase] =
     useState<any>(initialSearchParams);
@@ -97,6 +98,7 @@ export const Home = ({ mode }: HomeProps) => {
               limit: 20,
             })
           }
+          onReset={() => setSearchParametersBase({ ...initialSearchParams })}
         />
         <Box
           sx={{

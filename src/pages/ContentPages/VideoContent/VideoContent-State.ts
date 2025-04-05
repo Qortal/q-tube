@@ -21,10 +21,12 @@ import React, {
 import { Avatar, Box, Typography, useTheme } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
+import { hashWordWithoutPublicSalt } from "qapp-core";
 
+const superLikeVersion2Timestamp = 1738785600000
 export const useVideoContentState = () => {
   const { name: channelName, id } = useParams();
-
+  const [superLikeversion, setSuperLikeVersion] = useState<null | number>(null)
   const [isExpandedDescription, setIsExpandedDescription] =
     useState<boolean>(false);
   const containerRef = useRef<videoRefType>(null);
@@ -110,9 +112,13 @@ export const useVideoContentState = () => {
         },
       });
       const responseDataSearch = await response.json();
-
+     
       if (responseDataSearch?.length > 0) {
+        
         let resourceData = responseDataSearch[0];
+        if(resourceData?.created > superLikeVersion2Timestamp){
+          setSuperLikeVersion(2)
+        } else setSuperLikeVersion(1)
         resourceData = {
           title: resourceData?.metadata?.title,
           category: resourceData?.metadata?.category,
@@ -156,6 +162,9 @@ export const useVideoContentState = () => {
 
       if (existingVideo) {
         setVideoData(existingVideo);
+        if(+existingVideo?.created > superLikeVersion2Timestamp){
+          setSuperLikeVersion(2)
+        } else setSuperLikeVersion(1)
       } else {
         getVideoData(channelName, id);
       }
@@ -171,22 +180,36 @@ export const useVideoContentState = () => {
     }
   }, [videoData]);
 
-  const getComments = useCallback(async (id, nameAddressParam) => {
+  const getComments = useCallback(async (id, nameAddressParam, superLikeVersion) => {
     if (!id) return;
     try {
       setLoadingSuperLikes(true);
-
-      const url = `/arbitrary/resources/search?mode=ALL&service=BLOG_COMMENT&query=${SUPER_LIKE_BASE}${id.slice(
-        0,
-        39
-      )}&limit=100&includemetadata=true&reverse=true&excludeblocked=true`;
-      const response = await fetch(url, {
+      const hashPostId = await hashWordWithoutPublicSalt(id, 20)
+      const urlV2 = `/arbitrary/resources/search?mode=ALL&service=BLOG_COMMENT&query=${SUPER_LIKE_BASE}${hashPostId}&limit=100&includemetadata=true&reverse=true&excludeblocked=true`;
+      let response = await fetch(urlV2, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
         },
       });
-      const responseData = await response.json();
+      let responseData = []
+      responseData = await response.json();
+      if(superLikeVersion === 1){
+        const urlV1 = `/arbitrary/resources/search?mode=ALL&service=BLOG_COMMENT&query=${SUPER_LIKE_BASE}${id.slice(
+          0,
+          39
+        )}&limit=100&includemetadata=true&reverse=true&excludeblocked=true`;
+        const responseV1 = await fetch(urlV1, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        const responseDataV1 = await responseV1.json();
+        responseData = [...responseData, ...responseDataV1]
+
+      }
+      
       let comments: any[] = [];
       for (const comment of responseData) {
         if (
@@ -233,9 +256,9 @@ export const useVideoContentState = () => {
   }, []);
 
   useEffect(() => {
-    if (!nameAddress || !id) return;
-    getComments(id, nameAddress);
-  }, [getComments, id, nameAddress]);
+    if (!nameAddress || !id || !superLikeversion) return;
+    getComments(id, nameAddress, superLikeversion);
+  }, [getComments, id, nameAddress, superLikeversion]);
 
   const focusVideo = () => {
     const focusRef = containerRef.current?.getContainerRef()?.current;
@@ -244,10 +267,9 @@ export const useVideoContentState = () => {
 
   useEffect(() => {
     focusVideo();
-  });
+  }, []);
 
   const focusVideoOnClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    console.log("in focusVideo");
     const target = e.target as Element;
 
     const textTagNames = ["TEXTAREA", "P", "H[1-6]", "STRONG", "svg", "A"];
@@ -260,7 +282,6 @@ export const useVideoContentState = () => {
     // @ts-ignore
     const clickOnEmptySpace = !target?.onclick && noText;
 
-    console.log("tagName is: ", target?.tagName);
     // clicking on link in superlikes bar shows deleted video when loading
 
     if (target == e.currentTarget || clickOnEmptySpace) {

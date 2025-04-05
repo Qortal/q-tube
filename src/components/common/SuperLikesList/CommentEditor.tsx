@@ -16,8 +16,9 @@ import {
   CommentInputContainer,
   SubmitCommentButton,
 } from "./Comments-styles";
+import { hashWordWithoutPublicSalt } from "qapp-core";
 
-const uid = new ShortUniqueId();
+const uid = new ShortUniqueId({ length: 7 });
 
 const notification = localforage.createInstance({
   name: "notification",
@@ -184,7 +185,6 @@ export const CommentEditor = ({
       }
       if (isSuperLike && !dataFile)
         throw new Error("unable to edit Super like");
-
       const resourceResponse = await qortalRequest({
         action: "PUBLISH_QDN_RESOURCE",
         name: name,
@@ -247,16 +247,14 @@ export const CommentEditor = ({
   const handleSubmit = async () => {
     try {
       const id = uid.rnd();
-
-      let identifier = `${COMMENT_BASE}${postId.slice(-12)}_base_${id}`;
+      const hashPostId = await hashWordWithoutPublicSalt(postId, 20)
+      let identifier = `${COMMENT_BASE}${hashPostId}_base_${id}`;
       let idForNotification = identifier;
       const service = "BLOG_COMMENT";
       if (isReply && commentId) {
         const removeBaseCommentId = commentId;
         removeBaseCommentId.replace("_base_", "");
-        identifier = `${COMMENT_BASE}${postId.slice(
-          -12
-        )}_reply_${removeBaseCommentId.slice(-6)}_${id}`;
+        identifier = `${COMMENT_BASE}${hashPostId}_reply_${removeBaseCommentId.slice(-6)}_${id}`;
         idForNotification = commentId;
       }
       if (isEdit && commentId) {

@@ -38,6 +38,7 @@ import {
   Spacer,
 } from "../../Publish/PublishVideo/PublishVideo-styles.tsx";
 import { CommentInput } from "../Comments/Comments-styles.tsx";
+import { hashWordWithoutPublicSalt } from "qapp-core";
 
 const uid = new ShortUniqueId({ length: 4 });
 
@@ -119,10 +120,8 @@ export const SuperDislike = ({
       )};id:${identifier.slice(-30)}**`;
 
       const id = uid.rnd();
-      const identifierSuperDislike = `${SUPER_LIKE_BASE}${identifier.slice(
-        0,
-        39
-      )}_${id}`;
+      const hashPostId = await hashWordWithoutPublicSalt(identifier, 20)
+      const identifierSuperDislike = `${SUPER_LIKE_BASE}${hashPostId}_${id}`;
 
       const superLikeToBase64 = await objectToBase64({
         comment,

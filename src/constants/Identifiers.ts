@@ -1,4 +1,4 @@
-export const useTestIdentifiers = false;
+export const useTestIdentifiers = true;
 export const QTUBE_VIDEO_BASE = useTestIdentifiers
   ? "MYTEST_vid_"
   : "qtube_vid_";
@@ -12,8 +12,8 @@ export const SUPER_LIKE_BASE = useTestIdentifiers
 export const LIKE_BASE = useTestIdentifiers ? "MYTEST_like_" : "qtube_like_";
 
 export const COMMENT_BASE = useTestIdentifiers
-  ? "qcomment_v1_MYTEST_"
-  : "qcomment_v1_qtube_";
+  ? "qc_v1_MYTEST_"
+  : "qc_v1_qtube_";
 export const FOR = useTestIdentifiers ? "FORTEST5" : "FOR0962";
 export const FOR_SUPER_LIKE = useTestIdentifiers ? "MYTEST_sl" : `qtube_sl`;
 export const FOR_LIKE = useTestIdentifiers ? "MYTEST_like" : `qtube_like`;

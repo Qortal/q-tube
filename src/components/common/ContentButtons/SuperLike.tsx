@@ -114,7 +114,7 @@ export const SuperLike = ({
       const hashPostId = await hashWordWithoutPublicSalt(identifier, 20)
 
       const metadescription = `**sig:${
-        res?.data?.signature
+        res?.signature
       };${FOR}:${name}_${FOR_SUPER_LIKE};nm:${name.slice(
         0,
         20
@@ -125,7 +125,7 @@ export const SuperLike = ({
      
       const superLikeToBase64 = await objectToBase64({
         comment,
-        transactionReference: res?.data?.signature,
+        transactionReference: res?.signature,
         notificationInformation: {
           name,
           identifier,

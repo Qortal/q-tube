@@ -19,6 +19,7 @@ import {
   CrowdfundSubTitleRow,
 } from "../../Publish/PublishVideo/PublishVideo-styles.tsx";
 import { COMMENT_BASE } from "../../../constants/Identifiers.ts";
+import { hashWordWithoutPublicSalt } from "qapp-core";
 
 interface CommentSectionProps {
   postId: string;
@@ -57,7 +58,7 @@ export const SuperLikesSection = ({
   superlikes,
   postId,
   postName,
-  getMore,
+  getMore
 }: CommentSectionProps) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -119,9 +120,9 @@ export const SuperLikesSection = ({
       const offset = 0;
 
       const removeBaseCommentId = commentId.replace("_base_", "");
-      const url = `/arbitrary/resources/search?mode=ALL&service=BLOG_COMMENT&query=${COMMENT_BASE}${postId.slice(
-        -12
-      )}_reply_${removeBaseCommentId.slice(
+      const hashPostId = await hashWordWithoutPublicSalt(postId, 20)
+
+      const url = `/arbitrary/resources/search?mode=ALL&service=BLOG_COMMENT&query=${COMMENT_BASE}${hashPostId}_reply_${removeBaseCommentId.slice(
         -6
       )}&limit=0&includemetadata=false&offset=${offset}&reverse=false&excludeblocked=true`;
       const response = await fetch(url, {

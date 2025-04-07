@@ -38,8 +38,9 @@ import {
   Spacer,
 } from "../../Publish/PublishVideo/PublishVideo-styles.tsx";
 import { CommentInput } from "../Comments/Comments-styles.tsx";
+import { hashWordWithoutPublicSalt } from "qapp-core";
 
-const uid = new ShortUniqueId({ length: 4 });
+const uid = new ShortUniqueId({ length: 7 });
 
 export const SuperLike = ({
   onSuccess,
@@ -109,23 +110,22 @@ export const SuperLike = ({
         destinationAddress: address,
         amount: superlikeDonationAmount,
       });
+    
+      const hashPostId = await hashWordWithoutPublicSalt(identifier, 20)
 
       const metadescription = `**sig:${
-        res.signature
+        res?.signature
       };${FOR}:${name}_${FOR_SUPER_LIKE};nm:${name.slice(
         0,
         20
-      )};id:${identifier.slice(-30)}**`;
-
+      )}**`;
       const id = uid.rnd();
-      const identifierSuperLike = `${SUPER_LIKE_BASE}${identifier.slice(
-        0,
-        39
-      )}_${id}`;
 
+      const identifierSuperLike = `${SUPER_LIKE_BASE}${hashPostId}_${id}`;
+     
       const superLikeToBase64 = await objectToBase64({
         comment,
-        transactionReference: res.signature,
+        transactionReference: res?.signature,
         notificationInformation: {
           name,
           identifier,

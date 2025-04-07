@@ -19,6 +19,7 @@ import {
   CrowdfundSubTitleRow,
 } from "../../Publish/PublishVideo/PublishVideo-styles.tsx";
 import { COMMENT_BASE } from "../../../constants/Identifiers.ts";
+import { hashWordWithoutPublicSalt } from "qapp-core";
 
 interface CommentSectionProps {
   postId: string;
@@ -106,11 +107,9 @@ export const CommentSection = ({ postId, postName }: CommentSectionProps) => {
   const getReplies = useCallback(
     async (commentId, postId) => {
       const offset = 0;
-
+ const hashPostId = await hashWordWithoutPublicSalt(postId, 20)
       const removeBaseCommentId = commentId.replace("_base_", "");
-      const url = `/arbitrary/resources/search?mode=ALL&service=BLOG_COMMENT&query=${COMMENT_BASE}${postId.slice(
-        -12
-      )}_reply_${removeBaseCommentId.slice(
+      const url = `/arbitrary/resources/search?mode=ALL&service=BLOG_COMMENT&query=${COMMENT_BASE}${hashPostId}_reply_${removeBaseCommentId.slice(
         -6
       )}&limit=0&includemetadata=false&offset=${offset}&reverse=false&excludeblocked=true`;
 
@@ -155,9 +154,8 @@ export const CommentSection = ({ postId, postName }: CommentSectionProps) => {
         if (isNewMessages && numberOfComments) {
           offset = numberOfComments;
         }
-        const url = `/arbitrary/resources/search?mode=ALL&service=BLOG_COMMENT&query=${COMMENT_BASE}${postId.slice(
-          -12
-        )}_base_&limit=20&includemetadata=false&offset=${offset}&reverse=false&excludeblocked=true`;
+        const hashPostId = await hashWordWithoutPublicSalt(postId, 20)
+        const url = `/arbitrary/resources/search?mode=ALL&service=BLOG_COMMENT&query=${COMMENT_BASE}${hashPostId}_base_&limit=20&includemetadata=false&offset=${offset}&reverse=false&excludeblocked=true`;
         const response = await fetch(url, {
           method: "GET",
           headers: {

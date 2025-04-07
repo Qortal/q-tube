@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../../state/store";
 import ShortUniqueId from "short-unique-id";
 import { setNotification } from "../../../state/features/notificationsSlice";
+import {hashWordWithoutPublicSalt} from 'qapp-core'
 import {
   publishFormatter,
   stringToFile,
@@ -16,7 +17,7 @@ import {
 } from "./Comments-styles";
 
 import { COMMENT_BASE } from "../../../constants/Identifiers.ts";
-const uid = new ShortUniqueId();
+const uid = new ShortUniqueId({ length: 7 });
 
 const notification = localforage.createInstance({
   name: "notification",
@@ -202,16 +203,14 @@ export const CommentEditor = ({
   const handleSubmit = async () => {
     try {
       const id = uid.rnd();
-
-      let identifier = `${COMMENT_BASE}${postId.slice(-12)}_base_${id}`;
+      const hashPostId = await hashWordWithoutPublicSalt(postId, 20)
+      let identifier = `${COMMENT_BASE}${hashPostId}_base_${id}`;
       let idForNotification = identifier;
 
       if (isReply && commentId) {
         const removeBaseCommentId = commentId;
         removeBaseCommentId.replace("_base_", "");
-        identifier = `${COMMENT_BASE}${postId.slice(
-          -12
-        )}_reply_${removeBaseCommentId.slice(-6)}_${id}`;
+        identifier = `${COMMENT_BASE}${hashPostId}_reply_${removeBaseCommentId.slice(-6)}_${id}`;
         idForNotification = commentId;
       }
       if (isEdit && commentId) {

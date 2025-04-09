@@ -1,5 +1,5 @@
 import DownloadIcon from "@mui/icons-material/Download";
-import { Box, ButtonBase, SxProps, Theme, useMediaQuery } from "@mui/material";
+import { Box, IconButton, SxProps, Theme, useMediaQuery } from "@mui/material";
 import { useMemo } from "react";
 import { LikeAndDislike } from "../../../components/common/ContentButtons/LikeAndDislike.tsx";
 import { SuperLike } from "../../../components/common/ContentButtons/SuperLike.tsx";
@@ -8,6 +8,7 @@ import ShareIcon from '@mui/icons-material/Share'
 import { useDispatch, useSelector } from 'react-redux'
 import { setNotification } from '../../../state/features/notificationsSlice'
 import FileElement from "../../../components/common/FileElement.tsx";
+import TravelExploreIcon from '@mui/icons-material/TravelExplore';
 import {
   smallScreenSizeString,
   titleFormatterOnSave,
@@ -17,6 +18,11 @@ import {
   FileAttachmentContainer,
   FileAttachmentFont,
 } from "./VideoContent-styles.tsx";
+import { createQortalLink, IndexCategory, useGlobal } from "qapp-core";
+import { useLocation } from "react-router-dom";
+
+
+
 
 export interface VideoActionsBarProps {
   channelName: string;
@@ -27,6 +33,11 @@ export interface VideoActionsBarProps {
   sx?: SxProps<Theme>;
 }
 
+function replaceAppNameInQortalUrl(url: string, newAppName: string): string {
+  return url.replace(/(qortal:\/\/APP\/)[^/]+/, `$1${newAppName}`);
+}
+
+
 export const VideoActionsBar = ({
   channelName,
   videoData,
@@ -35,6 +46,9 @@ export const VideoActionsBar = ({
   setSuperLikeList,
   sx,
 }: VideoActionsBarProps) => {
+  const location = useLocation();
+
+  const openPageIndexManager = useGlobal().indexOperations.openPageIndexManager;
   const calculateAmountSuperlike = useMemo(() => {
     const totalQort = superLikeList?.reduce((acc, curr) => {
       if (curr?.amount && !isNaN(parseFloat(curr.amount)))
@@ -112,6 +126,15 @@ export const VideoActionsBar = ({
                 setSuperLikeList(prev => [val, ...prev]);
               }}
             />
+            <IconButton onClick={()=> {
+              const link = createQortalLink( "APP", "Q-Tube", location.pathname)
+              openPageIndexManager({
+                link: link,
+                name: channelName,
+                category: IndexCategory.PUBLIC_PAGE_VIDEO,
+                rootName: 'Q-Tube',
+              });
+            }}><TravelExploreIcon /></IconButton>
           </>
         )}
           </Box>
@@ -121,7 +144,7 @@ export const VideoActionsBar = ({
                       cursor: 'pointer'
                   }}
               >
-                  <ButtonBase   
+                  <ButtonBase
                       onClick={() => {
                           navigator.clipboard.writeText(`qortal://APP/Q-Tube/video/${videoData?.user}/${videoData?.id}`).then(() => {
                               dispatch(
@@ -129,7 +152,7 @@ export const VideoActionsBar = ({
                                       msg: 'Copied to clipboard!',
                                       alertType: 'success'
                                   })
-                              )    
+                              )
                           })
                       }}
                   >

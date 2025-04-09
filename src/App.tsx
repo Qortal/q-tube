@@ -1,7 +1,7 @@
 import { CssBaseline } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
 import { useEffect, useState } from "react";
-import { Provider } from "react-redux";
+import { Provider, useSelector } from "react-redux";
 import { Route, Routes } from "react-router-dom";
 import { persistStore } from "redux-persist";
 import { PersistGate } from "redux-persist/integration/react";
@@ -13,16 +13,18 @@ import { PlaylistContent } from "./pages/ContentPages/PlaylistContent/PlaylistCo
 import { VideoContent } from "./pages/ContentPages/VideoContent/VideoContent";
 import { Home } from "./pages/Home/Home";
 import { setFilteredSubscriptions } from "./state/features/videoSlice.ts";
-import { store, persistor } from "./state/store";
+import { store, persistor, RootState } from "./state/store";
 import { darkTheme, lightTheme } from "./styles/theme";
 import DownloadWrapper from "./wrappers/DownloadWrapper";
 import GlobalWrapper from "./wrappers/GlobalWrapper";
 import { ScrollWrapper } from "./wrappers/ScrollWrapper.tsx";
+import { QappCoreWrapper } from "./QappCoreWrapper.tsx";
 
 function App() {
   // const themeColor = window._qdnTheme
 
   const [theme, setTheme] = useState("dark");
+
   useIframe();
 
   useEffect(() => {
@@ -35,6 +37,7 @@ function App() {
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <ThemeProvider theme={theme === "light" ? lightTheme : darkTheme}>
+        <QappCoreWrapper>
           <Notification />
           <DownloadWrapper>
             <GlobalWrapper setTheme={(val: string) => setTheme(val)}>
@@ -55,6 +58,7 @@ function App() {
               </ScrollWrapper>
             </GlobalWrapper>
           </DownloadWrapper>
+          </QappCoreWrapper>
         </ThemeProvider>
       </PersistGate>
     </Provider>

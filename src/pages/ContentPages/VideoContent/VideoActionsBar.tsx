@@ -1,8 +1,12 @@
 import DownloadIcon from "@mui/icons-material/Download";
-import { Box, SxProps, Theme, useMediaQuery } from "@mui/material";
+import { Box, ButtonBase, SxProps, Theme, useMediaQuery } from "@mui/material";
 import { useMemo } from "react";
 import { LikeAndDislike } from "../../../components/common/ContentButtons/LikeAndDislike.tsx";
 import { SuperLike } from "../../../components/common/ContentButtons/SuperLike.tsx";
+import Tooltip, { TooltipProps, tooltipClasses } from "@mui/material/Tooltip";
+import ShareIcon from '@mui/icons-material/Share'
+import { useDispatch, useSelector } from 'react-redux'
+import { setNotification } from '../../../state/features/notificationsSlice'
 import FileElement from "../../../components/common/FileElement.tsx";
 import {
   smallScreenSizeString,
@@ -43,6 +47,8 @@ export const VideoActionsBar = ({
   const numberOfSuperlikes = useMemo(() => {
     return superLikeList?.length ?? 0;
   }, [superLikeList]);
+
+  const dispatch = useDispatch()
 
   const saveAsFilename = useMemo(() => {
     // nb. we prefer to construct the local filename to use for
@@ -108,7 +114,30 @@ export const VideoActionsBar = ({
             />
           </>
         )}
-      </Box>
+          </Box>
+          <Tooltip title={`Copy video link`} arrow>
+              <Box
+                  sx={{
+                      cursor: 'pointer'
+                  }}
+              >
+                  <ButtonBase   
+                      onClick={() => {
+                          navigator.clipboard.writeText(`qortal://APP/Q-Tube/video/${videoData?.user}/${videoData?.id}`).then(() => {
+                              dispatch(
+                                  setNotification({
+                                      msg: 'Copied to clipboard!',
+                                      alertType: 'success'
+                                  })
+                              )    
+                          })
+                      }}
+                  >
+                      <ShareIcon />
+                  </ButtonBase>
+              </Box>
+          </Tooltip>
+
 
       {videoData && (
         <FileAttachmentContainer sx={{ width: "100%", maxWidth: "340px" }}>

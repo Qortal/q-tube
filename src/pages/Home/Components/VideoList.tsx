@@ -29,6 +29,7 @@ import {
   VideoCardTitle,
   VideoUploadDate,
 } from "./VideoList-styles.tsx";
+import ContextMenuResource from '../../../components/common/ContextMenu/ContextMenuResource'
 
 interface VideoListProps {
   videos: Video[];
@@ -64,7 +65,7 @@ export const VideoList = ({ videos }: VideoListProps) => {
     }
   };
 
-  return (
+    return (
     <VideoCardContainer>
       {videos.map((video: any) => {
         const fullId = video ? `${video.id}-${video.user}` : undefined;
@@ -91,7 +92,7 @@ export const VideoList = ({ videos }: VideoListProps) => {
         const isPlaylist = videoObj?.service === "PLAYLIST";
 
         if (isPlaylist) {
-          return (
+            return (
             <VideoCardCol
               onMouseEnter={() => setShowIcons(videoObj.id)}
               onMouseLeave={() => setShowIcons(null)}
@@ -127,7 +128,7 @@ export const VideoList = ({ videos }: VideoListProps) => {
                   </Tooltip>
                 )}
               </IconsBox>
-
+               
               <VideoCard
                 sx={{
                   cursor: !hasHash && "default",
@@ -190,11 +191,17 @@ export const VideoList = ({ videos }: VideoListProps) => {
                   </Box>
                 </BottomParent>
               </VideoCard>
-            </VideoCardCol>
+              </VideoCardCol>
           );
         }
 
-        return (
+          return (
+          <ContextMenuResource
+            name={video.user}
+            service="VIDEO"
+            identifier={video.id}
+            link={`qortal://APP/Q-Tube/video/${video.user}/${video.id}`}
+          >
           <VideoCardCol
             key={videoObj.id}
             onMouseEnter={() => setShowIcons(videoObj.id)}
@@ -292,7 +299,8 @@ export const VideoList = ({ videos }: VideoListProps) => {
                 )}
               </BottomParent>
             </VideoCard>
-          </VideoCardCol>
+            </VideoCardCol>
+          </ContextMenuResource>
         );
       })}
     </VideoCardContainer>

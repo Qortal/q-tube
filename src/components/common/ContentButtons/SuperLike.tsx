@@ -39,6 +39,7 @@ import {
 } from "../../Publish/PublishVideo/PublishVideo-styles.tsx";
 import { CommentInput } from "../Comments/Comments-styles.tsx";
 import { hashWordWithoutPublicSalt } from "qapp-core";
+import { CustomTooltip } from "./CustomTooltip.tsx";
 
 const uid = new ShortUniqueId({ length: 7 });
 
@@ -110,19 +111,16 @@ export const SuperLike = ({
         destinationAddress: address,
         amount: superlikeDonationAmount,
       });
-    
-      const hashPostId = await hashWordWithoutPublicSalt(identifier, 20)
+
+      const hashPostId = await hashWordWithoutPublicSalt(identifier, 20);
 
       const metadescription = `**sig:${
         res?.signature
-      };${FOR}:${name}_${FOR_SUPER_LIKE};nm:${name.slice(
-        0,
-        20
-      )}**`;
+      };${FOR}:${name}_${FOR_SUPER_LIKE};nm:${name.slice(0, 20)}**`;
       const id = uid.rnd();
 
       const identifierSuperLike = `${SUPER_LIKE_BASE}${hashPostId}_${id}`;
-     
+
       const superLikeToBase64 = await objectToBase64({
         comment,
         transactionReference: res?.signature,
@@ -204,7 +202,7 @@ export const SuperLike = ({
           flexShrink: 0,
         }}
       >
-        <Tooltip title="Super Like" placement="top">
+        <CustomTooltip title="Super Like" placement="top">
           <Box
             sx={{
               padding: "5px",
@@ -248,7 +246,7 @@ export const SuperLike = ({
               </div>
             )}
           </Box>
-        </Tooltip>
+        </CustomTooltip>
       </Box>
       <Modal
         open={isOpen}

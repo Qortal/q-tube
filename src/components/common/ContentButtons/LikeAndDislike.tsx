@@ -10,6 +10,7 @@ import ShortUniqueId from "short-unique-id";
 import { objectToBase64 } from "../../../utils/PublishFormatter.ts";
 import { RootState } from "../../../state/store.ts";
 import { FOR, FOR_LIKE, LIKE_BASE } from "../../../constants/Identifiers.ts";
+import { CustomTooltip } from "./CustomTooltip.tsx";
 import {
   formatLikeCount,
   getCurrentLikesAndDislikesCount,
@@ -155,7 +156,7 @@ export const LikeAndDislike = ({ name, identifier }: LikeAndDislikeProps) => {
           flexShrink: 0,
         }}
       >
-        <Tooltip title="Like or Dislike Video" placement="top">
+        <CustomTooltip title="Like or Dislike Video" placement="top">
           <Box
             sx={{
               padding: "5px",
@@ -219,7 +220,7 @@ export const LikeAndDislike = ({ name, identifier }: LikeAndDislikeProps) => {
               </div>
             )}
           </Box>
-        </Tooltip>
+        </CustomTooltip>
       </Box>
     </>
   );

@@ -1,28 +1,21 @@
 import DownloadIcon from "@mui/icons-material/Download";
-import { Box, IconButton, SxProps, Theme, useMediaQuery } from "@mui/material";
+import ShareIcon from "@mui/icons-material/Share";
+import { Box, ButtonBase, SxProps, Theme } from "@mui/material";
+import Tooltip from "@mui/material/Tooltip";
 import { useMemo } from "react";
+import { useDispatch } from "react-redux";
+import { CustomTooltip } from "../../../components/common/ContentButtons/CustomTooltip.tsx";
+import { IndexButton } from "../../../components/common/ContentButtons/IndexButton.tsx";
 import { LikeAndDislike } from "../../../components/common/ContentButtons/LikeAndDislike.tsx";
 import { SuperLike } from "../../../components/common/ContentButtons/SuperLike.tsx";
-import Tooltip, { TooltipProps, tooltipClasses } from "@mui/material/Tooltip";
-import ShareIcon from '@mui/icons-material/Share'
-import { useDispatch, useSelector } from 'react-redux'
-import { setNotification } from '../../../state/features/notificationsSlice'
 import FileElement from "../../../components/common/FileElement.tsx";
-import TravelExploreIcon from '@mui/icons-material/TravelExplore';
-import {
-  smallScreenSizeString,
-  titleFormatterOnSave,
-} from "../../../constants/Misc.ts";
+import { titleFormatterOnSave } from "../../../constants/Misc.ts";
+import { setNotification } from "../../../state/features/notificationsSlice";
 import { ChannelActions } from "./ChannelActions.tsx";
 import {
   FileAttachmentContainer,
   FileAttachmentFont,
 } from "./VideoContent-styles.tsx";
-import { createQortalLink, IndexCategory, useGlobal } from "qapp-core";
-import { useLocation } from "react-router-dom";
-
-
-
 
 export interface VideoActionsBarProps {
   channelName: string;
@@ -37,7 +30,6 @@ function replaceAppNameInQortalUrl(url: string, newAppName: string): string {
   return url.replace(/(qortal:\/\/APP\/)[^/]+/, `$1${newAppName}`);
 }
 
-
 export const VideoActionsBar = ({
   channelName,
   videoData,
@@ -46,9 +38,6 @@ export const VideoActionsBar = ({
   setSuperLikeList,
   sx,
 }: VideoActionsBarProps) => {
-  const location = useLocation();
-
-  const openPageIndexManager = useGlobal().indexOperations.openPageIndexManager;
   const calculateAmountSuperlike = useMemo(() => {
     const totalQort = superLikeList?.reduce((acc, curr) => {
       if (curr?.amount && !isNaN(parseFloat(curr.amount)))
@@ -62,7 +51,7 @@ export const VideoActionsBar = ({
     return superLikeList?.length ?? 0;
   }, [superLikeList]);
 
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
   const saveAsFilename = useMemo(() => {
     // nb. we prefer to construct the local filename to use for
@@ -126,41 +115,36 @@ export const VideoActionsBar = ({
                 setSuperLikeList(prev => [val, ...prev]);
               }}
             />
-            <IconButton onClick={()=> {
-              const link = createQortalLink( "APP", "Q-Tube", location.pathname)
-              openPageIndexManager({
-                link: link,
-                name: channelName,
-                category: IndexCategory.PUBLIC_PAGE_VIDEO,
-                rootName: 'Q-Tube',
-              });
-            }}><TravelExploreIcon /></IconButton>
+            <IndexButton channelName={channelName} />
           </>
         )}
-          </Box>
-          <Tooltip title={`Copy video link`} arrow>
-              <Box
-                  sx={{
-                      cursor: 'pointer'
-                  }}
-              >
-                  <ButtonBase
-                      onClick={() => {
-                          navigator.clipboard.writeText(`qortal://APP/Q-Tube/video/${videoData?.user}/${videoData?.id}`).then(() => {
-                              dispatch(
-                                  setNotification({
-                                      msg: 'Copied to clipboard!',
-                                      alertType: 'success'
-                                  })
-                              )
-                          })
-                      }}
-                  >
-                      <ShareIcon />
-                  </ButtonBase>
-              </Box>
-          </Tooltip>
-
+      </Box>
+      <CustomTooltip title={`Copy video link`} placement={"top"} arrow>
+        <Box
+          sx={{
+            cursor: "pointer",
+          }}
+        >
+          <ButtonBase
+            onClick={() => {
+              navigator.clipboard
+                .writeText(
+                  `qortal://APP/Q-Tube/video/${videoData?.user}/${videoData?.id}`
+                )
+                .then(() => {
+                  dispatch(
+                    setNotification({
+                      msg: "Copied to clipboard!",
+                      alertType: "success",
+                    })
+                  );
+                });
+            }}
+          >
+            <ShareIcon />
+          </ButtonBase>
+        </Box>
+      </CustomTooltip>
 
       {videoData && (
         <FileAttachmentContainer sx={{ width: "100%", maxWidth: "340px" }}>

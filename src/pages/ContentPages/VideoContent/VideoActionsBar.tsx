@@ -1,16 +1,13 @@
 import DownloadIcon from "@mui/icons-material/Download";
-import ShareIcon from "@mui/icons-material/Share";
-import { Box, ButtonBase, SxProps, Theme } from "@mui/material";
-import Tooltip from "@mui/material/Tooltip";
+import { Box, SxProps, Theme } from "@mui/material";
 import { useMemo } from "react";
 import { useDispatch } from "react-redux";
-import { CustomTooltip } from "../../../components/common/ContentButtons/CustomTooltip.tsx";
+import { CopyLinkButton } from "../../../components/common/ContentButtons/CopyLinkButton.tsx";
 import { IndexButton } from "../../../components/common/ContentButtons/IndexButton.tsx";
 import { LikeAndDislike } from "../../../components/common/ContentButtons/LikeAndDislike.tsx";
 import { SuperLike } from "../../../components/common/ContentButtons/SuperLike.tsx";
 import FileElement from "../../../components/common/FileElement.tsx";
 import { titleFormatterOnSave } from "../../../constants/Misc.ts";
-import { setNotification } from "../../../state/features/notificationsSlice";
 import { ChannelActions } from "./ChannelActions.tsx";
 import {
   FileAttachmentContainer,
@@ -115,36 +112,16 @@ export const VideoActionsBar = ({
                 setSuperLikeList(prev => [val, ...prev]);
               }}
             />
-            <IndexButton channelName={channelName} />
           </>
         )}
       </Box>
-      <CustomTooltip title={`Copy video link`} placement={"top"} arrow>
-        <Box
-          sx={{
-            cursor: "pointer",
-          }}
-        >
-          <ButtonBase
-            onClick={() => {
-              navigator.clipboard
-                .writeText(
-                  `qortal://APP/Q-Tube/video/${videoData?.user}/${videoData?.id}`
-                )
-                .then(() => {
-                  dispatch(
-                    setNotification({
-                      msg: "Copied to clipboard!",
-                      alertType: "success",
-                    })
-                  );
-                });
-            }}
-          >
-            <ShareIcon />
-          </ButtonBase>
-        </Box>
-      </CustomTooltip>
+      <Box sx={{ display: "flex", gap: "5px" }}>
+        <IndexButton channelName={channelName} />
+        <CopyLinkButton
+          link={`qortal://APP/Q-Tube/video/${videoData?.user}/${videoData?.id}`}
+          tooltipTitle={`Copy video link`}
+        />
+      </Box>
 
       {videoData && (
         <FileAttachmentContainer sx={{ width: "100%", maxWidth: "340px" }}>

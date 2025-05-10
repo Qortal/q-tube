@@ -9,6 +9,7 @@ import {
 } from "../../../state/features/persistSlice.ts";
 import { setFilteredSubscriptions } from "../../../state/features/videoSlice.ts";
 import { styled } from "@mui/material/styles";
+import { CustomTooltip, TooltipLine } from "./CustomTooltip.tsx";
 
 interface SubscribeButtonProps extends ButtonProps {
   subscriberName: string;
@@ -94,10 +95,6 @@ export const SubscribeButton = ({
     ...props.sx,
   };
 
-  const TooltipLine = styled("div")(({ theme }) => ({
-    fontSize: "18px",
-  }));
-
   const tooltipTitle = (
     <>
       <TooltipLine>
@@ -108,7 +105,7 @@ export const SubscribeButton = ({
   );
 
   return (
-    <Tooltip title={tooltipTitle} placement={"top"} arrow>
+    <CustomTooltip title={tooltipTitle} placement={"top"} arrow>
       <Button
         {...props}
         variant={"contained"}
@@ -118,6 +115,6 @@ export const SubscribeButton = ({
       >
         {isSubscribed ? "Unsubscribe" : "Subscribe"}
       </Button>
-    </Tooltip>
+    </CustomTooltip>
   );
 };

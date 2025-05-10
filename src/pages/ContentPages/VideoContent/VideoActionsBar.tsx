@@ -1,17 +1,13 @@
 import DownloadIcon from "@mui/icons-material/Download";
-import { Box, ButtonBase, SxProps, Theme, useMediaQuery } from "@mui/material";
+import { Box, SxProps, Theme } from "@mui/material";
 import { useMemo } from "react";
+import { useDispatch } from "react-redux";
+import { CopyLinkButton } from "../../../components/common/ContentButtons/CopyLinkButton.tsx";
+import { IndexButton } from "../../../components/common/ContentButtons/IndexButton.tsx";
 import { LikeAndDislike } from "../../../components/common/ContentButtons/LikeAndDislike.tsx";
 import { SuperLike } from "../../../components/common/ContentButtons/SuperLike.tsx";
-import Tooltip, { TooltipProps, tooltipClasses } from "@mui/material/Tooltip";
-import ShareIcon from '@mui/icons-material/Share'
-import { useDispatch, useSelector } from 'react-redux'
-import { setNotification } from '../../../state/features/notificationsSlice'
 import FileElement from "../../../components/common/FileElement.tsx";
-import {
-  smallScreenSizeString,
-  titleFormatterOnSave,
-} from "../../../constants/Misc.ts";
+import { titleFormatterOnSave } from "../../../constants/Misc.ts";
 import { ChannelActions } from "./ChannelActions.tsx";
 import {
   FileAttachmentContainer,
@@ -25,6 +21,10 @@ export interface VideoActionsBarProps {
   superLikeList: any[];
   setSuperLikeList: React.Dispatch<React.SetStateAction<any[]>>;
   sx?: SxProps<Theme>;
+}
+
+function replaceAppNameInQortalUrl(url: string, newAppName: string): string {
+  return url.replace(/(qortal:\/\/APP\/)[^/]+/, `$1${newAppName}`);
 }
 
 export const VideoActionsBar = ({
@@ -48,7 +48,7 @@ export const VideoActionsBar = ({
     return superLikeList?.length ?? 0;
   }, [superLikeList]);
 
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
   const saveAsFilename = useMemo(() => {
     // nb. we prefer to construct the local filename to use for
@@ -114,30 +114,14 @@ export const VideoActionsBar = ({
             />
           </>
         )}
-          </Box>
-          <Tooltip title={`Copy video link`} arrow>
-              <Box
-                  sx={{
-                      cursor: 'pointer'
-                  }}
-              >
-                  <ButtonBase   
-                      onClick={() => {
-                          navigator.clipboard.writeText(`qortal://APP/Q-Tube/video/${videoData?.user}/${videoData?.id}`).then(() => {
-                              dispatch(
-                                  setNotification({
-                                      msg: 'Copied to clipboard!',
-                                      alertType: 'success'
-                                  })
-                              )    
-                          })
-                      }}
-                  >
-                      <ShareIcon />
-                  </ButtonBase>
-              </Box>
-          </Tooltip>
-
+      </Box>
+      <Box sx={{ display: "flex", gap: "5px" }}>
+        <IndexButton channelName={channelName} />
+        <CopyLinkButton
+          link={`qortal://APP/Q-Tube/video/${videoData?.user}/${videoData?.id}`}
+          tooltipTitle={`Copy video link`}
+        />
+      </Box>
 
       {videoData && (
         <FileAttachmentContainer sx={{ width: "100%", maxWidth: "340px" }}>

@@ -2,6 +2,7 @@ import { Box, Button, ButtonProps } from "@mui/material";
 import Tooltip, { TooltipProps, tooltipClasses } from "@mui/material/Tooltip";
 import { MouseEvent, useEffect, useState } from "react";
 import { styled } from "@mui/material/styles";
+import { CustomTooltip, TooltipLine } from "./CustomTooltip.tsx";
 
 interface FollowButtonProps extends ButtonProps {
   followerName: string;
@@ -116,10 +117,6 @@ export const FollowButton = ({ followerName, ...props }: FollowButtonProps) => {
     return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
   }
 
-  const TooltipLine = styled("div")(({ theme }) => ({
-    fontSize: "18px",
-  }));
-
   const tooltipTitle = followingSize && (
     <>
       <TooltipLine>
@@ -133,17 +130,9 @@ export const FollowButton = ({ followerName, ...props }: FollowButtonProps) => {
     </>
   );
 
-  const CustomWidthTooltip = styled(({ className, ...props }: TooltipProps) => (
-    <Tooltip {...props} classes={{ popper: className }} />
-  ))({
-    [`& .${tooltipClasses.tooltip}`]: {
-      maxWidth: 600,
-    },
-  });
-
   return (
     <>
-      <CustomWidthTooltip title={tooltipTitle} placement={"top"} arrow>
+      <CustomTooltip title={tooltipTitle} placement={"top"} arrow>
         <Button
           {...props}
           variant={"contained"}
@@ -153,7 +142,7 @@ export const FollowButton = ({ followerName, ...props }: FollowButtonProps) => {
         >
           {isFollowingName() ? "Unfollow" : "Follow"}
         </Button>
-      </CustomWidthTooltip>
+      </CustomTooltip>
     </>
   );
 };

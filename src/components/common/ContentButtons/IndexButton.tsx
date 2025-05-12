@@ -2,6 +2,7 @@ import SavedSearchIcon from "@mui/icons-material/SavedSearch";
 import { IconButton, Tooltip } from "@mui/material";
 import { createQortalLink, IndexCategory, useGlobal } from "qapp-core";
 import { CustomTooltip } from "./CustomTooltip.tsx";
+import { useLocation } from "react-router-dom";
 
 export interface IndexButtonProps {
   channelName: string;
@@ -9,6 +10,7 @@ export interface IndexButtonProps {
 
 export const IndexButton = ({ channelName }: IndexButtonProps) => {
   const openPageIndexManager = useGlobal().indexOperations.openPageIndexManager;
+  const location = useLocation();
 
   return (
     <CustomTooltip title={`Index Video`} arrow placement={"top"}>

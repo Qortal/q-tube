@@ -4,7 +4,7 @@ import {
   CrowdfundSubTitle,
   CrowdfundSubTitleRow,
 } from "../PublishVideo/PublishVideo-styles.tsx";
-import { Box, Button, Input, Typography, useTheme } from "@mui/material";
+import { Box, Button, Input, RadioGroup, Radio, Typography, useTheme, FormControlLabel } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { removeVideo } from "../../../state/features/videoSlice.ts";
@@ -19,8 +19,20 @@ export const PlaylistListEdit = ({ playlistData, removeVideo, addVideo }) => {
 
   const [searchResults, setSearchResults] = useState([]);
   const [filterSearch, setFilterSearch] = useState("");
+  const [userSearch, setUserSearch] = useState(`name=${username}&exactmatchnames=true&`);
+
+  const handleRadioChange = (event) => {
+    const value = event.target.value;
+    if (value === "myVideos") {
+      setUserSearch(`name=${username}&exactmatchnames=true&`);
+    } else {
+      setUserSearch(""); // All videos
+    }
+  };
+
   const search = async () => {
-    const url = `/arbitrary/resources/search?mode=ALL&service=DOCUMENT&mode=ALL&identifier=${QTUBE_VIDEO_BASE}&title=${filterSearch}&limit=20&includemetadata=true&reverse=true&name=${username}&exactmatchnames=true&offset=0`;
+    const url = `/arbitrary/resources/search?mode=ALL&service=DOCUMENT&mode=ALL&identifier=${QTUBE_VIDEO_BASE}&title=${filterSearch}&limit=20&includemetadata=true&reverse=true&${userSearch}offset=0`;
+
     const response = await fetch(url, {
       method: "GET",
       headers: {
@@ -44,8 +56,6 @@ export const PlaylistListEdit = ({ playlistData, removeVideo, addVideo }) => {
         sx={{
           display: "flex",
           flexDirection: "column",
-
-          maxWidth: "300px",
           width: "100%",
         }}
       >
@@ -105,8 +115,6 @@ export const PlaylistListEdit = ({ playlistData, removeVideo, addVideo }) => {
         sx={{
           display: "flex",
           flexDirection: "column",
-
-          maxWidth: "300px",
           width: "100%",
         }}
       >
@@ -120,6 +128,31 @@ export const PlaylistListEdit = ({ playlistData, removeVideo, addVideo }) => {
             overflow: "auto",
           }}
         >
+          <Box>
+            <RadioGroup
+              row
+              defaultValue="myVideos"
+              name="radio-buttons-group-video-select"
+              onChange={handleRadioChange}
+            >
+              <FormControlLabel
+                value="myVideos"
+                control={<Radio/>}
+                  label="My Videos"
+                  componentsProps={{
+                    typography: { sx: { fontSize: '14px' } }
+                  }}
+              />
+              <FormControlLabel
+                value="allVideos"
+                control={<Radio/>}
+                  label="All Videos"
+                  componentsProps={{
+                    typography: { sx: { fontSize: '14px' } }
+                  }}
+                />
+              </RadioGroup>
+          </Box>
           <Box
             sx={{
               display: "flex",
@@ -153,6 +186,8 @@ export const PlaylistListEdit = ({ playlistData, removeVideo, addVideo }) => {
                 fontSize: "18px",
               }}
             />
+          </Box>
+          <Box>
             <Button
               onClick={() => {
                 search();

@@ -4,9 +4,19 @@ import {
   CrowdfundSubTitle,
   CrowdfundSubTitleRow,
 } from "../PublishVideo/PublishVideo-styles.tsx";
-import { Box, Button, Input, RadioGroup, Radio, IconButton, Typography, useTheme, FormControlLabel } from "@mui/material";
-import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import {
+  Box,
+  Button,
+  Input,
+  RadioGroup,
+  Radio,
+  IconButton,
+  Typography,
+  useTheme,
+  FormControlLabel,
+} from "@mui/material";
+import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
+import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import { useNavigate } from "react-router-dom";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { removeVideo } from "../../../state/features/videoSlice.ts";
@@ -14,19 +24,26 @@ import AddIcon from "@mui/icons-material/Add";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../state/store.ts";
 import { QTUBE_VIDEO_BASE } from "../../../constants/Identifiers.ts";
-export const PlaylistListEdit = ({ playlistData, updateVideoList, removeVideo, addVideo }) => {
+export const PlaylistListEdit = ({
+  playlistData,
+  updateVideoList,
+  removeVideo,
+  addVideo,
+}) => {
   const theme = useTheme();
   const navigate = useNavigate();
   const username = useSelector((state: RootState) => state.auth?.user?.name);
 
   const [searchResults, setSearchResults] = useState([]);
   const [filterSearch, setFilterSearch] = useState("");
-  const [userSearch, setUserSearch] = useState(`name=${username}&exactmatchnames=true&`);
+  const [userSearch, setUserSearch] = useState(
+    `name=${username}&exactmatchnames=true&`
+  );
 
   const videos = playlistData?.videos || [];
   //const [hoveredIndex, setHoveredIndex] = useState(null);  // Mayb in the future
 
-  const handleRadioChange = (event) => {
+  const handleRadioChange = event => {
     const value = event.target.value;
     if (value === "myVideos") {
       setUserSearch(`name=${username}&exactmatchnames=true&`);
@@ -48,15 +65,18 @@ export const PlaylistListEdit = ({ playlistData, updateVideoList, removeVideo, a
     setSearchResults(responseDataSearchVid);
   };
 
-// Function to move a video up or down in the playlist
-const moveItem = (index, direction) => {
-  const targetIndex = index + direction;
-  if (targetIndex < 0 || targetIndex >= videos.length) return;
+  // Function to move a video up or down in the playlist
+  const moveItem = (index, direction) => {
+    const targetIndex = index + direction;
+    if (targetIndex < 0 || targetIndex >= videos.length) return;
 
-  const updated = [...videos];
-  [updated[index], updated[targetIndex]] = [updated[targetIndex], updated[index]];
-  updateVideoList( updated );
-};
+    const updated = [...videos];
+    [updated[index], updated[targetIndex]] = [
+      updated[targetIndex],
+      updated[index],
+    ];
+    updateVideoList(updated);
+  };
 
   return (
     <Box
@@ -96,24 +116,23 @@ const moveItem = (index, direction) => {
                   padding: "10px",
                   borderRadius: "5px",
                   userSelect: "none",
-                  '&:hover .action-icons': { display: 'flex' },
+                  "&:hover .action-icons": { display: "flex" },
                 }}
-                onMouseEnter={() => setHoveredIndex(index)}
-                onMouseLeave={() => setHoveredIndex(null)}
+                // onMouseEnter={() => setHoveredIndex(index)}
+                // onMouseLeave={() => setHoveredIndex(null)}
               >
-                
                 <Box
                   sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '2px',
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "2px",
                   }}
                 >
                   <IconButton
                     size="small"
                     onClick={() => moveItem(index, -1)}
                     disabled={index === 0}
-                    sx={{ padding: '2px' }}
+                    sx={{ padding: "2px" }}
                   >
                     <ArrowUpwardIcon fontSize="small" />
                   </IconButton>
@@ -121,7 +140,7 @@ const moveItem = (index, direction) => {
                     size="small"
                     onClick={() => moveItem(index, 1)}
                     disabled={index === playlistData?.videos?.length - 1}
-                    sx={{ padding: '2px' }}
+                    sx={{ padding: "2px" }}
                   >
                     <ArrowDownwardIcon fontSize="small" />
                   </IconButton>
@@ -183,7 +202,7 @@ const moveItem = (index, direction) => {
                 control={<Radio />}
                 label="My Videos"
                 componentsProps={{
-                  typography: { sx: { fontSize: '14px' } }
+                  typography: { sx: { fontSize: "14px" } },
                 }}
               />
               <FormControlLabel
@@ -191,7 +210,7 @@ const moveItem = (index, direction) => {
                 control={<Radio />}
                 label="All Videos"
                 componentsProps={{
-                  typography: { sx: { fontSize: '14px' } }
+                  typography: { sx: { fontSize: "14px" } },
                 }}
               />
             </RadioGroup>

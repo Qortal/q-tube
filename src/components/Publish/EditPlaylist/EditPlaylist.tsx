@@ -435,6 +435,12 @@ export const EditPlaylist = () => {
     setPlaylistData(copyData);
   };
 
+  const updateVideoList = list => {
+    const copyData = structuredClone(playlistData);
+    copyData.videos = [...list];
+    setPlaylistData(copyData);
+  }
+
   return (
     <>
       <Modal
@@ -571,6 +577,7 @@ export const EditPlaylist = () => {
 
             <PlaylistListEdit
               playlistData={playlistData}
+              updateVideoList={updateVideoList}
               removeVideo={removeVideo}
               addVideo={addVideo}
             />

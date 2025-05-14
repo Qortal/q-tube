@@ -4,7 +4,9 @@ import {
   CrowdfundSubTitle,
   CrowdfundSubTitleRow,
 } from "../PublishVideo/PublishVideo-styles.tsx";
-import { Box, Button, Input, RadioGroup, Radio, Typography, useTheme, FormControlLabel } from "@mui/material";
+import { Box, Button, Input, RadioGroup, Radio, IconButton, Typography, useTheme, FormControlLabel } from "@mui/material";
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import { useNavigate } from "react-router-dom";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import { removeVideo } from "../../../state/features/videoSlice.ts";
@@ -12,7 +14,7 @@ import AddIcon from "@mui/icons-material/Add";
 import { useSelector } from "react-redux";
 import { RootState } from "../../../state/store.ts";
 import { QTUBE_VIDEO_BASE } from "../../../constants/Identifiers.ts";
-export const PlaylistListEdit = ({ playlistData, removeVideo, addVideo }) => {
+export const PlaylistListEdit = ({ playlistData, updateVideoList, removeVideo, addVideo }) => {
   const theme = useTheme();
   const navigate = useNavigate();
   const username = useSelector((state: RootState) => state.auth?.user?.name);
@@ -20,6 +22,9 @@ export const PlaylistListEdit = ({ playlistData, removeVideo, addVideo }) => {
   const [searchResults, setSearchResults] = useState([]);
   const [filterSearch, setFilterSearch] = useState("");
   const [userSearch, setUserSearch] = useState(`name=${username}&exactmatchnames=true&`);
+
+  const videos = playlistData?.videos || [];
+  //const [hoveredIndex, setHoveredIndex] = useState(null);  // Mayb in the future
 
   const handleRadioChange = (event) => {
     const value = event.target.value;
@@ -42,6 +47,16 @@ export const PlaylistListEdit = ({ playlistData, removeVideo, addVideo }) => {
     const responseDataSearchVid = await response.json();
     setSearchResults(responseDataSearchVid);
   };
+
+// Function to move a video up or down in the playlist
+const moveItem = (index, direction) => {
+  const targetIndex = index + direction;
+  if (targetIndex < 0 || targetIndex >= videos.length) return;
+
+  const updated = [...videos];
+  [updated[index], updated[targetIndex]] = [updated[targetIndex], updated[index]];
+  updateVideoList( updated );
+};
 
   return (
     <Box
@@ -69,7 +84,7 @@ export const PlaylistListEdit = ({ playlistData, removeVideo, addVideo }) => {
             overflow: "auto",
           }}
         >
-          {playlistData?.videos?.map((vid, index) => {
+          {videos.map((vid, index) => {
             return (
               <Box
                 key={vid?.identifier}
@@ -81,8 +96,36 @@ export const PlaylistListEdit = ({ playlistData, removeVideo, addVideo }) => {
                   padding: "10px",
                   borderRadius: "5px",
                   userSelect: "none",
+                  '&:hover .action-icons': { display: 'flex' },
                 }}
+                onMouseEnter={() => setHoveredIndex(index)}
+                onMouseLeave={() => setHoveredIndex(null)}
               >
+                
+                <Box
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '2px',
+                  }}
+                >
+                  <IconButton
+                    size="small"
+                    onClick={() => moveItem(index, -1)}
+                    disabled={index === 0}
+                    sx={{ padding: '2px' }}
+                  >
+                    <ArrowUpwardIcon fontSize="small" />
+                  </IconButton>
+                  <IconButton
+                    size="small"
+                    onClick={() => moveItem(index, 1)}
+                    disabled={index === playlistData?.videos?.length - 1}
+                    sx={{ padding: '2px' }}
+                  >
+                    <ArrowDownwardIcon fontSize="small" />
+                  </IconButton>
+                </Box>
                 <Typography
                   sx={{
                     fontSize: "14px",
@@ -137,21 +180,21 @@ export const PlaylistListEdit = ({ playlistData, removeVideo, addVideo }) => {
             >
               <FormControlLabel
                 value="myVideos"
-                control={<Radio/>}
-                  label="My Videos"
-                  componentsProps={{
-                    typography: { sx: { fontSize: '14px' } }
-                  }}
+                control={<Radio />}
+                label="My Videos"
+                componentsProps={{
+                  typography: { sx: { fontSize: '14px' } }
+                }}
               />
               <FormControlLabel
                 value="allVideos"
-                control={<Radio/>}
-                  label="All Videos"
-                  componentsProps={{
-                    typography: { sx: { fontSize: '14px' } }
-                  }}
-                />
-              </RadioGroup>
+                control={<Radio />}
+                label="All Videos"
+                componentsProps={{
+                  typography: { sx: { fontSize: '14px' } }
+                }}
+              />
+            </RadioGroup>
           </Box>
           <Box
             sx={{

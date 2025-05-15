@@ -123,7 +123,7 @@ export const VideoActionsBar = ({
               >
                   <ButtonBase   
                       onClick={() => {
-                          navigator.clipboard.writeText(`qortal://APP/Q-Tube/video/${videoData?.user}/${videoData?.id}`).then(() => {
+                          navigator.clipboard.writeText(`qortal://APP/Q-Tube/video/${encodeURIComponent(videoData?.user)}/${encodeURIComponent(videoData?.id)}`).then(() => {
                               dispatch(
                                   setNotification({
                                       msg: 'Copied to clipboard!',

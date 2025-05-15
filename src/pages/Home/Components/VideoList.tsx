@@ -67,7 +67,7 @@ export const VideoList = ({ videos }: VideoListProps) => {
 
     return (
     <VideoCardContainer>
-      {videos.map((video: any) => {
+        {videos.map((video: any) => {
         const fullId = video ? `${video.id}-${video.user}` : undefined;
         const existingVideo = hashMapVideos[fullId];
         let hasHash = false;
@@ -93,10 +93,10 @@ export const VideoList = ({ videos }: VideoListProps) => {
 
         if (isPlaylist) {
             return (
-            <VideoCardCol
+              <VideoCardCol
+              key={videoObj.id} 
               onMouseEnter={() => setShowIcons(videoObj.id)}
               onMouseLeave={() => setShowIcons(null)}
-              key={videoObj.id}
             >
               <IconsBox
                 sx={{
@@ -196,11 +196,11 @@ export const VideoList = ({ videos }: VideoListProps) => {
         }
 
           return (
-          <ContextMenuResource
+            <ContextMenuResource
             name={video.user}
             service="VIDEO"
             identifier={video.id}
-            link={`qortal://APP/Q-Tube/video/${video.user}/${video.id}`}
+              link={`qortal://APP/Q-Tube/video/${encodeURIComponent(video.user)}/${encodeURIComponent(video.id)}`}
           >
           <VideoCardCol
             key={videoObj.id}

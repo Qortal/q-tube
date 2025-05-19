@@ -1,7 +1,7 @@
 import BlockIcon from "@mui/icons-material/Block";
 import EditIcon from "@mui/icons-material/Edit";
 import { Avatar, Box, Tooltip, Typography, useTheme } from "@mui/material";
-import React, { useState } from "react";
+import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { PlaylistSVG } from "../../../assets/svgs/PlaylistSVG.tsx";
@@ -34,13 +34,14 @@ import ContextMenuResource from '../../../components/common/ContextMenu/ContextM
 interface VideoListProps {
   videos: Video[];
 }
-export const VideoList = ({ videos }: VideoListProps) => {
+export const PlayListList = ({ videos }: VideoListProps) => {
   const [showIcons, setShowIcons] = useState(null);
 
   const hashMapVideos = useSelector(
     (state: RootState) => state.video.hashMapVideos
   );
 
+  // ToDo: This needs to be updated for names
   const username = useSelector((state: RootState) => state.auth?.user?.name);
 
   const navigate = useNavigate();
@@ -68,7 +69,6 @@ export const VideoList = ({ videos }: VideoListProps) => {
     return (
     <VideoCardContainer>
         {videos.map((video: any) => {
-          //key = video.id;
         const fullId = video ? `${video.id}-${video.user}` : undefined;
         const existingVideo = hashMapVideos[fullId];
         let hasHash = false;
@@ -308,4 +308,4 @@ export const VideoList = ({ videos }: VideoListProps) => {
   );
 };
 
-export default VideoList;
+export default PlayListList;

@@ -9,21 +9,24 @@ import {
   NavbarName,
 } from "../Navbar-styles.tsx";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { useRef, useState } from "react";
-
+import { useCallback, useRef, useState } from "react";
 import PersonOffIcon from "@mui/icons-material/PersonOff";
 import { useNavigate } from "react-router-dom";
 import { PopMenu, PopMenuRefType } from "../../../common/PopMenu.tsx";
-
+import { UserDropDown } from "../../../UserDropDown.tsx";
+import { Names } from "../../../../state/global/names.ts";
 export interface NavBarMenuProps {
   isShowMenu: boolean;
   userAvatar: string;
   userName: string | null;
+  allNames: Names;
 }
+
 export const UserMenu = ({
   isShowMenu,
   userAvatar,
   userName,
+  allNames
 }: NavBarMenuProps) => {
   const isScreenSmall = !useMediaQuery(`(min-width:600px)`);
   const theme = useTheme();
@@ -33,9 +36,10 @@ export const UserMenu = ({
   const popMenuRef = useRef<PopMenuRefType>(null);
   const navigate = useNavigate();
 
-  const handleMyChannelLink = () => {
-    navigate(`/channel/${userName}`);
-  };
+  const handleMyChannelLink = useCallback((switchToName) => {
+    userName = switchToName;
+    navigate(`/channel/${switchToName}`);
+  }, [navigate]);
 
   const onCloseBlockedNames = () => {
     setIsOpenBlockedNamesModal(false);
@@ -43,7 +47,7 @@ export const UserMenu = ({
 
   return (
     <>
-      {isShowMenu && (
+      {isShowMenu && (    
         <>
           <PopMenu
             ref={popMenuRef}
@@ -70,31 +74,17 @@ export const UserMenu = ({
               </AvatarContainer>
             }
           >
-            <DropdownContainer
-              onClick={() => {
-                handleMyChannelLink();
-                popMenuRef.current.closePopover();
-              }}
-            >
-              {!userAvatar ? (
-                <AccountCircleSVG
-                  color={theme.palette.text.primary}
-                  width={menuIconSize}
-                  height={menuIconSize}
+          
+            {
+              allNames.map((name) => (
+                <UserDropDown key={name.name}
+                  userName={name.name}
+                  handleMyChannelLink={handleMyChannelLink}
+                  popMenuRef={popMenuRef}
                 />
-              ) : (
-                <img
-                  src={userAvatar}
-                  alt="User Avatar"
-                  width={menuIconSize}
-                  height={menuIconSize}
-                  style={{
-                    borderRadius: "50%",
-                  }}
-                />
-              )}
-              <DropdownText>{userName}</DropdownText>
-            </DropdownContainer>
+              ))
+            }
+
             <DropdownContainer
               onClick={() => {
                 setIsOpenBlockedNamesModal(true);

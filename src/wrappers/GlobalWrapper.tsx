@@ -29,7 +29,9 @@ import ConsentModal from "../components/common/ConsentModal";
 import { useFetchSuperLikes } from "../hooks/useFetchSuperLikes";
 import { SUPER_LIKE_BASE } from "../constants/Identifiers.ts";
 import { minPriceSuperLike } from "../constants/Misc.ts";
-
+import { useHandleNameData } from './../hooks/useHandleNameData.tsx';
+import { namesAtom } from './../state/global/names';
+import { useAtom } from 'jotai';
 interface Props {
   children: React.ReactNode;
   setTheme: (val: string) => void;
@@ -47,15 +49,20 @@ const GlobalWrapper: React.FC<Props> = ({ children, setTheme }) => {
   const user = useSelector((state: RootState) => state.auth.user);
   const { addSuperlikeRawDataGetToList } = useFetchSuperLikes();
   const interval = useRef<any>(null);
-
+  useHandleNameData();
+  
   const videoPlaying = useSelector(
     (state: RootState) => state.global.videoPlaying
   );
+
   const username = useMemo(() => {
     if (!user?.name) return "";
 
     return user.name;
   }, [user]);
+
+  const [names] = useAtom(namesAtom);
+
   const getAvatar = React.useCallback(
     async (author: string) => {
       try {
@@ -223,6 +230,7 @@ const GlobalWrapper: React.FC<Props> = ({ children, setTheme }) => {
         setTheme={(val: string) => setTheme(val)}
         isAuthenticated={!!user?.name}
         userName={user?.name || ""}
+        allNames={names}
         userAvatar={userAvatar}
         authenticate={askForAccountInformation}
       />

@@ -6,16 +6,18 @@ import { PublishMenu } from "./Components/PublishMenu.tsx";
 import { QtubeLogo } from "./Components/QtubeLogo.tsx";
 import { UserMenu } from "./Components/UserMenu.tsx";
 import { CustomAppBar } from "./Navbar-styles";
+import { Names } from "./../../../state/global/names.ts";
 
 interface Props {
   isAuthenticated: boolean;
   userName: string | null;
+  allNames: Names;
   userAvatar: string;
   authenticate: () => void;
   setTheme: (val: string) => void;
 }
 
-const NavBar: React.FC<Props> = ({ isAuthenticated, userName, userAvatar }) => {
+const NavBar: React.FC<Props> = ({ isAuthenticated, userName, allNames, userAvatar }) => {
   const isScreenSmall = !useMediaQuery(`(min-width:600px)`);
   const isSecure = isAuthenticated && !!userName;
   const gapSize = 10;
@@ -45,6 +47,7 @@ const NavBar: React.FC<Props> = ({ isAuthenticated, userName, userAvatar }) => {
             isShowMenu={isSecure}
             userAvatar={userAvatar}
             userName={userName}
+            allNames={allNames}
           />
           <PublishMenu isDisplayed={isSecure} />
         </Box>

@@ -66,12 +66,9 @@ const GlobalWrapper: React.FC<Props> = ({ children, setTheme }) => {
   const getAvatar = React.useCallback(
     async (author: string) => {
       try {
-        const url = await qortalRequest({
-          action: "GET_QDN_RESOURCE_URL",
-          name: author,
-          service: "THUMBNAIL",
-          identifier: "qortal_avatar",
-        });
+
+        const url = `/arbitrary/THUMBNAIL/${author}/qortal_avatar`;
+
         if (url) {
           setUserAvatar(url);
           dispatch(

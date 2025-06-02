@@ -1,4 +1,4 @@
-import { Popover, useMediaQuery, useTheme } from "@mui/material";
+import { Popover, useMediaQuery, useTheme, Avatar } from "@mui/material";
 import { AccountCircleSVG } from "../../../../assets/svgs/AccountCircleSVG.tsx";
 import { headerIconSize, menuIconSize } from "../../../../constants/Misc.ts";
 import { BlockedNamesModal } from "../../../common/BlockedNamesModal/BlockedNamesModal.tsx";
@@ -11,10 +11,13 @@ import {
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useCallback, useRef, useState } from "react";
 import PersonOffIcon from "@mui/icons-material/PersonOff";
+import { RootState } from "../../../../state/store";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { PopMenu, PopMenuRefType } from "../../../common/PopMenu.tsx";
 import { UserDropDown } from "../../../UserDropDown.tsx";
 import { Names } from "../../../../state/global/names.ts";
+import { setName } from "../../../../state/features/authSlice.ts";
 export interface NavBarMenuProps {
   isShowMenu: boolean;
   userAvatar: string;
@@ -35,9 +38,10 @@ export const UserMenu = ({
     useState<boolean>(false);
   const popMenuRef = useRef<PopMenuRefType>(null);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  const handleMyChannelLink = useCallback((switchToName) => {
-    userName = switchToName;
+  const handleMyChannelLink = useCallback((switchToName: string) => {
+    dispatch(setName(switchToName));
     navigate(`/channel/${switchToName}`);
   }, [navigate]);
 
@@ -54,23 +58,9 @@ export const UserMenu = ({
             MenuHeader={
               <AvatarContainer>
                 {!isScreenSmall && <NavbarName>{userName}</NavbarName>}
-                {!userAvatar ? (
-                  <AccountCircleSVG
-                    color={theme.palette.text.primary}
-                    width={headerIconSize}
-                    height={headerIconSize}
-                  />
-                ) : (
-                  <img
-                    src={userAvatar}
-                    alt="User Avatar"
-                    width={headerIconSize}
-                    height={headerIconSize}
-                    style={{
-                      borderRadius: "50%",
-                    }}
-                  />
-                )}
+                <Avatar src={userAvatar}>
+                  {userName?.charAt(0).toUpperCase()} 
+                </Avatar>
               </AvatarContainer>
             }
           >

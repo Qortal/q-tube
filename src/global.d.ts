@@ -1,4 +1,9 @@
 // src/global.d.ts
+interface Location {
+  service: string;
+  name: string;
+  identifier?: string;
+}
 interface QortalRequestOptions {
   action: string;
   name?: string;
@@ -38,6 +43,7 @@ interface QortalRequestOptions {
   excludeBlocked?: boolean;
   exactMatchNames?: boolean;
   nameListFilter?: string[];
+  location?: Location;
 }
 
 declare function qortalRequest(options: QortalRequestOptions): Promise<any>;

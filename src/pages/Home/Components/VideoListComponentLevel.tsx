@@ -28,11 +28,23 @@ export const VideoListComponentLevel = ({ mode }: VideoListProps) => {
   const [videos, setVideos] = React.useState<Video[]>([]);
   const isLoading = useSignal(true);
   const { getVideo, checkAndUpdateVideo } = useFetchVideos();
+  // For Pagination
+  const pageRef = useRef(0);
+  const [hasMore, setHasMore] = useState(true);
+  const PAGE_SIZE = 20;
+
+  useEffect(() => {
+    firstFetch.current = false;
+    setVideos([]);
+    pageRef.current = 0;
+    setHasMore(true);
+  }, [paramName]);
 
   const getVideos = React.useCallback(async () => {
     isLoading.value = true;
     try {
-      const offset = videos.length;
+      const offset = pageRef.current * PAGE_SIZE;
+      console.log('getVideos ParamName:', paramName); 
       const url = `/arbitrary/resources/search?mode=ALL&service=DOCUMENT&query=${QTUBE_VIDEO_BASE}&limit=20&includemetadata=false&reverse=true&excludeblocked=true&name=${paramName}&exactmatchnames=true&offset=${offset}`;
       const response = await fetch(url, {
         method: "GET",
@@ -57,16 +69,24 @@ export const VideoListComponentLevel = ({ mode }: VideoListProps) => {
         };
       });
 
-      const copiedVideos: Video[] = [...videos];
-      structureData.forEach((video: Video) => {
-        const index = videos.findIndex(p => p.id === video.id);
-        if (index !== -1) {
-          copiedVideos[index] = video;
-        } else {
-          copiedVideos.push(video);
-        }
+      setVideos(prev => {
+        const updatedVideos = [...prev];
+
+        structureData.forEach(video => {
+          const exists = updatedVideos.some(v => v.id === video.id);
+          if (!exists) {
+            updatedVideos.push(video);
+          }
+        });
+        return updatedVideos;
       });
-      setVideos(copiedVideos);
+
+      // If fewer than PAGE_SIZE results, we've reached the end
+      if (structureData.length < PAGE_SIZE) {
+        setHasMore(false);
+      } else {
+        pageRef.current += 1;
+      }
 
       for (const content of structureData) {
         if (content.user && content.id) {
@@ -81,20 +101,20 @@ export const VideoListComponentLevel = ({ mode }: VideoListProps) => {
       console.log(error);
       isLoading.value = false;
     }
-  }, [videos, hashMapVideos]);
-
-  const getVideosHandlerMount = React.useCallback(async () => {
-    if (firstFetch.current) return;
-    firstFetch.current = true;
-    await getVideos();
-    afterFetch.current = true;
-  }, [getVideos]);
+  }, [checkAndUpdateVideo, getVideo, hashMapVideos, paramName]);
 
   useEffect(() => {
+    const fetchVideos = async () => {
+      firstFetch.current = true;
+      console.log("Running useEffect: " + paramName); 
+      await getVideos();
+      afterFetch.current = true;
+    };
+
     if (!firstFetch.current) {
-      getVideosHandlerMount();
+      fetchVideos();
     }
-  }, [getVideosHandlerMount]);
+  }, [paramName, getVideos]);
 
   return (
     <VideoManagerRow>
@@ -107,7 +127,10 @@ export const VideoListComponentLevel = ({ mode }: VideoListProps) => {
         }}
       >
         <VideoList videos={videos} />
-        <LazyLoad onLoadMore={getVideos} isLoading={isLoading.value}></LazyLoad>
+        <LazyLoad
+          onLoadMore={hasMore ? getVideos : undefined}
+          isLoading={isLoading.value}
+        />
       </Box>
     </VideoManagerRow>
   );

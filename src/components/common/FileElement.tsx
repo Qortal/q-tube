@@ -125,20 +125,11 @@ export default function FileElement({
       try {
         const { name, service, identifier } = fileInfo;
 
-        const url = `/arbitrary/${service}/${name}/${identifier}`;
-        fetch(url)
-          .then(response => response.blob())
-          .then(async blob => {
-            await qortalRequest({
-              action: "SAVE_FILE",
-              blob,
-              filename: filename,
-              mimeType,
-            });
-          })
-          .catch(error => {
-            console.error("Error fetching the video:", error);
-          });
+        await qortalRequest({
+          action: "SAVE_FILE",
+          location: fileInfo,
+          filename: filename,
+        });
       } catch (error: any) {
         let notificationObj: any = null;
         if (typeof error === "string") {

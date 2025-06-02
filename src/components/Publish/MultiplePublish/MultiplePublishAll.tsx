@@ -40,7 +40,7 @@ export const MultiplePublish = ({
   const hasStarted = useRef(false);
   const publish = useCallback(async (pub: any) => {
     const lengthOfResources = pub?.resources?.length;
-    const lengthOfTimeout = lengthOfResources * 30000;
+    const lengthOfTimeout = lengthOfResources * 1200000;  // Time out in QR, Seconds = 20 Minutes
     return await qortalRequestWithTimeout(pub, lengthOfTimeout);
   }, []);
   const [isPublishing, setIsPublishing] = useState(true);

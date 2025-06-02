@@ -45,8 +45,8 @@ export const getPrimaryAccountName = async (address: string) => {
   const primaryName = (await qortalRequest({
     action: "GET_PRIMARY_NAME",
     address,
-  })) as string;
-  return primaryName.length > 0 ? primaryName : "";
+  })) as string | null;
+  return primaryName ?? "";
 }
 
 export const searchTransactions = async (params: TransactionSearchParams) => {

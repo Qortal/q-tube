@@ -32,6 +32,8 @@ import { minPriceSuperLike } from "../constants/Misc.ts";
 import { useHandleNameData } from './../hooks/useHandleNameData.tsx';
 import { namesAtom } from './../state/global/names';
 import { useAtom } from 'jotai';
+import { getPrimaryAccountName } from "../utils/qortalRequestFunctions.ts";
+
 interface Props {
   children: React.ReactNode;
   setTheme: (val: string) => void;

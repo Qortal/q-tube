@@ -101,7 +101,7 @@ const GlobalWrapper: React.FC<Props> = ({ children, setTheme }) => {
         action: "GET_USER_ACCOUNT",
       });
 
-      const name = getPrimaryAccountName(account.address);
+      const name = await getPrimaryAccountName(account.address);
       dispatch(addUser({ ...account, name }));
     } catch (error) {
       console.error(error);

@@ -118,11 +118,10 @@ export const VideoActionsBar = ({
       <Box sx={{ display: "flex", gap: "5px" }}>
         <IndexButton channelName={channelName} />
         <CopyLinkButton
-          link={`qortal://APP/Q-Tube/video/${videoData?.user}/${videoData?.id}`}
+          link={`qortal://APP/Q-Tube/video/${encodeURIComponent(videoData?.user)}/${encodeURIComponent(videoData?.id)}`}
           tooltipTitle={`Copy video link`}
         />
       </Box>
-
       {videoData && (
         <FileAttachmentContainer sx={{ width: "100%", maxWidth: "340px" }}>
           <FileAttachmentFont>Save Video</FileAttachmentFont>

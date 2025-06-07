@@ -29,6 +29,10 @@ import ConsentModal from "../components/common/ConsentModal";
 import { useFetchSuperLikes } from "../hooks/useFetchSuperLikes";
 import { SUPER_LIKE_BASE } from "../constants/Identifiers.ts";
 import { minPriceSuperLike } from "../constants/Misc.ts";
+import { useHandleNameData } from './../hooks/useHandleNameData.tsx';
+import { namesAtom } from './../state/global/names';
+import { useAtom } from 'jotai';
+import { getPrimaryAccountName } from "../utils/qortalRequestFunctions.ts";
 
 interface Props {
   children: React.ReactNode;
@@ -47,24 +51,26 @@ const GlobalWrapper: React.FC<Props> = ({ children, setTheme }) => {
   const user = useSelector((state: RootState) => state.auth.user);
   const { addSuperlikeRawDataGetToList } = useFetchSuperLikes();
   const interval = useRef<any>(null);
-
+  useHandleNameData();
+  
   const videoPlaying = useSelector(
     (state: RootState) => state.global.videoPlaying
   );
+
   const username = useMemo(() => {
     if (!user?.name) return "";
 
     return user.name;
   }, [user]);
+
+  const [names] = useAtom(namesAtom);
+
   const getAvatar = React.useCallback(
     async (author: string) => {
       try {
-        const url = await qortalRequest({
-          action: "GET_QDN_RESOURCE_URL",
-          name: author,
-          service: "THUMBNAIL",
-          identifier: "qortal_avatar",
-        });
+
+        const url = `/arbitrary/THUMBNAIL/${author}/qortal_avatar`;
+
         if (url) {
           setUserAvatar(url);
           dispatch(
@@ -89,27 +95,13 @@ const GlobalWrapper: React.FC<Props> = ({ children, setTheme }) => {
 
   const { isLoadingGlobal } = useSelector((state: RootState) => state.global);
 
-  async function getNameInfo(address: string) {
-    const response = await qortalRequest({
-      action: "GET_ACCOUNT_NAMES",
-      address: address,
-    });
-    const nameData = response;
-
-    if (nameData?.length > 0) {
-      return nameData[0].name;
-    } else {
-      return "";
-    }
-  }
-
   const askForAccountInformation = React.useCallback(async () => {
     try {
       const account = await qortalRequest({
         action: "GET_USER_ACCOUNT",
       });
 
-      const name = await getNameInfo(account.address);
+      const name = await getPrimaryAccountName(account.address);
       dispatch(addUser({ ...account, name }));
     } catch (error) {
       console.error(error);
@@ -223,6 +215,7 @@ const GlobalWrapper: React.FC<Props> = ({ children, setTheme }) => {
         setTheme={(val: string) => setTheme(val)}
         isAuthenticated={!!user?.name}
         userName={user?.name || ""}
+        allNames={names}
         userAvatar={userAvatar}
         authenticate={askForAccountInformation}
       />

@@ -11,8 +11,6 @@ export const usePlaylistContentState = () => {
     id,
     videoData,
     superLikeList,
-    getVideoData,
-    setVideoData,
     videoReference,
     focusVideo,
     videoCover,
@@ -25,6 +23,7 @@ export const usePlaylistContentState = () => {
     contentRef,
     descriptionThreshold,
     loadingSuperLikes,
+    setVideoMetadataResource
   } = useVideoContentState();
 
   const userName = useSelector((state: RootState) => state.auth.user?.name);
@@ -51,6 +50,8 @@ export const usePlaylistContentState = () => {
   );
 
   const dispatch = useDispatch();
+
+  console.log('nameid', channelName, id)
 
   const checkforPlaylist = useCallback(
     async (name, id) => {
@@ -118,11 +119,7 @@ export const usePlaylistContentState = () => {
             setPlaylistData(combinedData);
             if (combinedData?.videos?.length > 0) {
               const vid = combinedData?.videos[0];
-              const fullId = vid ? `${vid.identifier}-${vid.name}` : undefined;
-              const existingVideo = hashMapVideos[fullId];
-
-              if (existingVideo) setVideoData(existingVideo);
-              else getVideoData(vid?.name, vid?.identifier);
+              setVideoMetadataResource({name: vid?.name, identifier: vid?.identifier, service: 'DOCUMENT'});
             }
           }
         }
@@ -134,6 +131,8 @@ export const usePlaylistContentState = () => {
     },
     [hashMapVideos]
   );
+
+  console.log('playlistdata', playlistData)
 
   useEffect(() => {
     if (channelName && id) {
@@ -170,7 +169,7 @@ export const usePlaylistContentState = () => {
       const nextVideoIndex = currentVideoIndex + 1;
       const findVideo = playlistData?.videos[nextVideoIndex] || null;
       if (findVideo) {
-        getVideoData(findVideo?.name, findVideo?.identifier);
+        setVideoMetadataResource({name: findVideo?.name, identifier: findVideo?.identifier, service: 'DOCUMENT'});
         setDoAutoPlay(true);
       }
     }
@@ -181,8 +180,7 @@ export const usePlaylistContentState = () => {
     id,
     videoData,
     superLikeList,
-    getVideoData,
-    setVideoData,
+    setVideoMetadataResource,
     videoReference,
     focusVideo,
     videoCover,

@@ -22,9 +22,9 @@ import {
 } from "./VideoList-styles.tsx";
 
 export interface SearchSidebarProps {
-  onSearch: (reset?: boolean, resetFilters?: boolean) => void;
+  onReset: () => void;
 }
-export const SearchSidebar = ({ onSearch }: SearchSidebarProps) => {
+export const SearchSidebar = ({ onReset }: SearchSidebarProps) => {
   const {
     filterSearch,
     filterName,
@@ -37,8 +37,8 @@ export const SearchSidebar = ({ onSearch }: SearchSidebarProps) => {
     selectedSubCategoryVideos,
     handleOptionSubCategoryChangeVideos,
     setFilterType,
-    filtersToDefault,
-  } = useSidebarState(onSearch);
+    onSearch
+  } = useSidebarState();
 
   const filtersStyle = { width: "75px", marginRight: "10px" };
   const isScreenSmall = !useMediaQuery(`(min-width:600px)`);
@@ -236,7 +236,7 @@ export const SearchSidebar = ({ onSearch }: SearchSidebarProps) => {
 
         <Button
           onClick={() => {
-            filtersToDefault();
+            onReset();
           }}
           sx={{
             marginTop: "20px",
@@ -249,7 +249,7 @@ export const SearchSidebar = ({ onSearch }: SearchSidebarProps) => {
         </Button>
         <Button
           onClick={() => {
-            onSearch(true);
+            onSearch();
           }}
           sx={{
             marginTop: "20px",

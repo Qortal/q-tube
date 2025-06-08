@@ -178,6 +178,8 @@ export const videoSlice = createSlice({
     ) => {
       state.filteredSubscriptionList = action.payload;
     },
+    resetVideoState: () => initialState, 
+
   },
 });
 
@@ -207,6 +209,7 @@ export const {
   setEditPlaylist,
   addtoHashMapSuperlikes,
   setFilteredSubscriptions,
+  resetVideoState
 } = videoSlice.actions;
 
 export default videoSlice.reducer;

@@ -7,6 +7,7 @@ import {
   VideoListType,
 } from "../../state/features/persistSlice.ts";
 import { RootState } from "../../state/store";
+import { resetVideoState } from "../../state/features/videoSlice.ts";
 
 export const useHomeState = (mode: string) => {
   const dispatch = useDispatch();
@@ -45,90 +46,97 @@ export const useHomeState = (mode: string) => {
     dispatch(setHomePageSelectedTab(newValue));
   };
 
-  const getVideosHandlerMount = React.useCallback(async () => {
-    if (firstFetch.current) return;
-    firstFetch.current = true;
-    setIsLoading(true);
-    await getVideos(
-      {
-        name: "",
-        category: "",
-        subcategory: "",
-        keywords: "",
-        contentType: filterType,
-      },
-      null,
-      null,
-      20,
-      tabValue
-    );
-    afterFetch.current = true;
-    isFetching.current = false;
+  // const getVideosHandlerMount = React.useCallback(async () => {
+  //   if (firstFetch.current) return;
+  //   firstFetch.current = true;
+  //   setIsLoading(true);
+  //   await getVideos(
+  //     {
+  //       name: "",
+  //       category: "",
+  //       subcategory: "",
+  //       keywords: "",
+  //       contentType: filterType,
+  //     },
+  //     null,
+  //     null,
+  //     20,
+  //     tabValue
+  //   );
+  //   afterFetch.current = true;
+  //   isFetching.current = false;
 
-    setIsLoading(false);
-  }, [getVideos]);
+  //   setIsLoading(false);
+  // }, [getVideos]);
 
-  const getVideosHandler = React.useCallback(
-    async (reset?: boolean, resetFilters?: boolean) => {
-      if (!firstFetch.current || !afterFetch.current) return;
-      if (isFetching.current) return;
-      isFetching.current = true;
+  // const getVideosHandler = React.useCallback(
+  //   async (reset?: boolean, resetFilters?: boolean) => {
+  //     if (!firstFetch.current || !afterFetch.current) return;
+  //     if (isFetching.current) return;
+  //     isFetching.current = true;
 
-      await getVideos(
-        {
-          name: filterName,
-          category: selectedCategoryVideos?.id,
-          subcategory: selectedSubCategoryVideos?.id,
-          keywords: filterSearch,
-          contentType: filterType,
-        },
-        reset,
-        resetFilters,
-        20,
-        tabValue
-      );
-      isFetching.current = false;
-    },
-    [
-      getVideos,
-      filterValue,
-      getVideosFiltered,
-      isFiltering,
-      filterName,
-      selectedCategoryVideos,
-      selectedSubCategoryVideos,
-      filterSearch,
-      filterType,
-      tabValue,
-    ]
-  );
+  //     await getVideos(
+  //       {
+  //         name: filterName,
+  //         category: selectedCategoryVideos?.id,
+  //         subcategory: selectedSubCategoryVideos?.id,
+  //         keywords: filterSearch,
+  //         contentType: filterType,
+  //       },
+  //       reset,
+  //       resetFilters,
+  //       20,
+  //       tabValue
+  //     );
+  //     isFetching.current = false;
+  //   },
+  //   [
+  //     getVideos,
+  //     filterValue,
+  //     getVideosFiltered,
+  //     isFiltering,
+  //     filterName,
+  //     selectedCategoryVideos,
+  //     selectedSubCategoryVideos,
+  //     filterSearch,
+  //     filterType,
+  //     tabValue,
+  //   ]
+  // );
 
-  useEffect(() => {
-    getVideosHandler(true);
-  }, [tabValue]);
-  const prevVal = useRef("");
+  // useEffect(() => {
+  //   getVideosHandler(true);
+  // }, [tabValue]);
+  // const prevVal = useRef("");
 
-  useEffect(() => {
-    if (isFiltering && filterValue !== prevVal?.current) {
-      prevVal.current = filterValue;
+  // useEffect(() => {
+  //   if (isFiltering && filterValue !== prevVal?.current) {
+  //     prevVal.current = filterValue;
 
-      getVideosHandler();
-    }
-  }, [filterValue, isFiltering, filteredVideos]);
+  //     getVideosHandler();
+  //   }
+  // }, [filterValue, isFiltering, filteredVideos]);
 
-  useEffect(() => {
-    if (
-      !firstFetch.current &&
-      !isFilterMode.current &&
-      globalVideos.length === 0
-    ) {
-      isFetching.current = true;
-      getVideosHandlerMount();
-    } else {
-      firstFetch.current = true;
-      afterFetch.current = true;
-    }
-  }, [getVideosHandlerMount, globalVideos]);
+  // useEffect(() => {
+  //   if (
+  //     !firstFetch.current &&
+  //     !isFilterMode.current &&
+  //     globalVideos.length === 0
+  //   ) {
+  //     isFetching.current = true;
+  //     getVideosHandlerMount();
+  //   } else {
+  //     firstFetch.current = true;
+  //     afterFetch.current = true;
+  //   }
+  // }, [getVideosHandlerMount, globalVideos]);
+
+  const resetState = ()=> {
+    dispatch(resetVideoState());
+    
+  }
+
+  console.log('filterName', filterName)
 
   return {
     tabValue,
@@ -136,6 +144,13 @@ export const useHomeState = (mode: string) => {
     videos,
     isLoading,
     filteredSubscriptionList,
-    getVideosHandler,
+    // getVideosHandler,
+    filterName,
+    filterSearch,
+    filterValue,
+    filterType,
+    selectedCategoryVideos,
+    selectedSubCategoryVideos,
+    resetState
   };
 };

@@ -5,11 +5,9 @@ import {
 } from "../../../constants/Identifiers.ts";
 import {
   minPriceSuperLike,
-  titleFormatterOnSave,
 } from "../../../constants/Misc.ts";
 import { useFetchSuperLikes } from "../../../hooks/useFetchSuperLikes.tsx";
 import { setIsLoadingGlobal } from "../../../state/features/globalSlice.ts";
-import { addToHashMap } from "../../../state/features/videoSlice.ts";
 import { RootState } from "../../../state/store.ts";
 import React, {
   useEffect,
@@ -18,14 +16,23 @@ import React, {
   useMemo,
   useCallback,
 } from "react";
-import { Avatar, Box, Typography, useTheme } from "@mui/material";
+import {  useTheme } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import { hashWordWithoutPublicSalt } from "qapp-core";
+import { hashWordWithoutPublicSalt, QortalGetMetadata, usePublish } from "qapp-core";
 
 const superLikeVersion2Timestamp = 1744041600000;
+
+
 export const useVideoContentState = () => {
   const { name: channelName, id } = useParams();
+  console.log('iddd', id)
+  const [videoMetadataResource, setVideoMetadataResource] = useState<null | QortalGetMetadata>(null)
+  const {resource } = usePublish(2, 'JSON', videoMetadataResource ? videoMetadataResource : !id ? null : {
+    identifier: id,
+    name: channelName,
+    service: 'DOCUMENT'
+  })
   const [superLikeversion, setSuperLikeVersion] = useState<null | number>(null);
   const [isExpandedDescription, setIsExpandedDescription] =
     useState<boolean>(false);
@@ -35,8 +42,6 @@ export const useVideoContentState = () => {
   const [descriptionHeight, setDescriptionHeight] = useState<null | number>(
     null
   );
-  const [videoData, setVideoData] = useState<any>(null);
-  const [isVideoLoaded, setIsVideoLoaded] = useState<boolean>(false);
 
   const userAvatarHash = useSelector(
     (state: RootState) => state.global.userAvatarHash
@@ -44,7 +49,32 @@ export const useVideoContentState = () => {
   const [loadingSuperLikes, setLoadingSuperLikes] = useState<boolean>(false);
   const [superLikeList, setSuperLikeList] = useState<any[]>([]);
   const { addSuperlikeRawDataGetToList } = useFetchSuperLikes();
+  const videoData = useMemo(()=> {
+    if(!resource?.data) return null
 
+    const resourceData = {
+      title: resource?.qortalMetadata?.metadata?.title,
+      category: resource?.qortalMetadata?.metadata?.category,
+      categoryName: resource?.qortalMetadata?.metadata?.categoryName,
+      tags: resource?.qortalMetadata?.metadata?.tags || [],
+      description: resource?.qortalMetadata?.metadata?.description,
+      created: resource?.qortalMetadata?.created,
+      updated: resource?.qortalMetadata?.updated,
+      user: resource?.qortalMetadata.name,
+      videoImage: "",
+      id: resource?.qortalMetadata.identifier,
+    };
+    return {
+      ...resourceData,
+      ...resource.data
+    }
+  }, [resource])
+
+  const isVideoLoaded = useMemo(()=> {
+    if(!resource?.data) return false
+    return true
+  }, [resource?.data])
+  console.log('videoData', videoData)
   const contentRef = useRef(null);
 
   const getAddressName = async name => {
@@ -74,9 +104,7 @@ export const useVideoContentState = () => {
   const navigate = useNavigate();
   const theme = useTheme();
 
-  const hashMapVideos = useSelector(
-    (state: RootState) => state.video.hashMapVideos
-  );
+
   const videoReference = useMemo(() => {
     if (!videoData) return null;
     const { videoReference } = videoData;
@@ -85,7 +113,6 @@ export const useVideoContentState = () => {
       videoReference?.name &&
       videoReference?.service
     ) {
-      setIsVideoLoaded(true);
       return videoReference;
     } else {
       return null;
@@ -99,76 +126,14 @@ export const useVideoContentState = () => {
   }, [videoData]);
   const dispatch = useDispatch();
 
-  const getVideoData = useCallback(async (name: string, id: string) => {
-    try {
-      if (!name || !id) return;
-      dispatch(setIsLoadingGlobal(true));
+  useEffect(()=> {
+    if(!resource?.qortalMetadata?.created) return
+    if (resource?.qortalMetadata?.created > superLikeVersion2Timestamp) {
+      setSuperLikeVersion(2);
+    } else setSuperLikeVersion(1);
+  }, [resource?.qortalMetadata?.created])
 
-      const url = `/arbitrary/resources/search?mode=ALL&service=DOCUMENT&query=${QTUBE_VIDEO_BASE}&limit=1&includemetadata=true&reverse=true&excludeblocked=true&name=${name}&exactmatchnames=true&offset=0&identifier=${id}`;
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      const responseDataSearch = await response.json();
 
-      if (responseDataSearch?.length > 0) {
-        let resourceData = responseDataSearch[0];
-        if (resourceData?.created > superLikeVersion2Timestamp) {
-          setSuperLikeVersion(2);
-        } else setSuperLikeVersion(1);
-        resourceData = {
-          title: resourceData?.metadata?.title,
-          category: resourceData?.metadata?.category,
-          categoryName: resourceData?.metadata?.categoryName,
-          tags: resourceData?.metadata?.tags || [],
-          description: resourceData?.metadata?.description,
-          created: resourceData?.created,
-          updated: resourceData?.updated,
-          user: resourceData.name,
-          videoImage: "",
-          id: resourceData.identifier,
-        };
-
-        const responseData = await qortalRequest({
-          action: "FETCH_QDN_RESOURCE",
-          name: name,
-          service: "DOCUMENT",
-          identifier: id,
-        });
-
-        if (responseData && !responseData.error) {
-          const combinedData = {
-            ...resourceData,
-            ...responseData,
-          };
-
-          setVideoData(combinedData);
-          dispatch(addToHashMap(combinedData));
-        }
-      }
-    } catch (error) {
-      console.log(error);
-    } finally {
-      dispatch(setIsLoadingGlobal(false));
-    }
-  }, []);
-
-  useEffect(() => {
-    if (channelName && id) {
-      const existingVideo = hashMapVideos[id + "-" + channelName];
-
-      if (existingVideo) {
-        setVideoData(existingVideo);
-        if (+existingVideo?.created > superLikeVersion2Timestamp) {
-          setSuperLikeVersion(2);
-        } else setSuperLikeVersion(1);
-      } else {
-        getVideoData(channelName, id);
-      }
-    }
-  }, [id, channelName]);
 
   const descriptionThreshold = 200;
   useEffect(() => {
@@ -311,8 +276,7 @@ export const useVideoContentState = () => {
     superLikeList,
     setSuperLikeList,
     getComments,
-    getVideoData,
-    setVideoData,
+    setVideoMetadataResource
   };
 };
 

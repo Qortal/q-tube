@@ -23,7 +23,7 @@ export const PlaylistContent = () => {
     id,
     videoData,
     superLikeList,
-    getVideoData,
+    setVideoMetadataResource,
     videoReference,
     focusVideo,
     videoCover,
@@ -98,7 +98,13 @@ export const PlaylistContent = () => {
           <Playlists
             playlistData={playlistData}
             currentVideoIdentifier={videoData?.id}
-            onClick={getVideoData}
+            onClick={(name, identifier)=> {
+              setVideoMetadataResource({
+                name,
+                identifier,
+                service: 'DOCUMENT'
+              })
+            }}
             sx={playlistsSX}
           />
         )}

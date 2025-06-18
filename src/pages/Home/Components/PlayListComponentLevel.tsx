@@ -3,20 +3,19 @@ import React, { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import LazyLoad from "../../../components/common/LazyLoad.tsx";
-import { QTUBE_VIDEO_BASE } from "../../../constants/Identifiers.ts";
 import { useFetchVideos } from "../../../hooks/useFetchVideos.tsx";
 import { Video } from "../../../state/features/videoSlice.ts";
 import { RootState } from "../../../state/store.ts";
 import { queue } from "../../../wrappers/GlobalWrapper.tsx";
 import { VideoManagerRow } from "./VideoList-styles.tsx";
-import VideoList from "./VideoList.tsx";
 import { useSignal } from "@preact/signals-react";
+import { PlayListList } from "./PlayListList.tsx";
 
 interface VideoListProps {
   mode?: string;
 }
 
-export const VideoListComponentLevel = ({ mode }: VideoListProps) => {
+export const PlayListComponentLevel = ({ mode }: VideoListProps) => {
   const { name: paramName } = useParams();
 
   const firstFetch = useRef(false);
@@ -40,12 +39,17 @@ export const VideoListComponentLevel = ({ mode }: VideoListProps) => {
     setHasMore(true);
   }, [paramName]);
 
+  // 16-May-2025: Includes Pagination for PlayLists
   const getVideos = React.useCallback(async () => {
     isLoading.value = true;
     try {
+
+      // Query to get a users playlists
+      //'http://192.168.0.43:12391/arbitrary/resources/search?service=PLAYLIST&name=Ice&exactmatchnames=true&limit=20&reverse=true' \
+
       const offset = pageRef.current * PAGE_SIZE;
-      console.log('getVideos ParamName:', paramName); 
-      const url = `/arbitrary/resources/search?mode=ALL&service=DOCUMENT&query=${QTUBE_VIDEO_BASE}&limit=20&includemetadata=false&reverse=true&excludeblocked=true&name=${paramName}&exactmatchnames=true&offset=${offset}`;
+      const url = `/arbitrary/resources/search?mode=ALL&service=PLAYLIST&name=${encodeURIComponent(paramName)}&exactmatchnames=true&limit=20&reverse=true&offset=${offset}`; 
+      
       const response = await fetch(url, {
         method: "GET",
         headers: {
@@ -53,6 +57,33 @@ export const VideoListComponentLevel = ({ mode }: VideoListProps) => {
         },
       });
       const responseData = await response.json();
+
+     /*  This is the search result for playlists by a specific use
+      [
+        {
+          "name": "Ice",
+          "service": "PLAYLIST",
+          "identifier": "qtube_playlist_the-history-of-qortal_wZ9BtX",
+          "size": 11824,
+          "created": 1747327830726
+        }
+      ]
+      */
+
+     /*  This is the result when getting the JSON infomration about a PLAYLIST
+      { "title": "The History of Qortal", 
+      "version": 1, 
+      "description": "A timeline of Qortal according to Ice", 
+      "htmlDescription": "<p>A timeline of Qortal according to Ice</p>", 
+      "image": "data:image/webp;base64,UklGRugqAABXRUJQVlA4WAoAAAAgAAAASwIAFQAGSJuX2Ws5....YY9umRdt3kC5BWqZoIno3+DIAAA", 
+      "videos": [
+      { "identifier": "qtube_vid_q-tube-may-15_32Mf4d_metadata", "name": "Ice", "service": "DOCUMENT", "code": "GLzeC**<p>New In Qortal? 15-May 2025</p><p>Come see new enhancements specific to Q-Tube</p><p><br></p>" }, 
+      { "identifier": "qtube_vid_11-why-crowetic-dedicated-to-q_nmHmNo_metadata", "name": "QortalNuggets", "service": "DOCUMENT", "code": "Q3fbb**<p>Ernest asks WHY. Jason answers.</p>" }, 
+      { "identifier": "qtube_vid_qortal-conscious-soul-festival_55y2u0_metadata", "name": "ThanksToZen", "service": "DOCUMENT", "code": "Xvwjg**Footage from day 1 of 2" }, 
+      { "identifier": "qtube_vid_qortal-at-web3-amsterdamvideo7_1lCJT4_metadata", "name": "igorcoin", "service": "DOCUMENT", "code": "IbRmX**qortal-at-web3-amsterdam_video_720p_eesti keelsete subtiitritega" }
+      ], 
+      "commentsId": "qtube_playlist__cm_wZ9BtX", "category": 26, "subcategory": "" }
+      */
 
       const structureData = responseData.map((video: any): Video => {
         return {
@@ -63,11 +94,26 @@ export const VideoListComponentLevel = ({ mode }: VideoListProps) => {
           description: video?.metadata?.description,
           created: video?.created,
           updated: video?.updated,
+          service: `PLAYLIST`,
           user: video.name,
           videoImage: "",
           id: video.identifier,
         };
       });
+
+      // Pre-Pagination
+      //setVideos((prev) => {
+      //  const copiedVideos: Video[] = [...prev];
+      //  structureData.forEach((video: Video) => {
+      //    const index = prev.findIndex((p) => p.id === video.id);
+      //    if (index !== -1) {
+      //      copiedVideos[index] = video;
+      //    } else {
+      //      copiedVideos.push(video);
+      //    }
+      //  });
+      //  return copiedVideos;
+      //});
 
       setVideos(prev => {
         const updatedVideos = [...prev];
@@ -103,18 +149,18 @@ export const VideoListComponentLevel = ({ mode }: VideoListProps) => {
     }
   }, [checkAndUpdateVideo, getVideo, hashMapVideos, paramName]);
 
-  useEffect(() => {
-    const fetchVideos = async () => {
-      firstFetch.current = true;
-      console.log("Running useEffect: " + paramName); 
-      await getVideos();
-      afterFetch.current = true;
-    };
+  const getVideosHandlerMount = React.useCallback(async () => {
+    if (firstFetch.current) return;
+    firstFetch.current = true;
+    await getVideos();
+    afterFetch.current = true;
+  }, [getVideos]);
 
+  useEffect(() => {
     if (!firstFetch.current) {
-      fetchVideos();
+      getVideosHandlerMount();
     }
-  }, [paramName, getVideos]);
+  }, [getVideosHandlerMount]);
 
   return (
     <VideoManagerRow>
@@ -126,7 +172,7 @@ export const VideoListComponentLevel = ({ mode }: VideoListProps) => {
           alignItems: "center",
         }}
       >
-        <VideoList videos={videos} />
+        <PlayListList videos={videos} />
         <LazyLoad
           onLoadMore={hasMore ? getVideos : undefined}
           isLoading={isLoading.value}

@@ -3,7 +3,6 @@ import { ThemeProvider } from "@mui/material/styles";
 import { useEffect, useState } from "react";
 import { Provider, useSelector } from "react-redux";
 import { Route, Routes } from "react-router-dom";
-import { persistStore } from "redux-persist";
 import { PersistGate } from "redux-persist/integration/react";
 import { subscriptionListFilter } from "./App-Functions.ts";
 import Notification from "./components/common/Notification/Notification";

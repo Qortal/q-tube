@@ -21,7 +21,7 @@ import {
 import { styled } from "@mui/system";
 import React, { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Key } from "ts-key-enum";
+// import { Key } from "ts-key-enum";
 import { setVideoPlaying } from "../../../state/features/globalSlice.ts";
 import { RootState } from "../../../state/store.ts";
 import { formatTime } from "../../../utils/numberFunctions.ts";
@@ -346,103 +346,103 @@ export const VideoPlayerGlobal: React.FC<VideoPlayerProps> = ({
   const keyboardShortcutsDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     e.preventDefault();
 
-    switch (e.key) {
-      case Key.Add:
-        increaseSpeed(false);
-        break;
-      case "+":
-        increaseSpeed(false);
-        break;
-      case ">":
-        increaseSpeed(false);
-        break;
+    // switch (e.key) {
+    //   case Key.Add:
+    //     increaseSpeed(false);
+    //     break;
+    //   case "+":
+    //     increaseSpeed(false);
+    //     break;
+    //   case ">":
+    //     increaseSpeed(false);
+    //     break;
 
-      case Key.Subtract:
-        decreaseSpeed();
-        break;
-      case "-":
-        decreaseSpeed();
-        break;
-      case "<":
-        decreaseSpeed();
-        break;
+    //   case Key.Subtract:
+    //     decreaseSpeed();
+    //     break;
+    //   case "-":
+    //     decreaseSpeed();
+    //     break;
+    //   case "<":
+    //     decreaseSpeed();
+    //     break;
 
-      case Key.ArrowLeft:
-        {
-          if (e.shiftKey) setProgressRelative(-300);
-          else if (e.ctrlKey) setProgressRelative(-60);
-          else if (e.altKey) setProgressRelative(-10);
-          else setProgressRelative(-5);
-        }
-        break;
+    //   case Key.ArrowLeft:
+    //     {
+    //       if (e.shiftKey) setProgressRelative(-300);
+    //       else if (e.ctrlKey) setProgressRelative(-60);
+    //       else if (e.altKey) setProgressRelative(-10);
+    //       else setProgressRelative(-5);
+    //     }
+    //     break;
 
-      case Key.ArrowRight:
-        {
-          if (e.shiftKey) setProgressRelative(300);
-          else if (e.ctrlKey) setProgressRelative(60);
-          else if (e.altKey) setProgressRelative(10);
-          else setProgressRelative(5);
-        }
-        break;
+    //   case Key.ArrowRight:
+    //     {
+    //       if (e.shiftKey) setProgressRelative(300);
+    //       else if (e.ctrlKey) setProgressRelative(60);
+    //       else if (e.altKey) setProgressRelative(10);
+    //       else setProgressRelative(5);
+    //     }
+    //     break;
 
-      case Key.ArrowDown:
-        changeVolume(-0.05);
-        break;
-      case Key.ArrowUp:
-        changeVolume(0.05);
-        break;
-    }
+    //   case Key.ArrowDown:
+    //     changeVolume(-0.05);
+    //     break;
+    //   case Key.ArrowUp:
+    //     changeVolume(0.05);
+    //     break;
+    // }
   };
 
   const keyboardShortcutsUp = (e: React.KeyboardEvent<HTMLDivElement>) => {
     e.preventDefault();
 
-    switch (e.key) {
-      case " ":
-        togglePlay();
-        break;
-      case "m":
-        toggleMute();
-        break;
+    // switch (e.key) {
+    //   case " ":
+    //     togglePlay();
+    //     break;
+    //   case "m":
+    //     toggleMute();
+    //     break;
 
-      case "f":
-        enterFullscreen();
-        break;
-      case Key.Escape:
-        exitFullscreen();
-        break;
+    //   case "f":
+    //     enterFullscreen();
+    //     break;
+    //   case Key.Escape:
+    //     exitFullscreen();
+    //     break;
 
-      case "0":
-        setProgressAbsolute(0);
-        break;
-      case "1":
-        setProgressAbsolute(10);
-        break;
-      case "2":
-        setProgressAbsolute(20);
-        break;
-      case "3":
-        setProgressAbsolute(30);
-        break;
-      case "4":
-        setProgressAbsolute(40);
-        break;
-      case "5":
-        setProgressAbsolute(50);
-        break;
-      case "6":
-        setProgressAbsolute(60);
-        break;
-      case "7":
-        setProgressAbsolute(70);
-        break;
-      case "8":
-        setProgressAbsolute(80);
-        break;
-      case "9":
-        setProgressAbsolute(90);
-        break;
-    }
+    //   case "0":
+    //     setProgressAbsolute(0);
+    //     break;
+    //   case "1":
+    //     setProgressAbsolute(10);
+    //     break;
+    //   case "2":
+    //     setProgressAbsolute(20);
+    //     break;
+    //   case "3":
+    //     setProgressAbsolute(30);
+    //     break;
+    //   case "4":
+    //     setProgressAbsolute(40);
+    //     break;
+    //   case "5":
+    //     setProgressAbsolute(50);
+    //     break;
+    //   case "6":
+    //     setProgressAbsolute(60);
+    //     break;
+    //   case "7":
+    //     setProgressAbsolute(70);
+    //     break;
+    //   case "8":
+    //     setProgressAbsolute(80);
+    //     break;
+    //   case "9":
+    //     setProgressAbsolute(90);
+    //     break;
+    // }
   };
 
   // useEffect(() => {

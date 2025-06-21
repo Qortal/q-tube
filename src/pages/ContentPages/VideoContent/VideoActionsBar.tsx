@@ -35,7 +35,6 @@ export const VideoActionsBar = ({
   setSuperLikeList,
   sx,
 }: VideoActionsBarProps) => {
-  console.log('videoDatalike', videoData)
   const calculateAmountSuperlike = useMemo(() => {
     const totalQort = superLikeList?.reduce((acc, curr) => {
       if (curr?.amount && !isNaN(parseFloat(curr.amount)))

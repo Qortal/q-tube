@@ -64,16 +64,18 @@ export const Home = ({ mode }: HomeProps) => {
 
 console.log('filterName', filterName)
 const searchParameters: QortalSearchParams = useMemo(()=> {
-  let description = ""
-  let query = ""
+  const searchOptions: {
+    description?: string
+    query?: string
+  } = {}
   if (selectedCategoryVideos) {
-    description = `category:${selectedCategoryVideos.id};`;
+    searchOptions.description = `category:${selectedCategoryVideos.id};`;
 
     if (selectedSubCategoryVideos)
-      description += `subcategory:${selectedSubCategoryVideos.id}`;
+      searchOptions.description += `subcategory:${selectedSubCategoryVideos.id}`;
   }
   if(filterSearch){
-    query = filterSearch
+    searchOptions.query = filterSearch
   }
   return {
     identifier:
@@ -84,9 +86,8 @@ const searchParameters: QortalSearchParams = useMemo(()=> {
     limit: 20,
     excludeBlocked: true,
     name: filterName || "",
-    description,
-    query,
-    mode: 'LATEST'
+    ...searchOptions,
+    mode: 'ALL'
   };
 }, [filterType, filterName, selectedSubCategoryVideos, selectedCategoryVideos, filterSearch])
  console.log('searchParameters', searchParameters)

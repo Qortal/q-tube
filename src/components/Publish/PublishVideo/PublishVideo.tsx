@@ -482,7 +482,7 @@ export const PublishVideo = ({
           throw new Error("cannot get playlist data");
         }
       }
-
+      console.log('listOfPublishes', listOfPublishes)
       const multiplePublish = {
         action: "PUBLISH_MULTIPLE_QDN_RESOURCES",
         resources: [...listOfPublishes],

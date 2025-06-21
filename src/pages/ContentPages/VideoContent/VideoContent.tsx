@@ -72,7 +72,8 @@ export const VideoContent = () => {
         sx={{
           display: "flex",
           flexDirection: "column",
-          padding: `0px 0px 0px ${isScreenSmall ? "0px" : "2%"}`,
+          // padding: `0px 0px 0px ${isScreenSmall ? "0px" : "2%"}`,
+          padding: '10px',
           width: "100%",
         }}
         onClick={focusVideo}
@@ -80,8 +81,8 @@ export const VideoContent = () => {
         {videoReference ? (
           <VideoPlayerContainer
             sx={{
-              width: `${videoWidth}%`,
-              marginLeft: "0%",
+              // width: `${videoWidth}%`,
+              // marginLeft: "0%",
             }}
           >
             <VideoPlayer

@@ -20,7 +20,7 @@ import {
   setSuperlikesAll,
   setUserAvatarHash,
 } from "../state/features/globalSlice";
-import { VideoPlayerGlobal } from "../components/common/VideoPlayer/VideoPlayerGlobal.tsx";
+// import { VideoPlayerGlobal } from "../components/common/VideoPlayer/VideoPlayerGlobal.tsx";
 import { Rnd } from "react-rnd";
 import { RequestQueue } from "../utils/queue";
 import { EditVideo } from "../components/Publish/EditVideo/EditVideo";

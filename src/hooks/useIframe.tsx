@@ -5,7 +5,7 @@ export const useIframe = () => {
   const navigate = useNavigate();
   useEffect(() => {
     function handleNavigation(event) {
-      if (event.data?.action === "NAVIGATE_TO_PATH" && event.data.path) {
+  if (event.data?.action === "NAVIGATE_TO_PATH" && event.data.path) {
         console.log("Navigating to path within React app:", event.data.path);
         navigate(event.data.path); // Navigate directly to the specified path
 

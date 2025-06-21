@@ -69,6 +69,7 @@ import {
   TimesIcon,
 } from "./PublishVideo-styles.tsx";
 import VideoLibraryIcon from "@mui/icons-material/VideoLibrary";
+import { usePublish } from "qapp-core";
 
 export const toBase64 = (file: File): Promise<string | ArrayBuffer | null> =>
   new Promise((resolve, reject) => {
@@ -111,6 +112,8 @@ export const PublishVideo = ({
   const userAddress = useSelector(
     (state: RootState) => state.auth?.user?.address
   );
+       const publishFromLibrary = usePublish()
+  
   const [files, setFiles] = useState<VideoFile[]>([]);
   const videoDurations = useSignal<number[]>([]);
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -487,27 +490,35 @@ export const PublishVideo = ({
         action: "PUBLISH_MULTIPLE_QDN_RESOURCES",
         resources: [...listOfPublishes],
       };
-      setPublishes(multiplePublish);
-      setIsOpenMultiplePublish(true);
+
+             await publishFromLibrary.publishMultipleResources(listOfPublishes)
+setIsOpenMultiplePublish(false);
+            setIsOpen(false);
+            setImageExtracts({});
+            setFiles([]);
+            setStep("videos");
+            setPlaylistCoverImage(null);
+            setPlaylistTitle("");
+            setPlaylistDescription("");
+            setSelectedCategory(null);
+            setCoverImageForAll(null);
+            setSelectedSubCategory(null);
+            setSelectedCategoryVideos(null);
+            setSelectedSubCategoryVideos(null);
+            setPlaylistSetting(null);
+            dispatch(
+              setNotification({
+                msg: "Videos published",
+                alertType: "success",
+              })
+            );
     } catch (error: any) {
-      let notificationObj: any = null;
-      if (typeof error === "string") {
-        notificationObj = {
-          msg: error || "Failed to publish video",
-          alertType: "error",
-        };
-      } else if (typeof error?.error === "string") {
-        notificationObj = {
-          msg: error?.error || "Failed to publish video",
-          alertType: "error",
-        };
-      } else {
-        notificationObj = {
+      
+        const notificationObj = {
           msg: error?.message || "Failed to publish video",
           alertType: "error",
         };
-      }
-      if (!notificationObj) return;
+      
       dispatch(setNotification(notificationObj));
 
       throw new Error("Failed to publish video");

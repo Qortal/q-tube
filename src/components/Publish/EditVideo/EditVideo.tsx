@@ -53,6 +53,7 @@ import {
   NewCrowdfundTitle,
   TimesIcon,
 } from "./EditVideo-styles.tsx";
+import { usePublish } from "qapp-core";
 
 const uid = new ShortUniqueId();
 const shortuid = new ShortUniqueId({ length: 5 });
@@ -67,6 +68,7 @@ export const EditVideo = () => {
   const editVideoProperties = useSelector(
     (state: RootState) => state.video.editVideoProperties
   );
+     const publishFromLibrary = usePublish()
   const [publishes, setPublishes] = useState<any>(null);
   const [isOpenMultiplePublish, setIsOpenMultiplePublish] = useState(false);
   const [videoPropertiesToSetToRedux, setVideoPropertiesToSetToRedux] =
@@ -314,35 +316,28 @@ export const EditVideo = () => {
         listOfPublishes.push(requestBodyVideo);
       }
 
-      const multiplePublish = {
-        action: "PUBLISH_MULTIPLE_QDN_RESOURCES",
-        resources: [...listOfPublishes],
-      };
-      setPublishes(multiplePublish);
-      setIsOpenMultiplePublish(true);
-      setVideoPropertiesToSetToRedux({
+    
+     
+       await publishFromLibrary.publishMultipleResources(listOfPublishes)
+  
+            const clonedCopy = structuredClone({
         ...editVideoProperties,
         ...videoObject,
       });
+            dispatch(updateVideo(clonedCopy));
+            dispatch(updateInHashMap(clonedCopy));
+            dispatch(
+              setNotification({
+                msg: "Video updated",
+                alertType: "success",
+              })
+            );
+            onClose();
     } catch (error: any) {
-      let notificationObj: any = null;
-      if (typeof error === "string") {
-        notificationObj = {
-          msg: error || "Failed to publish update",
-          alertType: "error",
-        };
-      } else if (typeof error?.error === "string") {
-        notificationObj = {
-          msg: error?.error || "Failed to publish update",
-          alertType: "error",
-        };
-      } else {
-        notificationObj = {
+      const notificationObj = {
           msg: error?.message || "Failed to publish update",
           alertType: "error",
         };
-      }
-      if (!notificationObj) return;
       dispatch(setNotification(notificationObj));
 
       throw new Error("Failed to publish update");

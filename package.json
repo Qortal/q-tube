@@ -52,6 +52,7 @@
     "prettier": "^3.4.2",
     "typescript": "^5.7.2",
     "vite": "^6.3.5",
+    "globals": "^15.15.0",
     "vite-plugin-static-copy": "^3.0.0"
   }
 }

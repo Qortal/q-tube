@@ -36,7 +36,6 @@ import { getPrimaryAccountName } from "../utils/qortalRequestFunctions.ts";
 
 interface Props {
   children: React.ReactNode;
-  setTheme: (val: string) => void;
 }
 
 let timer: number | null = null;
@@ -44,7 +43,8 @@ let timer: number | null = null;
 export const queue = new RequestQueue();
 export const queueSuperlikes = new RequestQueue();
 
-const GlobalWrapper: React.FC<Props> = ({ children, setTheme }) => {
+const GlobalWrapper: React.FC<Props> = ({ children }) => {
+  const [theme, setTheme] = useState('dark')
   const dispatch = useDispatch();
   const isDragging = useRef(false);
   const [userAvatar, setUserAvatar] = useState<string>("");
@@ -210,7 +210,8 @@ const GlobalWrapper: React.FC<Props> = ({ children, setTheme }) => {
     <>
       {isLoadingGlobal && <PageLoader />}
       <ConsentModal />
-
+       <EditVideo />
+                  <EditPlaylist />
       <NavBar
         setTheme={(val: string) => setTheme(val)}
         isAuthenticated={!!user?.name}
@@ -219,8 +220,7 @@ const GlobalWrapper: React.FC<Props> = ({ children, setTheme }) => {
         userAvatar={userAvatar}
         authenticate={askForAccountInformation}
       />
-      <EditVideo />
-      <EditPlaylist />
+  
       {/*<Rnd*/}
       {/*  onDragStart={onDragStart}*/}
       {/*  onDragStop={onDragStop}*/}

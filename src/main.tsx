@@ -11,8 +11,8 @@ const customWindow = window as unknown as CustomWindow;
 
 const baseUrl = customWindow?._qdnBase || "";
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
-  <BrowserRouter basename={baseUrl}>
+  <>
     <App />
     <div id="modal-root" />
-  </BrowserRouter>
+</>
 );

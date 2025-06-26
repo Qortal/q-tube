@@ -1,4 +1,4 @@
-import { Box, Typography, useMediaQuery } from "@mui/material";
+import { Box, Button, Typography, useMediaQuery } from "@mui/material";
 import React, { useEffect, useState } from "react";
 
 import DeletedVideo from "../../../assets/img/DeletedVideo.jpg";
@@ -66,6 +66,8 @@ export const VideoContent = () => {
     });
   }, []);
 
+  const [newVideo, setNewVideo] = useState(null)
+
   return (
     <>
       <Box
@@ -78,17 +80,27 @@ export const VideoContent = () => {
         }}
         onClick={focusVideo}
       >
+        <Button onClick={()=> {
+          setNewVideo({
+            identifier: 'MYTEST2_vid_hymn-for-peace_gEpkBT',
+            name: 'SafetyMongoose',
+            service: 'VIDEO'
+          })
+        }}>play another</Button>
+        <Button onClick={()=> setNewVideo(null)}>go back</Button>
         {videoReference ? (
           <VideoPlayerContainer
             sx={{
               // width: `${videoWidth}%`,
               // marginLeft: "0%",
+              height: '70vh',
+              backgroundColor: 'black'
             }}
           >
             <VideoPlayer
-              name={videoReference?.name}
-              service={videoReference?.service}
-              identifier={videoReference?.identifier}
+              name={newVideo?.name || videoReference?.name}
+              service={newVideo?.service || videoReference?.service}
+              identifier={newVideo?.identifier || videoReference?.identifier}
               user={channelName}
               jsonId={id}
               poster={videoCover || ""}
@@ -98,17 +110,11 @@ export const VideoContent = () => {
                 video: { aspectRatio: "16 / 9" },
               }}
               duration={videoData?.duration}
+              
             />
           </VideoPlayerContainer>
-        ) : isVideoLoaded ? (
-          <img
-            src={DeletedVideo}
-            width={"70%"}
-            height={"37%"}
-            style={{ marginLeft: "5%" }}
-          />
         ) : (
-          <Box sx={{ width: "55vw", aspectRatio: "16/9" }}></Box>
+          <Box sx={{ width: "100%", height: '70vh', background: 'black'}}></Box>
         )}
         <VideoContentContainer
           sx={{ paddingLeft: isScreenSmall ? "5px" : "0px" }}

@@ -95,9 +95,10 @@ export const VideoPlayer = forwardRef<videoRefType, VideoPlayerProps>(
       // <VideoContext.Provider value={contextData}>
       <Box sx={{
         width: '100%',
-        height: '70vh'
+        height: '70vh',
+        background: 'black'
       }}>
-        <QappVideoPlayer timelineActions={timelineActions} poster={props.poster} videoRef={videoRef} qortalVideoResource={{name: props.name, service: props.service as Service, identifier: props.identifier}} />
+        <QappVideoPlayer  timelineActions={timelineActions} poster={props.poster} videoRef={videoRef} qortalVideoResource={{name: props.name, service: props.service as Service, identifier: props.identifier}} />
         </Box>
         //  <VideoContainer
         //   tabIndex={0}

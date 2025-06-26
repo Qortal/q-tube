@@ -428,7 +428,7 @@ export const PublishVideo = ({
         if (!selectExistingPlaylist) {
           throw new Error("select a playlist");
         }
-
+        
         // get raw data for playlist
         const responseData = await qortalRequest({
           action: "FETCH_QDN_RESOURCE",

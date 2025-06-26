@@ -20,7 +20,7 @@
     "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true,
     "strictNullChecks": false,
-    "types": ["node"]
+    "types": ["node", "qapp-core/global"]
   },
   "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]

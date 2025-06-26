@@ -41,6 +41,7 @@ export const DownloadTaskManager: React.FC = () => {
   const handleCloseDownload = () => {
     setAnchorEl(null);
     setOpenDownload(false);
+
   };
 
   useEffect(() => {

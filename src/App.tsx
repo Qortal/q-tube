@@ -9,7 +9,6 @@ import Notification from './components/common/Notification/Notification';
 import { setFilteredSubscriptions } from './state/features/videoSlice.ts';
 import { store, persistor } from './state/store';
 import { darkTheme } from './styles/theme';
-import DownloadWrapper from './wrappers/DownloadWrapper';
 
 import { Routes } from './Routes.tsx';
 
@@ -26,9 +25,7 @@ function App() {
         <ThemeProvider theme={darkTheme}>
           <CssBaseline />
           <Notification />
-          <DownloadWrapper>
-            <Routes />
-          </DownloadWrapper>
+          <Routes />
         </ThemeProvider>
       </PersistGate>
     </Provider>

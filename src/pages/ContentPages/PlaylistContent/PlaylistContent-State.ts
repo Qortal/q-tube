@@ -1,9 +1,9 @@
-import { useDispatch, useSelector } from "react-redux";
-import { setIsLoadingGlobal } from "../../../state/features/globalSlice.ts";
-import { RootState } from "../../../state/store.ts";
-import { useVideoContentState } from "../VideoContent/VideoContent-State.ts";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from 'react-redux';
+import { setIsLoadingGlobal } from '../../../state/features/globalSlice.ts';
+import { RootState } from '../../../state/store.ts';
+import { useVideoContentState } from '../VideoContent/VideoContent-State.ts';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export const usePlaylistContentState = () => {
   const {
@@ -12,9 +12,7 @@ export const usePlaylistContentState = () => {
     videoData,
     superLikeList,
     videoReference,
-    focusVideo,
     videoCover,
-    containerRef,
     theme,
     descriptionHeight,
     setSuperLikeList,
@@ -23,7 +21,7 @@ export const usePlaylistContentState = () => {
     contentRef,
     descriptionThreshold,
     loadingSuperLikes,
-    setVideoMetadataResource
+    setVideoMetadataResource,
   } = useVideoContentState();
 
   const userName = useSelector((state: RootState) => state.auth.user?.name);
@@ -51,8 +49,6 @@ export const usePlaylistContentState = () => {
 
   const dispatch = useDispatch();
 
-  console.log('nameid', channelName, id)
-
   const checkforPlaylist = useCallback(
     async (name, id) => {
       try {
@@ -62,9 +58,9 @@ export const usePlaylistContentState = () => {
 
         const url = `/arbitrary/resources/search?mode=ALL&service=PLAYLIST&identifier=${id}&limit=1&includemetadata=true&reverse=true&excludeblocked=true&name=${name}&exactmatchnames=true&offset=0`;
         const response = await fetch(url, {
-          method: "GET",
+          method: 'GET',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
         });
         const responseDataSearch = await response.json();
@@ -80,13 +76,13 @@ export const usePlaylistContentState = () => {
             created: resourceData?.created,
             updated: resourceData?.updated,
             name: resourceData.name,
-            videoImage: "",
+            videoImage: '',
             identifier: resourceData.identifier,
             service: resourceData.service,
           };
 
           const responseData = await qortalRequest({
-            action: "FETCH_QDN_RESOURCE",
+            action: 'FETCH_QDN_RESOURCE',
             name: resourceData.name,
             service: resourceData.service,
             identifier: resourceData.identifier,
@@ -102,9 +98,9 @@ export const usePlaylistContentState = () => {
               for (const vid of combinedData.videos) {
                 const url = `/arbitrary/resources/search?mode=ALL&service=DOCUMENT&identifier=${vid.identifier}&limit=1&includemetadata=true&reverse=true&name=${vid.name}&exactmatchnames=true&offset=0`;
                 const response = await fetch(url, {
-                  method: "GET",
+                  method: 'GET',
                   headers: {
-                    "Content-Type": "application/json",
+                    'Content-Type': 'application/json',
                   },
                 });
                 const responseDataSearchVid = await response.json();
@@ -119,7 +115,11 @@ export const usePlaylistContentState = () => {
             setPlaylistData(combinedData);
             if (combinedData?.videos?.length > 0) {
               const vid = combinedData?.videos[0];
-              setVideoMetadataResource({name: vid?.name, identifier: vid?.identifier, service: 'DOCUMENT'});
+              setVideoMetadataResource({
+                name: vid?.name,
+                identifier: vid?.identifier,
+                service: 'DOCUMENT',
+              });
             }
           }
         }
@@ -132,7 +132,7 @@ export const usePlaylistContentState = () => {
     [hashMapVideos]
   );
 
-  console.log('playlistdata', playlistData)
+  console.log('playlistdata', playlistData);
 
   useEffect(() => {
     if (channelName && id) {
@@ -142,16 +142,16 @@ export const usePlaylistContentState = () => {
 
   const nextVideo = useMemo(() => {
     const currentVideoIndex = playlistData?.videos?.findIndex(
-      item => item?.identifier === videoData?.id
+      (item) => item?.identifier === videoData?.id
     );
     if (currentVideoIndex !== -1) {
       const nextVideoIndex = currentVideoIndex + 1;
       const findVideo = playlistData?.videos[nextVideoIndex] || null;
       if (findVideo) {
-        const id = findVideo?.identifier?.replace("_metadata", "");
+        const id = findVideo?.identifier?.replace('_metadata', '');
         return {
           ...findVideo,
-          service: "VIDEO",
+          service: 'VIDEO',
           identifier: id,
           jsonId: findVideo?.identifier,
         };
@@ -163,13 +163,17 @@ export const usePlaylistContentState = () => {
 
   const onEndVideo = useCallback(() => {
     const currentVideoIndex = playlistData?.videos?.findIndex(
-      item => item?.identifier === videoData?.id
+      (item) => item?.identifier === videoData?.id
     );
     if (currentVideoIndex !== -1) {
       const nextVideoIndex = currentVideoIndex + 1;
       const findVideo = playlistData?.videos[nextVideoIndex] || null;
       if (findVideo) {
-        setVideoMetadataResource({name: findVideo?.name, identifier: findVideo?.identifier, service: 'DOCUMENT'});
+        setVideoMetadataResource({
+          name: findVideo?.name,
+          identifier: findVideo?.identifier,
+          service: 'DOCUMENT',
+        });
         setDoAutoPlay(true);
       }
     }
@@ -182,9 +186,7 @@ export const usePlaylistContentState = () => {
     superLikeList,
     setVideoMetadataResource,
     videoReference,
-    focusVideo,
     videoCover,
-    containerRef,
     theme,
     descriptionHeight,
     nextVideo,

@@ -28,7 +28,7 @@ export interface VideoPlayerProps {
 
 export const VideoPlayer = ({ ...props }: VideoPlayerProps) => {
   const videoRef = useRef(null);
-
+  console.log('autoPlay', props?.autoPlay);
   return (
     <Box
       sx={{
@@ -45,6 +45,8 @@ export const VideoPlayer = ({ ...props }: VideoPlayerProps) => {
           service: props.service as Service,
           identifier: props.identifier,
         }}
+        autoPlay={props?.autoPlay}
+        onEnded={props?.onEnd}
       />
     </Box>
   );

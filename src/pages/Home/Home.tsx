@@ -20,7 +20,6 @@ export const Home = ({ mode }: HomeProps) => {
   const {
     tabValue,
     changeTab,
-    isLoading,
     filteredSubscriptionList,
     selectedCategoryVideos,
     selectedSubCategoryVideos,
@@ -133,11 +132,9 @@ export const Home = ({ mode }: HomeProps) => {
                   />
                 </>
               ) : (
-                !isLoading && (
-                  <div style={{ textAlign: 'center' }}>
-                    You have no subscriptions
-                  </div>
-                )
+                <div style={{ textAlign: 'center' }}>
+                  You have no subscriptions
+                </div>
               )}
             </TabPanel>
           </TabContext>

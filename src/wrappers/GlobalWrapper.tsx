@@ -43,18 +43,12 @@ export const queue = new RequestQueue();
 export const queueSuperlikes = new RequestQueue();
 
 const GlobalWrapper: React.FC<Props> = ({ children }) => {
-  const [theme, setTheme] = useState('dark');
   const dispatch = useDispatch();
-  const isDragging = useRef(false);
   const [userAvatar, setUserAvatar] = useState<string>('');
   const user = useSelector((state: RootState) => state.auth.user);
   const { addSuperlikeRawDataGetToList } = useFetchSuperLikes();
   const interval = useRef<any>(null);
   useHandleNameData();
-
-  const videoPlaying = useSelector(
-    (state: RootState) => state.global.videoPlaying
-  );
 
   const username = useMemo(() => {
     if (!user?.name) return '';
@@ -109,27 +103,6 @@ const GlobalWrapper: React.FC<Props> = ({ children }) => {
   React.useEffect(() => {
     askForAccountInformation();
   }, [askForAccountInformation]);
-
-  const onDragStart = () => {
-    timer = Date.now();
-    isDragging.current = true;
-  };
-
-  const handleStopDrag = async () => {
-    const time = Date.now();
-    if (timer && time - timer < 300) {
-      isDragging.current = false;
-    } else {
-      isDragging.current = true;
-    }
-  };
-  const onDragStop = () => {
-    handleStopDrag();
-  };
-
-  const checkIfDrag = useCallback(() => {
-    return isDragging.current;
-  }, []);
 
   const getSuperlikes = useCallback(async () => {
     try {
@@ -211,7 +184,6 @@ const GlobalWrapper: React.FC<Props> = ({ children }) => {
       <EditVideo />
       <EditPlaylist />
       <NavBar
-        setTheme={(val: string) => setTheme(val)}
         isAuthenticated={!!user?.name}
         userName={user?.name || ''}
         allNames={names}

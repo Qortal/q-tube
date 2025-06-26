@@ -1,36 +1,33 @@
-import { Box, Button, Typography, useMediaQuery } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import { Box, Typography, useMediaQuery } from '@mui/material';
+import { useEffect, useState } from 'react';
 
-import DeletedVideo from "../../../assets/img/DeletedVideo.jpg";
-import { CommentSection } from "../../../components/common/Comments/CommentSection.tsx";
-import { SuperLikesSection } from "../../../components/common/SuperLikesList/SuperLikesSection.tsx";
-import { DisplayHtml } from "../../../components/common/TextEditor/DisplayHtml.tsx";
-import { VideoPlayer } from "../../../components/common/VideoPlayer/VideoPlayer.tsx";
+import { CommentSection } from '../../../components/common/Comments/CommentSection.tsx';
+import { SuperLikesSection } from '../../../components/common/SuperLikesList/SuperLikesSection.tsx';
+import { DisplayHtml } from '../../../components/common/TextEditor/DisplayHtml.tsx';
+import { VideoPlayer } from '../../../components/common/VideoPlayer/VideoPlayer.tsx';
 import {
   fontSizeSmall,
   minFileSize,
   smallVideoSize,
-} from "../../../constants/Misc.ts";
-import { formatBytes } from "../../../utils/numberFunctions.ts";
-import { formatDate } from "../../../utils/time.ts";
-import { VideoActionsBar } from "./VideoActionsBar.tsx";
-import { useVideoContentState } from "./VideoContent-State.ts";
+} from '../../../constants/Misc.ts';
+import { formatBytes } from '../../../utils/numberFunctions.ts';
+import { formatDate } from '../../../utils/time.ts';
+import { VideoActionsBar } from './VideoActionsBar.tsx';
+import { useVideoContentState } from './VideoContent-State.ts';
 import {
   Spacer,
   VideoContentContainer,
   VideoDescription,
   VideoPlayerContainer,
   VideoTitle,
-} from "./VideoContent-styles.tsx";
+} from './VideoContent-styles.tsx';
 
 export const VideoContent = () => {
   const {
-    focusVideo,
     videoReference,
     channelName,
     id,
     videoCover,
-    containerRef,
     isVideoLoaded,
     theme,
     videoData,
@@ -61,70 +58,56 @@ export const VideoContent = () => {
   if (videoWidth < minWidthPercent) videoWidth = minWidthPercent;
 
   useEffect(() => {
-    window.addEventListener("resize", e => {
+    window.addEventListener('resize', (e) => {
       setScreenWidth(window.innerWidth + 120);
     });
   }, []);
-
-  const [newVideo, setNewVideo] = useState(null)
 
   return (
     <>
       <Box
         sx={{
-          display: "flex",
-          flexDirection: "column",
-          // padding: `0px 0px 0px ${isScreenSmall ? "0px" : "2%"}`,
+          display: 'flex',
+          flexDirection: 'column',
           padding: '10px',
-          width: "100%",
+          width: '100%',
         }}
-        onClick={focusVideo}
       >
-        <Button onClick={()=> {
-          setNewVideo({
-            identifier: 'MYTEST2_vid_hymn-for-peace_gEpkBT',
-            name: 'SafetyMongoose',
-            service: 'VIDEO'
-          })
-        }}>play another</Button>
-        <Button onClick={()=> setNewVideo(null)}>go back</Button>
         {videoReference ? (
           <VideoPlayerContainer
             sx={{
-              // width: `${videoWidth}%`,
-              // marginLeft: "0%",
               height: '70vh',
-              backgroundColor: 'black'
+              backgroundColor: 'black',
             }}
           >
             <VideoPlayer
-              name={newVideo?.name || videoReference?.name}
-              service={newVideo?.service || videoReference?.service}
-              identifier={newVideo?.identifier || videoReference?.identifier}
+              name={videoReference?.name}
+              service={videoReference?.service}
+              identifier={videoReference?.identifier}
               user={channelName}
               jsonId={id}
-              poster={videoCover || ""}
-              ref={containerRef}
+              poster={videoCover || ''}
               videoStyles={{
-                videoContainer: { aspectRatio: "16 / 9" },
-                video: { aspectRatio: "16 / 9" },
+                videoContainer: { aspectRatio: '16 / 9' },
+                video: { aspectRatio: '16 / 9' },
               }}
               duration={videoData?.duration}
-              
             />
           </VideoPlayerContainer>
         ) : (
-          <Box sx={{ width: "100%", height: '70vh', background: 'black'}}></Box>
+          <Box
+            sx={{ width: '100%', height: '70vh', background: 'black' }}
+          ></Box>
         )}
         <VideoContentContainer
-          sx={{ paddingLeft: isScreenSmall ? "5px" : "0px" }}
+          sx={{ paddingLeft: isScreenSmall ? '5px' : '0px' }}
         >
           <VideoTitle
-            variant={isScreenSmall ? "h2" : "h1"}
+            variant={isScreenSmall ? 'h2' : 'h1'}
             color="textPrimary"
             sx={{
-              textAlign: "start",
-              marginTop: isScreenSmall ? "20px" : "10px",
+              textAlign: 'start',
+              marginTop: isScreenSmall ? '20px' : '10px',
             }}
           >
             {videoData?.title}
@@ -135,7 +118,7 @@ export const VideoContent = () => {
                 variant="h2"
                 sx={{
                   fontSize: fontSizeSmall,
-                  display: "inline",
+                  display: 'inline',
                 }}
                 color={theme.palette.text.primary}
               >
@@ -147,13 +130,13 @@ export const VideoContent = () => {
               <Typography
                 variant="h1"
                 sx={{
-                  fontSize: "90%",
-                  display: "inline",
-                  marginLeft: "20px",
+                  fontSize: '90%',
+                  display: 'inline',
+                  marginLeft: '20px',
                 }}
-                color={"green"}
+                color={'green'}
               >
-                {formatBytes(videoData.fileSize, 2, "Decimal")}
+                {formatBytes(videoData.fileSize, 2, 'Decimal')}
               </Typography>
             )}
           </Box>
@@ -163,42 +146,42 @@ export const VideoContent = () => {
             setSuperLikeList={setSuperLikeList}
             superLikeList={superLikeList}
             videoReference={videoReference}
-            sx={{ width: "calc(100% - 5px)" }}
+            sx={{ width: 'calc(100% - 5px)' }}
           />
 
           <Spacer height="15px" />
           {videoData?.fullDescription && (
             <Box
               sx={{
-                background: "#333333",
-                borderRadius: "5px",
-                padding: "5px",
-                width: "95%",
+                background: '#333333',
+                borderRadius: '5px',
+                padding: '5px',
+                width: '95%',
                 cursor: !descriptionHeight
-                  ? "default"
+                  ? 'default'
                   : isExpandedDescription
-                    ? "default"
-                    : "pointer",
-                position: "relative",
-                marginBottom: "30px",
+                    ? 'default'
+                    : 'pointer',
+                position: 'relative',
+                marginBottom: '30px',
               }}
               className={
                 !descriptionHeight
-                  ? ""
+                  ? ''
                   : isExpandedDescription
-                    ? ""
-                    : "hover-click"
+                    ? ''
+                    : 'hover-click'
               }
             >
               {descriptionHeight && !isExpandedDescription && (
                 <Box
                   sx={{
-                    position: "absolute",
-                    top: "0px",
-                    right: "0px",
-                    left: "0px",
-                    bottom: "0px",
-                    cursor: "pointer",
+                    position: 'absolute',
+                    top: '0px',
+                    right: '0px',
+                    left: '0px',
+                    bottom: '0px',
+                    cursor: 'pointer',
                   }}
                   onClick={() => {
                     if (isExpandedDescription) return;
@@ -210,11 +193,11 @@ export const VideoContent = () => {
                 ref={contentRef}
                 sx={{
                   height: !descriptionHeight
-                    ? "auto"
+                    ? 'auto'
                     : isExpandedDescription
-                      ? "auto"
-                      : "200px",
-                  overflow: "hidden",
+                      ? 'auto'
+                      : '200px',
+                  overflow: 'hidden',
                 }}
               >
                 {videoData?.htmlDescription ? (
@@ -224,7 +207,7 @@ export const VideoContent = () => {
                     variant="body1"
                     color="textPrimary"
                     sx={{
-                      cursor: "default",
+                      cursor: 'default',
                     }}
                   >
                     {videoData?.fullDescription}
@@ -234,17 +217,17 @@ export const VideoContent = () => {
               {descriptionHeight >= descriptionThreshold && (
                 <Typography
                   onClick={() => {
-                    setIsExpandedDescription(prev => !prev);
+                    setIsExpandedDescription((prev) => !prev);
                   }}
                   sx={{
-                    fontWeight: "bold",
-                    fontSize: "16px",
-                    cursor: "pointer",
-                    paddingLeft: "15px",
-                    paddingTop: "15px",
+                    fontWeight: 'bold',
+                    fontSize: '16px',
+                    cursor: 'pointer',
+                    paddingLeft: '15px',
+                    paddingTop: '15px',
                   }}
                 >
-                  {isExpandedDescription ? "Show less" : "...more"}
+                  {isExpandedDescription ? 'Show less' : '...more'}
                 </Typography>
               )}
             </Box>
@@ -257,10 +240,10 @@ export const VideoContent = () => {
                 getMore={() => {}}
                 loadingSuperLikes={loadingSuperLikes}
                 superlikes={superLikeList}
-                postId={id || ""}
-                postName={channelName || ""}
+                postId={id || ''}
+                postName={channelName || ''}
               />
-              <CommentSection postId={id || ""} postName={channelName || ""} />
+              <CommentSection postId={id || ''} postName={channelName || ''} />
             </>
           )}
         </VideoContentContainer>

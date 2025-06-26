@@ -1,21 +1,20 @@
-import { Box, SxProps, Theme, Typography, useMediaQuery } from "@mui/material";
-import React from "react";
-import { CommentSection } from "../../../components/common/Comments/CommentSection.tsx";
-import { SuperLikesSection } from "../../../components/common/SuperLikesList/SuperLikesSection.tsx";
-import { DisplayHtml } from "../../../components/common/TextEditor/DisplayHtml.tsx";
-import { VideoPlayer } from "../../../components/common/VideoPlayer/VideoPlayer.tsx";
-import { Playlists } from "../../../components/Playlists/Playlists.tsx";
-import { fontSizeSmall, minFileSize } from "../../../constants/Misc.ts";
-import { formatBytes } from "../../../utils/numberFunctions.ts";
-import { formatDate } from "../../../utils/time.ts";
-import { VideoActionsBar } from "../VideoContent/VideoActionsBar.tsx";
-import { usePlaylistContentState } from "./PlaylistContent-State.ts";
+import { Box, SxProps, Theme, Typography, useMediaQuery } from '@mui/material';
+import { CommentSection } from '../../../components/common/Comments/CommentSection.tsx';
+import { SuperLikesSection } from '../../../components/common/SuperLikesList/SuperLikesSection.tsx';
+import { DisplayHtml } from '../../../components/common/TextEditor/DisplayHtml.tsx';
+import { VideoPlayer } from '../../../components/common/VideoPlayer/VideoPlayer.tsx';
+import { Playlists } from '../../../components/Playlists/Playlists.tsx';
+import { fontSizeSmall, minFileSize } from '../../../constants/Misc.ts';
+import { formatBytes } from '../../../utils/numberFunctions.ts';
+import { formatDate } from '../../../utils/time.ts';
+import { VideoActionsBar } from '../VideoContent/VideoActionsBar.tsx';
+import { usePlaylistContentState } from './PlaylistContent-State.ts';
 import {
   Spacer,
   VideoDescription,
   VideoPlayerContainer,
   VideoTitle,
-} from "./PlaylistContent-styles.tsx";
+} from './PlaylistContent-styles.tsx';
 
 export const PlaylistContent = () => {
   const {
@@ -25,9 +24,7 @@ export const PlaylistContent = () => {
     superLikeList,
     setVideoMetadataResource,
     videoReference,
-    focusVideo,
     videoCover,
-    containerRef,
     theme,
     descriptionHeight,
     nextVideo,
@@ -45,14 +42,14 @@ export const PlaylistContent = () => {
   const isScreenSmall = !useMediaQuery(`(min-width:950px)`);
 
   const playlistsSX: SxProps<Theme> = isScreenSmall
-    ? { width: "100%", marginTop: "10px" }
-    : { width: "35%", position: "absolute", right: "20px" };
+    ? { width: '100%', marginTop: '10px' }
+    : { width: '35%', position: 'absolute', right: '20px' };
 
   return videoData && videoData?.videos?.length === 0 ? (
     <Box
       sx={{
-        width: "100%",
-        display: "flex",
+        width: '100%',
+        display: 'flex',
       }}
     >
       <Typography>This playlist doesn't exist</Typography>
@@ -60,20 +57,19 @@ export const PlaylistContent = () => {
   ) : (
     <Box
       sx={{
-        display: "flex",
-        alignItems: "center",
-        flexDirection: "column",
-        padding: "0px",
-        marginLeft: "2%",
+        display: 'flex',
+        alignItems: 'center',
+        flexDirection: 'column',
+        padding: '0px',
+        marginLeft: '2%',
       }}
-      onClick={focusVideo}
     >
       <VideoPlayerContainer
         sx={{
-          width: isScreenSmall ? "100%" : "60%",
-          alignSelf: "start",
-          paddingRight: isScreenSmall ? "10px" : "0px",
-          marginBottom: "20px",
+          width: isScreenSmall ? '100%' : '60%',
+          alignSelf: 'start',
+          paddingRight: isScreenSmall ? '10px' : '0px',
+          marginBottom: '20px',
         }}
       >
         {videoReference && (
@@ -83,13 +79,12 @@ export const PlaylistContent = () => {
             identifier={videoReference?.identifier}
             user={channelName}
             jsonId={id}
-            poster={videoCover || ""}
+            poster={videoCover || ''}
             nextVideo={nextVideo}
             onEnd={onEndVideo}
             autoPlay={doAutoPlay}
-            ref={containerRef}
             videoStyles={{
-              video: { aspectRatio: "16 / 9" },
+              video: { aspectRatio: '16 / 9' },
             }}
             duration={videoData?.duration}
           />
@@ -98,12 +93,12 @@ export const PlaylistContent = () => {
           <Playlists
             playlistData={playlistData}
             currentVideoIdentifier={videoData?.id}
-            onClick={(name, identifier)=> {
+            onClick={(name, identifier) => {
               setVideoMetadataResource({
                 name,
                 identifier,
-                service: 'DOCUMENT'
-              })
+                service: 'DOCUMENT',
+              });
             }}
             sx={playlistsSX}
           />
@@ -115,23 +110,23 @@ export const PlaylistContent = () => {
         videoReference={videoReference}
         superLikeList={superLikeList}
         setSuperLikeList={setSuperLikeList}
-        sx={{ width: "100%" }}
+        sx={{ width: '100%' }}
       />
       <Box
         sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          width: "100%",
-          marginTop: "10px",
-          gap: "10px",
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          width: '100%',
+          marginTop: '10px',
+          gap: '10px',
         }}
       >
         <VideoTitle
           variant="h1"
           color="textPrimary"
           sx={{
-            textAlign: "center",
+            textAlign: 'center',
           }}
         >
           {videoData?.title}
@@ -140,9 +135,9 @@ export const PlaylistContent = () => {
 
       <Box
         sx={{
-          display: "flex",
-          width: "100%",
-          gap: "20px",
+          display: 'flex',
+          width: '100%',
+          gap: '20px',
         }}
       >
         {videoData?.created && (
@@ -160,11 +155,11 @@ export const PlaylistContent = () => {
           <Typography
             variant="h1"
             sx={{
-              fontSize: "90%",
+              fontSize: '90%',
             }}
-            color={"green"}
+            color={'green'}
           >
-            {formatBytes(videoData.fileSize, 2, "Decimal")}
+            {formatBytes(videoData.fileSize, 2, 'Decimal')}
           </Typography>
         )}
       </Box>
@@ -172,30 +167,30 @@ export const PlaylistContent = () => {
       {videoData?.fullDescription && (
         <Box
           sx={{
-            background: "#333333",
-            borderRadius: "5px",
-            padding: "5px",
-            width: "95%",
-            alignSelf: "flex-start",
+            background: '#333333',
+            borderRadius: '5px',
+            padding: '5px',
+            width: '95%',
+            alignSelf: 'flex-start',
             cursor: !descriptionHeight
-              ? "default"
+              ? 'default'
               : isExpandedDescription
-                ? "default"
-                : "pointer",
+                ? 'default'
+                : 'pointer',
           }}
           className={
-            !descriptionHeight ? "" : isExpandedDescription ? "" : "hover-click"
+            !descriptionHeight ? '' : isExpandedDescription ? '' : 'hover-click'
           }
         >
           {descriptionHeight && !isExpandedDescription && (
             <Box
               sx={{
-                position: "absolute",
-                top: "0px",
-                right: "0px",
-                left: "0px",
-                bottom: "0px",
-                cursor: "pointer",
+                position: 'absolute',
+                top: '0px',
+                right: '0px',
+                left: '0px',
+                bottom: '0px',
+                cursor: 'pointer',
               }}
               onClick={() => {
                 if (isExpandedDescription) return;
@@ -207,11 +202,11 @@ export const PlaylistContent = () => {
             ref={contentRef}
             sx={{
               height: !descriptionHeight
-                ? "auto"
+                ? 'auto'
                 : isExpandedDescription
-                  ? "auto"
+                  ? 'auto'
                   : `${descriptionHeight}px`,
-              overflow: "hidden",
+              overflow: 'hidden',
             }}
           >
             {videoData?.htmlDescription ? (
@@ -221,7 +216,7 @@ export const PlaylistContent = () => {
                 variant="body1"
                 color="textPrimary"
                 sx={{
-                  cursor: "default",
+                  cursor: 'default',
                 }}
               >
                 {videoData?.fullDescription}
@@ -231,17 +226,17 @@ export const PlaylistContent = () => {
           {descriptionHeight >= descriptionThreshold && (
             <Typography
               onClick={() => {
-                setIsExpandedDescription(prev => !prev);
+                setIsExpandedDescription((prev) => !prev);
               }}
               sx={{
-                fontWeight: "bold",
-                fontSize: "16px",
-                cursor: "pointer",
-                paddingLeft: "15px",
-                paddingTop: "15px",
+                fontWeight: 'bold',
+                fontSize: '16px',
+                cursor: 'pointer',
+                paddingLeft: '15px',
+                paddingTop: '15px',
               }}
             >
-              {isExpandedDescription ? "Show less" : "...more"}
+              {isExpandedDescription ? 'Show less' : '...more'}
             </Typography>
           )}
         </Box>
@@ -250,14 +245,14 @@ export const PlaylistContent = () => {
         <SuperLikesSection
           loadingSuperLikes={loadingSuperLikes}
           superlikes={superLikeList}
-          postId={videoData?.id || ""}
-          postName={videoData?.user || ""}
+          postId={videoData?.id || ''}
+          postName={videoData?.user || ''}
         />
       )}
       {videoData?.id && channelName && (
         <CommentSection
-          postId={videoData?.id || ""}
-          postName={channelName || ""}
+          postId={videoData?.id || ''}
+          postName={channelName || ''}
         />
       )}
     </Box>

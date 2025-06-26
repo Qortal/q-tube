@@ -1,144 +1,162 @@
-import { Avatar, Box, Tooltip, Typography, useTheme } from "@mui/material";
-import { BlockIconContainer, BottomParent, IconsBox, NameContainer, VideoCard, VideoCardCol, VideoCardName, VideoCardTitle, VideoUploadDate } from "./VideoList-styles";
-import { setEditPlaylist } from "../../../state/features/videoSlice";
-import ResponsiveImage from "../../../components/ResponsiveImage";
-import { PlaylistSVG } from "../../../assets/svgs/PlaylistSVG";
-import { formatTime } from "../../../utils/numberFunctions";
-import { VideoCardImageContainer } from "./VideoCardImageContainer";
-import { fontSizeSmall, minDuration } from "../../../constants/Misc";
-import { formatDate } from "../../../utils/time";
-import { useNavigate } from "react-router-dom";
-import DeleteIcon from "@mui/icons-material/Delete";
-import BlockIcon from "@mui/icons-material/Block";
-import EditIcon from "@mui/icons-material/Edit";
-import { useDispatch } from "react-redux";
-import { useGlobal } from "qapp-core";
+import { Avatar, Box, Tooltip, Typography, useTheme } from '@mui/material';
+import {
+  BlockIconContainer,
+  BottomParent,
+  IconsBox,
+  NameContainer,
+  VideoCard,
+  VideoCardCol,
+  VideoCardName,
+  VideoCardTitle,
+  VideoUploadDate,
+} from './VideoList-styles';
+import { setEditPlaylist } from '../../../state/features/videoSlice';
+import ResponsiveImage from '../../../components/ResponsiveImage';
+import { PlaylistSVG } from '../../../assets/svgs/PlaylistSVG';
+import { formatTime } from '../../../utils/numberFunctions';
+import { VideoCardImageContainer } from './VideoCardImageContainer';
+import { fontSizeSmall, minDuration } from '../../../constants/Misc';
+import { formatDate } from '../../../utils/time';
+import { useNavigate } from 'react-router-dom';
+import DeleteIcon from '@mui/icons-material/Delete';
+import BlockIcon from '@mui/icons-material/Block';
+import EditIcon from '@mui/icons-material/Edit';
+import { useDispatch } from 'react-redux';
+import { useGlobal } from 'qapp-core';
+import { useState } from 'react';
 
-export const VideoListItem = ({qortalMetadata, video, setShowIcons, showIcons, username, blockUserFunc, setEditVideo}) => {
-    const navigate = useNavigate()
-    const dispatch = useDispatch();
-    const theme = useTheme()
-    const { lists } = useGlobal();
+export const VideoListItem = ({
+  qortalMetadata,
+  video,
+  username,
+  blockUserFunc,
+  setEditVideo,
+}) => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const [showIcons, setShowIcons] = useState(null);
+  const theme = useTheme();
+  const { lists } = useGlobal();
 
-    const {  deleteResource } = lists;
+  const { deleteResource } = lists;
 
-    const isPlaylist = qortalMetadata?.service === "PLAYLIST";
+  const isPlaylist = qortalMetadata?.service === 'PLAYLIST';
 
-    if (isPlaylist) {
-        return (
-          <VideoCardCol
-          key={qortalMetadata?.identifier} 
-          onMouseEnter={() => setShowIcons(qortalMetadata?.identifier)}
-          onMouseLeave={() => setShowIcons(null)}
+  if (isPlaylist) {
+    return (
+      <VideoCardCol
+        key={qortalMetadata?.identifier}
+        onMouseEnter={() => setShowIcons(qortalMetadata?.identifier)}
+        onMouseLeave={() => setShowIcons(null)}
+      >
+        <IconsBox
+          sx={{
+            opacity: showIcons === qortalMetadata?.identifier ? 1 : 0,
+            zIndex: 2,
+          }}
         >
-          <IconsBox
-            sx={{
-              opacity: showIcons === qortalMetadata?.identifier ? 1 : 0,
-              zIndex: 2,
-            }}
-          >
-            {qortalMetadata?.name === username && (
-              <Tooltip title="Edit playlist" placement="top">
-                <BlockIconContainer>
-                  <EditIcon
-                    onClick={() => {
-                      const resourceData = {
-                        title: qortalMetadata?.metadata?.title,
-                        category: qortalMetadata?.metadata?.category,
-                        categoryName: qortalMetadata?.metadata?.categoryName,
-                        tags: qortalMetadata?.metadata?.tags || [],
-                        description: qortalMetadata?.metadata?.description,
-                        created: qortalMetadata?.created,
-                        updated: qortalMetadata?.updated,
-                        name: qortalMetadata.name,
-                        videoImage: "",
-                        identifier: qortalMetadata.identifier,
-                        service: qortalMetadata.service,
-                      };
-                      dispatch(setEditPlaylist({...resourceData, ...video}));
-                    }}
-                  />
-                </BlockIconContainer>
-              </Tooltip>
-            )}
-
-            {qortalMetadata?.name !== username && (
-              <Tooltip title="Block user content" placement="top">
-                <BlockIconContainer>
-                  <BlockIcon
-                    onClick={() => {
-                      blockUserFunc(qortalMetadata?.name);
-                    }}
-                  />
-                </BlockIconContainer>
-              </Tooltip>
-            )}
-          </IconsBox>
-           
-          <VideoCard
-           
-            onClick={() => {
-              navigate(`/playlist/${qortalMetadata?.name}/${qortalMetadata?.identifier}`);
-            }}
-          >
-            <ResponsiveImage
-              src={video?.image}
-              width={266}
-              height={150}
-              style={{
-                maxHeight: "50%",
-              }}
-            />
-            <VideoCardTitle>{video?.title}</VideoCardTitle>
-            <BottomParent>
-              <NameContainer
-                onClick={e => {
-                  e.stopPropagation();
-                  navigate(`/channel/${qortalMetadata?.name}`);
-                }}
-              >
-                <Avatar
-                  sx={{ height: 24, width: 24 }}
-                  src={`/arbitrary/THUMBNAIL/${qortalMetadata?.name}/qortal_avatar`}
-                  alt={`${qortalMetadata?.name}'s avatar`}
-                />
-                <VideoCardName
-                  sx={{
-                    ":hover": {
-                      textDecoration: "underline",
-                    },
+          {qortalMetadata?.name === username && (
+            <Tooltip title="Edit playlist" placement="top">
+              <BlockIconContainer>
+                <EditIcon
+                  onClick={() => {
+                    const resourceData = {
+                      title: qortalMetadata?.metadata?.title,
+                      category: qortalMetadata?.metadata?.category,
+                      categoryName: qortalMetadata?.metadata?.categoryName,
+                      tags: qortalMetadata?.metadata?.tags || [],
+                      description: qortalMetadata?.metadata?.description,
+                      created: qortalMetadata?.created,
+                      updated: qortalMetadata?.updated,
+                      name: qortalMetadata.name,
+                      videoImage: '',
+                      identifier: qortalMetadata.identifier,
+                      service: qortalMetadata.service,
+                    };
+                    dispatch(setEditPlaylist({ ...resourceData, ...video }));
                   }}
-                >
-                  {qortalMetadata?.name}
-                </VideoCardName>
+                />
+              </BlockIconContainer>
+            </Tooltip>
+          )}
 
-                {qortalMetadata?.created && (
-                  <VideoUploadDate>
-                    {formatDate(qortalMetadata.created)}
-                  </VideoUploadDate>
-                )}
-              </NameContainer>
-              <Box
+          {qortalMetadata?.name !== username && (
+            <Tooltip title="Block user content" placement="top">
+              <BlockIconContainer>
+                <BlockIcon
+                  onClick={() => {
+                    blockUserFunc(qortalMetadata?.name);
+                  }}
+                />
+              </BlockIconContainer>
+            </Tooltip>
+          )}
+        </IconsBox>
+
+        <VideoCard
+          onClick={() => {
+            navigate(
+              `/playlist/${qortalMetadata?.name}/${qortalMetadata?.identifier}`
+            );
+          }}
+        >
+          <ResponsiveImage
+            src={video?.image}
+            width={266}
+            height={150}
+            style={{
+              maxHeight: '50%',
+            }}
+          />
+          <VideoCardTitle>{video?.title}</VideoCardTitle>
+          <BottomParent>
+            <NameContainer
+              onClick={(e) => {
+                e.stopPropagation();
+                navigate(`/channel/${qortalMetadata?.name}`);
+              }}
+            >
+              <Avatar
+                sx={{ height: 24, width: 24 }}
+                src={`/arbitrary/THUMBNAIL/${qortalMetadata?.name}/qortal_avatar`}
+                alt={`${qortalMetadata?.name}'s avatar`}
+              />
+              <VideoCardName
                 sx={{
-                  display: "flex",
-                  position: "absolute",
-                  bottom: "5px",
-                  right: "5px",
+                  ':hover': {
+                    textDecoration: 'underline',
+                  },
                 }}
               >
-                <PlaylistSVG
-                  color={theme.palette.text.primary}
-                  height="36px"
-                  width="36px"
-                />
-              </Box>
-            </BottomParent>
-          </VideoCard>
-          </VideoCardCol>
-      );
-    }
+                {qortalMetadata?.name}
+              </VideoCardName>
 
-    console.log('showIcons', qortalMetadata, showIcons, qortalMetadata?.name === username, qortalMetadata?.name, username)
+              {qortalMetadata?.created && (
+                <VideoUploadDate>
+                  {formatDate(qortalMetadata.created)}
+                </VideoUploadDate>
+              )}
+            </NameContainer>
+            <Box
+              sx={{
+                display: 'flex',
+                position: 'absolute',
+                bottom: '5px',
+                right: '5px',
+              }}
+            >
+              <PlaylistSVG
+                color={theme.palette.text.primary}
+                height="36px"
+                width="36px"
+              />
+            </Box>
+          </BottomParent>
+        </VideoCard>
+      </VideoCardCol>
+    );
+  }
+
   return (
     <VideoCardCol
       key={qortalMetadata?.identifier}
@@ -165,11 +183,11 @@ export const VideoListItem = ({qortalMetadata, video, setShowIcons, showIcons, u
                     created: qortalMetadata?.created,
                     updated: qortalMetadata?.updated,
                     user: qortalMetadata.name,
-                    videoImage: "",
+                    videoImage: '',
                     id: qortalMetadata.identifier,
                   };
 
-                  dispatch(setEditVideo({...resourceData, ...video}));
+                  dispatch(setEditVideo({ ...resourceData, ...video }));
                 }}
               />
             </BlockIconContainer>
@@ -192,10 +210,7 @@ export const VideoListItem = ({qortalMetadata, video, setShowIcons, showIcons, u
             <BlockIconContainer>
               <DeleteIcon
                 onClick={() => {
-                  deleteResource([
-                    qortalMetadata,
-                    video.videoReference,
-                  ]);
+                  deleteResource([qortalMetadata, video.videoReference]);
                 }}
               />
             </BlockIconContainer>
@@ -217,9 +232,7 @@ export const VideoListItem = ({qortalMetadata, video, setShowIcons, showIcons, u
             bgcolor="#202020"
             zIndex={999}
           >
-            <Typography color="white">
-              {formatTime(video.duration)}
-            </Typography>
+            <Typography color="white">{formatTime(video.duration)}</Typography>
           </Box>
         )}
         <VideoCardImageContainer
@@ -237,7 +250,7 @@ export const VideoListItem = ({qortalMetadata, video, setShowIcons, showIcons, u
         </Tooltip>
         <BottomParent>
           <NameContainer
-            onClick={e => {
+            onClick={(e) => {
               e.stopPropagation();
               navigate(`/channel/${qortalMetadata?.name}`);
             }}
@@ -249,8 +262,8 @@ export const VideoListItem = ({qortalMetadata, video, setShowIcons, showIcons, u
             />
             <VideoCardName
               sx={{
-                ":hover": {
-                  textDecoration: "underline",
+                ':hover': {
+                  textDecoration: 'underline',
                 },
               }}
             >
@@ -258,8 +271,8 @@ export const VideoListItem = ({qortalMetadata, video, setShowIcons, showIcons, u
             </VideoCardName>
           </NameContainer>
           {qortalMetadata?.created && (
-            <Box sx={{ flexDirection: "row", width: "100%" }}>
-              <VideoUploadDate sx={{ display: "inline" }}>
+            <Box sx={{ flexDirection: 'row', width: '100%' }}>
+              <VideoUploadDate sx={{ display: 'inline' }}>
                 {formatDate(qortalMetadata.created)}
               </VideoUploadDate>
             </Box>
@@ -268,4 +281,4 @@ export const VideoListItem = ({qortalMetadata, video, setShowIcons, showIcons, u
       </VideoCard>
     </VideoCardCol>
   );
-}
+};

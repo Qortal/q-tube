@@ -4,35 +4,34 @@ import React, {
   useCallback,
   useRef,
   useMemo,
-} from "react";
-import { useDispatch, useSelector } from "react-redux";
+} from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   extractSigValue,
   getPaymentInfo,
   isTimestampWithinRange,
-} from "../pages/ContentPages/VideoContent/VideoContent-State.ts";
+} from '../pages/ContentPages/VideoContent/VideoContent-State.ts';
 
-import { addUser } from "../state/features/authSlice";
-import NavBar from "../components/layout/Navbar/Navbar";
-import PageLoader from "../components/common/PageLoader";
-import { RootState } from "../state/store";
+import { addUser } from '../state/features/authSlice';
+import NavBar from '../components/layout/Navbar/Navbar';
+import PageLoader from '../components/common/PageLoader';
+import { RootState } from '../state/store';
 import {
   setSuperlikesAll,
   setUserAvatarHash,
-} from "../state/features/globalSlice";
-// import { VideoPlayerGlobal } from "../components/common/VideoPlayer/VideoPlayerGlobal.tsx";
-import { Rnd } from "react-rnd";
-import { RequestQueue } from "../utils/queue";
-import { EditVideo } from "../components/Publish/EditVideo/EditVideo";
-import { EditPlaylist } from "../components/Publish/EditPlaylist/EditPlaylist";
-import ConsentModal from "../components/common/ConsentModal";
-import { useFetchSuperLikes } from "../hooks/useFetchSuperLikes";
-import { SUPER_LIKE_BASE } from "../constants/Identifiers.ts";
-import { minPriceSuperLike } from "../constants/Misc.ts";
+} from '../state/features/globalSlice';
+import { Rnd } from 'react-rnd';
+import { RequestQueue } from '../utils/queue';
+import { EditVideo } from '../components/Publish/EditVideo/EditVideo';
+import { EditPlaylist } from '../components/Publish/EditPlaylist/EditPlaylist';
+import ConsentModal from '../components/common/ConsentModal';
+import { useFetchSuperLikes } from '../hooks/useFetchSuperLikes';
+import { SUPER_LIKE_BASE } from '../constants/Identifiers.ts';
+import { minPriceSuperLike } from '../constants/Misc.ts';
 import { useHandleNameData } from './../hooks/useHandleNameData.tsx';
 import { namesAtom } from './../state/global/names';
 import { useAtom } from 'jotai';
-import { getPrimaryAccountName } from "../utils/qortalRequestFunctions.ts";
+import { getPrimaryAccountName } from '../utils/qortalRequestFunctions.ts';
 
 interface Props {
   children: React.ReactNode;
@@ -44,21 +43,21 @@ export const queue = new RequestQueue();
 export const queueSuperlikes = new RequestQueue();
 
 const GlobalWrapper: React.FC<Props> = ({ children }) => {
-  const [theme, setTheme] = useState('dark')
+  const [theme, setTheme] = useState('dark');
   const dispatch = useDispatch();
   const isDragging = useRef(false);
-  const [userAvatar, setUserAvatar] = useState<string>("");
+  const [userAvatar, setUserAvatar] = useState<string>('');
   const user = useSelector((state: RootState) => state.auth.user);
   const { addSuperlikeRawDataGetToList } = useFetchSuperLikes();
   const interval = useRef<any>(null);
   useHandleNameData();
-  
+
   const videoPlaying = useSelector(
     (state: RootState) => state.global.videoPlaying
   );
 
   const username = useMemo(() => {
-    if (!user?.name) return "";
+    if (!user?.name) return '';
 
     return user.name;
   }, [user]);
@@ -68,7 +67,6 @@ const GlobalWrapper: React.FC<Props> = ({ children }) => {
   const getAvatar = React.useCallback(
     async (author: string) => {
       try {
-
         const url = `/arbitrary/THUMBNAIL/${author}/qortal_avatar`;
 
         if (url) {
@@ -98,7 +96,7 @@ const GlobalWrapper: React.FC<Props> = ({ children }) => {
   const askForAccountInformation = React.useCallback(async () => {
     try {
       const account = await qortalRequest({
-        action: "GET_USER_ACCOUNT",
+        action: 'GET_USER_ACCOUNT',
       });
 
       const name = await getPrimaryAccountName(account.address);
@@ -141,9 +139,9 @@ const GlobalWrapper: React.FC<Props> = ({ children }) => {
       while (validCount < 20 && totalCount < 100) {
         const url = `/arbitrary/resources/search?mode=ALL&service=BLOG_COMMENT&query=${SUPER_LIKE_BASE}&limit=1&offset=${totalCount}&includemetadata=true&reverse=true&excludeblocked=true`;
         const response = await fetch(url, {
-          method: "GET",
+          method: 'GET',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
         });
         const responseData = await response.json();
@@ -171,7 +169,7 @@ const GlobalWrapper: React.FC<Props> = ({ children }) => {
                     ...comments,
                     {
                       ...comment,
-                      message: "",
+                      message: '',
                       amount: res.amount,
                     },
                   ];
@@ -210,41 +208,16 @@ const GlobalWrapper: React.FC<Props> = ({ children }) => {
     <>
       {isLoadingGlobal && <PageLoader />}
       <ConsentModal />
-       <EditVideo />
-                  <EditPlaylist />
+      <EditVideo />
+      <EditPlaylist />
       <NavBar
         setTheme={(val: string) => setTheme(val)}
         isAuthenticated={!!user?.name}
-        userName={user?.name || ""}
+        userName={user?.name || ''}
         allNames={names}
         userAvatar={userAvatar}
         authenticate={askForAccountInformation}
       />
-  
-      {/*<Rnd*/}
-      {/*  onDragStart={onDragStart}*/}
-      {/*  onDragStop={onDragStop}*/}
-      {/*  style={{*/}
-      {/*    display: videoPlaying ? "block" : "none",*/}
-      {/*    position: "fixed",*/}
-      {/*    height: "auto",*/}
-      {/*    width: 350,*/}
-      {/*    zIndex: 1000,*/}
-      {/*    maxWidth: 800,*/}
-      {/*  }}*/}
-      {/*  default={{*/}
-      {/*    x: 0,*/}
-      {/*    y: 60,*/}
-      {/*    width: 350,*/}
-      {/*    height: "auto",*/}
-      {/*  }}*/}
-      {/*  // eslint-disable-next-line @typescript-eslint/no-empty-function*/}
-      {/*  onDrag={() => {}}*/}
-      {/*>*/}
-      {/*  {videoPlaying && (*/}
-      {/*    <VideoPlayerGlobal checkIfDrag={checkIfDrag} element={videoPlaying} />*/}
-      {/*  )}*/}
-      {/*</Rnd>*/}
 
       {children}
     </>

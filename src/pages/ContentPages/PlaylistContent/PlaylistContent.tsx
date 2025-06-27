@@ -87,6 +87,7 @@ export const PlaylistContent = () => {
               video: { aspectRatio: '16 / 9' },
             }}
             duration={videoData?.duration}
+            filename={videoData?.filename}
           />
         )}
         {playlistData && (

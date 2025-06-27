@@ -7,6 +7,7 @@ import { CircularProgress } from '@mui/material';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import { setNotification } from '../../state/features/notificationsSlice';
 import { useResourceStatus } from 'qapp-core';
+import { useLocation } from 'react-router-dom';
 
 const Widget = styled('div')(({ theme }) => ({
   padding: 8,
@@ -63,8 +64,11 @@ export default function FileElement({
   const [startedDownload, setStartedDownload] = React.useState<boolean>(false);
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const [downloadLoader, setDownloadLoader] = React.useState<any>(false);
+  const location = useLocation();
   const resourceStatus = useResourceStatus({
     resource: startedDownload ? fileInfo : null,
+    path: location.pathname,
+    filename: fileInfo?.filename,
   });
   const dispatch = useDispatch();
   const handlePlay = async () => {

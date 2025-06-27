@@ -3,6 +3,7 @@ import { useRef } from 'react';
 
 import { VideoPlayer as QappVideoPlayer, Service } from 'qapp-core';
 import { Box } from '@mui/material';
+import { useLocation } from 'react-router-dom';
 export interface VideoStyles {
   videoContainer?: CSS.Properties;
   video?: CSS.Properties;
@@ -24,10 +25,12 @@ export interface VideoPlayerProps {
   autoPlay?: boolean;
   style?: CSS.Properties;
   duration?: number;
+  filename: string;
 }
 
 export const VideoPlayer = ({ ...props }: VideoPlayerProps) => {
   const videoRef = useRef(null);
+  const location = useLocation();
   console.log('autoPlay', props?.autoPlay);
   return (
     <Box
@@ -47,6 +50,8 @@ export const VideoPlayer = ({ ...props }: VideoPlayerProps) => {
         }}
         autoPlay={props?.autoPlay}
         onEnded={props?.onEnd}
+        filename={props?.filename}
+        path={location.pathname}
       />
     </Box>
   );

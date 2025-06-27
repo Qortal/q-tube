@@ -63,6 +63,8 @@ export const VideoContent = () => {
     });
   }, []);
 
+  console.log('videoData', videoData);
+
   return (
     <>
       <Box
@@ -92,6 +94,7 @@ export const VideoContent = () => {
                 video: { aspectRatio: '16 / 9' },
               }}
               duration={videoData?.duration}
+              filename={videoData?.filename}
             />
           </VideoPlayerContainer>
         ) : (

@@ -1,15 +1,15 @@
-import { Button, ButtonProps, Tooltip } from "@mui/material";
-import { MouseEvent, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { subscriptionListFilter } from "../../../App-Functions.ts";
-import { RootState } from "../../../state/store.ts";
+import { Button, ButtonProps } from '@mui/material';
+import { MouseEvent, useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { subscriptionListFilter } from '../../../App-Functions.ts';
+import { RootState } from '../../../state/store.ts';
 import {
   subscribe,
   unSubscribe,
-} from "../../../state/features/persistSlice.ts";
-import { setFilteredSubscriptions } from "../../../state/features/videoSlice.ts";
-import { styled } from "@mui/material/styles";
-import { CustomTooltip, TooltipLine } from "./CustomTooltip.tsx";
+} from '../../../state/features/persistSlice.ts';
+import { setFilteredSubscriptions } from '../../../state/features/videoSlice.ts';
+import { CustomTooltip, TooltipLine } from './CustomTooltip.tsx';
+import { useAuth } from 'qapp-core';
 
 interface SubscribeButtonProps extends ButtonProps {
   subscriberName: string;
@@ -30,12 +30,13 @@ export const SubscribeButton = ({
     return state.video.filteredSubscriptionList;
   });
 
-  const userName = useSelector((state: RootState) => state.auth.user?.name);
+  const { name } = useAuth();
+  const userName = name;
   const [isSubscribed, setIsSubscribed] = useState<boolean>(false);
 
   const isSubscribedToName = (subscriptionList: SubscriptionData[]) => {
     return (
-      subscriptionList.find(item => {
+      subscriptionList.find((item) => {
         return item.subscriberName === subscriberName;
       }) !== undefined
     );
@@ -43,7 +44,7 @@ export const SubscribeButton = ({
 
   useEffect(() => {
     if (!filteredSubscriptionList || filteredSubscriptionList.length === 0) {
-      subscriptionListFilter().then(filteredList => {
+      subscriptionListFilter().then((filteredList) => {
         dispatch(setFilteredSubscriptions(filteredList));
         setIsSubscribed(isSubscribedToName(filteredList));
       });
@@ -68,7 +69,7 @@ export const SubscribeButton = ({
     dispatch(
       setFilteredSubscriptions(
         filteredSubscriptionList.filter(
-          item => item.subscriberName !== subscriptionData.subscriberName
+          (item) => item.subscriberName !== subscriptionData.subscriberName
         )
       )
     );
@@ -81,17 +82,17 @@ export const SubscribeButton = ({
     isSubscribed ? unSubscribeFromRedux() : subscribeToRedux();
   };
 
-  const verticalPadding = "3px";
-  const horizontalPadding = "8px";
+  const verticalPadding = '3px';
+  const horizontalPadding = '8px';
   const buttonStyle = {
-    fontSize: "15px",
-    fontWeight: "700",
+    fontSize: '15px',
+    fontWeight: '700',
     paddingTop: verticalPadding,
     paddingBottom: verticalPadding,
     paddingLeft: horizontalPadding,
     paddingRight: horizontalPadding,
     borderRadius: 28,
-    height: "45px",
+    height: '45px',
     ...props.sx,
   };
 
@@ -105,15 +106,15 @@ export const SubscribeButton = ({
   );
 
   return (
-    <CustomTooltip title={tooltipTitle} placement={"top"} arrow>
+    <CustomTooltip title={tooltipTitle} placement={'top'} arrow>
       <Button
         {...props}
-        variant={"contained"}
+        variant={'contained'}
         color="error"
         sx={buttonStyle}
-        onClick={e => manageSubscription(e)}
+        onClick={(e) => manageSubscription(e)}
       >
-        {isSubscribed ? "Unsubscribe" : "Subscribe"}
+        {isSubscribed ? 'Unsubscribe' : 'Subscribe'}
       </Button>
     </CustomTooltip>
   );

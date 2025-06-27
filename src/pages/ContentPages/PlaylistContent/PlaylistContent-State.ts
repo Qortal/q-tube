@@ -4,6 +4,7 @@ import { RootState } from '../../../state/store.ts';
 import { useVideoContentState } from '../VideoContent/VideoContent-State.ts';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from 'qapp-core';
 
 export const usePlaylistContentState = () => {
   const {
@@ -24,8 +25,8 @@ export const usePlaylistContentState = () => {
     setVideoMetadataResource,
   } = useVideoContentState();
 
-  const userName = useSelector((state: RootState) => state.auth.user?.name);
-
+  const { name } = useAuth();
+  const userName = name;
   const [doAutoPlay, setDoAutoPlay] = useState(false);
 
   const calculateAmountSuperlike = useMemo(() => {
@@ -131,8 +132,6 @@ export const usePlaylistContentState = () => {
     },
     [hashMapVideos]
   );
-
-  console.log('playlistdata', playlistData);
 
   useEffect(() => {
     if (channelName && id) {

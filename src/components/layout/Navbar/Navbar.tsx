@@ -7,23 +7,16 @@ import { QtubeLogo } from './Components/QtubeLogo.tsx';
 import { UserMenu } from './Components/UserMenu.tsx';
 import { CustomAppBar } from './Navbar-styles';
 import { Names } from './../../../state/global/names.ts';
+import { useAuth } from 'qapp-core';
 
 interface Props {
-  isAuthenticated: boolean;
-  userName: string | null;
   allNames: Names;
-  userAvatar: string;
-  authenticate: () => void;
 }
 
-const NavBar: React.FC<Props> = ({
-  isAuthenticated,
-  userName,
-  allNames,
-  userAvatar,
-}) => {
+const NavBar: React.FC<Props> = ({ allNames }) => {
   const isScreenSmall = !useMediaQuery(`(min-width:600px)`);
-  const isSecure = isAuthenticated && !!userName;
+  const { name, avatarUrl } = useAuth();
+  const isSecure = !!name;
   const gapSize = 10;
 
   return (
@@ -49,8 +42,8 @@ const NavBar: React.FC<Props> = ({
           <DownloadTaskManager />
           <UserMenu
             isShowMenu={isSecure}
-            userAvatar={userAvatar}
-            userName={userName}
+            userAvatar={avatarUrl}
+            userName={name}
             allNames={allNames}
           />
           <PublishMenu isDisplayed={isSecure} />

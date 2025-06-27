@@ -1,22 +1,21 @@
-import React, { useEffect, useState } from "react";
-import ThumbUpIcon from "@mui/icons-material/ThumbUp";
-import ThumbDownIcon from "@mui/icons-material/ThumbDown";
-import ThumbUpOffAltOutlinedIcon from "@mui/icons-material/ThumbUpOffAltOutlined";
-import ThumbDownOffAltOutlinedIcon from "@mui/icons-material/ThumbDownOffAltOutlined";
-import { Box, Tooltip } from "@mui/material";
-import { useDispatch, useSelector } from "react-redux";
-import { setNotification } from "../../../state/features/notificationsSlice.ts";
-import ShortUniqueId from "short-unique-id";
-import { objectToBase64 } from "../../../utils/PublishFormatter.ts";
-import { RootState } from "../../../state/store.ts";
-import { FOR, FOR_LIKE, LIKE_BASE } from "../../../constants/Identifiers.ts";
-import { CustomTooltip } from "./CustomTooltip.tsx";
+import { useEffect, useState } from 'react';
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+import ThumbDownIcon from '@mui/icons-material/ThumbDown';
+import ThumbUpOffAltOutlinedIcon from '@mui/icons-material/ThumbUpOffAltOutlined';
+import ThumbDownOffAltOutlinedIcon from '@mui/icons-material/ThumbDownOffAltOutlined';
+import { Box } from '@mui/material';
+import { useDispatch } from 'react-redux';
+import { setNotification } from '../../../state/features/notificationsSlice.ts';
+import { objectToBase64 } from '../../../utils/PublishFormatter.ts';
+import { LIKE_BASE } from '../../../constants/Identifiers.ts';
+import { CustomTooltip } from './CustomTooltip.tsx';
 import {
   formatLikeCount,
   getCurrentLikesAndDislikesCount,
   getCurrentLikeType,
   LikesAndDislikes,
-} from "./LikeAndDislike-functions.ts";
+} from './LikeAndDislike-functions.ts';
+import { useAuth } from 'qapp-core';
 
 interface LikeAndDislikeProps {
   name: string;
@@ -31,7 +30,7 @@ export const LIKE = LikeType.Like;
 export const DISLIKE = LikeType.Dislike;
 export const NEUTRAL = LikeType.Neutral;
 export const LikeAndDislike = ({ name, identifier }: LikeAndDislikeProps) => {
-  const username = useSelector((state: RootState) => state.auth?.user?.name);
+  const { name: username } = useAuth();
   const dispatch = useDispatch();
   const [likeCount, setLikeCount] = useState<number>(0);
   const [dislikeCount, setDislikeCount] = useState<number>(0);
@@ -52,37 +51,37 @@ export const LikeAndDislike = ({ name, identifier }: LikeAndDislikeProps) => {
       setDislikeCount(likesAndDislikes?.dislikes || 0);
       setIsLoading(false);
     });
-  }, []);
+  }, [username]);
 
   const updateLikeDataState = (newLikeType: LikeType) => {
     const setSuccessNotification = (msg: string) =>
       dispatch(
         setNotification({
           msg,
-          alertType: "success",
+          alertType: 'success',
         })
       );
     setCurrentLikeType(newLikeType);
     switch (newLikeType) {
       case NEUTRAL:
         if (currentLikeType === LIKE) {
-          setLikeCount(count => count - 1);
-          setSuccessNotification("Like Removed");
+          setLikeCount((count) => count - 1);
+          setSuccessNotification('Like Removed');
         } else {
-          setDislikeCount(count => count - 1);
-          setSuccessNotification("Dislike Removed");
+          setDislikeCount((count) => count - 1);
+          setSuccessNotification('Dislike Removed');
         }
 
         break;
       case LIKE:
-        if (currentLikeType === DISLIKE) setDislikeCount(count => count - 1);
-        setLikeCount(count => count + 1);
-        setSuccessNotification("Like Successful");
+        if (currentLikeType === DISLIKE) setDislikeCount((count) => count - 1);
+        setLikeCount((count) => count + 1);
+        setSuccessNotification('Like Successful');
         break;
       case DISLIKE:
-        if (currentLikeType === LIKE) setLikeCount(count => count - 1);
-        setDislikeCount(count => count + 1);
-        setSuccessNotification("Dislike Successful");
+        if (currentLikeType === LIKE) setLikeCount((count) => count - 1);
+        setDislikeCount((count) => count + 1);
+        setSuccessNotification('Dislike Successful');
         break;
     }
   };
@@ -90,41 +89,41 @@ export const LikeAndDislike = ({ name, identifier }: LikeAndDislikeProps) => {
     if (isLoading) {
       dispatch(
         setNotification({
-          msg: "Wait for Like Data to load first",
-          alertType: "error",
+          msg: 'Wait for Like Data to load first',
+          alertType: 'error',
         })
       );
       return;
     }
     try {
-      if (!username) throw new Error("You need a name to publish");
+      if (!username) throw new Error('You need a name to publish');
       if (!name) throw new Error("Could not retrieve content creator's name");
-      if (!identifier) throw new Error("Could not retrieve id of video post");
+      if (!identifier) throw new Error('Could not retrieve id of video post');
 
       if (username === name) {
         dispatch(
           setNotification({
-            msg: "You cannot send yourself a like",
-            alertType: "error",
+            msg: 'You cannot send yourself a like',
+            alertType: 'error',
           })
         );
         return;
       }
       qortalRequest({
-        action: "GET_NAME_DATA",
+        action: 'GET_NAME_DATA',
         name: name,
-      }).then(resName => {
+      }).then((resName) => {
         const address = resName.owner;
         if (!address)
           throw new Error("Could not retrieve content creator's address");
       });
 
       await qortalRequest({
-        action: "PUBLISH_QDN_RESOURCE",
+        action: 'PUBLISH_QDN_RESOURCE',
         name: username,
-        service: "CHAIN_COMMENT",
+        service: 'CHAIN_COMMENT',
         data64: await objectToBase64({ likeType: chosenLikeType }),
-        title: "",
+        title: '',
         identifier: likeIdentifier,
         filename: `like_metadata.json`,
       });
@@ -137,11 +136,11 @@ export const LikeAndDislike = ({ name, identifier }: LikeAndDislikeProps) => {
             error ||
             error?.error ||
             error?.message ||
-            "Failed to publish Like or Dislike",
-          alertType: "error",
+            'Failed to publish Like or Dislike',
+          alertType: 'error',
         })
       );
-      throw new Error("Failed to publish Super Like");
+      throw new Error('Failed to publish Super Like');
     }
   };
 
@@ -149,23 +148,23 @@ export const LikeAndDislike = ({ name, identifier }: LikeAndDislikeProps) => {
     <>
       <Box
         sx={{
-          display: "flex",
-          alignItems: "center",
-          gap: "15px",
-          cursor: "pointer",
+          display: 'flex',
+          alignItems: 'center',
+          gap: '15px',
+          cursor: 'pointer',
           flexShrink: 0,
         }}
       >
         <CustomTooltip title="Like or Dislike Video" placement="top">
           <Box
             sx={{
-              padding: "5px",
-              borderRadius: "7px",
-              gap: "10px",
-              display: "flex",
-              alignItems: "center",
-              marginRight: "20px",
-              height: "53px",
+              padding: '5px',
+              borderRadius: '7px',
+              gap: '10px',
+              display: 'flex',
+              alignItems: 'center',
+              marginRight: '20px',
+              height: '53px',
             }}
           >
             {currentLikeType === LIKE ? (
@@ -176,13 +175,13 @@ export const LikeAndDislike = ({ name, identifier }: LikeAndDislikeProps) => {
             {likeCount > 0 && (
               <div
                 style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  userSelect: "none",
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  userSelect: 'none',
                 }}
               >
-                <span style={{ marginRight: "10px", paddingBottom: "4px" }}>
+                <span style={{ marginRight: '10px', paddingBottom: '4px' }}>
                   {formatLikeCount(likeCount)}
                 </span>
               </div>
@@ -191,28 +190,28 @@ export const LikeAndDislike = ({ name, identifier }: LikeAndDislikeProps) => {
             {currentLikeType === DISLIKE ? (
               <ThumbDownIcon
                 onClick={() => publishLike(NEUTRAL)}
-                color={"error"}
+                color={'error'}
               />
             ) : (
               <ThumbDownOffAltOutlinedIcon
                 onClick={() => publishLike(DISLIKE)}
-                color={"error"}
+                color={'error'}
               />
             )}
             {dislikeCount > 0 && (
               <div
                 style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  userSelect: "none",
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  userSelect: 'none',
                 }}
               >
                 <span
                   style={{
-                    marginRight: "10px",
-                    paddingBottom: "4px",
-                    color: "red",
+                    marginRight: '10px',
+                    paddingBottom: '4px',
+                    color: 'red',
                   }}
                 >
                   {formatLikeCount(dislikeCount)}

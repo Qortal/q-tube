@@ -9,33 +9,33 @@ import {
   Typography,
   useMediaQuery,
   useTheme,
-} from "@mui/material";
-import React, { useCallback, useState, useEffect } from "react";
-import ThumbUpIcon from "@mui/icons-material/ThumbUp";
+} from '@mui/material';
+import React, { useCallback, useState, useEffect } from 'react';
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import {
   fontSizeSmall,
   smallScreenSizeString,
-} from "../../../constants/Misc.ts";
+} from '../../../constants/Misc.ts';
 
-import { CommentEditor } from "./CommentEditor";
+import { CommentEditor } from './CommentEditor';
 import {
   CardContentContainerComment,
   CommentActionButtonRow,
   CommentDateText,
   EditReplyButton,
   StyledCardComment,
-} from "./Comments-styles";
-import { StyledCardHeaderComment } from "./Comments-styles";
-import { StyledCardColComment } from "./Comments-styles";
-import { AuthorTextComment } from "./Comments-styles";
+} from './Comments-styles';
+import { StyledCardHeaderComment } from './Comments-styles';
+import { StyledCardColComment } from './Comments-styles';
+import { AuthorTextComment } from './Comments-styles';
 import {
   StyledCardContentComment,
   LoadMoreCommentsButton as CommentActionButton,
-} from "./Comments-styles";
-import { useSelector } from "react-redux";
-import { RootState } from "../../../state/store";
-import Portal from "../Portal";
-import { formatDate } from "../../../utils/time";
+} from './Comments-styles';
+
+import Portal from '../Portal';
+import { formatDate } from '../../../utils/time';
+import { createAvatarLink, useAuth } from 'qapp-core';
 interface CommentProps {
   comment: any;
   postId: string;
@@ -56,7 +56,7 @@ export const Comment = ({
 }: CommentProps) => {
   const [isReplying, setIsReplying] = useState<boolean>(false);
   const [isEditing, setIsEditing] = useState<boolean>(false);
-  const { user } = useSelector((state: RootState) => state.auth);
+  const { name: username } = useAuth();
   const [currentEdit, setCurrentEdit] = useState<any>(null);
   const theme = useTheme();
 
@@ -70,9 +70,9 @@ export const Comment = ({
     <Box
       id={comment?.identifier}
       sx={{
-        display: "flex",
-        width: "100%",
-        flexDirection: "column",
+        display: 'flex',
+        width: '100%',
+        flexDirection: 'column',
       }}
     >
       {currentEdit && (
@@ -87,13 +87,13 @@ export const Comment = ({
             <DialogContent>
               <Box
                 sx={{
-                  width: "300px",
-                  display: "flex",
-                  justifyContent: "center",
+                  width: '300px',
+                  display: 'flex',
+                  justifyContent: 'center',
                 }}
               >
                 <CommentEditor
-                  onSubmit={obj => handleSubmit(obj, true)}
+                  onSubmit={(obj) => handleSubmit(obj, true)}
                   postId={postId}
                   postName={postName}
                   isEdit
@@ -122,19 +122,19 @@ export const Comment = ({
       >
         <Box
           sx={{
-            display: "flex",
-            alignItems: "center",
-            gap: "5px",
-            marginTop: "20px",
-            justifyContent: "space-between",
+            display: 'flex',
+            alignItems: 'center',
+            gap: '5px',
+            marginTop: '20px',
+            justifyContent: 'space-between',
           }}
         >
           {comment?.created && (
             <Typography
               variant="h6"
               sx={{
-                fontSize: "12px",
-                marginLeft: "5px",
+                fontSize: '12px',
+                marginLeft: '5px',
               }}
               color={theme.palette.text.primary}
             >
@@ -149,7 +149,7 @@ export const Comment = ({
             >
               reply
             </CommentActionButton>
-            {user?.name === comment?.name && hasHash && (
+            {username === comment?.name && hasHash && (
               <CommentActionButton
                 size="small"
                 variant="contained"
@@ -176,10 +176,10 @@ export const Comment = ({
 
       <Box
         sx={{
-          display: "flex",
-          width: "100%",
-          flexDirection: "column",
-          alignItems: "center",
+          display: 'flex',
+          width: '100%',
+          flexDirection: 'column',
+          alignItems: 'center',
         }}
       >
         {isReplying && (
@@ -206,19 +206,12 @@ export const CommentCard = ({
   isReply,
   amount,
 }: any) => {
-  const [avatarUrl, setAvatarUrl] = React.useState<string>("");
-  const { user } = useSelector((state: RootState) => state.auth);
+  const [avatarUrl, setAvatarUrl] = React.useState<string>('');
 
-  const theme = useTheme();
-
+  const { name: username } = useAuth();
   const getAvatar = React.useCallback(async (author: string) => {
     try {
-      const url = await qortalRequest({
-        action: "GET_QDN_RESOURCE_URL",
-        name: author,
-        service: "THUMBNAIL",
-        identifier: "qortal_avatar",
-      });
+      const url = createAvatarLink(author);
 
       setAvatarUrl(url);
     } catch (error) {
@@ -232,49 +225,49 @@ export const CommentCard = ({
 
   const isScreenSmall = !useMediaQuery(`(min-width:${smallScreenSizeString})`);
   const superLikeHeaderSX = {
-    display: "flex",
-    flexDirection: isScreenSmall ? "column" : "row",
-    alignItems: "center",
+    display: 'flex',
+    flexDirection: isScreenSmall ? 'column' : 'row',
+    alignItems: 'center',
   };
 
   return (
     <CardContentContainerComment>
       <StyledCardHeaderComment
         sx={{
-          "& .MuiCardHeader-content": {
-            overflow: "hidden",
+          '& .MuiCardHeader-content': {
+            overflow: 'hidden',
           },
         }}
       >
         <Box sx={superLikeHeaderSX}>
           <Box
             sx={{
-              display: "flex",
-              gap: "10px",
-              alignItems: "center",
+              display: 'flex',
+              gap: '10px',
+              alignItems: 'center',
             }}
           >
             <Avatar
               src={avatarUrl}
               alt={`${name}'s avatar`}
-              sx={{ width: "35px", height: "35px" }}
+              sx={{ width: '35px', height: '35px' }}
             />
-            <AuthorTextComment sx={{ width: "max-content" }}>
+            <AuthorTextComment sx={{ width: 'max-content' }}>
               {name}
             </AuthorTextComment>
           </Box>
           <StyledCardColComment
             sx={{
-              marginTop: isScreenSmall ? "10px" : "0px",
-              marginLeft: isScreenSmall ? "0px" : "10px",
+              marginTop: isScreenSmall ? '10px' : '0px',
+              marginLeft: isScreenSmall ? '0px' : '10px',
             }}
           >
             {!isReply && (
               <ThumbUpIcon
                 style={{
-                  color: "gold",
-                  cursor: "pointer",
-                  marginRight: "10px",
+                  color: 'gold',
+                  cursor: 'pointer',
+                  marginRight: '10px',
                 }}
               />
             )}
@@ -282,7 +275,7 @@ export const CommentCard = ({
               <Typography
                 sx={{
                   fontSize: fontSizeSmall,
-                  color: "gold",
+                  color: 'gold',
                 }}
               >
                 {parseFloat(amount)?.toFixed(2)} QORT
@@ -296,9 +289,9 @@ export const CommentCard = ({
       </StyledCardContentComment>
       <Box
         sx={{
-          paddingLeft: "15px",
-          display: "flex",
-          flexDirection: "column",
+          paddingLeft: '15px',
+          display: 'flex',
+          flexDirection: 'column',
         }}
       >
         {replies?.map((reply: any) => {
@@ -307,10 +300,10 @@ export const CommentCard = ({
               key={reply?.identifier}
               id={reply?.identifier}
               sx={{
-                display: "flex",
-                border: "1px solid grey",
-                borderRadius: "10px",
-                marginTop: "8px",
+                display: 'flex',
+                border: '1px solid grey',
+                borderRadius: '10px',
+                marginTop: '8px',
               }}
             >
               <CommentCard
@@ -321,10 +314,10 @@ export const CommentCard = ({
               >
                 <Box
                   sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "5px",
-                    justifyContent: "space-between",
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '5px',
+                    justifyContent: 'space-between',
                   }}
                 >
                   {reply?.created && (
@@ -332,7 +325,7 @@ export const CommentCard = ({
                       {formatDate(+reply?.created)}
                     </CommentDateText>
                   )}
-                  {user?.name === reply?.name ? (
+                  {username === reply?.name ? (
                     <EditReplyButton
                       size="small"
                       variant="contained"

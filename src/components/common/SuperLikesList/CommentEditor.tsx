@@ -1,27 +1,22 @@
-import localforage from "localforage";
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import ShortUniqueId from "short-unique-id";
-import { COMMENT_BASE } from "../../../constants/Identifiers.ts";
-import { setNotification } from "../../../state/features/notificationsSlice";
-import { addtoHashMapSuperlikes } from "../../../state/features/videoSlice";
-import { RootState } from "../../../state/store";
-import {
-  objectToBase64,
-  objectToFile,
-  stringToFile,
-} from "../../../utils/PublishFormatter.ts";
+import localforage from 'localforage';
+import { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
+import ShortUniqueId from 'short-unique-id';
+import { COMMENT_BASE } from '../../../constants/Identifiers.ts';
+import { setNotification } from '../../../state/features/notificationsSlice';
+import { addtoHashMapSuperlikes } from '../../../state/features/videoSlice';
+import { objectToBase64 } from '../../../utils/PublishFormatter.ts';
 import {
   CommentInput,
   CommentInputContainer,
   SubmitCommentButton,
-} from "./Comments-styles";
-import { hashWordWithoutPublicSalt } from "qapp-core";
+} from './Comments-styles';
+import { hashWordWithoutPublicSalt, useAuth } from 'qapp-core';
 
 const uid = new ShortUniqueId({ length: 7 });
 
 const notification = localforage.createInstance({
-  name: "notification",
+  name: 'notification',
 });
 
 const MAX_ITEMS = 10;
@@ -36,11 +31,11 @@ export interface Item {
 export async function addItem(item: Item): Promise<void> {
   // Get all items
   const notificationComments: Item[] =
-    (await notification.getItem("comments")) || [];
+    (await notification.getItem('comments')) || [];
 
   // Find the item with the same id, if it exists
   const existingItemIndex = notificationComments.findIndex(
-    i => i.id === item.id
+    (i) => i.id === item.id
   );
 
   if (existingItemIndex !== -1) {
@@ -58,15 +53,15 @@ export async function addItem(item: Item): Promise<void> {
   }
 
   // Store the items back into localForage
-  await notification.setItem("comments", notificationComments);
+  await notification.setItem('comments', notificationComments);
 }
 export async function updateItemDate(item: any): Promise<void> {
   // Get all items
   const notificationComments: Item[] =
-    (await notification.getItem("comments")) || [];
+    (await notification.getItem('comments')) || [];
 
   const notificationCreatorComment: any =
-    (await notification.getItem("post-comments")) || {};
+    (await notification.getItem('post-comments')) || {};
   const findPostId = notificationCreatorComment[item.postId];
   if (findPostId) {
     notificationCreatorComment[item.postId].lastSeen = item.lastSeen;
@@ -80,8 +75,8 @@ export async function updateItemDate(item: any): Promise<void> {
   });
 
   // Store the items back into localForage
-  await notification.setItem("comments", notificationComments);
-  await notification.setItem("post-comments", notificationCreatorComment);
+  await notification.setItem('comments', notificationComments);
+  await notification.setItem('post-comments', notificationCreatorComment);
 }
 interface CommentEditorProps {
   postId: string;
@@ -100,7 +95,7 @@ export function utf8ToBase64(inputString: string): string {
   // Encode the string as UTF-8
   const utf8String = encodeURIComponent(inputString).replace(
     /%([0-9A-F]{2})/g,
-    (match, p1) => String.fromCharCode(Number("0x" + p1))
+    (match, p1) => String.fromCharCode(Number('0x' + p1))
   );
 
   // Convert the UTF-8 encoded string to base64
@@ -120,10 +115,9 @@ export const CommentEditor = ({
   comment,
   hasHash,
 }: CommentEditorProps) => {
-  const [value, setValue] = useState<string>("");
+  const [value, setValue] = useState<string>('');
   const dispatch = useDispatch();
-  const { user } = useSelector((state: RootState) => state.auth);
-
+  const { name, address } = useAuth();
   useEffect(() => {
     if (isEdit && commentMessage) {
       setValue(commentMessage);
@@ -134,26 +128,24 @@ export const CommentEditor = ({
     identifier: string,
     idForNotification?: string
   ) => {
-    const address = user?.address;
-    const name = user?.name || "";
-    let errorMsg = "";
+    let errorMsg = '';
 
     if (!address) {
       errorMsg = "Cannot post: your address isn't available";
     }
     if (!name) {
-      errorMsg = "Cannot post without a name";
+      errorMsg = 'Cannot post without a name';
     }
 
     if (value.length > 200) {
-      errorMsg = "Comment needs to be under 200 characters";
+      errorMsg = 'Comment needs to be under 200 characters';
     }
 
     if (errorMsg) {
       dispatch(
         setNotification({
           msg: errorMsg,
-          alertType: "error",
+          alertType: 'error',
         })
       );
       throw new Error(errorMsg);
@@ -161,8 +153,8 @@ export const CommentEditor = ({
 
     try {
       let dataFile: string = null;
-      let description = "";
-      let tag1 = "";
+      let description = '';
+      let tag1 = '';
       let superObj = {};
       if (isSuperLike) {
         if (
@@ -172,7 +164,7 @@ export const CommentEditor = ({
           !comment?.notificationInformation ||
           !comment?.about
         )
-          throw new Error("unable to edit Super like");
+          throw new Error('unable to edit Super like');
         description = comment?.metadata?.description;
         tag1 = comment?.metadata?.tags[0];
         superObj = {
@@ -184,20 +176,20 @@ export const CommentEditor = ({
         dataFile = await objectToBase64(superObj);
       }
       if (isSuperLike && !dataFile)
-        throw new Error("unable to edit Super like");
+        throw new Error('unable to edit Super like');
       const resourceResponse = await qortalRequest({
-        action: "PUBLISH_QDN_RESOURCE",
+        action: 'PUBLISH_QDN_RESOURCE',
         name: name,
-        service: "BLOG_COMMENT",
+        service: 'BLOG_COMMENT',
         data64: isSuperLike ? dataFile : utf8ToBase64(value),
         identifier: identifier,
         description,
-        tag1,
+        tags: [tag1],
       });
       dispatch(
         setNotification({
-          msg: "Comment successfully published",
-          alertType: "success",
+          msg: 'Comment successfully published',
+          alertType: 'success',
         })
       );
 
@@ -222,38 +214,38 @@ export const CommentEditor = ({
       return resourceResponse;
     } catch (error: any) {
       let notificationObj: any = null;
-      if (typeof error === "string") {
+      if (typeof error === 'string') {
         notificationObj = {
-          msg: error || "Failed to publish comment",
-          alertType: "error",
+          msg: error || 'Failed to publish comment',
+          alertType: 'error',
         };
-      } else if (typeof error?.error === "string") {
+      } else if (typeof error?.error === 'string') {
         notificationObj = {
-          msg: error?.error || "Failed to publish comment",
-          alertType: "error",
+          msg: error?.error || 'Failed to publish comment',
+          alertType: 'error',
         };
       } else {
         notificationObj = {
-          msg: error?.message || "Failed to publish comment",
-          alertType: "error",
+          msg: error?.message || 'Failed to publish comment',
+          alertType: 'error',
         };
       }
-      if (!notificationObj) throw new Error("Failed to publish comment");
+      if (!notificationObj) throw new Error('Failed to publish comment');
 
       dispatch(setNotification(notificationObj));
-      throw new Error("Failed to publish comment");
+      throw new Error('Failed to publish comment');
     }
   };
   const handleSubmit = async () => {
     try {
       const id = uid.rnd();
-      const hashPostId = await hashWordWithoutPublicSalt(postId, 20)
+      const hashPostId = await hashWordWithoutPublicSalt(postId, 20);
       let identifier = `${COMMENT_BASE}${hashPostId}_base_${id}`;
       let idForNotification = identifier;
-      const service = "BLOG_COMMENT";
+      const service = 'BLOG_COMMENT';
       if (isReply && commentId) {
         const removeBaseCommentId = commentId;
-        removeBaseCommentId.replace("_base_", "");
+        removeBaseCommentId.replace('_base_', '');
         identifier = `${COMMENT_BASE}${hashPostId}_reply_${removeBaseCommentId.slice(-6)}_${id}`;
         idForNotification = commentId;
       }
@@ -270,11 +262,11 @@ export const CommentEditor = ({
           identifier,
           message: value,
           service,
-          name: user?.name,
+          name: name,
         });
       }
 
-      setValue("");
+      setValue('');
     } catch (error) {
       console.error(error);
     }
@@ -292,12 +284,12 @@ export const CommentEditor = ({
         inputProps={{
           maxLength: 200,
         }}
-        InputLabelProps={{ style: { fontSize: "18px" } }}
-        onChange={e => setValue(e.target.value)}
+        InputLabelProps={{ style: { fontSize: '18px' } }}
+        onChange={(e) => setValue(e.target.value)}
       />
 
       <SubmitCommentButton variant="contained" onClick={handleSubmit}>
-        {isReply ? "Submit reply" : isEdit ? "Edit" : "Submit comment"}
+        {isReply ? 'Submit reply' : isEdit ? 'Edit' : 'Submit comment'}
       </SubmitCommentButton>
     </CommentInputContainer>
   );

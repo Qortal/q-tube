@@ -1,11 +1,10 @@
-import { useCallback, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useCallback } from 'react';
+import { useDispatch } from 'react-redux';
 
 import { blockUser, setEditVideo } from '../../../state/features/videoSlice.ts';
-import { RootState } from '../../../state/store.ts';
 
 import { VideoCardContainer } from './VideoList-styles.tsx';
-import { QortalSearchParams, ResourceListDisplay } from 'qapp-core';
+import { QortalSearchParams, ResourceListDisplay, useAuth } from 'qapp-core';
 import { VideoListItem } from './VideoListItem.tsx';
 import { VideoLoaderItem } from './VideoLoaderItem.tsx';
 
@@ -14,7 +13,7 @@ interface VideoListProps {
   listName: string;
 }
 export const VideoList = ({ searchParameters, listName }: VideoListProps) => {
-  const username = useSelector((state: RootState) => state.auth?.user?.name);
+  const { name: username } = useAuth();
 
   const dispatch = useDispatch();
 

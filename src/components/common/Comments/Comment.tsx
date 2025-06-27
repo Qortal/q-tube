@@ -8,27 +8,27 @@ import {
   DialogTitle,
   Typography,
   useTheme,
-} from "@mui/material";
-import React, { useCallback, useState, useEffect } from "react";
-import { CommentEditor } from "./CommentEditor";
+} from '@mui/material';
+import { useCallback, useState } from 'react';
+import { CommentEditor } from './CommentEditor';
 import {
   CardContentContainerComment,
   CommentActionButtonRow,
   CommentDateText,
   EditReplyButton,
   StyledCardComment,
-} from "./Comments-styles";
-import { StyledCardHeaderComment } from "./Comments-styles";
-import { StyledCardColComment } from "./Comments-styles";
-import { AuthorTextComment } from "./Comments-styles";
+} from './Comments-styles';
+import { StyledCardHeaderComment } from './Comments-styles';
+import { StyledCardColComment } from './Comments-styles';
+import { AuthorTextComment } from './Comments-styles';
 import {
   StyledCardContentComment,
   LoadMoreCommentsButton as CommentActionButton,
-} from "./Comments-styles";
-import { useSelector } from "react-redux";
-import { RootState } from "../../../state/store";
-import Portal from "../Portal";
-import { formatDate } from "../../../utils/time";
+} from './Comments-styles';
+
+import Portal from '../Portal';
+import { formatDate } from '../../../utils/time';
+import { createAvatarLink, useAuth } from 'qapp-core';
 interface CommentProps {
   comment: any;
   postId: string;
@@ -43,7 +43,7 @@ export const Comment = ({
 }: CommentProps) => {
   const [isReplying, setIsReplying] = useState<boolean>(false);
   const [isEditing, setIsEditing] = useState<boolean>(false);
-  const { user } = useSelector((state: RootState) => state.auth);
+  const { name } = useAuth();
   const [currentEdit, setCurrentEdit] = useState<any>(null);
   const theme = useTheme();
 
@@ -57,9 +57,9 @@ export const Comment = ({
     <Box
       id={comment?.identifier}
       sx={{
-        display: "flex",
-        width: "100%",
-        flexDirection: "column",
+        display: 'flex',
+        width: '100%',
+        flexDirection: 'column',
       }}
     >
       {currentEdit && (
@@ -74,13 +74,13 @@ export const Comment = ({
             <DialogContent>
               <Box
                 sx={{
-                  width: "300px",
-                  display: "flex",
-                  justifyContent: "center",
+                  width: '300px',
+                  display: 'flex',
+                  justifyContent: 'center',
                 }}
               >
                 <CommentEditor
-                  onSubmit={obj => handleSubmit(obj, true)}
+                  onSubmit={(obj) => handleSubmit(obj, true)}
                   postId={postId}
                   postName={postName}
                   isEdit
@@ -105,19 +105,19 @@ export const Comment = ({
       >
         <Box
           sx={{
-            display: "flex",
-            alignItems: "center",
-            gap: "5px",
-            marginTop: "20px",
-            justifyContent: "space-between",
+            display: 'flex',
+            alignItems: 'center',
+            gap: '5px',
+            marginTop: '20px',
+            justifyContent: 'space-between',
           }}
         >
           {comment?.created && (
             <Typography
               variant="h6"
               sx={{
-                fontSize: "12px",
-                marginLeft: "5px",
+                fontSize: '12px',
+                marginLeft: '5px',
               }}
               color={theme.palette.text.primary}
             >
@@ -132,7 +132,7 @@ export const Comment = ({
             >
               reply
             </CommentActionButton>
-            {user?.name === comment?.name && (
+            {name === comment?.name && (
               <CommentActionButton
                 size="small"
                 variant="contained"
@@ -159,10 +159,10 @@ export const Comment = ({
 
       <Box
         sx={{
-          display: "flex",
-          width: "100%",
-          flexDirection: "column",
-          alignItems: "center",
+          display: 'flex',
+          width: '100%',
+          flexDirection: 'column',
+          alignItems: 'center',
         }}
       >
         {isReplying && (
@@ -187,36 +187,15 @@ export const CommentCard = ({
   children,
   setCurrentEdit,
 }: any) => {
-  const [avatarUrl, setAvatarUrl] = React.useState<string>("");
-  const { user } = useSelector((state: RootState) => state.auth);
-
-  const theme = useTheme();
-
-  const getAvatar = React.useCallback(async (author: string) => {
-    try {
-      const url = await qortalRequest({
-        action: "GET_QDN_RESOURCE_URL",
-        name: author,
-        service: "THUMBNAIL",
-        identifier: "qortal_avatar",
-      });
-
-      setAvatarUrl(url);
-    } catch (error) {
-      console.error(error);
-    }
-  }, []);
-
-  useEffect(() => {
-    getAvatar(name);
-  }, [name]);
+  const { name: username } = useAuth();
+  const avatarUrl = createAvatarLink(username);
 
   return (
     <CardContentContainerComment>
       <StyledCardHeaderComment
         sx={{
-          "& .MuiCardHeader-content": {
-            overflow: "hidden",
+          '& .MuiCardHeader-content': {
+            overflow: 'hidden',
           },
         }}
       >
@@ -224,7 +203,7 @@ export const CommentCard = ({
           <Avatar
             src={avatarUrl}
             alt={`${name}'s avatar`}
-            sx={{ width: "35px", height: "35px" }}
+            sx={{ width: '35px', height: '35px' }}
           />
         </Box>
         <StyledCardColComment>
@@ -236,9 +215,9 @@ export const CommentCard = ({
       </StyledCardContentComment>
       <Box
         sx={{
-          paddingLeft: "15px",
-          display: "flex",
-          flexDirection: "column",
+          paddingLeft: '15px',
+          display: 'flex',
+          flexDirection: 'column',
         }}
       >
         {replies?.map((reply: any) => {
@@ -247,10 +226,10 @@ export const CommentCard = ({
               key={reply?.identifier}
               id={reply?.identifier}
               sx={{
-                display: "flex",
-                border: "1px solid grey",
-                borderRadius: "10px",
-                marginTop: "8px",
+                display: 'flex',
+                border: '1px solid grey',
+                borderRadius: '10px',
+                marginTop: '8px',
               }}
             >
               <CommentCard
@@ -260,10 +239,10 @@ export const CommentCard = ({
               >
                 <Box
                   sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "5px",
-                    justifyContent: "space-between",
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '5px',
+                    justifyContent: 'space-between',
                   }}
                 >
                   {reply?.created && (
@@ -271,7 +250,7 @@ export const CommentCard = ({
                       {formatDate(+reply?.created)}
                     </CommentDateText>
                   )}
-                  {user?.name === reply?.name ? (
+                  {username === reply?.name ? (
                     <EditReplyButton
                       size="small"
                       variant="contained"

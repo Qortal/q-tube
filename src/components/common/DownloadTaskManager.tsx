@@ -11,15 +11,12 @@ import {
   useTheme,
 } from '@mui/material';
 import { Movie } from '@mui/icons-material';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../state/store';
 import { useNavigate } from 'react-router-dom';
 import { DownloadingLight } from '../../assets/svgs/DownloadingLight';
 import { DownloadedLight } from '../../assets/svgs/DownloadedLight';
 import { useAllResourceStatus } from 'qapp-core';
 
 export const DownloadTaskManager: React.FC = () => {
-  const { downloads } = useSelector((state: RootState) => state.global);
   const theme = useTheme();
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);

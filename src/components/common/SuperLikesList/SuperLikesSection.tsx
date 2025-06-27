@@ -1,11 +1,10 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { CommentEditor } from "./CommentEditor";
-import { Comment } from "./Comment";
-import { Box, Button, CircularProgress, useTheme } from "@mui/material";
-import { styled } from "@mui/system";
-import { useSelector } from "react-redux";
-import { RootState } from "../../../state/store";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Comment } from './Comment';
+import { CircularProgress } from '@mui/material';
+import { styled } from '@mui/system';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../state/store';
+import { useNavigate, useLocation } from 'react-router-dom';
 import {
   CommentContainer,
   CommentEditorContainer,
@@ -13,13 +12,10 @@ import {
   LoadMoreCommentsButton,
   LoadMoreCommentsButtonRow,
   NoCommentsRow,
-} from "./Comments-styles";
-import {
-  CrowdfundSubTitle,
-  CrowdfundSubTitleRow,
-} from "../../Publish/PublishVideo/PublishVideo-styles.tsx";
-import { COMMENT_BASE } from "../../../constants/Identifiers.ts";
-import { hashWordWithoutPublicSalt } from "qapp-core";
+} from './Comments-styles';
+
+import { COMMENT_BASE } from '../../../constants/Identifiers.ts';
+import { hashWordWithoutPublicSalt } from 'qapp-core';
 
 interface CommentSectionProps {
   postId: string;
@@ -29,7 +25,7 @@ interface CommentSectionProps {
   loadingSuperLikes: boolean;
 }
 
-const Panel = styled("div")`
+const Panel = styled('div')`
   display: flex;
   flex-direction: column;
   justify-content: start;
@@ -58,14 +54,12 @@ export const SuperLikesSection = ({
   superlikes,
   postId,
   postName,
-  getMore
+  getMore,
 }: CommentSectionProps) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [listComments, setListComments] = useState<any[]>([]);
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const { user } = useSelector((state: RootState) => state.auth);
-  const [newMessages, setNewMessages] = useState(0);
   const [loadingComments, setLoadingComments] = useState<boolean>(null);
   const hashMapSuperlikes = useSelector(
     (state: RootState) => state.video.hashMapSuperlikes
@@ -74,7 +68,7 @@ export const SuperLikesSection = ({
     if (isEdit) {
       setListComments((prev: any[]) => {
         const findCommentIndex = prev.findIndex(
-          item => item?.identifier === obj?.identifier
+          (item) => item?.identifier === obj?.identifier
         );
         if (findCommentIndex === -1) return prev;
 
@@ -85,7 +79,7 @@ export const SuperLikesSection = ({
 
       return;
     }
-    setListComments(prev => [
+    setListComments((prev) => [
       ...prev,
       {
         ...obj,
@@ -95,9 +89,9 @@ export const SuperLikesSection = ({
 
   useEffect(() => {
     const query = new URLSearchParams(location.search);
-    let commentVar = query?.get("comment");
+    let commentVar = query?.get('comment');
     if (commentVar) {
-      if (commentVar && commentVar.endsWith("/")) {
+      if (commentVar && commentVar.endsWith('/')) {
         commentVar = commentVar.slice(0, -1);
       }
       setIsOpen(true);
@@ -105,9 +99,9 @@ export const SuperLikesSection = ({
         const el = document.getElementById(commentVar);
         if (el) {
           el.scrollIntoView();
-          el.classList.add("glow");
+          el.classList.add('glow');
           setTimeout(() => {
-            el.classList.remove("glow");
+            el.classList.remove('glow');
           }, 2000);
         }
         navigate(location.pathname, { replace: true });
@@ -119,16 +113,16 @@ export const SuperLikesSection = ({
     async (commentId, postId) => {
       const offset = 0;
 
-      const removeBaseCommentId = commentId.replace("_base_", "");
-      const hashPostId = await hashWordWithoutPublicSalt(postId, 20)
+      const removeBaseCommentId = commentId.replace('_base_', '');
+      const hashPostId = await hashWordWithoutPublicSalt(postId, 20);
 
       const url = `/arbitrary/resources/search?mode=ALL&service=BLOG_COMMENT&query=${COMMENT_BASE}${hashPostId}_reply_${removeBaseCommentId.slice(
         -6
       )}&limit=0&includemetadata=false&offset=${offset}&reverse=false&excludeblocked=true`;
       const response = await fetch(url, {
-        method: "GET",
+        method: 'GET',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
       });
       const responseData = await response.json();
@@ -137,9 +131,9 @@ export const SuperLikesSection = ({
         if (comment.identifier && comment.name) {
           const url = `/arbitrary/BLOG_COMMENT/${comment.name}/${comment.identifier}`;
           const response = await fetch(url, {
-            method: "GET",
+            method: 'GET',
             headers: {
-              "Content-Type": "application/json",
+              'Content-Type': 'application/json',
             },
           });
 
@@ -184,12 +178,12 @@ export const SuperLikesSection = ({
 
   const structuredCommentList = useMemo(() => {
     return listComments.reduce((acc, curr, index, array) => {
-      if (curr?.identifier?.includes("_reply_")) {
+      if (curr?.identifier?.includes('_reply_')) {
         return acc;
       }
       acc.push({
         ...curr,
-        replies: array.filter(comment =>
+        replies: array.filter((comment) =>
           comment.identifier.includes(`_reply_${curr.identifier.slice(-6)}`)
         ),
       });
@@ -215,7 +209,7 @@ export const SuperLikesSection = ({
                 let hash = {};
                 if (hashMapSuperlikes[comment?.identifier]) {
                   message.message =
-                    hashMapSuperlikes[comment?.identifier]?.comment || "";
+                    hashMapSuperlikes[comment?.identifier]?.comment || '';
                   hasHash = true;
                   hash = hashMapSuperlikes[comment?.identifier];
                 }

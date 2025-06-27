@@ -10,36 +10,36 @@ import {
   SelectChangeEvent,
   Typography,
   useTheme,
-} from "@mui/material";
-import { Signal, useSignal, useSignalEffect } from "@preact/signals-react";
-import Compressor from "compressorjs";
-import React, { useEffect, useState } from "react";
-import { useDropzone } from "react-dropzone";
-import { useDispatch, useSelector } from "react-redux";
-import ShortUniqueId from "short-unique-id";
-import { categories, subCategories } from "../../../constants/Categories.ts";
-import { QTUBE_VIDEO_BASE } from "../../../constants/Identifiers.ts";
+} from '@mui/material';
+import { Signal, useSignal, useSignalEffect } from '@preact/signals-react';
+import Compressor from 'compressorjs';
+import React, { useEffect, useState } from 'react';
+import { useDropzone } from 'react-dropzone';
+import { useDispatch, useSelector } from 'react-redux';
+import ShortUniqueId from 'short-unique-id';
+import { categories, subCategories } from '../../../constants/Categories.ts';
+import { QTUBE_VIDEO_BASE } from '../../../constants/Identifiers.ts';
 import {
   maxSize,
   titleFormatter,
   videoMaxSize,
-} from "../../../constants/Misc.ts";
+} from '../../../constants/Misc.ts';
 
-import { setNotification } from "../../../state/features/notificationsSlice.ts";
+import { setNotification } from '../../../state/features/notificationsSlice.ts';
 import {
   setEditVideo,
   updateInHashMap,
   updateVideo,
-} from "../../../state/features/videoSlice.ts";
-import { RootState } from "../../../state/store.ts";
-import BoundedNumericTextField from "../../../utils/BoundedNumericTextField.tsx";
-import { objectToBase64 } from "../../../utils/PublishFormatter.ts";
-import { FrameExtractor } from "../../common/FrameExtractor/FrameExtractor.tsx";
-import ImageUploader from "../../common/ImageUploader.tsx";
-import { TextEditor } from "../../common/TextEditor/TextEditor.tsx";
-import { extractTextFromHTML } from "../../common/TextEditor/utils.ts";
-import { MultiplePublish } from "../MultiplePublish/MultiplePublishAll.tsx";
-import { toBase64 } from "../PublishVideo/PublishVideo.tsx";
+} from '../../../state/features/videoSlice.ts';
+import { RootState } from '../../../state/store.ts';
+import BoundedNumericTextField from '../../../utils/BoundedNumericTextField.tsx';
+import { objectToBase64 } from '../../../utils/PublishFormatter.ts';
+import { FrameExtractor } from '../../common/FrameExtractor/FrameExtractor.tsx';
+import ImageUploader from '../../common/ImageUploader.tsx';
+import { TextEditor } from '../../common/TextEditor/TextEditor.tsx';
+import { extractTextFromHTML } from '../../common/TextEditor/utils.ts';
+import { MultiplePublish } from '../MultiplePublish/MultiplePublishAll.tsx';
+import { toBase64 } from '../PublishVideo/PublishVideo.tsx';
 
 import {
   AddCoverImageButton,
@@ -52,19 +52,14 @@ import {
   ModalBody,
   NewCrowdfundTitle,
   TimesIcon,
-} from "./EditVideo-styles.tsx";
-import { usePublish } from "qapp-core";
-
-const uid = new ShortUniqueId();
-const shortuid = new ShortUniqueId({ length: 5 });
+} from './EditVideo-styles.tsx';
+import { useAuth, usePublish } from 'qapp-core';
 
 export const EditVideo = () => {
   const theme = useTheme();
   const dispatch = useDispatch();
-  const username = useSelector((state: RootState) => state.auth?.user?.name);
-  const userAddress = useSelector(
-    (state: RootState) => state.auth?.user?.address
-  );
+  const { name: username, address: userAddress } = useAuth();
+
   const editVideoProperties = useSelector(
     (state: RootState) => state.video.editVideoProperties
   );
@@ -72,11 +67,11 @@ export const EditVideo = () => {
   const [isOpenMultiplePublish, setIsOpenMultiplePublish] = useState(false);
   const [videoPropertiesToSetToRedux, setVideoPropertiesToSetToRedux] =
     useState(null);
-    const publishFromLibrary = usePublish()
-  
-  const [title, setTitle] = useState<string>("");
-  const [description, setDescription] = useState<string>("");
-  const [coverImage, setCoverImage] = useState<string>("");
+  const publishFromLibrary = usePublish();
+
+  const [title, setTitle] = useState<string>('');
+  const [description, setDescription] = useState<string>('');
+  const [coverImage, setCoverImage] = useState<string>('');
   const [file, setFile] = useState(null);
   const [selectedCategoryVideos, setSelectedCategoryVideos] =
     useState<any>(null);
@@ -94,7 +89,7 @@ export const EditVideo = () => {
 
   const { getRootProps, getInputProps } = useDropzone({
     accept: {
-      "video/*": [],
+      'video/*': [],
     },
     maxFiles: 1,
     maxSize,
@@ -106,8 +101,8 @@ export const EditVideo = () => {
       let errorString = null;
 
       rejectedFiles.forEach(({ file, errors }) => {
-        errors.forEach(error => {
-          if (error.code === "file-too-large") {
+        errors.forEach((error) => {
+          if (error.code === 'file-too-large') {
             errorString = `File must be under ${videoMaxSize}MB`;
           }
           console.log(`Error with file ${file.name}: ${error.message}`);
@@ -116,7 +111,7 @@ export const EditVideo = () => {
       if (errorString) {
         const notificationObj = {
           msg: errorString,
-          alertType: "error",
+          alertType: 'error',
         };
 
         dispatch(setNotification(notificationObj));
@@ -124,66 +119,20 @@ export const EditVideo = () => {
     },
   });
 
-  // useEffect(() => {
-  //   if (editVideoProperties) {
-  //     const descriptionString = editVideoProperties?.description || "";
-  //     // Splitting the string at the asterisks
-  //     const parts = descriptionString.split("**");
-
-  //     // The part within the asterisks
-  //     const extractedString = parts[1];
-
-  //     // The part after the last asterisks
-  //     const description = parts[2] || ""; // Using '|| '' to handle cases where there is no text after the last **
-  //     setTitle(editVideoProperties?.title || "");
-  //     setDescription(editVideoProperties?.fullDescription || "");
-  //     setCoverImage(editVideoProperties?.videoImage || "");
-
-  //     // Split the extracted string into key-value pairs
-  //     const keyValuePairs = extractedString.split(";");
-
-  //     // Initialize variables to hold the category and subcategory values
-  //     let category, subcategory;
-
-  //     // Loop through each key-value pair
-  //     keyValuePairs.forEach((pair) => {
-  //       const [key, value] = pair.split(":");
-
-  //       // Check the key and assign the value to the appropriate variable
-  //       if (key === "category") {
-  //         category = value;
-  //       } else if (key === "subcategory") {
-  //         subcategory = value;
-  //       }
-  //     });
-
-  //     if(category){
-  //       const selectedOption = categories.find((option) => option.id === +category);
-  //   setSelectedCategoryVideos(selectedOption || null);
-  //     }
-
-  //     if(subcategory){
-  //       const selectedOption = categories.find((option) => option.id === +subcategory);
-  //   setSelectedCategoryVideos(selectedOption || null);
-  //     }
-
-  //   }
-  // }, [editVideoProperties]);
-
   useEffect(() => {
     if (editVideoProperties) {
-      setTitle(editVideoProperties?.title || "");
+      setTitle(editVideoProperties?.title || '');
       if (editVideoProperties?.htmlDescription) {
         setDescription(editVideoProperties?.htmlDescription);
       } else if (editVideoProperties?.fullDescription) {
         const paragraph = `<p>${editVideoProperties?.fullDescription}</p>`;
         setDescription(paragraph);
       }
-      setCoverImage(editVideoProperties?.videoImage || "");
+      setCoverImage(editVideoProperties?.videoImage || '');
 
       if (editVideoProperties?.category) {
         const selectedOption = categories.find(
-          option => option.id === +editVideoProperties.category
+          (option) => option.id === +editVideoProperties.category
         );
         setSelectedCategoryVideos(selectedOption || null);
       }
@@ -195,7 +144,7 @@ export const EditVideo = () => {
       ) {
         const selectedOption = subCategories[
           +editVideoProperties?.category
-        ]?.find(option => option.id === +editVideoProperties.subcategory);
+        ]?.find((option) => option.id === +editVideoProperties.subcategory);
         setSelectedSubCategoryVideos(selectedOption || null);
       }
     }
@@ -205,28 +154,28 @@ export const EditVideo = () => {
     dispatch(setEditVideo(null));
     setVideoPropertiesToSetToRedux(null);
     setFile(null);
-    setTitle("");
+    setTitle('');
     setImageExtracts([]);
-    setDescription("");
-    setCoverImage("");
+    setDescription('');
+    setCoverImage('');
   };
 
   async function publishQDNResource() {
     try {
-      if (!title) throw new Error("Please enter a title");
-      if (!description) throw new Error("Please enter a description");
-      if (!coverImage) throw new Error("Please select cover image");
-      if (!selectedCategoryVideos) throw new Error("Please select a category");
+      if (!title) throw new Error('Please enter a title');
+      if (!description) throw new Error('Please enter a description');
+      if (!coverImage) throw new Error('Please select cover image');
+      if (!selectedCategoryVideos) throw new Error('Please select a category');
       if (!editVideoProperties) return;
-      if (!userAddress) throw new Error("Unable to locate user address");
-      let errorMsg = "";
-      let name = "";
+      if (!userAddress) throw new Error('Unable to locate user address');
+      let errorMsg = '';
+      let name = '';
       if (username) {
         name = username;
       }
       if (!name) {
         errorMsg =
-          "Cannot publish without access to your name. Please authenticate.";
+          'Cannot publish without access to your name. Please authenticate.';
       }
 
       if (editVideoProperties?.user !== username) {
@@ -237,32 +186,32 @@ export const EditVideo = () => {
         dispatch(
           setNotification({
             msg: errorMsg,
-            alertType: "error",
+            alertType: 'error',
           })
         );
         return;
       }
       const listOfPublishes = [];
       const category = selectedCategoryVideos.id;
-      const subcategory = selectedSubCategoryVideos?.id || "";
+      const subcategory = selectedSubCategoryVideos?.id || '';
 
       const fullDescription = extractTextFromHTML(description);
-      let fileExtension = "mp4";
-      const fileExtensionSplit = file?.name?.split(".");
+      let fileExtension = 'mp4';
+      const fileExtensionSplit = file?.name?.split('.');
       if (fileExtensionSplit?.length > 1) {
-        fileExtension = fileExtensionSplit?.pop() || "mp4";
+        fileExtension = fileExtensionSplit?.pop() || 'mp4';
       }
 
       const filename = title.slice(0, 15);
       // Step 1: Replace all white spaces with underscores
 
       // Replace all forms of whitespace (including non-standard ones) with underscores
-      const stringWithUnderscores = filename.replace(/[\s\uFEFF\xA0]+/g, "_");
+      const stringWithUnderscores = filename.replace(/[\s\uFEFF\xA0]+/g, '_');
 
       // Remove all non-alphanumeric characters (except underscores)
       const alphanumericString = stringWithUnderscores.replace(
         /[^a-zA-Z0-9_]/g,
-        ""
+        ''
       );
 
       const videoObject: any = {
@@ -277,21 +226,21 @@ export const EditVideo = () => {
         category,
         subcategory,
         code: editVideoProperties.code,
-        videoType: file?.type || "video/mp4",
+        videoType: file?.type || 'video/mp4',
         filename: `${alphanumericString.trim()}.${fileExtension}`,
         fileSize: file?.size || 0,
         duration: videoDuration.value[0] || editVideoProperties?.duration || 0,
       };
-      console.log("edit publish duration: ", videoObject?.duration);
+      console.log('edit publish duration: ', videoObject?.duration);
       const metadescription =
         `**category:${category};subcategory:${subcategory};code:${editVideoProperties.code}**` +
         description.slice(0, 150);
 
       // Description is obtained from raw data
       const requestBodyJson: any = {
-        action: "PUBLISH_QDN_RESOURCE",
+        action: 'PUBLISH_QDN_RESOURCE',
         name: username,
-        service: "DOCUMENT",
+        service: 'DOCUMENT',
         data64: await objectToBase64(videoObject),
         title: title.slice(0, 50),
         description: metadescription,
@@ -303,9 +252,9 @@ export const EditVideo = () => {
 
       if (file && editVideoProperties.videoReference?.identifier) {
         const requestBodyVideo: any = {
-          action: "PUBLISH_QDN_RESOURCE",
+          action: 'PUBLISH_QDN_RESOURCE',
           name: username,
-          service: "VIDEO",
+          service: 'VIDEO',
           file,
           title: title.slice(0, 50),
           description: metadescription,
@@ -317,7 +266,7 @@ export const EditVideo = () => {
       }
 
       const multiplePublish = {
-        action: "PUBLISH_MULTIPLE_QDN_RESOURCES",
+        action: 'PUBLISH_MULTIPLE_QDN_RESOURCES',
         resources: [...listOfPublishes],
       };
       // setPublishes(multiplePublish);
@@ -326,32 +275,33 @@ export const EditVideo = () => {
         ...editVideoProperties,
         ...videoObject,
       });
-     const success = await publishFromLibrary.publishMultipleResources(listOfPublishes)
-     console.log('success', success)
+      const success =
+        await publishFromLibrary.publishMultipleResources(listOfPublishes);
+      console.log('success', success);
       setIsOpenMultiplePublish(false);
-            const clonedCopy = structuredClone({
+      const clonedCopy = structuredClone({
         ...editVideoProperties,
         ...videoObject,
       });
-            dispatch(updateVideo(clonedCopy));
-            dispatch(updateInHashMap(clonedCopy));
-            dispatch(
-              setNotification({
-                msg: "Video updated",
-                alertType: "success",
-              })
-            );
-            onClose();
+      dispatch(updateVideo(clonedCopy));
+      dispatch(updateInHashMap(clonedCopy));
+      dispatch(
+        setNotification({
+          msg: 'Video updated',
+          alertType: 'success',
+        })
+      );
+      onClose();
     } catch (error: any) {
       let notificationObj: any = null;
       notificationObj = {
-          msg: error?.message || "Failed to publish update",
-          alertType: "error",
-        };
+        msg: error?.message || 'Failed to publish update',
+        alertType: 'error',
+      };
       if (!notificationObj) return;
       dispatch(setNotification(notificationObj));
 
-      throw new Error("Failed to publish update");
+      throw new Error('Failed to publish update');
     }
   }
 
@@ -359,7 +309,7 @@ export const EditVideo = () => {
     event: SelectChangeEvent<string>
   ) => {
     const optionId = event.target.value;
-    const selectedOption = categories.find(option => option.id === +optionId);
+    const selectedOption = categories.find((option) => option.id === +optionId);
     setSelectedCategoryVideos(selectedOption || null);
   };
   const handleOptionSubCategoryChangeVideos = (
@@ -368,12 +318,12 @@ export const EditVideo = () => {
   ) => {
     const optionId = event.target.value;
     const selectedOption = subcategories.find(
-      option => option.id === +optionId
+      (option) => option.id === +optionId
     );
     setSelectedSubCategoryVideos(selectedOption || null);
   };
 
-  const onFramesExtracted = async imgs => {
+  const onFramesExtracted = async (imgs) => {
     try {
       const imagesExtracts = [];
 
@@ -381,14 +331,14 @@ export const EditVideo = () => {
         try {
           let compressedFile;
           const image = img;
-          await new Promise<void>(resolve => {
+          await new Promise<void>((resolve) => {
             new Compressor(image, {
               quality: 0.8,
               maxWidth: 750,
-              mimeType: "image/webp",
+              mimeType: 'image/webp',
               success(result) {
-                const file = new File([result], "name", {
-                  type: "image/webp",
+                const file = new File([result], 'name', {
+                  type: 'image/webp',
                 });
                 compressedFile = file;
                 resolve();
@@ -419,12 +369,12 @@ export const EditVideo = () => {
         aria-labelledby="modal-title"
         aria-describedby="modal-description"
       >
-        <ModalBody sx={{ maxHeight: "98vh" }}>
+        <ModalBody sx={{ maxHeight: '98vh' }}>
           <Box
             sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
             }}
           >
             <NewCrowdfundTitle>Update Video properties</NewCrowdfundTitle>
@@ -433,11 +383,11 @@ export const EditVideo = () => {
             <Box
               {...getRootProps()}
               sx={{
-                border: "1px dashed gray",
+                border: '1px dashed gray',
                 padding: 2,
-                textAlign: "center",
+                textAlign: 'center',
                 marginBottom: 2,
-                cursor: "pointer",
+                cursor: 'pointer',
               }}
             >
               <input {...getInputProps()} />
@@ -445,16 +395,16 @@ export const EditVideo = () => {
             </Box>
             <Typography
               sx={{
-                marginBottom: "10px",
+                marginBottom: '10px',
               }}
             >
               {file?.name}
             </Typography>
             <Box
               sx={{
-                display: "flex",
-                gap: "20px",
-                alignItems: "center",
+                display: 'flex',
+                gap: '20px',
+                alignItems: 'center',
               }}
             >
               <FormControl fullWidth sx={{ marginBottom: 2 }}>
@@ -462,10 +412,10 @@ export const EditVideo = () => {
                 <Select
                   labelId="Category"
                   input={<OutlinedInput label="Select a Category" />}
-                  value={selectedCategoryVideos?.id || ""}
+                  value={selectedCategoryVideos?.id || ''}
                   onChange={handleOptionCategoryChangeVideos}
                 >
-                  {categories.map(option => (
+                  {categories.map((option) => (
                     <MenuItem key={option.id} value={option.id}>
                       {option.name}
                     </MenuItem>
@@ -479,19 +429,21 @@ export const EditVideo = () => {
                     <Select
                       labelId="Sub-Category"
                       input={<OutlinedInput label="Select a Sub-Category" />}
-                      value={selectedSubCategoryVideos?.id || ""}
-                      onChange={e =>
+                      value={selectedSubCategoryVideos?.id || ''}
+                      onChange={(e) =>
                         handleOptionSubCategoryChangeVideos(
                           e,
                           subCategories[selectedCategoryVideos?.id]
                         )
                       }
                     >
-                      {subCategories[selectedCategoryVideos.id].map(option => (
-                        <MenuItem key={option.id} value={option.id}>
-                          {option.name}
-                        </MenuItem>
-                      ))}
+                      {subCategories[selectedCategoryVideos.id].map(
+                        (option) => (
+                          <MenuItem key={option.id} value={option.id}>
+                            {option.name}
+                          </MenuItem>
+                        )
+                      )}
                     </Select>
                   </FormControl>
                 )}
@@ -499,7 +451,7 @@ export const EditVideo = () => {
             {file && (
               <FrameExtractor
                 videoFile={file}
-                onFramesExtracted={imgs => onFramesExtracted(imgs)}
+                onFramesExtracted={(imgs) => onFramesExtracted(imgs)}
                 videoDurations={videoDuration}
                 index={0}
               />
@@ -511,8 +463,8 @@ export const EditVideo = () => {
                     Add Cover Image
                     <AddLogoIcon
                       sx={{
-                        height: "25px",
-                        width: "auto",
+                        height: '25px',
+                        width: 'auto',
                       }}
                     ></AddLogoIcon>
                   </AddCoverImageButton>
@@ -522,9 +474,9 @@ export const EditVideo = () => {
                   <CoverImagePreview src={coverImage} alt="logo" />
                   <TimesIcon
                     color={theme.palette.text.primary}
-                    onClickFunc={() => setCoverImage("")}
-                    height={"32"}
-                    width={"32"}
+                    onClickFunc={() => setCoverImage('')}
+                    height={'32'}
+                    width={'32'}
                   ></TimesIcon>
                 </LogoPreviewRow>
               )}
@@ -535,7 +487,7 @@ export const EditVideo = () => {
                 addIconButtons={false}
                 allowDecimals={false}
                 initialValue={videoDuration.value[0].toString()}
-                afterChange={s => {
+                afterChange={(s) => {
                   videoDuration.value[0] = +s;
                 }}
               />
@@ -544,9 +496,9 @@ export const EditVideo = () => {
                 label="Title of video"
                 variant="filled"
                 value={title}
-                onChange={e => {
+                onChange={(e) => {
                   const value = e.target.value;
-                  const formattedValue = value.replace(titleFormatter, "");
+                  const formattedValue = value.replace(titleFormatter, '');
                   setTitle(formattedValue);
                 }}
                 inputProps={{ maxLength: 180 }}
@@ -554,14 +506,14 @@ export const EditVideo = () => {
               />
               <Typography
                 sx={{
-                  fontSize: "18px",
+                  fontSize: '18px',
                 }}
               >
                 Description of video
               </Typography>
               <TextEditor
                 inlineContent={description}
-                setInlineContent={value => {
+                setInlineContent={(value) => {
                   setDescription(value);
                 }}
               />
@@ -591,9 +543,9 @@ export const EditVideo = () => {
             </CrowdfundActionButton>
             <Box
               sx={{
-                display: "flex",
-                gap: "20px",
-                alignItems: "center",
+                display: 'flex',
+                gap: '20px',
+                alignItems: 'center',
               }}
             >
               <CrowdfundActionButton
@@ -615,14 +567,14 @@ export const EditVideo = () => {
       {isOpenMultiplePublish && (
         <MultiplePublish
           isOpen={isOpenMultiplePublish}
-          onError={messageNotification => {
+          onError={(messageNotification) => {
             setIsOpenMultiplePublish(false);
             setPublishes(null);
             if (messageNotification) {
               dispatch(
                 setNotification({
                   msg: messageNotification,
-                  alertType: "error",
+                  alertType: 'error',
                 })
               );
             }
@@ -634,8 +586,8 @@ export const EditVideo = () => {
             dispatch(updateInHashMap(clonedCopy));
             dispatch(
               setNotification({
-                msg: "Video updated",
-                alertType: "success",
+                msg: 'Video updated',
+                alertType: 'success',
               })
             );
             onClose();

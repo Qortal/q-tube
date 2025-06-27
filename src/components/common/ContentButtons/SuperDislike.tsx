@@ -1,4 +1,4 @@
-import ThumbDownIcon from "@mui/icons-material/ThumbDown";
+import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import {
   Box,
   DialogContent,
@@ -8,37 +8,36 @@ import {
   Tooltip,
   useMediaQuery,
   useTheme,
-} from "@mui/material";
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import ShortUniqueId from "short-unique-id";
-import qortImg from "../../../assets/img/qort.png";
+} from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
+import ShortUniqueId from 'short-unique-id';
+import qortImg from '../../../assets/img/qort.png';
 import {
   FOR,
   FOR_SUPER_LIKE,
   SUPER_LIKE_BASE,
-} from "../../../constants/Identifiers.ts";
+} from '../../../constants/Identifiers.ts';
 import {
   fontSizeLarge,
   fontSizeMedium,
   minPriceSuperDislike,
-} from "../../../constants/Misc.ts";
-import { setNotification } from "../../../state/features/notificationsSlice.ts";
-import { RootState } from "../../../state/store.ts";
-import BoundedNumericTextField from "../../../utils/BoundedNumericTextField.tsx";
-import { numberToInt, truncateNumber } from "../../../utils/numberFunctions.ts";
-import { objectToBase64 } from "../../../utils/PublishFormatter.ts";
-import { getUserBalance } from "../../../utils/qortalRequestFunctions.ts";
-import { MultiplePublish } from "../../Publish/MultiplePublish/MultiplePublishAll.tsx";
+} from '../../../constants/Misc.ts';
+import { setNotification } from '../../../state/features/notificationsSlice.ts';
+import BoundedNumericTextField from '../../../utils/BoundedNumericTextField.tsx';
+import { numberToInt, truncateNumber } from '../../../utils/numberFunctions.ts';
+import { objectToBase64 } from '../../../utils/PublishFormatter.ts';
+import { getUserBalance } from '../../../utils/qortalRequestFunctions.ts';
+import { MultiplePublish } from '../../Publish/MultiplePublish/MultiplePublishAll.tsx';
 import {
   CrowdfundActionButton,
   CrowdfundActionButtonRow,
   ModalBody,
   NewCrowdfundTitle,
   Spacer,
-} from "../../Publish/PublishVideo/PublishVideo-styles.tsx";
-import { CommentInput } from "../Comments/Comments-styles.tsx";
-import { hashWordWithoutPublicSalt } from "qapp-core";
+} from '../../Publish/PublishVideo/PublishVideo-styles.tsx';
+import { CommentInput } from '../Comments/Comments-styles.tsx';
+import { hashWordWithoutPublicSalt, useAuth } from 'qapp-core';
 
 const uid = new ShortUniqueId({ length: 4 });
 
@@ -54,17 +53,17 @@ export const SuperDislike = ({
 
   const [superDislikeDonationAmount, setSuperdislikeDonationAmount] =
     useState<number>(minPriceSuperDislike);
-  const [currentBalance, setCurrentBalance] = useState<string>("");
+  const [currentBalance, setCurrentBalance] = useState<string>('');
 
-  const [comment, setComment] = useState<string>("");
-  const username = useSelector((state: RootState) => state.auth?.user?.name);
+  const [comment, setComment] = useState<string>('');
+  const { name: username } = useAuth();
   const [isOpenMultiplePublish, setIsOpenMultiplePublish] = useState(false);
   const [publishes, setPublishes] = useState<any>(null);
   const dispatch = useDispatch();
 
   const resetValues = () => {
     setSuperdislikeDonationAmount(0);
-    setComment("");
+    setComment('');
     setPublishes(null);
   };
   const onClose = () => {
@@ -74,23 +73,23 @@ export const SuperDislike = ({
 
   async function publishSuperDislike() {
     try {
-      if (!username) throw new Error("You need a name to publish");
+      if (!username) throw new Error('You need a name to publish');
       if (!name) throw new Error("Could not retrieve content creator's name");
       const estimatedTransactionFees = 0.1;
       const donationExceedsBalance =
         superDislikeDonationAmount + estimatedTransactionFees >=
         +currentBalance;
       if (donationExceedsBalance) {
-        throw new Error("Total donations exceeds current balance");
+        throw new Error('Total donations exceeds current balance');
       }
 
       const resName = await qortalRequest({
-        action: "GET_NAME_DATA",
+        action: 'GET_NAME_DATA',
         name: name,
       });
 
       const address = resName.owner;
-      if (!identifier) throw new Error("Could not retrieve id of video post");
+      if (!identifier) throw new Error('Could not retrieve id of video post');
       //   if (comment.length > 200) throw new Error("Comment needs to be under 200 characters")
 
       if (!address)
@@ -106,9 +105,10 @@ export const SuperDislike = ({
       const listOfPublishes = [];
 
       const res = await qortalRequest({
-        action: "SEND_COIN",
-        coin: "QORT",
-        destinationAddress: address,
+        action: 'SEND_COIN',
+        coin: 'QORT',
+        recipient: address,
+
         amount: superDislikeDonationAmount,
       });
 
@@ -120,7 +120,7 @@ export const SuperDislike = ({
       )};id:${identifier.slice(-30)}**`;
 
       const id = uid.rnd();
-      const hashPostId = await hashWordWithoutPublicSalt(identifier, 20)
+      const hashPostId = await hashWordWithoutPublicSalt(identifier, 20);
       const identifierSuperDislike = `${SUPER_LIKE_BASE}${hashPostId}_${id}`;
 
       const superLikeToBase64 = await objectToBase64({
@@ -138,11 +138,11 @@ export const SuperDislike = ({
       //   const base64 = utf8ToBase64(comment);
 
       const requestBodyJson: any = {
-        action: "PUBLISH_QDN_RESOURCE",
+        action: 'PUBLISH_QDN_RESOURCE',
         name: username,
-        service: "BLOG_COMMENT",
+        service: 'BLOG_COMMENT',
         data64: superLikeToBase64,
-        title: "",
+        title: '',
         description: metadescription,
         identifier: identifierSuperDislike,
         tag1: SUPER_LIKE_BASE,
@@ -152,7 +152,7 @@ export const SuperDislike = ({
       listOfPublishes.push(requestBodyJson);
 
       const multiplePublish = {
-        action: "PUBLISH_MULTIPLE_QDN_RESOURCES",
+        action: 'PUBLISH_MULTIPLE_QDN_RESOURCES',
         resources: [...listOfPublishes],
       };
       setPublishes(multiplePublish);
@@ -165,16 +165,16 @@ export const SuperDislike = ({
             error?.error ||
             error?.message ||
             error ||
-            "Failed to publish Super Like",
-          alertType: "error",
+            'Failed to publish Super Like',
+          alertType: 'error',
         })
       );
-      throw new Error("Failed to publish Super Like");
+      throw new Error('Failed to publish Super Like');
     }
   }
 
   useEffect(() => {
-    getUserBalance().then(foundBalance => {
+    getUserBalance().then((foundBalance) => {
       setCurrentBalance(truncateNumber(foundBalance, 2));
     });
   }, []);
@@ -188,8 +188,8 @@ export const SuperDislike = ({
           if (username === name) {
             dispatch(
               setNotification({
-                msg: "You cannot send yourself a Super like",
-                alertType: "error",
+                msg: 'You cannot send yourself a Super like',
+                alertType: 'error',
               })
             );
             return;
@@ -197,52 +197,52 @@ export const SuperDislike = ({
           setIsOpen(true);
         }}
         sx={{
-          display: "flex",
-          alignItems: "center",
-          gap: "15px",
-          cursor: "pointer",
+          display: 'flex',
+          alignItems: 'center',
+          gap: '15px',
+          cursor: 'pointer',
           flexShrink: 0,
         }}
       >
         <Tooltip title="Super Like" placement="top">
           <Box
             sx={{
-              padding: "5px",
-              borderRadius: "7px",
-              gap: "5px",
-              display: "flex",
-              alignItems: "center",
-              outline: "1px red solid",
-              marginRight: "10px",
-              height: "53px",
+              padding: '5px',
+              borderRadius: '7px',
+              gap: '5px',
+              display: 'flex',
+              alignItems: 'center',
+              outline: '1px red solid',
+              marginRight: '10px',
+              height: '53px',
             }}
           >
             <ThumbDownIcon
               style={{
-                color: "red",
+                color: 'red',
               }}
             />
 
             {numberOfSuperdislikes === 0 ? null : (
               <div
                 style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  userSelect: "none",
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  userSelect: 'none',
                 }}
               >
-                <span style={{ marginRight: "10px", paddingBottom: "4px" }}>
+                <span style={{ marginRight: '10px', paddingBottom: '4px' }}>
                   {numberOfSuperdislikes}
                 </span>
                 <img
                   style={{
-                    height: "25px",
-                    width: "25px",
-                    marginRight: "5px",
+                    height: '25px',
+                    width: '25px',
+                    marginRight: '5px',
                   }}
                   src={qortImg}
-                  alt={"Qort Icon"}
+                  alt={'Qort Icon'}
                 />
                 {truncateNumber(totalAmount, 0)}
               </div>
@@ -258,28 +258,28 @@ export const SuperDislike = ({
       >
         <ModalBody
           sx={{
-            width: "90%",
-            backgroundColor: "#A58700",
-            boxShadow: "none",
-            gap: "0px",
-            padding: "0px",
+            width: '90%',
+            backgroundColor: '#A58700',
+            boxShadow: 'none',
+            gap: '0px',
+            padding: '0px',
             border: 0,
           }}
         >
           <Box
             sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              width: "100%",
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '100%',
             }}
           >
             <NewCrowdfundTitle>Super Like</NewCrowdfundTitle>
           </Box>
-          <DialogContent sx={{ padding: "10px 12px" }}>
+          <DialogContent sx={{ padding: '10px 12px' }}>
             <Box>
               <InputLabel
-                sx={{ color: "white" }}
+                sx={{ color: 'white' }}
                 htmlFor="standard-adornment-amount"
               >
                 Amount
@@ -297,32 +297,32 @@ export const SuperDislike = ({
                 InputProps={{
                   style: {
                     fontSize: fontSizeMedium,
-                    width: "80%",
+                    width: '80%',
                     border: `1px solid ${theme.palette.primary.main}`,
                   },
                   startAdornment: (
                     <InputAdornment position="start">
                       <img
                         style={{
-                          height: "40px",
-                          width: "40px",
+                          height: '40px',
+                          width: '40px',
                         }}
                         src={qortImg}
-                        alt={"Qort Icon"}
+                        alt={'Qort Icon'}
                       />
                     </InputAdornment>
                   ),
                 }}
               />
 
-              <Box sx={{ display: "flex", gap: "5px", alignItems: "center" }}>
+              <Box sx={{ display: 'flex', gap: '5px', alignItems: 'center' }}>
                 <img
                   style={{
-                    height: "25px",
-                    width: "25px",
+                    height: '25px',
+                    width: '25px',
                   }}
                   src={qortImg}
-                  alt={"Qort Icon"}
+                  alt={'Qort Icon'}
                 />
                 Balance: {currentBalance}
               </Box>
@@ -337,13 +337,13 @@ export const SuperDislike = ({
                 variant="filled"
                 value={comment}
                 InputLabelProps={{
-                  style: { fontSize: fontSizeMedium, color: "white" },
+                  style: { fontSize: fontSizeMedium, color: 'white' },
                 }}
                 inputProps={{
                   maxLength: 500,
                   style: { fontSize: fontSizeLarge },
                 }}
-                onChange={e => setComment(e.target.value)}
+                onChange={(e) => setComment(e.target.value)}
                 sx={{ border: `1px solid ${theme.palette.primary.main}` }}
               />
             </Box>
@@ -351,11 +351,11 @@ export const SuperDislike = ({
           <CrowdfundActionButtonRow>
             <Box
               sx={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                margin: "10px",
-                width: "100%",
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                margin: '10px',
+                width: '100%',
               }}
             >
               <CrowdfundActionButton
@@ -385,14 +385,14 @@ export const SuperDislike = ({
       {isOpenMultiplePublish && (
         <MultiplePublish
           isOpen={isOpenMultiplePublish}
-          onError={messageNotification => {
+          onError={(messageNotification) => {
             setIsOpenMultiplePublish(false);
             setPublishes(null);
             if (messageNotification) {
               dispatch(
                 setNotification({
                   msg: messageNotification,
-                  alertType: "error",
+                  alertType: 'error',
                 })
               );
             }
@@ -411,8 +411,8 @@ export const SuperDislike = ({
 
             dispatch(
               setNotification({
-                msg: "Super like published",
-                alertType: "success",
+                msg: 'Super like published',
+                alertType: 'success',
               })
             );
           }}

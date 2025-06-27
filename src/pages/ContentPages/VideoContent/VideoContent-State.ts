@@ -1,16 +1,8 @@
 import { SUPER_LIKE_BASE } from '../../../constants/Identifiers.ts';
 import { minPriceSuperLike } from '../../../constants/Misc.ts';
 import { useFetchSuperLikes } from '../../../hooks/useFetchSuperLikes.tsx';
-import { RootState } from '../../../state/store.ts';
-import React, {
-  useEffect,
-  useRef,
-  useState,
-  useMemo,
-  useCallback,
-} from 'react';
+import { useEffect, useRef, useState, useMemo, useCallback } from 'react';
 import { useTheme } from '@mui/material';
-import { useSelector } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   hashWordWithoutPublicSalt,
@@ -46,9 +38,6 @@ export const useVideoContentState = () => {
     null
   );
 
-  const userAvatarHash = useSelector(
-    (state: RootState) => state.global.userAvatarHash
-  );
   const [loadingSuperLikes, setLoadingSuperLikes] = useState<boolean>(false);
   const [superLikeList, setSuperLikeList] = useState<any[]>([]);
   const { addSuperlikeRawDataGetToList } = useFetchSuperLikes();
@@ -95,14 +84,7 @@ export const useVideoContentState = () => {
       getAddressName(channelName);
     }
   }, [channelName]);
-  const avatarUrl = useMemo(() => {
-    let url = '';
-    if (channelName && userAvatarHash[channelName]) {
-      url = userAvatarHash[channelName];
-    }
 
-    return url;
-  }, [userAvatarHash, channelName]);
   const navigate = useNavigate();
   const theme = useTheme();
 

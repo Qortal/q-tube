@@ -2,12 +2,15 @@ import * as React from 'react';
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import { useDispatch } from 'react-redux';
 import { CircularProgress } from '@mui/material';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
-import { setNotification } from '../../state/features/notificationsSlice';
 import { useResourceStatus } from 'qapp-core';
 import { useLocation } from 'react-router-dom';
+import { useSetAtom } from 'jotai';
+import {
+  AltertObject,
+  setNotificationAtom,
+} from '../../state/global/notifications';
 
 const Widget = styled('div')(({ theme }) => ({
   padding: 8,
@@ -65,12 +68,12 @@ export default function FileElement({
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const [downloadLoader, setDownloadLoader] = React.useState<any>(false);
   const location = useLocation();
+  const setNotification = useSetAtom(setNotificationAtom);
   const resourceStatus = useResourceStatus({
     resource: startedDownload ? fileInfo : null,
     path: location.pathname,
     filename: fileInfo?.filename,
   });
-  const dispatch = useDispatch();
   const handlePlay = async () => {
     if (disable) return;
     setStartedDownload(true);
@@ -85,12 +88,14 @@ export default function FileElement({
           location: fileInfo,
           filename: fileInfo?.filename,
         });
-      } catch (error: any) {
-        const notificationObj = {
-          msg: error?.message || 'Failed to save file',
+      } catch (error) {
+        const isError = error instanceof Error;
+        const message = isError ? error?.message : 'Failed to save file';
+        const notificationObj: AltertObject = {
+          msg: message,
           alertType: 'error',
         };
-        dispatch(setNotification(notificationObj));
+        setNotification(notificationObj);
       } finally {
         setDownloadLoader(false);
       }
@@ -103,12 +108,11 @@ export default function FileElement({
   React.useEffect(() => {
     if (resourceStatus?.isReady) {
       setIsLoading(false);
-      dispatch(
-        setNotification({
-          msg: 'Download completed. Click to save file',
-          alertType: 'info',
-        })
-      );
+      const notificationObj: AltertObject = {
+        msg: 'Download completed. Click to save file',
+        alertType: 'info',
+      };
+      setNotification(notificationObj);
     }
   }, [resourceStatus?.isReady]);
 

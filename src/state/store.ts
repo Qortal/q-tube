@@ -1,7 +1,5 @@
 /* eslint-disable */
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
-import notificationsReducer from './features/notificationsSlice';
-import globalReducer from './features/globalSlice';
 import videoReducer from './features/videoSlice';
 import {
   persistReducer,
@@ -15,15 +13,7 @@ import {
 } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 
-const persistSettingsConfig = {
-  key: 'persist',
-  version: 1,
-  storage,
-};
-
 const reducer = combineReducers({
-  notifications: notificationsReducer,
-  global: globalReducer,
   video: videoReducer,
 });
 

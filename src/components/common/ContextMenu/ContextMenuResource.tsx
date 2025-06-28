@@ -1,42 +1,46 @@
-import * as React from 'react'
-import Menu from '@mui/material/Menu'
-import MenuItem from '@mui/material/MenuItem'
-import Typography from '@mui/material/Typography'
+import * as React from 'react';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import Typography from '@mui/material/Typography';
 //import { CopyToClipboard } from 'react-copy-to-clipboard'
-import { useDispatch } from 'react-redux'
-import { setNotification } from '../../../state/features/notificationsSlice'
-import { Box, ButtonBase } from '@mui/material'
+import { Box, ButtonBase } from '@mui/material';
+import {
+  AltertObject,
+  setNotificationAtom,
+} from '../../../state/global/notifications';
+import { useSetAtom } from 'jotai';
 
 export default function ContextMenuResource({
   children,
   name,
   service,
   identifier,
-  link
+  link,
 }: any) {
+  const setNotification = useSetAtom(setNotificationAtom);
+
   const [contextMenu, setContextMenu] = React.useState<{
-    mouseX: number
-    mouseY: number
-  } | null>(null)
-  const dispatch = useDispatch()
+    mouseX: number;
+    mouseY: number;
+  } | null>(null);
   const handleContextMenu = (event: React.MouseEvent) => {
-    event.preventDefault()
+    event.preventDefault();
     setContextMenu(
       contextMenu === null
         ? {
             mouseX: event.clientX + 2,
-            mouseY: event.clientY - 6
+            mouseY: event.clientY - 6,
           }
         : // repeated contextmenu when it is already open closes it with Chrome 84 on Ubuntu
           // Other native context menus might behave different.
           // With this behavior we prevent contextmenu from the backdrop to re-locale existing context menus.
           null
-    )
-  }
+    );
+  };
 
   const handleClose = () => {
-    setContextMenu(null)
-  }
+    setContextMenu(null);
+  };
 
   return (
     <div
@@ -57,20 +61,19 @@ export default function ContextMenuResource({
         <MenuItem>
           <ButtonBase
             onClick={() => {
-                handleClose()
-                navigator.clipboard.writeText(`${link}`).then(() => {
-                    dispatch(
-                        setNotification({
-                            msg: 'Copied to clipboard!',
-                            alertType: 'success'
-                        })
-                    )
-                })
+              handleClose();
+              navigator.clipboard.writeText(`${link}`).then(() => {
+                const notificationObj: AltertObject = {
+                  msg: 'Copied to clipboard!',
+                  alertType: 'success',
+                };
+                setNotification(notificationObj);
+              });
             }}
           >
             <Box
               sx={{
-                fontSize: '16px'
+                fontSize: '16px',
               }}
             >
               Copy Link
@@ -79,5 +82,5 @@ export default function ContextMenuResource({
         </MenuItem>
       </Menu>
     </div>
-  )
+  );
 }

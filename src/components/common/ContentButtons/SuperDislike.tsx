@@ -10,7 +10,6 @@ import {
   useTheme,
 } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
 import ShortUniqueId from 'short-unique-id';
 import qortImg from '../../../assets/img/qort.png';
 import {
@@ -23,7 +22,6 @@ import {
   fontSizeMedium,
   minPriceSuperDislike,
 } from '../../../constants/Misc.ts';
-import { setNotification } from '../../../state/features/notificationsSlice.ts';
 import BoundedNumericTextField from '../../../utils/BoundedNumericTextField.tsx';
 import { numberToInt, truncateNumber } from '../../../utils/numberFunctions.ts';
 import { objectToBase64 } from '../../../utils/PublishFormatter.ts';
@@ -38,6 +36,11 @@ import {
 } from '../../Publish/PublishVideo/PublishVideo-styles.tsx';
 import { CommentInput } from '../Comments/Comments-styles.tsx';
 import { hashWordWithoutPublicSalt, useAuth } from 'qapp-core';
+import { useSetAtom } from 'jotai';
+import {
+  AltertObject,
+  setNotificationAtom,
+} from '../../../state/global/notifications.ts';
 
 const uid = new ShortUniqueId({ length: 4 });
 
@@ -59,7 +62,7 @@ export const SuperDislike = ({
   const { name: username } = useAuth();
   const [isOpenMultiplePublish, setIsOpenMultiplePublish] = useState(false);
   const [publishes, setPublishes] = useState<any>(null);
-  const dispatch = useDispatch();
+  const setNotification = useSetAtom(setNotificationAtom);
 
   const resetValues = () => {
     setSuperdislikeDonationAmount(0);
@@ -159,17 +162,17 @@ export const SuperDislike = ({
 
       setIsOpenMultiplePublish(true);
     } catch (error: any) {
-      dispatch(
-        setNotification({
-          msg:
-            error?.error ||
-            error?.message ||
-            error ||
-            'Failed to publish Super Like',
-          alertType: 'error',
-        })
-      );
-      throw new Error('Failed to publish Super Like');
+      const isError = error instanceof Error;
+      const message = isError
+        ? error?.message
+        : 'Failed to publish Super Dislike';
+      const notificationObj: AltertObject = {
+        msg: message,
+        alertType: 'error',
+      };
+      setNotification(notificationObj);
+
+      throw new Error('Failed to publish Super Dislike');
     }
   }
 
@@ -186,12 +189,12 @@ export const SuperDislike = ({
       <Box
         onClick={() => {
           if (username === name) {
-            dispatch(
-              setNotification({
-                msg: 'You cannot send yourself a Super like',
-                alertType: 'error',
-              })
-            );
+            const notificationObj: AltertObject = {
+              msg: 'You cannot send yourself a Super Dislike',
+              alertType: 'error',
+            };
+            setNotification(notificationObj);
+
             return;
           }
           setIsOpen(true);
@@ -204,7 +207,7 @@ export const SuperDislike = ({
           flexShrink: 0,
         }}
       >
-        <Tooltip title="Super Like" placement="top">
+        <Tooltip title="Super Dislike" placement="top">
           <Box
             sx={{
               padding: '5px',
@@ -274,7 +277,7 @@ export const SuperDislike = ({
               width: '100%',
             }}
           >
-            <NewCrowdfundTitle>Super Like</NewCrowdfundTitle>
+            <NewCrowdfundTitle>Super Dislike</NewCrowdfundTitle>
           </Box>
           <DialogContent sx={{ padding: '10px 12px' }}>
             <Box>
@@ -389,12 +392,11 @@ export const SuperDislike = ({
             setIsOpenMultiplePublish(false);
             setPublishes(null);
             if (messageNotification) {
-              dispatch(
-                setNotification({
-                  msg: messageNotification,
-                  alertType: 'error',
-                })
-              );
+              const notificationObj: AltertObject = {
+                msg: messageNotification,
+                alertType: 'error',
+              };
+              setNotification(notificationObj);
             }
           }}
           onSubmit={() => {
@@ -408,13 +410,11 @@ export const SuperDislike = ({
             });
             setIsOpenMultiplePublish(false);
             onClose();
-
-            dispatch(
-              setNotification({
-                msg: 'Super like published',
-                alertType: 'success',
-              })
-            );
+            const notificationObj: AltertObject = {
+              msg: 'Super Dislike published',
+              alertType: 'success',
+            };
+            setNotification(notificationObj);
           }}
           publishes={publishes}
         />

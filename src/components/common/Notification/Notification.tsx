@@ -1,17 +1,22 @@
-import { useDispatch, useSelector } from "react-redux";
-import { toast, ToastContainer, Zoom, Slide } from "react-toastify";
-import { removeNotification } from "../../../state/features/notificationsSlice";
-import "react-toastify/dist/ReactToastify.css";
-import { RootState } from "../../../state/store";
+import { useDispatch, useSelector } from 'react-redux';
+import { toast, ToastContainer, Zoom, Slide } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { RootState } from '../../../state/store';
+import { useAtom, useSetAtom } from 'jotai';
+import {
+  alertAtom,
+  removeNotificationAtom,
+} from '../../../state/global/notifications';
 
 const Notification = () => {
   const dispatch = useDispatch();
 
-  const { alertTypes } = useSelector((state: RootState) => state.notifications);
+  const [alertTypes] = useAtom(alertAtom);
+  const removeNotification = useSetAtom(removeNotificationAtom);
 
   if (alertTypes.alertError) {
     toast.error(`❌ ${alertTypes?.alertError}`, {
-      position: "bottom-right",
+      position: 'bottom-right',
       autoClose: 4000,
       hideProgressBar: false,
       closeOnClick: true,
@@ -20,11 +25,11 @@ const Notification = () => {
       progress: undefined,
       icon: false,
     });
-    dispatch(removeNotification());
+    removeNotification();
   }
   if (alertTypes.alertSuccess) {
     toast.success(`✔️ ${alertTypes?.alertSuccess}`, {
-      position: "bottom-right",
+      position: 'bottom-right',
       autoClose: 4000,
       hideProgressBar: false,
       closeOnClick: true,
@@ -33,20 +38,20 @@ const Notification = () => {
       progress: undefined,
       icon: false,
     });
-    dispatch(removeNotification());
+    removeNotification();
   }
   if (alertTypes.alertInfo) {
     toast.info(`${alertTypes?.alertInfo}`, {
-      position: "top-right",
+      position: 'top-right',
       autoClose: 1300,
       hideProgressBar: false,
       closeOnClick: true,
       pauseOnHover: true,
       draggable: true,
       progress: undefined,
-      theme: "light",
+      theme: 'light',
     });
-    dispatch(removeNotification());
+    removeNotification();
   }
 
   if (alertTypes.alertInfo) {
@@ -62,7 +67,7 @@ const Notification = () => {
         draggable
         pauseOnHover
         theme="light"
-        toastStyle={{ fontSize: "16px" }}
+        toastStyle={{ fontSize: '16px' }}
         transition={Slide}
       />
     );

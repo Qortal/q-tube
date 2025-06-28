@@ -1,9 +1,7 @@
 import localforage from 'localforage';
 import { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
 import ShortUniqueId from 'short-unique-id';
 import { COMMENT_BASE } from '../../../constants/Identifiers.ts';
-import { setNotification } from '../../../state/features/notificationsSlice';
 import { addtoHashMapSuperlikes } from '../../../state/features/videoSlice';
 import { objectToBase64 } from '../../../utils/PublishFormatter.ts';
 import {
@@ -12,6 +10,11 @@ import {
   SubmitCommentButton,
 } from './Comments-styles';
 import { hashWordWithoutPublicSalt, useAuth } from 'qapp-core';
+import { useSetAtom } from 'jotai';
+import {
+  AltertObject,
+  setNotificationAtom,
+} from '../../../state/global/notifications.ts';
 
 const uid = new ShortUniqueId({ length: 7 });
 
@@ -116,7 +119,8 @@ export const CommentEditor = ({
   hasHash,
 }: CommentEditorProps) => {
   const [value, setValue] = useState<string>('');
-  const dispatch = useDispatch();
+  const setNotification = useSetAtom(setNotificationAtom);
+
   const { name, address } = useAuth();
   useEffect(() => {
     if (isEdit && commentMessage) {
@@ -142,12 +146,12 @@ export const CommentEditor = ({
     }
 
     if (errorMsg) {
-      dispatch(
-        setNotification({
-          msg: errorMsg,
-          alertType: 'error',
-        })
-      );
+      const notificationObj: AltertObject = {
+        msg: errorMsg,
+        alertType: 'error',
+      };
+      setNotification(notificationObj);
+
       throw new Error(errorMsg);
     }
 
@@ -186,12 +190,11 @@ export const CommentEditor = ({
         description,
         tags: [tag1],
       });
-      dispatch(
-        setNotification({
-          msg: 'Comment successfully published',
-          alertType: 'success',
-        })
-      );
+      const notificationObj: AltertObject = {
+        msg: 'Comment successfully published',
+        alertType: 'success',
+      };
+      setNotification(notificationObj);
 
       if (isSuperLike) {
         dispatch(
@@ -213,26 +216,13 @@ export const CommentEditor = ({
 
       return resourceResponse;
     } catch (error: any) {
-      let notificationObj: any = null;
-      if (typeof error === 'string') {
-        notificationObj = {
-          msg: error || 'Failed to publish comment',
-          alertType: 'error',
-        };
-      } else if (typeof error?.error === 'string') {
-        notificationObj = {
-          msg: error?.error || 'Failed to publish comment',
-          alertType: 'error',
-        };
-      } else {
-        notificationObj = {
-          msg: error?.message || 'Failed to publish comment',
-          alertType: 'error',
-        };
-      }
-      if (!notificationObj) throw new Error('Failed to publish comment');
-
-      dispatch(setNotification(notificationObj));
+      const isError = error instanceof Error;
+      const message = isError ? error?.message : 'Failed to publish Comment';
+      const notificationObj: AltertObject = {
+        msg: message,
+        alertType: 'error',
+      };
+      setNotification(notificationObj);
       throw new Error('Failed to publish comment');
     }
   };

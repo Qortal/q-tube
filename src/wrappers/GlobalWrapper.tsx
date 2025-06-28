@@ -14,7 +14,6 @@ import {
 
 import NavBar from '../components/layout/Navbar/Navbar';
 import PageLoader from '../components/common/PageLoader';
-import { setSuperlikesAll } from '../state/features/globalSlice';
 import { RequestQueue } from '../utils/queue';
 import { EditVideo } from '../components/Publish/EditVideo/EditVideo';
 import { EditPlaylist } from '../components/Publish/EditPlaylist/EditPlaylist';
@@ -26,6 +25,7 @@ import { useHandleNameData } from './../hooks/useHandleNameData.tsx';
 import { namesAtom } from './../state/global/names';
 import { useAtom, useSetAtom } from 'jotai';
 import { useAuth } from 'qapp-core';
+import { superlikesAtom } from '../state/global/superlikes.ts';
 
 interface Props {
   children: React.ReactNode;
@@ -36,6 +36,7 @@ export const queueSuperlikes = new RequestQueue();
 
 const GlobalWrapper: React.FC<Props> = ({ children }) => {
   const dispatch = useDispatch();
+  const setSuperlikesAll = useSetAtom(superlikesAtom);
   const { addSuperlikeRawDataGetToList } = useFetchSuperLikes();
   const interval = useRef<any>(null);
   useHandleNameData();
@@ -94,7 +95,7 @@ const GlobalWrapper: React.FC<Props> = ({ children }) => {
         }
         totalCount++;
       }
-      dispatch(setSuperlikesAll(comments));
+      setSuperlikesAll(comments);
     } catch (error) {
       console.error(error);
     }

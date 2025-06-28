@@ -39,9 +39,6 @@ import {
   FiltersSubContainer,
 } from '../../../pages/Home/Components/VideoList-styles.tsx';
 
-import { setNotification } from '../../../state/features/notificationsSlice.ts';
-import { RootState } from '../../../state/store.ts';
-import { objectToBase64 } from '../../../utils/PublishFormatter.ts';
 import { getFileName } from '../../../utils/stringFunctions.ts';
 import { CardContentContainerComment } from '../../common/Comments/Comments-styles.tsx';
 import { FrameExtractor } from '../../common/FrameExtractor/FrameExtractor.tsx';
@@ -69,7 +66,12 @@ import {
   TimesIcon,
 } from './PublishVideo-styles.tsx';
 import VideoLibraryIcon from '@mui/icons-material/VideoLibrary';
-import { useAuth } from 'qapp-core';
+import { objectToBase64, useAuth, usePublish } from 'qapp-core';
+import { useSetAtom } from 'jotai';
+import {
+  AltertObject,
+  setNotificationAtom,
+} from '../../../state/global/notifications.ts';
 
 export const toBase64 = (file: File): Promise<string | ArrayBuffer | null> =>
   new Promise((resolve, reject) => {
@@ -108,6 +110,7 @@ export const PublishVideo = ({
   const theme = useTheme();
   const dispatch = useDispatch();
   const [isOpenMultiplePublish, setIsOpenMultiplePublish] = useState(false);
+  const setNotification = useSetAtom(setNotificationAtom);
 
   const { name: username, address: userAddress } = useAuth();
 
@@ -142,6 +145,7 @@ export const PublishVideo = ({
   const [isCheckDescriptionIsTitle, setIsCheckDescriptionIsTitle] =
     useState(false);
   const [imageExtracts, setImageExtracts] = useState<any>({});
+  const publishFromLibrary = usePublish();
 
   useSignals();
   const assembleVideoDurations = () => {
@@ -189,12 +193,11 @@ export const PublishVideo = ({
         });
       });
       if (errorString) {
-        const notificationObj = {
+        const notificationObj: AltertObject = {
           msg: errorString,
           alertType: 'error',
         };
-
-        dispatch(setNotification(notificationObj));
+        setNotification(notificationObj);
       }
     },
   });
@@ -244,12 +247,11 @@ export const PublishVideo = ({
       }
 
       if (errorMsg) {
-        dispatch(
-          setNotification({
-            msg: errorMsg,
-            alertType: 'error',
-          })
-        );
+        const notificationObj: AltertObject = {
+          msg: errorMsg,
+          alertType: 'error',
+        };
+        setNotification(notificationObj);
         return;
       }
 
@@ -486,28 +488,22 @@ export const PublishVideo = ({
         action: 'PUBLISH_MULTIPLE_QDN_RESOURCES',
         resources: [...listOfPublishes],
       };
-      setPublishes(multiplePublish);
-      setIsOpenMultiplePublish(true);
+      await publishFromLibrary.publishMultipleResources(listOfPublishes);
+
+      const notificationObj: AltertObject = {
+        msg: 'Video published',
+        alertType: 'success',
+      };
+      setNotification(notificationObj);
+      onClose();
     } catch (error: any) {
-      let notificationObj: any = null;
-      if (typeof error === 'string') {
-        notificationObj = {
-          msg: error || 'Failed to publish video',
-          alertType: 'error',
-        };
-      } else if (typeof error?.error === 'string') {
-        notificationObj = {
-          msg: error?.error || 'Failed to publish video',
-          alertType: 'error',
-        };
-      } else {
-        notificationObj = {
-          msg: error?.message || 'Failed to publish video',
-          alertType: 'error',
-        };
-      }
-      if (!notificationObj) return;
-      dispatch(setNotification(notificationObj));
+      const isError = error instanceof Error;
+      const message = isError ? error?.message : 'Failed to publish video';
+      const notificationObj: AltertObject = {
+        msg: message,
+        alertType: 'error',
+      };
+      setNotification(notificationObj);
 
       throw new Error('Failed to publish video');
     }
@@ -579,12 +575,13 @@ export const PublishVideo = ({
 
       setStep('playlist');
     } catch (error) {
-      dispatch(
-        setNotification({
-          msg: error?.message || 'Please fill out all inputs',
-          alertType: 'error',
-        })
-      );
+      const isError = error instanceof Error;
+      const message = isError ? error?.message : 'Please fill out all inputs';
+      const notificationObj: AltertObject = {
+        msg: message,
+        alertType: 'error',
+      };
+      setNotification(notificationObj);
     }
   };
 
@@ -920,20 +917,6 @@ export const PublishVideo = ({
                         />
                       </>
                     )}
-
-                    {/* <CustomInputField
-                      name="description"
-                      label="Describe your video in a few words"
-                      variant="filled"
-                      value={file?.description}
-                      onChange={(e) =>
-                        handleOnchange(index, "description", e.target.value)
-                      }
-                      inputProps={{ maxLength: 10000 }}
-                      multiline
-                      maxRows={3}
-                      required
-                    /> */}
                   </React.Fragment>
                 );
               })}
@@ -1168,17 +1151,6 @@ export const PublishVideo = ({
                     inputProps={{ maxLength: 180 }}
                     required
                   />
-                  {/* <CustomInputField
-                    name="description"
-                    label="Describe your playlist in a few words"
-                    variant="filled"
-                    value={playlistDescription}
-                    onChange={(e) => setPlaylistDescription(e.target.value)}
-                    inputProps={{ maxLength: 10000 }}
-                    multiline
-                    maxRows={3}
-                    required
-                  /> */}
 
                   <Typography
                     sx={{
@@ -1258,8 +1230,6 @@ export const PublishVideo = ({
                 <CrowdfundActionButton
                   variant="contained"
                   onClick={() => {
-                    // publishQDNResource();
-                    // setIsOpenMultiplePublish(true)
                     setStep('videos');
                   }}
                 >
@@ -1298,47 +1268,6 @@ export const PublishVideo = ({
           </CrowdfundActionButtonRow>
         </ModalBody>
       </Modal>
-
-      {isOpenMultiplePublish && (
-        <MultiplePublish
-          isOpen={isOpenMultiplePublish}
-          onError={(messageNotification) => {
-            setIsOpenMultiplePublish(false);
-            setPublishes(null);
-            if (messageNotification) {
-              dispatch(
-                setNotification({
-                  msg: messageNotification,
-                  alertType: 'error',
-                })
-              );
-            }
-          }}
-          onSubmit={() => {
-            setIsOpenMultiplePublish(false);
-            setIsOpen(false);
-            setImageExtracts({});
-            setFiles([]);
-            setStep('videos');
-            setPlaylistCoverImage(null);
-            setPlaylistTitle('');
-            setPlaylistDescription('');
-            setSelectedCategory(null);
-            setCoverImageForAll(null);
-            setSelectedSubCategory(null);
-            setSelectedCategoryVideos(null);
-            setSelectedSubCategoryVideos(null);
-            setPlaylistSetting(null);
-            dispatch(
-              setNotification({
-                msg: 'Videos published',
-                alertType: 'success',
-              })
-            );
-          }}
-          publishes={publishes}
-        />
-      )}
     </>
   );
 };

@@ -25,7 +25,6 @@ import {
   videoMaxSize,
 } from '../../../constants/Misc.ts';
 
-import { setNotification } from '../../../state/features/notificationsSlice.ts';
 import {
   setEditVideo,
   updateInHashMap,
@@ -54,9 +53,16 @@ import {
   TimesIcon,
 } from './EditVideo-styles.tsx';
 import { useAuth, usePublish } from 'qapp-core';
+import { useSetAtom } from 'jotai';
+import {
+  AltertObject,
+  setNotificationAtom,
+} from '../../../state/global/notifications.ts';
 
 export const EditVideo = () => {
   const theme = useTheme();
+  const setNotification = useSetAtom(setNotificationAtom);
+
   const dispatch = useDispatch();
   const { name: username, address: userAddress } = useAuth();
 
@@ -109,12 +115,11 @@ export const EditVideo = () => {
         });
       });
       if (errorString) {
-        const notificationObj = {
+        const notificationObj: AltertObject = {
           msg: errorString,
           alertType: 'error',
         };
-
-        dispatch(setNotification(notificationObj));
+        setNotification(notificationObj);
       }
     },
   });
@@ -183,12 +188,11 @@ export const EditVideo = () => {
       }
 
       if (errorMsg) {
-        dispatch(
-          setNotification({
-            msg: errorMsg,
-            alertType: 'error',
-          })
-        );
+        const notificationObj: AltertObject = {
+          msg: errorMsg,
+          alertType: 'error',
+        };
+        setNotification(notificationObj);
         return;
       }
       const listOfPublishes = [];
@@ -264,41 +268,33 @@ export const EditVideo = () => {
         listOfPublishes.push(requestBodyVideo);
       }
 
-      const multiplePublish = {
-        action: 'PUBLISH_MULTIPLE_QDN_RESOURCES',
-        resources: [...listOfPublishes],
-      };
-      // setPublishes(multiplePublish);
-      // setIsOpenMultiplePublish(true);
       setVideoPropertiesToSetToRedux({
         ...editVideoProperties,
         ...videoObject,
       });
-      const success =
-        await publishFromLibrary.publishMultipleResources(listOfPublishes);
-      setIsOpenMultiplePublish(false);
+
+      await publishFromLibrary.publishMultipleResources(listOfPublishes);
       const clonedCopy = structuredClone({
         ...editVideoProperties,
         ...videoObject,
       });
       dispatch(updateVideo(clonedCopy));
       dispatch(updateInHashMap(clonedCopy));
-      dispatch(
-        setNotification({
-          msg: 'Video updated',
-          alertType: 'success',
-        })
-      );
+      const notificationObj: AltertObject = {
+        msg: 'Video updated',
+        alertType: 'success',
+      };
+      setNotification(notificationObj);
+
       onClose();
     } catch (error: any) {
-      let notificationObj: any = null;
-      notificationObj = {
-        msg: error?.message || 'Failed to publish update',
+      const isError = error instanceof Error;
+      const message = isError ? error?.message : 'Failed to publish update';
+      const notificationObj: AltertObject = {
+        msg: message,
         alertType: 'error',
       };
-      if (!notificationObj) return;
-      dispatch(setNotification(notificationObj));
-
+      setNotification(notificationObj);
       throw new Error('Failed to publish update');
     }
   }
@@ -515,17 +511,6 @@ export const EditVideo = () => {
                   setDescription(value);
                 }}
               />
-              {/* <CustomInputField
-                name="description"
-                label="Describe your video in a few words"
-                variant="filled"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                inputProps={{ maxLength: 10000 }}
-                multiline
-                maxRows={3}
-                required
-              /> */}
             </React.Fragment>
           </>
 
@@ -562,37 +547,6 @@ export const EditVideo = () => {
           </CrowdfundActionButtonRow>
         </ModalBody>
       </Modal>
-      {isOpenMultiplePublish && (
-        <MultiplePublish
-          isOpen={isOpenMultiplePublish}
-          onError={(messageNotification) => {
-            setIsOpenMultiplePublish(false);
-            setPublishes(null);
-            if (messageNotification) {
-              dispatch(
-                setNotification({
-                  msg: messageNotification,
-                  alertType: 'error',
-                })
-              );
-            }
-          }}
-          onSubmit={() => {
-            setIsOpenMultiplePublish(false);
-            const clonedCopy = structuredClone(videoPropertiesToSetToRedux);
-            dispatch(updateVideo(clonedCopy));
-            dispatch(updateInHashMap(clonedCopy));
-            dispatch(
-              setNotification({
-                msg: 'Video updated',
-                alertType: 'success',
-              })
-            );
-            onClose();
-          }}
-          publishes={publishes}
-        />
-      )}
     </>
   );
 };

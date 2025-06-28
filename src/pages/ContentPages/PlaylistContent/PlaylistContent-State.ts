@@ -1,5 +1,4 @@
-import { useDispatch, useSelector } from 'react-redux';
-import { setIsLoadingGlobal } from '../../../state/features/globalSlice.ts';
+import { useSelector } from 'react-redux';
 import { RootState } from '../../../state/store.ts';
 import { useVideoContentState } from '../VideoContent/VideoContent-State.ts';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -28,7 +27,7 @@ export const usePlaylistContentState = () => {
   const { name } = useAuth();
   const userName = name;
   const [doAutoPlay, setDoAutoPlay] = useState(false);
-
+  const [isLoadingPlaylist, setIsLoadingPlaylist] = useState(false);
   const calculateAmountSuperlike = useMemo(() => {
     const totalQort = superLikeList?.reduce((acc, curr) => {
       if (curr?.amount && !isNaN(parseFloat(curr.amount)))
@@ -48,12 +47,10 @@ export const usePlaylistContentState = () => {
     (state: RootState) => state.video.hashMapVideos
   );
 
-  const dispatch = useDispatch();
-
   const checkforPlaylist = useCallback(
     async (name, id) => {
       try {
-        dispatch(setIsLoadingGlobal(true));
+        setIsLoadingPlaylist(true);
 
         if (!name || !id) return;
 
@@ -127,7 +124,7 @@ export const usePlaylistContentState = () => {
       } catch (error) {
         console.error(error);
       } finally {
-        dispatch(setIsLoadingGlobal(false));
+        setIsLoadingPlaylist(false);
       }
     },
     [hashMapVideos]
@@ -202,5 +199,6 @@ export const usePlaylistContentState = () => {
     contentRef,
     descriptionThreshold,
     loadingSuperLikes,
+    isLoadingPlaylist,
   };
 };

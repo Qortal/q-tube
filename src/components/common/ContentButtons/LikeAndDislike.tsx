@@ -4,8 +4,6 @@ import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import ThumbUpOffAltOutlinedIcon from '@mui/icons-material/ThumbUpOffAltOutlined';
 import ThumbDownOffAltOutlinedIcon from '@mui/icons-material/ThumbDownOffAltOutlined';
 import { Box } from '@mui/material';
-import { useDispatch } from 'react-redux';
-import { setNotification } from '../../../state/features/notificationsSlice.ts';
 import { objectToBase64 } from '../../../utils/PublishFormatter.ts';
 import { LIKE_BASE } from '../../../constants/Identifiers.ts';
 import { CustomTooltip } from './CustomTooltip.tsx';
@@ -16,6 +14,11 @@ import {
   LikesAndDislikes,
 } from './LikeAndDislike-functions.ts';
 import { useAuth } from 'qapp-core';
+import { useSetAtom } from 'jotai';
+import {
+  AltertObject,
+  setNotificationAtom,
+} from '../../../state/global/notifications.ts';
 
 interface LikeAndDislikeProps {
   name: string;
@@ -31,12 +34,12 @@ export const DISLIKE = LikeType.Dislike;
 export const NEUTRAL = LikeType.Neutral;
 export const LikeAndDislike = ({ name, identifier }: LikeAndDislikeProps) => {
   const { name: username } = useAuth();
-  const dispatch = useDispatch();
   const [likeCount, setLikeCount] = useState<number>(0);
   const [dislikeCount, setDislikeCount] = useState<number>(0);
   const [currentLikeType, setCurrentLikeType] = useState<LikeType>(NEUTRAL);
   const likeIdentifier = `${LIKE_BASE}${identifier.slice(0, 39)}`;
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const setNotification = useSetAtom(setNotificationAtom);
 
   useEffect(() => {
     type PromiseReturn = [LikeType, LikesAndDislikes];
@@ -54,13 +57,13 @@ export const LikeAndDislike = ({ name, identifier }: LikeAndDislikeProps) => {
   }, [username]);
 
   const updateLikeDataState = (newLikeType: LikeType) => {
-    const setSuccessNotification = (msg: string) =>
-      dispatch(
-        setNotification({
-          msg,
-          alertType: 'success',
-        })
-      );
+    const setSuccessNotification = (msg: string) => {
+      const notificationObj: AltertObject = {
+        msg,
+        alertType: 'success',
+      };
+      setNotification(notificationObj);
+    };
     setCurrentLikeType(newLikeType);
     switch (newLikeType) {
       case NEUTRAL:
@@ -87,12 +90,12 @@ export const LikeAndDislike = ({ name, identifier }: LikeAndDislikeProps) => {
   };
   const publishLike = async (chosenLikeType: LikeType) => {
     if (isLoading) {
-      dispatch(
-        setNotification({
-          msg: 'Wait for Like Data to load first',
-          alertType: 'error',
-        })
-      );
+      const notificationObj: AltertObject = {
+        msg: 'Wait for Like Data to load first',
+        alertType: 'error',
+      };
+      setNotification(notificationObj);
+
       return;
     }
     try {
@@ -101,12 +104,12 @@ export const LikeAndDislike = ({ name, identifier }: LikeAndDislikeProps) => {
       if (!identifier) throw new Error('Could not retrieve id of video post');
 
       if (username === name) {
-        dispatch(
-          setNotification({
-            msg: 'You cannot send yourself a like',
-            alertType: 'error',
-          })
-        );
+        const notificationObj: AltertObject = {
+          msg: 'You cannot send yourself a like',
+          alertType: 'error',
+        };
+        setNotification(notificationObj);
+
         return;
       }
       qortalRequest({
@@ -130,16 +133,16 @@ export const LikeAndDislike = ({ name, identifier }: LikeAndDislikeProps) => {
 
       updateLikeDataState(chosenLikeType);
     } catch (error: any) {
-      dispatch(
-        setNotification({
-          msg:
-            error ||
-            error?.error ||
-            error?.message ||
-            'Failed to publish Like or Dislike',
-          alertType: 'error',
-        })
-      );
+      const isError = error instanceof Error;
+      const message = isError
+        ? error?.message
+        : 'Failed to publish Like or Dislike';
+      const notificationObj: AltertObject = {
+        msg: message,
+        alertType: 'error',
+      };
+      setNotification(notificationObj);
+
       throw new Error('Failed to publish Super Like');
     }
   };

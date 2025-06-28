@@ -1,24 +1,22 @@
-import { Box, Tooltip, Typography, useMediaQuery } from "@mui/material";
-import React, { useRef } from "react";
-import { fontSizeSmall } from "../../../constants/Misc.ts";
-import { CrowdfundActionButton } from "../../Publish/PublishVideo/PublishVideo-styles.tsx";
-import { PopMenu, PopMenuRefType } from "../PopMenu.tsx";
-import ListSuperLikes from "./ListSuperLikes";
-import { useSelector } from "react-redux";
-import { RootState } from "../../../state/store";
-import ThumbUpIcon from "@mui/icons-material/ThumbUp";
+import { Box, Tooltip, Typography, useMediaQuery } from '@mui/material';
+import { useRef } from 'react';
+import { fontSizeSmall } from '../../../constants/Misc.ts';
+import { CrowdfundActionButton } from '../../Publish/PublishVideo/PublishVideo-styles.tsx';
+import { PopMenu, PopMenuRefType } from '../PopMenu.tsx';
+import ListSuperLikes from './ListSuperLikes';
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+import { useAtom } from 'jotai';
+import { superlikesAtom } from '../../../state/global/superlikes.ts';
 export const ListSuperLikeContainer = () => {
-  const superlikelist = useSelector(
-    (state: RootState) => state.global.superlikelistAll
-  );
+  const [superlikelist] = useAtom(superlikesAtom);
 
-  const isScreenLarge = useMediaQuery("(min-width:1200px)");
+  const isScreenLarge = useMediaQuery('(min-width:1200px)');
 
-  const headerSX = { fontSize: fontSizeSmall, color: "gold" };
+  const headerSX = { fontSize: fontSizeSmall, color: 'gold' };
 
   const popoverRef = useRef<PopMenuRefType>(null);
   return (
-    <Box sx={{ paddingLeft: "5px" }}>
+    <Box sx={{ paddingLeft: '5px' }}>
       {isScreenLarge ? (
         <>
           <Typography sx={headerSX}>Recent Super likes</Typography>
@@ -30,32 +28,32 @@ export const ListSuperLikeContainer = () => {
           popoverProps={{
             open: undefined,
             sx: {
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              marginTop: "40px",
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              marginTop: '40px',
             },
-            anchorReference: "none",
+            anchorReference: 'none',
           }}
           ref={popoverRef}
           MenuHeader={
-            <Tooltip title={"Show recent Superlikes"} placement={"left"} arrow>
+            <Tooltip title={'Show recent Superlikes'} placement={'left'} arrow>
               <Box
                 sx={{
-                  padding: "5px",
-                  borderRadius: "7px",
-                  outline: "1px gold solid",
-                  height: "53px",
-                  position: "absolute",
-                  top: "60px",
-                  right: "2%",
-                  display: "flex",
-                  alignItems: "center",
+                  padding: '5px',
+                  borderRadius: '7px',
+                  outline: '1px gold solid',
+                  height: '53px',
+                  position: 'absolute',
+                  top: '60px',
+                  right: '2%',
+                  display: 'flex',
+                  alignItems: 'center',
                 }}
               >
                 <ThumbUpIcon
                   style={{
-                    color: "gold",
+                    color: 'gold',
                   }}
                 />
               </Box>
@@ -64,10 +62,10 @@ export const ListSuperLikeContainer = () => {
         >
           <Box
             sx={{
-              display: "flex",
-              backgroundColor: "#1A1C1E",
-              justifyContent: "space-between",
-              alignItems: "center",
+              display: 'flex',
+              backgroundColor: '#1A1C1E',
+              justifyContent: 'space-between',
+              alignItems: 'center',
             }}
           >
             <Typography sx={headerSX}>Recent Superlikes</Typography>
@@ -75,9 +73,9 @@ export const ListSuperLikeContainer = () => {
               variant="contained"
               color="error"
               sx={{
-                height: "25px",
-                width: "75px",
-                marginRight: "5px",
+                height: '25px',
+                width: '75px',
+                marginRight: '5px',
               }}
               onClick={() => {
                 if (popoverRef?.current) popoverRef.current.closePopover();

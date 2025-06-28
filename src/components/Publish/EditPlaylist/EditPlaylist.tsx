@@ -26,7 +26,6 @@ import {
 import ShortUniqueId from 'short-unique-id';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { setNotification } from '../../../state/features/notificationsSlice.ts';
 import { objectToBase64 } from '../../../utils/PublishFormatter.ts';
 import { RootState } from '../../../state/store.ts';
 import {
@@ -45,6 +44,11 @@ import {
   QTUBE_VIDEO_BASE,
 } from '../../../constants/Identifiers.ts';
 import { useAuth } from 'qapp-core';
+import {
+  AltertObject,
+  setNotificationAtom,
+} from '../../../state/global/notifications.ts';
+import { useSetAtom } from 'jotai';
 
 const uid = new ShortUniqueId();
 const shortuid = new ShortUniqueId({ length: 5 });
@@ -53,6 +57,7 @@ export const EditPlaylist = () => {
   const theme = useTheme();
   const dispatch = useDispatch();
   const { name: username, address: userAddress } = useAuth();
+  const setNotification = useSetAtom(setNotificationAtom);
 
   const editVideoProperties = useSelector(
     (state: RootState) => state.video.editPlaylistProperties
@@ -225,12 +230,11 @@ export const EditPlaylist = () => {
       }
 
       if (errorMsg) {
-        dispatch(
-          setNotification({
-            msg: errorMsg,
-            alertType: 'error',
-          })
-        );
+        const notificationObj: AltertObject = {
+          msg: errorMsg,
+          alertType: 'error',
+        };
+        setNotification(notificationObj);
         return;
       }
       const category = selectedCategoryVideos.id;
@@ -343,35 +347,21 @@ export const EditPlaylist = () => {
           })
         );
       }
-
-      dispatch(
-        setNotification({
-          msg: 'Playlist published',
-          alertType: 'success',
-        })
-      );
+      const notificationObj: AltertObject = {
+        msg: 'Playlist published',
+        alertType: 'success',
+      };
+      setNotification(notificationObj);
 
       onClose();
     } catch (error: any) {
-      let notificationObj: any = null;
-      if (typeof error === 'string') {
-        notificationObj = {
-          msg: error || 'Failed to publish update',
-          alertType: 'error',
-        };
-      } else if (typeof error?.error === 'string') {
-        notificationObj = {
-          msg: error?.error || 'Failed to publish update',
-          alertType: 'error',
-        };
-      } else {
-        notificationObj = {
-          msg: error?.message || 'Failed to publish update',
-          alertType: 'error',
-        };
-      }
-      if (!notificationObj) return;
-      dispatch(setNotification(notificationObj));
+      const isError = error instanceof Error;
+      const message = isError ? error?.message : 'Failed to publish update';
+      const notificationObj: AltertObject = {
+        msg: message,
+        alertType: 'error',
+      };
+      setNotification(notificationObj);
 
       throw new Error('Failed to publish update');
     }

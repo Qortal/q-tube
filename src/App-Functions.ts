@@ -1,5 +1,4 @@
 import { SubscriptionData } from './components/common/ContentButtons/SubscribeButton.tsx';
-import { store } from './state/store.ts';
 
 export const getUserName = async () => {
   const account = await qortalRequest({
@@ -21,22 +20,4 @@ export const filterVideosByName = (
   return subscriptionList.filter((item) => {
     return item.userName === userName;
   });
-};
-export const subscriptionListFilter = async (reset = true) => {
-  const filteredSubscriptionList =
-    store.getState().video.filteredSubscriptionList;
-  const isFilteredSubscriptionListEmpty = filteredSubscriptionList.length === 0;
-
-  if (!reset && !isFilteredSubscriptionListEmpty) {
-    return filteredSubscriptionList;
-  }
-
-  const subscriptionList = store.getState().persist.subscriptionList;
-  const filterByUserName =
-    store.getState().persist.subscriptionListFilter === 'currentNameOnly';
-  const userName = await getUserName();
-
-  if (filterByUserName && userName) {
-    return filterVideosByName(subscriptionList, userName);
-  } else return subscriptionList;
 };

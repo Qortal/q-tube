@@ -52,7 +52,7 @@ export const SearchSidebar = () => {
       }}
     >
       <FiltersContainer>
-        <StatsData />
+        {/* <StatsData /> */}
         <Input
           id="standard-adornment-name"
           onChange={(e) => {

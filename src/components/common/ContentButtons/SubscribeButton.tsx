@@ -1,13 +1,6 @@
 import { Button, ButtonProps } from '@mui/material';
-import { MouseEvent, useEffect, useMemo, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { subscriptionListFilter } from '../../../App-Functions.ts';
-import { RootState } from '../../../state/store.ts';
-import {
-  subscribe,
-  unSubscribe,
-} from '../../../state/features/persistSlice.ts';
-import { setFilteredSubscriptions } from '../../../state/features/videoSlice.ts';
+import { MouseEvent, useMemo } from 'react';
+
 import { CustomTooltip, TooltipLine } from './CustomTooltip.tsx';
 import { useAuth } from 'qapp-core';
 import { usePersistedState } from '../../../state/persist/persist.ts';
@@ -25,12 +18,8 @@ export const SubscribeButton = ({
   subscriberName,
   ...props
 }: SubscribeButtonProps) => {
-  const dispatch = useDispatch();
   const [subscriptions, setSubscriptions, isHydratedSubscriptions] =
     usePersistedState('subscriptions', []);
-  const filteredSubscriptionList = useSelector((state: RootState) => {
-    return state.video.filteredSubscriptionList;
-  });
 
   const { name } = useAuth();
   const userName = name;
@@ -46,10 +35,6 @@ export const SubscribeButton = ({
     subscriberName: subscriberName,
   };
   const subscribeToRedux = () => {
-    dispatch(subscribe(subscriptionData));
-    dispatch(
-      setFilteredSubscriptions([...filteredSubscriptionList, subscriptionData])
-    );
     setSubscriptions((prev) => [...prev, subscriptionData]);
   };
   const unSubscribeFromRedux = () => {

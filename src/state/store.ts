@@ -1,10 +1,8 @@
 /* eslint-disable */
-import { combineReducers, configureStore } from "@reduxjs/toolkit";
-import notificationsReducer from "./features/notificationsSlice";
-import authReducer from "./features/authSlice";
-import globalReducer from "./features/globalSlice";
-import videoReducer from "./features/videoSlice";
-import persistDataReducer from "./features/persistSlice.ts";
+import { combineReducers, configureStore } from '@reduxjs/toolkit';
+import notificationsReducer from './features/notificationsSlice';
+import globalReducer from './features/globalSlice';
+import videoReducer from './features/videoSlice';
 import {
   persistReducer,
   FLUSH,
@@ -14,26 +12,24 @@ import {
   PURGE,
   REGISTER,
   persistStore,
-} from "redux-persist";
-import storage from "redux-persist/lib/storage";
+} from 'redux-persist';
+import storage from 'redux-persist/lib/storage';
 
 const persistSettingsConfig = {
-  key: "persist",
+  key: 'persist',
   version: 1,
   storage,
 };
 
 const reducer = combineReducers({
   notifications: notificationsReducer,
-  auth: authReducer,
   global: globalReducer,
   video: videoReducer,
-  persist: persistReducer(persistSettingsConfig, persistDataReducer),
 });
 
 export const store = configureStore({
   reducer,
-  middleware: getDefaultMiddleware =>
+  middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: false,
     }),

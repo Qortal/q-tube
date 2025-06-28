@@ -17,7 +17,6 @@ import { useNavigate } from 'react-router-dom';
 import { PopMenu, PopMenuRefType } from '../../../common/PopMenu.tsx';
 import { UserDropDown } from '../../../UserDropDown.tsx';
 import { Names } from '../../../../state/global/names.ts';
-import { setName } from '../../../../state/features/authSlice.ts';
 import { useAuth } from 'qapp-core';
 export interface NavBarMenuProps {
   isShowMenu: boolean;

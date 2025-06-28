@@ -19,7 +19,7 @@ interface HomeProps {
 }
 export const Home = ({ mode }: HomeProps) => {
   const { isLoadingUser } = useAuth();
-  const { tabValue, changeTab, filteredSubscriptionList } = useHomeState(mode);
+  const { tabValue, changeTab } = useHomeState(mode);
   const [filterName, setFilterName, isHydratedFilterName] = usePersistedState(
     'filterName',
     ''

@@ -26,8 +26,6 @@ import { useHandleNameData } from './../hooks/useHandleNameData.tsx';
 import { namesAtom } from './../state/global/names';
 import { useAtom, useSetAtom } from 'jotai';
 import { useAuth } from 'qapp-core';
-import { setFilteredSubscriptions } from '../state/features/videoSlice.ts';
-import { subscriptionListFilter } from '../App-Functions.ts';
 
 interface Props {
   children: React.ReactNode;
@@ -43,11 +41,6 @@ const GlobalWrapper: React.FC<Props> = ({ children }) => {
   useHandleNameData();
   const { isLoadingUser, address } = useAuth();
   const [names] = useAtom(namesAtom);
-  useEffect(() => {
-    subscriptionListFilter(false).then((filteredList) => {
-      dispatch(setFilteredSubscriptions(filteredList));
-    });
-  }, []);
 
   const getSuperlikes = useCallback(async () => {
     try {

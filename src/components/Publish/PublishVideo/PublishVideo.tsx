@@ -185,7 +185,7 @@ export const PublishVideo = ({
           if (error.code === 'file-too-large') {
             errorString = `File must be under ${videoMaxSize}MB`;
           }
-          console.log(`Error with file ${file.name}: ${error.message}`);
+          console.error(`Error with file ${file.name}: ${error.message}`);
         });
       });
       if (errorString) {
@@ -482,7 +482,6 @@ export const PublishVideo = ({
           throw new Error('cannot get playlist data');
         }
       }
-      console.log('listOfPublishes', listOfPublishes);
       const multiplePublish = {
         action: 'PUBLISH_MULTIPLE_QDN_RESOURCES',
         resources: [...listOfPublishes],
@@ -610,7 +609,7 @@ export const PublishVideo = ({
                 resolve();
               },
               error(error) {
-                console.log(error);
+                console.error(error);
               },
             });
           });
@@ -629,7 +628,7 @@ export const PublishVideo = ({
         };
       });
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 

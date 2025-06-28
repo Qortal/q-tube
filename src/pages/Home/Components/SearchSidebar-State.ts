@@ -1,18 +1,34 @@
 import { SelectChangeEvent } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { categories } from '../../../constants/Categories.ts';
-import { changeFilterType } from '../../../state/features/persistSlice.ts';
-import {
-  changefilterName,
-  changefilterSearch,
-  changeSelectedCategoryVideos,
-  changeSelectedSubCategoryVideos,
-  resetVideoState,
-} from '../../../state/features/videoSlice.ts';
-import { RootState } from '../../../state/store.ts';
+import { usePersistedState } from '../../../state/persist/persist.ts';
+import { useAuth } from 'qapp-core';
 
 export const useSidebarState = () => {
+  const { isLoadingUser } = useAuth();
+  const [filterType, setFilterType, isHydratedFilterState] = usePersistedState(
+    'filterType',
+    'videos'
+  );
+  const [filterSearch, setFilterSearch, isHydratedFilterSearch] =
+    usePersistedState('filterSearch', '');
+
+  const [filterName, setFilterName, isHydratedFilterName] = usePersistedState(
+    'filterName',
+    ''
+  );
+  const [filterCategory, setFilterCategory, isHydratedFilterCategory] =
+    usePersistedState('filterCategory', '');
+  const [filterSubCategory, setFilterSubCategory, isHydratedFilterSubCategory] =
+    usePersistedState('filterSubCategory', '');
+  const isHydrated =
+    isHydratedFilterState &&
+    isHydratedFilterSearch &&
+    isHydratedFilterName &&
+    isHydratedFilterCategory &&
+    isHydratedFilterSubCategory &&
+    !isLoadingUser;
+
   const [filterStateSearch, setFilterStateSearch] = useState('');
   const [filterStateType, setFilterStateType] = useState('videos');
   const [filterStateName, setFilterStateName] = useState('');
@@ -21,42 +37,35 @@ export const useSidebarState = () => {
   const [selectedSubCategoryVideosState, setSelectedSubCategoryVideosState] =
     useState(null);
 
-  const dispatch = useDispatch();
-
   const onSearch = () => {
-    dispatch(changeFilterType(filterStateType));
-    dispatch(changefilterSearch(filterStateSearch));
-    dispatch(changefilterName(filterStateName));
-    dispatch(changeSelectedCategoryVideos(selectedCategoryVideosState));
-    dispatch(changeSelectedSubCategoryVideos(selectedSubCategoryVideosState));
+    setFilterType(filterStateType);
+    setFilterSearch(filterStateSearch);
+    setFilterName(filterStateName);
+    setFilterCategory(selectedCategoryVideosState);
+    setFilterSubCategory(selectedSubCategoryVideosState);
   };
 
-  const {
-    selectedCategoryVideos,
-    selectedSubCategoryVideos,
-    filterName,
-    filterSearch,
-  } = useSelector((state: RootState) => state.video);
-  const filterType = useSelector(
-    (state: RootState) => state.persist.filterType
-  );
-
   useEffect(() => {
+    if (!isHydrated) return;
     setFilterStateSearch(filterSearch);
     setFilterStateName(filterName);
     setFilterStateType(filterType);
-    setSelectedCategoryVideosState(selectedCategoryVideos);
-    setSelectedSubCategoryVideosState(selectedSubCategoryVideos);
+    setSelectedCategoryVideosState(filterCategory);
+    setSelectedSubCategoryVideosState(filterSubCategory);
   }, [
     filterName,
     filterSearch,
     filterType,
-    selectedCategoryVideos,
-    selectedSubCategoryVideos,
+    filterCategory,
+    filterSubCategory,
+    isHydrated,
   ]);
 
   const onReset = () => {
-    dispatch(resetVideoState());
+    setFilterSearch('');
+    setFilterName('');
+    setFilterCategory('');
+    setFilterSubCategory('');
   };
 
   const handleInputKeyDown = (event: any) => {

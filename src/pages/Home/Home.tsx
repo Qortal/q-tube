@@ -11,23 +11,39 @@ import {
   QTUBE_PLAYLIST_BASE,
   QTUBE_VIDEO_BASE,
 } from '../../constants/Identifiers.ts';
-import { QortalSearchParams } from 'qapp-core';
+import { QortalSearchParams, useAuth } from 'qapp-core';
+import { usePersistedState } from '../../state/persist/persist.ts';
 
 interface HomeProps {
   mode?: string;
 }
 export const Home = ({ mode }: HomeProps) => {
-  const {
-    tabValue,
-    changeTab,
-    filteredSubscriptionList,
-    selectedCategoryVideos,
-    selectedSubCategoryVideos,
-    filterType,
-    filterName,
-    filterSearch,
-    resetState,
-  } = useHomeState(mode);
+  const { isLoadingUser } = useAuth();
+  const { tabValue, changeTab, filteredSubscriptionList } = useHomeState(mode);
+  const [filterName, setFilterName, isHydratedFilterName] = usePersistedState(
+    'filterName',
+    ''
+  );
+  const [subscriptions, setSubscriptions, isHydratedSubscriptions] =
+    usePersistedState('subscriptions', []);
+  const [filterType, setFilterType, isHydratedFilterState] = usePersistedState(
+    'filterType',
+    'videos'
+  );
+  const [filterSearch, setFilterSearch, isHydratedFilterSearch] =
+    usePersistedState('filterSearch', '');
+
+  const [filterCategory, setFilterCategory, isHydratedFilterCategory] =
+    usePersistedState<any>('filterCategory', '');
+  const [filterSubCategory, setFilterSubCategory, isHydratedFilterSubCategory] =
+    usePersistedState<any>('filterSubCategory', '');
+  const isHydrated =
+    isHydratedFilterState &&
+    isHydratedFilterSearch &&
+    isHydratedFilterName &&
+    isHydratedFilterSubCategory &&
+    isHydratedFilterCategory &&
+    !isLoadingUser;
 
   const tabPaneSX = {
     width: '100%',
@@ -53,27 +69,30 @@ export const Home = ({ mode }: HomeProps) => {
   else if (!isScreenSmall) homeColumns = mediumGridSX;
   else homeColumns = smallGridSX;
 
-  let description: string = undefined;
-  if (selectedCategoryVideos) {
-    description = `category:${selectedCategoryVideos}`;
-
-    if (selectedSubCategoryVideos)
-      description += `;subcategory:${selectedSubCategoryVideos}`;
-  }
-
-  const searchParameters: QortalSearchParams = useMemo(() => {
+  const searchParameters: QortalSearchParams | null = useMemo(() => {
+    if (!isHydrated) return null;
+    const isSubscriptionTab = tabValue === 'subscriptions';
     const searchOptions: {
       description?: string;
       query?: string;
+      names?: string[];
+      name?: string;
     } = {};
-    if (selectedCategoryVideos) {
-      searchOptions.description = `category:${selectedCategoryVideos.id};`;
+    if (isSubscriptionTab) {
+      searchOptions.names = subscriptions?.map((n) => n.subscriberName);
+    }
+    if (filterCategory) {
+      searchOptions.description = `category:${filterCategory.id};`;
 
-      if (selectedSubCategoryVideos)
-        searchOptions.description += `subcategory:${selectedSubCategoryVideos.id}`;
+      if (filterSubCategory)
+        searchOptions.description += `subcategory:${filterSubCategory.id}`;
     }
     if (filterSearch) {
       searchOptions.query = filterSearch;
+    }
+    if (filterName) {
+      searchOptions.name = filterName;
+      delete searchOptions.names;
     }
     return {
       identifier:
@@ -83,22 +102,24 @@ export const Home = ({ mode }: HomeProps) => {
       reverse: true,
       limit: 20,
       excludeBlocked: true,
-      name: filterName || '',
       ...searchOptions,
       mode: 'ALL',
     };
   }, [
     filterType,
     filterName,
-    selectedSubCategoryVideos,
-    selectedCategoryVideos,
+    filterCategory,
+    filterSubCategory,
     filterSearch,
+    isHydrated,
+    tabValue,
+    subscriptions,
   ]);
 
   return (
     <>
       <Box sx={{ ...homeBaseSX, ...homeColumns }}>
-        <SearchSidebar onReset={resetState} />
+        <SearchSidebar />
         <Box
           sx={{
             width: '100%',
@@ -107,37 +128,39 @@ export const Home = ({ mode }: HomeProps) => {
             alignItems: 'center',
           }}
         >
-          <TabContext value={tabValue}>
-            <TabList
-              onChange={changeTab}
-              textColor={'secondary'}
-              indicatorColor={'secondary'}
-              centered={false}
-            >
-              <Tab label="All" value={'all'} sx={tabSX} />
-              <Tab label="Subscriptions" value={'subscriptions'} sx={tabSX} />
-            </TabList>
-            <TabPanel value={'all'} sx={tabPaneSX}>
-              <VideoList
-                listName="AllVideos"
-                searchParameters={searchParameters}
-              />
-            </TabPanel>
-            <TabPanel value={'subscriptions'} sx={tabPaneSX}>
-              {filteredSubscriptionList.length > 0 ? (
-                <>
-                  <VideoList
-                    listName="SubscribedVideos"
-                    searchParameters={searchParameters}
-                  />
-                </>
-              ) : (
-                <div style={{ textAlign: 'center' }}>
-                  You have no subscriptions
-                </div>
-              )}
-            </TabPanel>
-          </TabContext>
+          {searchParameters && (
+            <TabContext value={tabValue}>
+              <TabList
+                onChange={changeTab}
+                textColor={'secondary'}
+                indicatorColor={'secondary'}
+                centered={false}
+              >
+                <Tab label="All" value={'all'} sx={tabSX} />
+                <Tab label="Subscriptions" value={'subscriptions'} sx={tabSX} />
+              </TabList>
+              <TabPanel value={'all'} sx={tabPaneSX}>
+                <VideoList
+                  listName="AllVideos"
+                  searchParameters={searchParameters}
+                />
+              </TabPanel>
+              <TabPanel value={'subscriptions'} sx={tabPaneSX}>
+                {subscriptions.length > 0 ? (
+                  <>
+                    <VideoList
+                      listName="SubscribedVideos"
+                      searchParameters={searchParameters}
+                    />
+                  </>
+                ) : (
+                  <div style={{ textAlign: 'center' }}>
+                    You have no subscriptions
+                  </div>
+                )}
+              </TabPanel>
+            </TabContext>
+          )}
         </Box>
         <ListSuperLikeContainer />
       </Box>

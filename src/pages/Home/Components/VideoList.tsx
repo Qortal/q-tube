@@ -31,7 +31,7 @@ export const VideoList = ({ searchParameters, listName }: VideoListProps) => {
         dispatch(blockUser(user));
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 

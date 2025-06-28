@@ -1,5 +1,5 @@
 import { Button, ButtonProps } from '@mui/material';
-import { MouseEvent, useEffect, useState } from 'react';
+import { MouseEvent, useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { subscriptionListFilter } from '../../../App-Functions.ts';
 import { RootState } from '../../../state/store.ts';
@@ -10,6 +10,7 @@ import {
 import { setFilteredSubscriptions } from '../../../state/features/videoSlice.ts';
 import { CustomTooltip, TooltipLine } from './CustomTooltip.tsx';
 import { useAuth } from 'qapp-core';
+import { usePersistedState } from '../../../state/persist/persist.ts';
 
 interface SubscribeButtonProps extends ButtonProps {
   subscriberName: string;
@@ -25,34 +26,21 @@ export const SubscribeButton = ({
   ...props
 }: SubscribeButtonProps) => {
   const dispatch = useDispatch();
-
+  const [subscriptions, setSubscriptions, isHydratedSubscriptions] =
+    usePersistedState('subscriptions', []);
   const filteredSubscriptionList = useSelector((state: RootState) => {
     return state.video.filteredSubscriptionList;
   });
 
   const { name } = useAuth();
   const userName = name;
-  const [isSubscribed, setIsSubscribed] = useState<boolean>(false);
-
-  const isSubscribedToName = (subscriptionList: SubscriptionData[]) => {
+  const isSubscribed = useMemo(() => {
     return (
-      subscriptionList.find((item) => {
+      subscriptions.find((item) => {
         return item.subscriberName === subscriberName;
       }) !== undefined
     );
-  };
-
-  useEffect(() => {
-    if (!filteredSubscriptionList || filteredSubscriptionList.length === 0) {
-      subscriptionListFilter().then((filteredList) => {
-        dispatch(setFilteredSubscriptions(filteredList));
-        setIsSubscribed(isSubscribedToName(filteredList));
-      });
-    } else {
-      setIsSubscribed(isSubscribedToName(filteredSubscriptionList));
-    }
-  }, []);
-
+  }, [subscriptions]);
   const subscriptionData: SubscriptionData = {
     userName: userName,
     subscriberName: subscriberName,
@@ -62,18 +50,14 @@ export const SubscribeButton = ({
     dispatch(
       setFilteredSubscriptions([...filteredSubscriptionList, subscriptionData])
     );
-    setIsSubscribed(true);
+    setSubscriptions((prev) => [...prev, subscriptionData]);
   };
   const unSubscribeFromRedux = () => {
-    dispatch(unSubscribe(subscriptionData));
-    dispatch(
-      setFilteredSubscriptions(
-        filteredSubscriptionList.filter(
-          (item) => item.subscriberName !== subscriptionData.subscriberName
-        )
+    setSubscriptions((prev) =>
+      prev.filter(
+        (item) => item.subscriberName !== subscriptionData.subscriberName
       )
     );
-    setIsSubscribed(false);
   };
 
   const manageSubscription = (e: MouseEvent<HTMLButtonElement>) => {
@@ -110,6 +94,7 @@ export const SubscribeButton = ({
       <Button
         {...props}
         variant={'contained'}
+        disabled={!isHydratedSubscriptions}
         color="error"
         sx={buttonStyle}
         onClick={(e) => manageSubscription(e)}

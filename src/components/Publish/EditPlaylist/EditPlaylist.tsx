@@ -149,7 +149,7 @@ export const EditPlaylist = () => {
       combinedData.videos = videos;
       setPlaylistData(combinedData);
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   }, []);
 

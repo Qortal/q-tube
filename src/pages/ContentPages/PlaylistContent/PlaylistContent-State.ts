@@ -125,7 +125,7 @@ export const usePlaylistContentState = () => {
           }
         }
       } catch (error) {
-        console.log(error);
+        console.error(error);
       } finally {
         dispatch(setIsLoadingGlobal(false));
       }

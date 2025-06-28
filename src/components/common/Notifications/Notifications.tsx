@@ -157,7 +157,7 @@ export const Notifications = () => {
                   urlReference = responseSearch[0];
                 }
               } catch (error) {
-                console.log(error);
+                console.error(error);
               }
               //   const url = `/arbitrary/BLOG_COMMENT/${comment.name}/${comment.identifier}`;
               //   const response = await fetch(url, {
@@ -179,7 +179,7 @@ export const Notifications = () => {
               ];
             }
           } catch (error) {
-            console.log(error);
+            console.error(error);
           }
         }
       }
@@ -193,7 +193,7 @@ export const Notifications = () => {
         return uniqueNotifications.slice(0, 20);
       });
     } catch (error) {
-      console.log({ error });
+      console.error(error);
     }
   }, []);
 

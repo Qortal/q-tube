@@ -56,7 +56,6 @@ export const CommentSection = ({ postId, postName }: CommentSectionProps) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [newMessages, setNewMessages] = useState(0);
   const [loadingComments, setLoadingComments] = useState<boolean>(false);
-  // console.log("postId is: ", postId, " postName is: ", postName);
   const onSubmit = (obj?: any, isEdit?: boolean) => {
     if (isEdit) {
       setListComments((prev: any[]) => {
@@ -161,8 +160,6 @@ export const CommentSection = ({ postId, postName }: CommentSectionProps) => {
           },
         });
         const responseData = await response.json();
-        // console.log("url is: ", url);
-        // console.log("response is: ", responseData);
 
         let comments: any[] = [];
         for (const comment of responseData) {

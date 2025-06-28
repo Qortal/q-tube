@@ -20,6 +20,7 @@
     "compressorjs": "^1.2.1",
     "dompurify": "^3.2.3",
     "i18n": "^0.15.1",
+    "idb-keyval": "^6.2.2",
     "jotai": "^2.12.4",
     "localforage": "^1.10.0",
     "mediainfo.js": "^0.3.5",

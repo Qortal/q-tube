@@ -27,7 +27,7 @@ export const useFetchVideos = () => {
       videosPerNamePublished.value =
         totalVideosPublished.value / totalNamesPublished.value;
     } catch (error) {
-      console.log({ error });
+      console.error(error);
     }
   }, []);
 

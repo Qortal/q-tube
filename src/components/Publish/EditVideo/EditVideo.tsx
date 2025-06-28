@@ -105,7 +105,7 @@ export const EditVideo = () => {
           if (error.code === 'file-too-large') {
             errorString = `File must be under ${videoMaxSize}MB`;
           }
-          console.log(`Error with file ${file.name}: ${error.message}`);
+          console.error(`Error with file ${file.name}: ${error.message}`);
         });
       });
       if (errorString) {
@@ -231,7 +231,6 @@ export const EditVideo = () => {
         fileSize: file?.size || 0,
         duration: videoDuration.value[0] || editVideoProperties?.duration || 0,
       };
-      console.log('edit publish duration: ', videoObject?.duration);
       const metadescription =
         `**category:${category};subcategory:${subcategory};code:${editVideoProperties.code}**` +
         description.slice(0, 150);
@@ -277,7 +276,6 @@ export const EditVideo = () => {
       });
       const success =
         await publishFromLibrary.publishMultipleResources(listOfPublishes);
-      console.log('success', success);
       setIsOpenMultiplePublish(false);
       const clonedCopy = structuredClone({
         ...editVideoProperties,
@@ -344,7 +342,7 @@ export const EditVideo = () => {
                 resolve();
               },
               error(error) {
-                console.log(error);
+                console.error(error);
               },
             });
           });
@@ -358,7 +356,7 @@ export const EditVideo = () => {
 
       setImageExtracts(imagesExtracts);
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 

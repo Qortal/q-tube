@@ -31,7 +31,6 @@ export interface VideoPlayerProps {
 export const VideoPlayer = ({ ...props }: VideoPlayerProps) => {
   const videoRef = useRef(null);
   const location = useLocation();
-  console.log('autoPlay', props?.autoPlay);
   return (
     <Box
       sx={{

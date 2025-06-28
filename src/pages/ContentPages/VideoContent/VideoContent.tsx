@@ -63,8 +63,6 @@ export const VideoContent = () => {
     });
   }, []);
 
-  console.log('videoData', videoData);
-
   return (
     <>
       <Box

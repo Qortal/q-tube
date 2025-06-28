@@ -24,7 +24,7 @@ import { SUPER_LIKE_BASE } from '../constants/Identifiers.ts';
 import { minPriceSuperLike } from '../constants/Misc.ts';
 import { useHandleNameData } from './../hooks/useHandleNameData.tsx';
 import { namesAtom } from './../state/global/names';
-import { useAtom } from 'jotai';
+import { useAtom, useSetAtom } from 'jotai';
 import { useAuth } from 'qapp-core';
 import { setFilteredSubscriptions } from '../state/features/videoSlice.ts';
 import { subscriptionListFilter } from '../App-Functions.ts';
@@ -41,9 +41,8 @@ const GlobalWrapper: React.FC<Props> = ({ children }) => {
   const { addSuperlikeRawDataGetToList } = useFetchSuperLikes();
   const interval = useRef<any>(null);
   useHandleNameData();
-  const { isLoadingUser } = useAuth();
+  const { isLoadingUser, address } = useAuth();
   const [names] = useAtom(namesAtom);
-
   useEffect(() => {
     subscriptionListFilter(false).then((filteredList) => {
       dispatch(setFilteredSubscriptions(filteredList));
@@ -95,7 +94,7 @@ const GlobalWrapper: React.FC<Props> = ({ children }) => {
                   validCount++;
                 }
               } catch (error) {
-                console.log(error);
+                console.error(error);
               }
             }
           }

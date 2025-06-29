@@ -101,7 +101,6 @@ export const Home = ({ mode }: HomeProps) => {
       offset: 0,
       reverse: true,
       limit: 20,
-      excludeBlocked: true,
       ...searchOptions,
       mode: 'ALL',
     };

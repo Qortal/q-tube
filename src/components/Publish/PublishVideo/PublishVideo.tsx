@@ -64,7 +64,7 @@ import {
   TimesIcon,
 } from './PublishVideo-styles.tsx';
 import VideoLibraryIcon from '@mui/icons-material/VideoLibrary';
-import { objectToBase64, useAuth, usePublish } from 'qapp-core';
+import { objectToBase64, useAuth, useGlobal, usePublish } from 'qapp-core';
 import { useSetAtom } from 'jotai';
 import {
   AltertObject,
@@ -108,7 +108,7 @@ export const PublishVideo = ({
   const theme = useTheme();
   const [isOpenMultiplePublish, setIsOpenMultiplePublish] = useState(false);
   const setNotification = useSetAtom(setNotificationAtom);
-
+  const { lists } = useGlobal();
   const { name: username, address: userAddress } = useAuth();
 
   const [files, setFiles] = useState<VideoFile[]>([]);
@@ -251,6 +251,8 @@ export const PublishVideo = ({
 
       const listOfPublishes: any[] = [];
 
+      const tempResourcesForList: any[] = [];
+
       for (let i = 0; i < files.length; i++) {
         const publish = files[i];
         const title = publish.title;
@@ -348,6 +350,16 @@ export const PublishVideo = ({
         };
         listOfPublishes.push(requestBodyJson);
         listOfPublishes.push(requestBodyVideo);
+        tempResourcesForList.push({
+          qortalMetadata: {
+            identifier,
+            name: name,
+            service: 'DOCUMENT',
+            size: 1000,
+            created: Date.now(),
+          },
+          data: videoObject,
+        });
       }
 
       const isNewPlaylist = playlistSetting === 'new';
@@ -478,12 +490,9 @@ export const PublishVideo = ({
           throw new Error('cannot get playlist data');
         }
       }
-      const multiplePublish = {
-        action: 'PUBLISH_MULTIPLE_QDN_RESOURCES',
-        resources: [...listOfPublishes],
-      };
-      await publishFromLibrary.publishMultipleResources(listOfPublishes);
 
+      await publishFromLibrary.publishMultipleResources(listOfPublishes);
+      lists.addNewResources('AllVideos', tempResourcesForList);
       const notificationObj: AltertObject = {
         msg: 'Video published',
         alertType: 'success',

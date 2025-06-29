@@ -28,7 +28,6 @@ import { FrameExtractor } from '../../common/FrameExtractor/FrameExtractor.tsx';
 import ImageUploader from '../../common/ImageUploader.tsx';
 import { TextEditor } from '../../common/TextEditor/TextEditor.tsx';
 import { extractTextFromHTML } from '../../common/TextEditor/utils.ts';
-import { MultiplePublish } from '../MultiplePublish/MultiplePublishAll.tsx';
 import { toBase64 } from '../PublishVideo/PublishVideo.tsx';
 
 import {
@@ -56,9 +55,8 @@ export const EditVideo = () => {
   const setNotification = useSetAtom(setNotificationAtom);
   const setEditVideo = useSetAtom(editVideoAtom);
   const { name: username, address: userAddress } = useAuth();
-  const { lists, auth } = useGlobal();
+  const { lists } = useGlobal();
   const [editVideoProperties] = useAtom(editVideoAtom);
-  const [publishes, setPublishes] = useState<any>(null);
 
   const publishFromLibrary = usePublish();
 

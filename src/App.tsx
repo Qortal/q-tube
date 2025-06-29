@@ -1,18 +1,14 @@
-import { CssBaseline } from '@mui/material';
-import { ThemeProvider } from '@mui/material/styles';
 import Notification from './components/common/Notification/Notification';
 
-import { darkTheme } from './styles/theme';
-
 import { Routes } from './Routes.tsx';
+import ThemeProviderWrapper from './styles/theme-provider.tsx';
 
 function App() {
   return (
-    <ThemeProvider theme={darkTheme}>
-      <CssBaseline />
+    <ThemeProviderWrapper>
       <Notification />
       <Routes />
-    </ThemeProvider>
+    </ThemeProviderWrapper>
   );
 }
 

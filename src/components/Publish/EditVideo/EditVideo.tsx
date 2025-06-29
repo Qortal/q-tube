@@ -143,8 +143,6 @@ export const EditVideo = () => {
     }
   }, [editVideoProperties]);
 
-  console.log('editVideoProperties', editVideoProperties);
-
   const onClose = () => {
     setEditVideo(null);
     setFile(null);

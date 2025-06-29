@@ -34,10 +34,10 @@ export const SubscribeButton = ({
     userName: userName,
     subscriberName: subscriberName,
   };
-  const subscribeToRedux = () => {
+  const subscribeTo = () => {
     setSubscriptions((prev) => [...prev, subscriptionData]);
   };
-  const unSubscribeFromRedux = () => {
+  const unSubscribe = () => {
     setSubscriptions((prev) =>
       prev.filter(
         (item) => item.subscriberName !== subscriptionData.subscriberName
@@ -48,7 +48,7 @@ export const SubscribeButton = ({
   const manageSubscription = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    isSubscribed ? unSubscribeFromRedux() : subscribeToRedux();
+    isSubscribed ? unSubscribe() : subscribeTo();
   };
 
   const verticalPadding = '3px';

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   Box,
   Button,
@@ -7,13 +7,14 @@ import {
   SelectChangeEvent,
   ListItem,
   List,
-  useTheme
-} from "@mui/material";
+  useTheme,
+} from '@mui/material';
 import {
   StyledModal,
   ModalContent,
-  ModalText
-} from "./BlockedNamesModal-styles";
+  ModalText,
+} from './BlockedNamesModal-styles';
+import { useBlockedNames } from 'qapp-core';
 
 interface PostModalProps {
   open: boolean;
@@ -22,16 +23,17 @@ interface PostModalProps {
 
 export const BlockedNamesModal: React.FC<PostModalProps> = ({
   open,
-  onClose
+  onClose,
 }) => {
+  const { removeFromBlockedList } = useBlockedNames();
   const [blockedNames, setBlockedNames] = useState<string[]>([]);
   const theme = useTheme();
   const getBlockedNames = React.useCallback(async () => {
     try {
       const listName = `blockedNames`;
       const response = await qortalRequest({
-        action: "GET_LIST_ITEMS",
-        list_name: listName
+        action: 'GET_LIST_ITEMS',
+        list_name: listName,
       });
       setBlockedNames(response);
     } catch (error) {
@@ -45,11 +47,7 @@ export const BlockedNamesModal: React.FC<PostModalProps> = ({
 
   const removeFromBlockList = async (name: string) => {
     try {
-      const response = await qortalRequest({
-        action: "DELETE_LIST_ITEM",
-        list_name: "blockedNames",
-        item: name
-      });
+      const response = await removeFromBlockedList([name]);
 
       if (response === true) {
         setBlockedNames((prev) => prev.filter((n) => n !== name));
@@ -63,18 +61,18 @@ export const BlockedNamesModal: React.FC<PostModalProps> = ({
         <ModalText>Manage blocked names</ModalText>
         <List
           sx={{
-            width: "100%",
-            display: "flex",
-            flexDirection: "column",
-            flex: "1",
-            overflow: "auto"
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            flex: '1',
+            overflow: 'auto',
           }}
         >
           {blockedNames.map((name, index) => (
             <ListItem
               key={name + index}
               sx={{
-                display: "flex"
+                display: 'flex',
               }}
             >
               <Typography>{name}</Typography>
@@ -82,7 +80,7 @@ export const BlockedNamesModal: React.FC<PostModalProps> = ({
                 sx={{
                   backgroundColor: theme.palette.primary.light,
                   color: theme.palette.text.primary,
-                  fontFamily: "Raleway"
+                  fontFamily: 'Raleway',
                 }}
                 onClick={() => removeFromBlockList(name)}
               >

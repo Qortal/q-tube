@@ -2,8 +2,6 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Comment } from './Comment';
 import { CircularProgress } from '@mui/material';
 import { styled } from '@mui/system';
-import { useSelector } from 'react-redux';
-import { RootState } from '../../../state/store';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   CommentContainer,

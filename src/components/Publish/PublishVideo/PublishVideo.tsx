@@ -15,8 +15,7 @@ import {
   Typography,
   useTheme,
 } from '@mui/material';
-import { useSignal } from '@preact/signals-react';
-import { useSignals } from '@preact/signals-react/runtime';
+
 import Compressor from 'compressorjs';
 import React, { useState } from 'react';
 import { useDropzone } from 'react-dropzone';
@@ -113,7 +112,7 @@ export const PublishVideo = ({
   const { name: username, address: userAddress } = useAuth();
 
   const [files, setFiles] = useState<VideoFile[]>([]);
-  const videoDurations = useSignal<number[]>([]);
+  const [videoDurations, setVideoDurations] = useState<number[]>([]);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [coverImageForAll, setCoverImageForAll] = useState<null | string>('');
 
@@ -145,17 +144,14 @@ export const PublishVideo = ({
   const [imageExtracts, setImageExtracts] = useState<any>({});
   const publishFromLibrary = usePublish();
 
-  useSignals();
   const assembleVideoDurations = () => {
-    if (files.length === videoDurations.value.length) return;
+    if (files.length === videoDurations.length) return;
     const newArray: number[] = [];
 
     files.map((file, index) =>
-      newArray.push(
-        videoDurations.value[index] ? videoDurations.value[index] : 0
-      )
+      newArray.push(videoDurations[index] ? videoDurations[index] : 0)
     );
-    videoDurations.value = [...newArray];
+    setVideoDurations([...newArray]);
   };
 
   const { getRootProps, getInputProps } = useDropzone({
@@ -319,7 +315,7 @@ export const PublishVideo = ({
           videoType: file?.type || 'video/mp4',
           filename: `${alphanumericString.trim()}.${fileExtension}`,
           fileSize: file?.size || 0,
-          duration: videoDurations.value[i],
+          duration: videoDurations[i],
         };
 
         const metadescription =
@@ -849,6 +845,7 @@ export const PublishVideo = ({
                         onFramesExtracted(imgs, index)
                       }
                       videoDurations={videoDurations}
+                      setVideoDurations={setVideoDurations}
                       index={index}
                     />
                     <Typography>{file?.file?.name}</Typography>

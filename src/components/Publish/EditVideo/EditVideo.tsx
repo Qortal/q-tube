@@ -11,7 +11,6 @@ import {
   Typography,
   useTheme,
 } from '@mui/material';
-import { Signal, useSignal } from '@preact/signals-react';
 import Compressor from 'compressorjs';
 import React, { useEffect, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
@@ -72,14 +71,15 @@ export const EditVideo = () => {
   const [selectedSubCategoryVideos, setSelectedSubCategoryVideos] =
     useState<any>(null);
   const [imageExtracts, setImageExtracts] = useState<any>([]);
-
-  const videoDuration: Signal<number[]> = useSignal([
+  const [videoDurations, setVideoDurations] = useState<number[]>([
     editVideoProperties?.duration || 0,
   ]);
 
   useEffect(() => {
-    videoDuration.value[0] = Math.floor(editVideoProperties?.duration);
-  }, [editVideoProperties]);
+    if (editVideoProperties?.duration) {
+      setVideoDurations([Math.floor(editVideoProperties?.duration || 0)]);
+    }
+  }, [editVideoProperties?.duration]);
 
   const { getRootProps, getInputProps } = useDropzone({
     accept: {
@@ -221,7 +221,7 @@ export const EditVideo = () => {
         videoType: file?.type || 'video/mp4',
         filename: `${alphanumericString.trim()}.${fileExtension}`,
         fileSize: file?.size || 0,
-        duration: videoDuration.value[0] || editVideoProperties?.duration || 0,
+        duration: videoDurations[0] || editVideoProperties?.duration || 0,
       };
       const metadescription =
         `**category:${category};subcategory:${subcategory};code:${editVideoProperties.code}**` +
@@ -445,7 +445,8 @@ export const EditVideo = () => {
               <FrameExtractor
                 videoFile={file}
                 onFramesExtracted={(imgs) => onFramesExtracted(imgs)}
-                videoDurations={videoDuration}
+                videoDurations={videoDurations}
+                setVideoDurations={setVideoDurations}
                 index={0}
               />
             )}
@@ -479,9 +480,10 @@ export const EditVideo = () => {
                 label="Video Duration in Seconds"
                 addIconButtons={false}
                 allowDecimals={false}
-                initialValue={videoDuration.value[0].toString()}
+                initialValue={videoDurations[0].toString()}
                 afterChange={(s) => {
-                  videoDuration.value[0] = +s;
+                  const newS = +s;
+                  setVideoDurations([newS]);
                 }}
               />
               <CustomInputField

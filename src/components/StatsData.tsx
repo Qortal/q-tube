@@ -1,15 +1,21 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { styled } from '@mui/system';
 import { Grid } from '@mui/material';
 import { useFetchVideos } from '../hooks/useFetchVideos.tsx';
-import { signal } from '@preact/signals-react';
+import { useAtom } from 'jotai';
+import {
+  totalNamesPublishedAtom,
+  totalVideosPublishedAtom,
+  videosPerNamePublishedAtom,
+} from '../state/global/stats.ts';
 
 /* eslint-disable react-refresh/only-export-components */
-export const totalVideosPublished = signal(0);
-export const totalNamesPublished = signal(0);
-export const videosPerNamePublished = signal(0);
 
 export const StatsData = () => {
+  const [totalVideosPublished] = useAtom(totalVideosPublishedAtom);
+  const [totalNamesPublished] = useAtom(totalNamesPublishedAtom);
+  const [videosPerNamePublished] = useAtom(videosPerNamePublishedAtom);
+
   const StatsCol = styled(Grid)(({ theme }) => ({
     display: 'flex',
     flexDirection: 'column',
@@ -24,9 +30,9 @@ export const StatsData = () => {
     return value > 0 ? 'inline' : 'none';
   };
 
-  const showVideoCount = showValueIfExists(totalVideosPublished.value);
-  const showPublisherCount = showValueIfExists(totalNamesPublished.value);
-  const showAverage = showValueIfExists(videosPerNamePublished.value);
+  const showVideoCount = showValueIfExists(totalVideosPublished);
+  const showPublisherCount = showValueIfExists(totalNamesPublished);
+  const showAverage = showValueIfExists(videosPerNamePublished);
   useEffect(() => {
     getVideosCount();
   }, [getVideosCount]);
@@ -36,13 +42,13 @@ export const StatsData = () => {
       <div>
         Videos:{' '}
         <span style={{ fontWeight: 'bold', display: showVideoCount }}>
-          {totalVideosPublished.value}
+          {totalVideosPublished}
         </span>
       </div>
       <div>
         Publishers:{' '}
         <span style={{ fontWeight: 'bold', display: showPublisherCount }}>
-          {totalNamesPublished.value}
+          {totalNamesPublished}
         </span>
       </div>
       <div>
@@ -53,7 +59,7 @@ export const StatsData = () => {
             display: showAverage,
           }}
         >
-          {Number(videosPerNamePublished.value).toFixed(0)}
+          {Number(videosPerNamePublished).toFixed(0)}
         </span>
       </div>
     </StatsCol>

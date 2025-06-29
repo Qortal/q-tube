@@ -1,12 +1,11 @@
-import { Signal } from "@preact/signals-react";
-import { useSignals } from "@preact/signals-react/runtime";
-import React, { useEffect, useRef, useState, useMemo } from "react";
+import { useEffect, useRef, useState, useMemo } from 'react';
 
 export interface FrameExtractorProps {
   videoFile: File;
   onFramesExtracted: (imgs, index?: number) => Promise<void>;
-  videoDurations?: Signal<number[]>;
-  index?: number;
+  videoDurations: number[];
+  index: number;
+  setVideoDurations: (durations: number[]) => void;
 }
 
 export const FrameExtractor = ({
@@ -14,6 +13,7 @@ export const FrameExtractor = ({
   onFramesExtracted,
   videoDurations,
   index,
+  setVideoDurations,
 }: FrameExtractorProps) => {
   const videoRef = useRef(null);
   const [durations, setDurations] = useState([]);
@@ -21,14 +21,14 @@ export const FrameExtractor = ({
 
   useEffect(() => {
     const video = videoRef.current;
-    video.addEventListener("loadedmetadata", () => {
+    video.addEventListener('loadedmetadata', () => {
       const duration = video.duration;
       if (isFinite(duration)) {
         // Proceed with your logic
 
-        const newVideoDurations = [...videoDurations.value];
+        const newVideoDurations = [...videoDurations];
         newVideoDurations[index] = duration;
-        videoDurations.value = [...newVideoDurations];
+        setVideoDurations([...newVideoDurations]);
         const section = duration / 4;
         const timestamps = [];
 
@@ -59,22 +59,22 @@ export const FrameExtractor = ({
     const canvas = canvasRef.current;
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
-    const context = canvas.getContext("2d");
+    const context = canvas.getContext('2d');
 
     const frameData = [];
 
     for (const time of durations) {
-      await new Promise<void>(resolve => {
+      await new Promise<void>((resolve) => {
         video.currentTime = time;
         const onSeeked = () => {
           context.drawImage(video, 0, 0, canvas.width, canvas.height);
-          canvas.toBlob(blob => {
+          canvas.toBlob((blob) => {
             frameData.push(blob);
             resolve();
-          }, "image/png");
-          video.removeEventListener("seeked", onSeeked);
+          }, 'image/png');
+          video.removeEventListener('seeked', onSeeked);
         };
-        video.addEventListener("seeked", onSeeked, { once: true });
+        video.addEventListener('seeked', onSeeked, { once: true });
       });
     }
 
@@ -83,8 +83,8 @@ export const FrameExtractor = ({
 
   return (
     <div>
-      <video ref={videoRef} style={{ display: "none" }} src={fileUrl}></video>
-      <canvas ref={canvasRef} style={{ display: "none" }}></canvas>
+      <video ref={videoRef} style={{ display: 'none' }} src={fileUrl}></video>
+      <canvas ref={canvasRef} style={{ display: 'none' }}></canvas>
     </div>
   );
 };

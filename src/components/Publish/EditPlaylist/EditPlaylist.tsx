@@ -24,15 +24,8 @@ import {
   useTheme,
 } from '@mui/material';
 import ShortUniqueId from 'short-unique-id';
-import { useDispatch, useSelector } from 'react-redux';
 
 import { objectToBase64 } from '../../../utils/PublishFormatter.ts';
-import { RootState } from '../../../state/store.ts';
-import {
-  updateVideo,
-  updateInHashMap,
-  setEditPlaylist,
-} from '../../../state/features/videoSlice.ts';
 import ImageUploader from '../../common/ImageUploader.tsx';
 import { categories, subCategories } from '../../../constants/Categories.ts';
 import { Playlists } from '../../Playlists/Playlists.tsx';
@@ -43,25 +36,25 @@ import {
   QTUBE_PLAYLIST_BASE,
   QTUBE_VIDEO_BASE,
 } from '../../../constants/Identifiers.ts';
-import { useAuth } from 'qapp-core';
+import { useAuth, useGlobal } from 'qapp-core';
 import {
   AltertObject,
   setNotificationAtom,
 } from '../../../state/global/notifications.ts';
-import { useSetAtom } from 'jotai';
+import { useAtom, useSetAtom } from 'jotai';
+import { editPlaylistAtom } from '../../../state/publish/playlist.ts';
 
 const uid = new ShortUniqueId();
 const shortuid = new ShortUniqueId({ length: 5 });
 
 export const EditPlaylist = () => {
   const theme = useTheme();
-  const dispatch = useDispatch();
   const { name: username, address: userAddress } = useAuth();
   const setNotification = useSetAtom(setNotificationAtom);
+  const { lists } = useGlobal();
+  const [editVideoProperties] = useAtom(editPlaylistAtom);
+  const setEditPlaylist = useSetAtom(editPlaylistAtom);
 
-  const editVideoProperties = useSelector(
-    (state: RootState) => state.video.editPlaylistProperties
-  );
   const [playlistData, setPlaylistData] = useState<any>(null);
   const [title, setTitle] = useState<string>('');
   const [description, setDescription] = useState<string>('');
@@ -83,52 +76,6 @@ export const EditPlaylist = () => {
       });
     }
   }, [isNew]);
-
-  // useEffect(() => {
-  //   if (editVideoProperties) {
-  //     const descriptionString = editVideoProperties?.description || "";
-  //     // Splitting the string at the asterisks
-  //     const parts = descriptionString.split("**");
-
-  //     // The part within the asterisks
-  //     const extractedString = parts[1];
-
-  //     // The part after the last asterisks
-  //     const description = parts[2] || ""; // Using '|| '' to handle cases where there is no text after the last **
-  //     setTitle(editVideoProperties?.title || "");
-  //     setDescription(editVideoProperties?.fullDescription || "");
-  //     setCoverImage(editVideoProperties?.videoImage || "");
-
-  //     // Split the extracted string into key-value pairs
-  //     const keyValuePairs = extractedString.split(";");
-
-  //     // Initialize variables to hold the category and subcategory values
-  //     let category, subcategory;
-
-  //     // Loop through each key-value pair
-  //     keyValuePairs.forEach((pair) => {
-  //       const [key, value] = pair.split(":");
-
-  //       // Check the key and assign the value to the appropriate variable
-  //       if (key === "category") {
-  //         category = value;
-  //       } else if (key === "subcategory") {
-  //         subcategory = value;
-  //       }
-  //     });
-
-  //     if(category){
-  //       const selectedOption = categories.find((option) => option.id === +category);
-  //   setSelectedCategoryVideos(selectedOption || null);
-  //     }
-
-  //     if(subcategory){
-  //       const selectedOption = categories.find((option) => option.id === +subcategory);
-  //   setSelectedCategoryVideos(selectedOption || null);
-  //     }
-
-  //   }
-  // }, [editVideoProperties]);
 
   const checkforPlaylist = React.useCallback(async (videoList) => {
     try {
@@ -203,7 +150,7 @@ export const EditPlaylist = () => {
     setSelectedCategoryVideos(null);
     setSelectedSubCategoryVideos(null);
     setCoverImage('');
-    dispatch(setEditPlaylist(null));
+    setEditPlaylist(null);
   };
 
   async function publishQDNResource() {
@@ -331,21 +278,25 @@ export const EditPlaylist = () => {
           user: username,
           ...playlistObject,
         };
-        dispatch(updateVideo(objectToStore));
-        dispatch(updateInHashMap(objectToStore));
       } else {
-        dispatch(
-          updateVideo({
-            ...editVideoProperties,
-            ...playlistObject,
-          })
-        );
-        dispatch(
-          updateInHashMap({
-            ...editVideoProperties,
-            ...playlistObject,
-          })
-        );
+        lists.updateNewResources([
+          {
+            data: playlistObject,
+            qortalMetadata: {
+              identifier: identifier,
+              service: 'PLAYLIST',
+              name: username,
+              size: 100,
+              updated: Date.now(),
+              metadata: {
+                title: title.slice(0, 50),
+                description: metadescription,
+                tags: [QTUBE_VIDEO_BASE],
+              },
+              created: editVideoProperties?.created,
+            },
+          },
+        ]);
       }
       const notificationObj: AltertObject = {
         msg: 'Playlist published',

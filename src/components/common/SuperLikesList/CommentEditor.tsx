@@ -2,7 +2,6 @@ import localforage from 'localforage';
 import { useEffect, useState } from 'react';
 import ShortUniqueId from 'short-unique-id';
 import { COMMENT_BASE } from '../../../constants/Identifiers.ts';
-import { addtoHashMapSuperlikes } from '../../../state/features/videoSlice';
 import { objectToBase64 } from '../../../utils/PublishFormatter.ts';
 import {
   CommentInput,
@@ -15,6 +14,7 @@ import {
   AltertObject,
   setNotificationAtom,
 } from '../../../state/global/notifications.ts';
+import { addToHashMapSuperlikesAtom } from '../../../state/global/superlikes.ts';
 
 const uid = new ShortUniqueId({ length: 7 });
 
@@ -120,6 +120,7 @@ export const CommentEditor = ({
 }: CommentEditorProps) => {
   const [value, setValue] = useState<string>('');
   const setNotification = useSetAtom(setNotificationAtom);
+  const addSuperlike = useSetAtom(addToHashMapSuperlikesAtom);
 
   const { name, address } = useAuth();
   useEffect(() => {
@@ -197,13 +198,11 @@ export const CommentEditor = ({
       setNotification(notificationObj);
 
       if (isSuperLike) {
-        dispatch(
-          addtoHashMapSuperlikes({
-            ...superObj,
-            ...comment,
-            message: value,
-          })
-        );
+        addSuperlike({
+          ...superObj,
+          ...comment,
+          message: value,
+        });
       }
       if (idForNotification) {
         addItem({

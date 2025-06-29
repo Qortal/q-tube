@@ -5,7 +5,6 @@ import React, {
   useRef,
   useMemo,
 } from 'react';
-import { useDispatch } from 'react-redux';
 import {
   extractSigValue,
   getPaymentInfo,
@@ -35,7 +34,6 @@ export const queue = new RequestQueue();
 export const queueSuperlikes = new RequestQueue();
 
 const GlobalWrapper: React.FC<Props> = ({ children }) => {
-  const dispatch = useDispatch();
   const setSuperlikesAll = useSetAtom(superlikesAtom);
   const { addSuperlikeRawDataGetToList } = useFetchSuperLikes();
   const interval = useRef<any>(null);

@@ -3,7 +3,6 @@ import { CommentEditor } from './CommentEditor';
 import { Comment } from './Comment';
 import { Box, Button, CircularProgress, useTheme } from '@mui/material';
 import { styled } from '@mui/system';
-import { RootState } from '../../../state/store';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   CommentContainer,

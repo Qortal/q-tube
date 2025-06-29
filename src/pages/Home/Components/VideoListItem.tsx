@@ -10,7 +10,6 @@ import {
   VideoCardTitle,
   VideoUploadDate,
 } from './VideoList-styles';
-import { setEditPlaylist } from '../../../state/features/videoSlice';
 import ResponsiveImage from '../../../components/ResponsiveImage';
 import { PlaylistSVG } from '../../../assets/svgs/PlaylistSVG';
 import { formatTime } from '../../../utils/numberFunctions';
@@ -21,9 +20,10 @@ import { useNavigate } from 'react-router-dom';
 import DeleteIcon from '@mui/icons-material/Delete';
 import BlockIcon from '@mui/icons-material/Block';
 import EditIcon from '@mui/icons-material/Edit';
-import { useDispatch } from 'react-redux';
 import { useGlobal } from 'qapp-core';
 import { useState } from 'react';
+import { editPlaylistAtom } from '../../../state/publish/playlist';
+import { useSetAtom } from 'jotai';
 
 export const VideoListItem = ({
   qortalMetadata,
@@ -33,12 +33,12 @@ export const VideoListItem = ({
   setEditVideo,
 }) => {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
   const [showIcons, setShowIcons] = useState(null);
   const theme = useTheme();
   const { lists } = useGlobal();
 
   const { deleteResource } = lists;
+  const setEditPlaylist = useSetAtom(editPlaylistAtom);
 
   const isPlaylist = qortalMetadata?.service === 'PLAYLIST';
 
@@ -73,7 +73,7 @@ export const VideoListItem = ({
                       identifier: qortalMetadata.identifier,
                       service: qortalMetadata.service,
                     };
-                    dispatch(setEditPlaylist({ ...resourceData, ...video }));
+                    setEditPlaylist({ ...resourceData, ...video });
                   }}
                 />
               </BlockIconContainer>
@@ -187,7 +187,7 @@ export const VideoListItem = ({
                     id: qortalMetadata.identifier,
                   };
 
-                  dispatch(setEditVideo({ ...resourceData, ...video }));
+                  setEditVideo({ ...resourceData, ...video });
                 }}
               />
             </BlockIconContainer>

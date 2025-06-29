@@ -22,7 +22,6 @@ import {
   fontSizeMedium,
   minPriceSuperLike,
 } from '../../../constants/Misc.ts';
-import { RootState } from '../../../state/store.ts';
 import BoundedNumericTextField from '../../../utils/BoundedNumericTextField.tsx';
 import { numberToInt, truncateNumber } from '../../../utils/numberFunctions.ts';
 import { objectToBase64 } from '../../../utils/PublishFormatter.ts';

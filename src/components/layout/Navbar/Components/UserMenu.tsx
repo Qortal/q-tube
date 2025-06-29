@@ -1,6 +1,5 @@
-import { Popover, useMediaQuery, useTheme, Avatar } from '@mui/material';
-import { AccountCircleSVG } from '../../../../assets/svgs/AccountCircleSVG.tsx';
-import { headerIconSize, menuIconSize } from '../../../../constants/Misc.ts';
+import { useMediaQuery, useTheme, Avatar } from '@mui/material';
+import { menuIconSize } from '../../../../constants/Misc.ts';
 import { BlockedNamesModal } from '../../../common/BlockedNamesModal/BlockedNamesModal.tsx';
 import {
   AvatarContainer,
@@ -8,11 +7,8 @@ import {
   DropdownText,
   NavbarName,
 } from '../Navbar-styles.tsx';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useCallback, useRef, useState } from 'react';
 import PersonOffIcon from '@mui/icons-material/PersonOff';
-import { RootState } from '../../../../state/store';
-import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { PopMenu, PopMenuRefType } from '../../../common/PopMenu.tsx';
 import { UserDropDown } from '../../../UserDropDown.tsx';
@@ -38,7 +34,6 @@ export const UserMenu = ({
     useState<boolean>(false);
   const popMenuRef = useRef<PopMenuRefType>(null);
   const navigate = useNavigate();
-  const dispatch = useDispatch();
 
   const handleMyChannelLink = useCallback(
     (switchToName: string) => {

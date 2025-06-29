@@ -20,7 +20,6 @@ import { useSignals } from '@preact/signals-react/runtime';
 import Compressor from 'compressorjs';
 import React, { useState } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { useDispatch } from 'react-redux';
 import ShortUniqueId from 'short-unique-id';
 import { categories, subCategories } from '../../../constants/Categories.ts';
 import {
@@ -108,7 +107,6 @@ export const PublishVideo = ({
   afterClose,
 }: PublishVideoProps) => {
   const theme = useTheme();
-  const dispatch = useDispatch();
   const [isOpenMultiplePublish, setIsOpenMultiplePublish] = useState(false);
   const setNotification = useSetAtom(setNotificationAtom);
 
@@ -183,7 +181,7 @@ export const PublishVideo = ({
 
       setFiles((prev) => [...prev, ...formatArray]);
 
-      let errorString = null;
+      let errorString: string | null = null;
       rejectedFiles.forEach(({ file, errors }) => {
         errors.forEach((error) => {
           if (error.code === 'file-too-large') {
@@ -255,7 +253,7 @@ export const PublishVideo = ({
         return;
       }
 
-      const listOfPublishes = [];
+      const listOfPublishes: any[] = [];
 
       for (let i = 0; i < files.length; i++) {
         const publish = files[i];
@@ -587,7 +585,7 @@ export const PublishVideo = ({
 
   const onFramesExtracted = async (imgs, index) => {
     try {
-      const imagesExtracts = [];
+      const imagesExtracts: string[] = [];
 
       for (const img of imgs) {
         try {
@@ -612,7 +610,9 @@ export const PublishVideo = ({
           });
           if (!compressedFile) continue;
           const base64Img = await toBase64(compressedFile);
-          imagesExtracts.push(base64Img);
+          if (base64Img && typeof base64Img === 'string') {
+            imagesExtracts.push(base64Img);
+          }
         } catch (error) {
           console.error(error);
         }
@@ -1065,7 +1065,7 @@ export const PublishVideo = ({
                       </Button>
                     </Box>
 
-                    {searchResults?.map((vid, index) => {
+                    {searchResults?.map((vid: any, index) => {
                       return (
                         <Box
                           key={vid?.identifier}

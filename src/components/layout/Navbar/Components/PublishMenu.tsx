@@ -1,28 +1,27 @@
-import { useDispatch } from "react-redux";
-import { headerIconSize, menuIconSize } from "../../../../constants/Misc.ts";
-import { setEditPlaylist } from "../../../../state/features/videoSlice.ts";
-import { StyledButton } from "../../../Publish/PublishVideo/PublishVideo-styles.tsx";
-import { PublishVideo } from "../../../Publish/PublishVideo/PublishVideo.tsx";
+import { headerIconSize, menuIconSize } from '../../../../constants/Misc.ts';
+import { StyledButton } from '../../../Publish/PublishVideo/PublishVideo-styles.tsx';
+import { PublishVideo } from '../../../Publish/PublishVideo/PublishVideo.tsx';
 import {
   AvatarContainer,
   DropdownContainer,
   DropdownText,
   NavbarName,
-} from "../Navbar-styles.tsx";
-import AddBoxIcon from "@mui/icons-material/AddBox";
-import { PopMenu, PopMenuRefType } from "../../../common/PopMenu.tsx";
-import { useRef } from "react";
-import { useMediaQuery } from "@mui/material";
+} from '../Navbar-styles.tsx';
+import AddBoxIcon from '@mui/icons-material/AddBox';
+import { PopMenu, PopMenuRefType } from '../../../common/PopMenu.tsx';
+import { useRef } from 'react';
+import { useMediaQuery } from '@mui/material';
 
 export interface PublishButtonsProps {
   isDisplayed: boolean;
 }
-import PlaylistAddIcon from "@mui/icons-material/PlaylistAdd";
+import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
+import { editPlaylistAtom } from '../../../../state/publish/playlist.ts';
+import { useSetAtom } from 'jotai';
 
 export const PublishMenu = ({ isDisplayed }: PublishButtonsProps) => {
-  const dispatch = useDispatch();
   const popMenuRef = useRef<PopMenuRefType>(null);
-
+  const setEditPlaylist = useSetAtom(editPlaylistAtom);
   const isScreenSmall = !useMediaQuery(`(min-width:600px)`);
   return (
     <>
@@ -31,11 +30,11 @@ export const PublishMenu = ({ isDisplayed }: PublishButtonsProps) => {
           MenuHeader={
             <>
               {!isScreenSmall && (
-                <NavbarName sx={{ marginRight: "5px" }}>Publish</NavbarName>
+                <NavbarName sx={{ marginRight: '5px' }}>Publish</NavbarName>
               )}
               <AddBoxIcon
                 sx={{
-                  color: "DarkGreen",
+                  color: 'DarkGreen',
                   width: headerIconSize,
                   height: headerIconSize,
                 }}
@@ -53,14 +52,14 @@ export const PublishMenu = ({ isDisplayed }: PublishButtonsProps) => {
               startIcon={
                 <PlaylistAddIcon
                   sx={{
-                    color: "#00BFFF",
+                    color: '#00BFFF',
                     width: menuIconSize,
                     height: menuIconSize,
                   }}
                 />
               }
               onClick={() => {
-                dispatch(setEditPlaylist({ mode: "new" }));
+                setEditPlaylist({ mode: 'new' });
               }}
             >
               Playlist

@@ -1,7 +1,5 @@
-import { useDispatch, useSelector } from 'react-redux';
 import { toast, ToastContainer, Zoom, Slide } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { RootState } from '../../../state/store';
 import { useAtom, useSetAtom } from 'jotai';
 import {
   alertAtom,
@@ -9,8 +7,6 @@ import {
 } from '../../../state/global/notifications';
 
 const Notification = () => {
-  const dispatch = useDispatch();
-
   const [alertTypes] = useAtom(alertAtom);
   const removeNotification = useSetAtom(removeNotificationAtom);
 

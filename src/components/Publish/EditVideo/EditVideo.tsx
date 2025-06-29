@@ -11,12 +11,10 @@ import {
   Typography,
   useTheme,
 } from '@mui/material';
-import { Signal, useSignal, useSignalEffect } from '@preact/signals-react';
+import { Signal, useSignal } from '@preact/signals-react';
 import Compressor from 'compressorjs';
 import React, { useEffect, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { useDispatch, useSelector } from 'react-redux';
-import ShortUniqueId from 'short-unique-id';
 import { categories, subCategories } from '../../../constants/Categories.ts';
 import { QTUBE_VIDEO_BASE } from '../../../constants/Identifiers.ts';
 import {
@@ -25,12 +23,6 @@ import {
   videoMaxSize,
 } from '../../../constants/Misc.ts';
 
-import {
-  setEditVideo,
-  updateInHashMap,
-  updateVideo,
-} from '../../../state/features/videoSlice.ts';
-import { RootState } from '../../../state/store.ts';
 import BoundedNumericTextField from '../../../utils/BoundedNumericTextField.tsx';
 import { objectToBase64 } from '../../../utils/PublishFormatter.ts';
 import { FrameExtractor } from '../../common/FrameExtractor/FrameExtractor.tsx';
@@ -52,33 +44,29 @@ import {
   NewCrowdfundTitle,
   TimesIcon,
 } from './EditVideo-styles.tsx';
-import { useAuth, usePublish } from 'qapp-core';
-import { useSetAtom } from 'jotai';
+import { useAuth, useGlobal, usePublish } from 'qapp-core';
+import { useAtom, useSetAtom } from 'jotai';
 import {
   AltertObject,
   setNotificationAtom,
 } from '../../../state/global/notifications.ts';
+import { editVideoAtom } from '../../../state/publish/video.ts';
 
 export const EditVideo = () => {
   const theme = useTheme();
   const setNotification = useSetAtom(setNotificationAtom);
-
-  const dispatch = useDispatch();
+  const setEditVideo = useSetAtom(editVideoAtom);
   const { name: username, address: userAddress } = useAuth();
-
-  const editVideoProperties = useSelector(
-    (state: RootState) => state.video.editVideoProperties
-  );
+  const { lists, auth } = useGlobal();
+  const [editVideoProperties] = useAtom(editVideoAtom);
   const [publishes, setPublishes] = useState<any>(null);
-  const [isOpenMultiplePublish, setIsOpenMultiplePublish] = useState(false);
-  const [videoPropertiesToSetToRedux, setVideoPropertiesToSetToRedux] =
-    useState(null);
+
   const publishFromLibrary = usePublish();
 
   const [title, setTitle] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [coverImage, setCoverImage] = useState<string>('');
-  const [file, setFile] = useState(null);
+  const [file, setFile] = useState<null | File>(null);
   const [selectedCategoryVideos, setSelectedCategoryVideos] =
     useState<any>(null);
   const [selectedSubCategoryVideos, setSelectedSubCategoryVideos] =
@@ -104,7 +92,7 @@ export const EditVideo = () => {
 
       setFile(firstFile);
 
-      let errorString = null;
+      let errorString: null | string = null;
 
       rejectedFiles.forEach(({ file, errors }) => {
         errors.forEach((error) => {
@@ -155,9 +143,10 @@ export const EditVideo = () => {
     }
   }, [editVideoProperties]);
 
+  console.log('editVideoProperties', editVideoProperties);
+
   const onClose = () => {
-    dispatch(setEditVideo(null));
-    setVideoPropertiesToSetToRedux(null);
+    setEditVideo(null);
     setFile(null);
     setTitle('');
     setImageExtracts([]);
@@ -167,6 +156,7 @@ export const EditVideo = () => {
 
   async function publishQDNResource() {
     try {
+      if (!username) throw new Error('A name is required to publish');
       if (!title) throw new Error('Please enter a title');
       if (!description) throw new Error('Please enter a description');
       if (!coverImage) throw new Error('Please select cover image');
@@ -195,14 +185,14 @@ export const EditVideo = () => {
         setNotification(notificationObj);
         return;
       }
-      const listOfPublishes = [];
+      const listOfPublishes: any[] = [];
       const category = selectedCategoryVideos.id;
       const subcategory = selectedSubCategoryVideos?.id || '';
 
       const fullDescription = extractTextFromHTML(description);
       let fileExtension = 'mp4';
       const fileExtensionSplit = file?.name?.split('.');
-      if (fileExtensionSplit?.length > 1) {
+      if (fileExtensionSplit && fileExtensionSplit?.length > 1) {
         fileExtension = fileExtensionSplit?.pop() || 'mp4';
       }
 
@@ -268,18 +258,26 @@ export const EditVideo = () => {
         listOfPublishes.push(requestBodyVideo);
       }
 
-      setVideoPropertiesToSetToRedux({
-        ...editVideoProperties,
-        ...videoObject,
-      });
-
       await publishFromLibrary.publishMultipleResources(listOfPublishes);
-      const clonedCopy = structuredClone({
-        ...editVideoProperties,
-        ...videoObject,
-      });
-      dispatch(updateVideo(clonedCopy));
-      dispatch(updateInHashMap(clonedCopy));
+
+      lists.updateNewResources([
+        {
+          data: videoObject,
+          qortalMetadata: {
+            identifier: editVideoProperties.id,
+            service: 'DOCUMENT',
+            name: username,
+            size: 100,
+            updated: Date.now(),
+            metadata: {
+              title: title.slice(0, 50),
+              description: metadescription,
+              tags: [QTUBE_VIDEO_BASE],
+            },
+            created: editVideoProperties?.created,
+          },
+        },
+      ]);
       const notificationObj: AltertObject = {
         msg: 'Video updated',
         alertType: 'success',
@@ -319,7 +317,7 @@ export const EditVideo = () => {
 
   const onFramesExtracted = async (imgs) => {
     try {
-      const imagesExtracts = [];
+      const imagesExtracts: string[] = [];
 
       for (const img of imgs) {
         try {
@@ -343,8 +341,11 @@ export const EditVideo = () => {
             });
           });
           if (!compressedFile) continue;
-          const base64Img = await toBase64(compressedFile);
-          imagesExtracts.push(base64Img);
+          const result = await toBase64(compressedFile);
+
+          if (result && typeof result === 'string') {
+            imagesExtracts.push(result);
+          }
         } catch (error) {
           console.error(error);
         }
@@ -536,7 +537,7 @@ export const EditVideo = () => {
                 onClick={() => {
                   publishQDNResource();
                 }}
-                disabled={file && imageExtracts.length === 0}
+                disabled={!!file && imageExtracts?.length === 0}
               >
                 {file && imageExtracts.length === 0 && (
                   <CircularProgress color="secondary" size={14} />

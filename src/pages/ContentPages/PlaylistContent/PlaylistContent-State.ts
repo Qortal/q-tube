@@ -1,5 +1,3 @@
-import { useSelector } from 'react-redux';
-import { RootState } from '../../../state/store.ts';
 import { useVideoContentState } from '../VideoContent/VideoContent-State.ts';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -43,92 +41,85 @@ export const usePlaylistContentState = () => {
   const navigate = useNavigate();
   const [playlistData, setPlaylistData] = useState<any>(null);
 
-  const hashMapVideos = useSelector(
-    (state: RootState) => state.video.hashMapVideos
-  );
+  const checkforPlaylist = useCallback(async (name, id) => {
+    try {
+      setIsLoadingPlaylist(true);
 
-  const checkforPlaylist = useCallback(
-    async (name, id) => {
-      try {
-        setIsLoadingPlaylist(true);
+      if (!name || !id) return;
 
-        if (!name || !id) return;
+      const url = `/arbitrary/resources/search?mode=ALL&service=PLAYLIST&identifier=${id}&limit=1&includemetadata=true&reverse=true&excludeblocked=true&name=${name}&exactmatchnames=true&offset=0`;
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      const responseDataSearch = await response.json();
 
-        const url = `/arbitrary/resources/search?mode=ALL&service=PLAYLIST&identifier=${id}&limit=1&includemetadata=true&reverse=true&excludeblocked=true&name=${name}&exactmatchnames=true&offset=0`;
-        const response = await fetch(url, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+      if (responseDataSearch?.length > 0) {
+        let resourceData = responseDataSearch[0];
+        resourceData = {
+          title: resourceData?.metadata?.title,
+          category: resourceData?.metadata?.category,
+          categoryName: resourceData?.metadata?.categoryName,
+          tags: resourceData?.metadata?.tags || [],
+          description: resourceData?.metadata?.description,
+          created: resourceData?.created,
+          updated: resourceData?.updated,
+          name: resourceData.name,
+          videoImage: '',
+          identifier: resourceData.identifier,
+          service: resourceData.service,
+        };
+
+        const responseData = await qortalRequest({
+          action: 'FETCH_QDN_RESOURCE',
+          name: resourceData.name,
+          service: resourceData.service,
+          identifier: resourceData.identifier,
         });
-        const responseDataSearch = await response.json();
 
-        if (responseDataSearch?.length > 0) {
-          let resourceData = responseDataSearch[0];
-          resourceData = {
-            title: resourceData?.metadata?.title,
-            category: resourceData?.metadata?.category,
-            categoryName: resourceData?.metadata?.categoryName,
-            tags: resourceData?.metadata?.tags || [],
-            description: resourceData?.metadata?.description,
-            created: resourceData?.created,
-            updated: resourceData?.updated,
-            name: resourceData.name,
-            videoImage: '',
-            identifier: resourceData.identifier,
-            service: resourceData.service,
+        if (responseData && !responseData.error) {
+          const combinedData = {
+            ...resourceData,
+            ...responseData,
           };
+          const videos = [];
+          if (combinedData?.videos) {
+            for (const vid of combinedData.videos) {
+              const url = `/arbitrary/resources/search?mode=ALL&service=DOCUMENT&identifier=${vid.identifier}&limit=1&includemetadata=true&reverse=true&name=${vid.name}&exactmatchnames=true&offset=0`;
+              const response = await fetch(url, {
+                method: 'GET',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+              });
+              const responseDataSearchVid = await response.json();
 
-          const responseData = await qortalRequest({
-            action: 'FETCH_QDN_RESOURCE',
-            name: resourceData.name,
-            service: resourceData.service,
-            identifier: resourceData.identifier,
-          });
-
-          if (responseData && !responseData.error) {
-            const combinedData = {
-              ...resourceData,
-              ...responseData,
-            };
-            const videos = [];
-            if (combinedData?.videos) {
-              for (const vid of combinedData.videos) {
-                const url = `/arbitrary/resources/search?mode=ALL&service=DOCUMENT&identifier=${vid.identifier}&limit=1&includemetadata=true&reverse=true&name=${vid.name}&exactmatchnames=true&offset=0`;
-                const response = await fetch(url, {
-                  method: 'GET',
-                  headers: {
-                    'Content-Type': 'application/json',
-                  },
-                });
-                const responseDataSearchVid = await response.json();
-
-                if (responseDataSearchVid?.length > 0) {
-                  const resourceData2 = responseDataSearchVid[0];
-                  videos.push(resourceData2);
-                }
+              if (responseDataSearchVid?.length > 0) {
+                const resourceData2 = responseDataSearchVid[0];
+                videos.push(resourceData2);
               }
             }
-            combinedData.videos = videos;
-            setPlaylistData(combinedData);
-            if (combinedData?.videos?.length > 0) {
-              const vid = combinedData?.videos[0];
-              setVideoMetadataResource({
-                name: vid?.name,
-                identifier: vid?.identifier,
-                service: 'DOCUMENT',
-              });
-            }
+          }
+          combinedData.videos = videos;
+          setPlaylistData(combinedData);
+          if (combinedData?.videos?.length > 0) {
+            const vid = combinedData?.videos[0];
+            setVideoMetadataResource({
+              name: vid?.name,
+              identifier: vid?.identifier,
+              service: 'DOCUMENT',
+            });
           }
         }
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setIsLoadingPlaylist(false);
       }
-    },
-    [hashMapVideos]
-  );
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoadingPlaylist(false);
+    }
+  }, []);
 
   useEffect(() => {
     if (channelName && id) {

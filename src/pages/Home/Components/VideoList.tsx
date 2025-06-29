@@ -1,12 +1,19 @@
 import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 
-import { blockUser, setEditVideo } from '../../../state/features/videoSlice.ts';
+import { blockUser } from '../../../state/features/videoSlice.ts';
 
 import { VideoCardContainer } from './VideoList-styles.tsx';
-import { QortalSearchParams, ResourceListDisplay, useAuth } from 'qapp-core';
+import {
+  QortalSearchParams,
+  ResourceListDisplay,
+  useAuth,
+  useGlobal,
+} from 'qapp-core';
 import { VideoListItem } from './VideoListItem.tsx';
 import { VideoLoaderItem } from './VideoLoaderItem.tsx';
+import { useSetAtom } from 'jotai';
+import { editVideoAtom } from '../../../state/publish/video.ts';
 
 interface VideoListProps {
   searchParameters: QortalSearchParams;
@@ -14,8 +21,9 @@ interface VideoListProps {
 }
 export const VideoList = ({ searchParameters, listName }: VideoListProps) => {
   const { name: username } = useAuth();
-
+  const { lists } = useGlobal();
   const dispatch = useDispatch();
+  const setEditVideo = useSetAtom(editVideoAtom);
 
   const blockUserFunc = async (user: string) => {
     if (user === 'Q-Tube') return;
@@ -28,7 +36,8 @@ export const VideoList = ({ searchParameters, listName }: VideoListProps) => {
       });
 
       if (response === true) {
-        dispatch(blockUser(user));
+        lists.deleteList('AllVideos');
+        // dispatch(blockUser(user));
       }
     } catch (error) {
       console.error(error);

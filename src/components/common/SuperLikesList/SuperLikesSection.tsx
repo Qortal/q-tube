@@ -16,6 +16,8 @@ import {
 
 import { COMMENT_BASE } from '../../../constants/Identifiers.ts';
 import { hashWordWithoutPublicSalt } from 'qapp-core';
+import { useAtomValue } from 'jotai';
+import { hashMapSuperlikesAtom } from '../../../state/global/superlikes.ts';
 
 interface CommentSectionProps {
   postId: string;
@@ -61,9 +63,9 @@ export const SuperLikesSection = ({
   const [listComments, setListComments] = useState<any[]>([]);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [loadingComments, setLoadingComments] = useState<boolean>(null);
-  const hashMapSuperlikes = useSelector(
-    (state: RootState) => state.video.hashMapSuperlikes
-  );
+
+  const hashMapSuperlikes = useAtomValue(hashMapSuperlikesAtom);
+
   const onSubmit = (obj?: any, isEdit?: boolean) => {
     if (isEdit) {
       setListComments((prev: any[]) => {

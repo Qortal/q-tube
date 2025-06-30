@@ -11,14 +11,12 @@ export const VideoContentContainer = styled(Box)(({ theme }) => ({
 export const VideoPlayerContainer = styled(Box)(({ theme }) => ({}));
 
 export const VideoTitle = styled(Typography)(({ theme }) => ({
-  fontFamily: 'Raleway',
   fontSize: fontSizeMedium,
   color: theme.palette.text.primary,
   wordBreak: 'break-word',
 }));
 
 export const VideoDescription = styled(Typography)(({ theme }) => ({
-  fontFamily: 'Raleway',
   fontSize: '16px',
   color: theme.palette.text.primary,
   userSelect: 'none',
@@ -60,7 +58,6 @@ export const StyledCardColComment = styled(Box)({
 });
 
 export const AuthorTextComment = styled(Typography)({
-  fontFamily: 'Raleway, sans-serif',
   fontSize: fontSizeMedium,
   lineHeight: '1.2',
 });
@@ -74,7 +71,6 @@ export const FileAttachmentContainer = styled(Box)(({ theme }) => ({
 }));
 
 export const FileAttachmentFont = styled(Typography)(({ theme }) => ({
-  fontFamily: 'Mulish',
   color: theme.palette.text.primary,
   fontSize: '20px',
   letterSpacing: 0,

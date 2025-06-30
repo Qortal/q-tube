@@ -135,7 +135,6 @@ export const DownloadTaskManager: React.FC = () => {
                     </Box>
                     <Typography
                       sx={{
-                        fontFamily: 'Arial',
                         color: theme.palette.text.primary,
                       }}
                       variant="caption"
@@ -150,7 +149,6 @@ export const DownloadTaskManager: React.FC = () => {
                       fontSize: '10px',
                       width: '100%',
                       textAlign: 'start',
-                      fontFamily: 'Arial',
                       color: theme.palette.text.primary,
                       textOverflow: 'ellipsis',
                       whiteSpace: 'nowrap',

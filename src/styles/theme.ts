@@ -2,42 +2,47 @@ import { createTheme } from '@mui/material/styles';
 
 const commonThemeOptions = {
   typography: {
-    fontFamily: ['Inter'].join(','),
+    fontFamily: ['Roboto'].join(','),
     h1: {
       fontSize: '2rem',
-      fontWeight: 600,
+      fontWeight: 700, // changed from 600 to match Roboto weights
+      lineHeight: 1.2,
     },
     h2: {
       fontSize: '1.75rem',
       fontWeight: 500,
+      lineHeight: 1.2,
     },
     h3: {
       fontSize: '1.5rem',
       fontWeight: 500,
+      lineHeight: 1.2,
     },
     h4: {
       fontSize: '1.25rem',
       fontWeight: 500,
+      lineHeight: 1.2,
     },
     h5: {
       fontSize: '1rem',
       fontWeight: 500,
+      lineHeight: 1.2,
     },
     h6: {
       fontSize: '0.875rem',
       fontWeight: 500,
+      lineHeight: 1.2,
     },
     body1: {
       fontSize: '1rem',
       fontWeight: 400,
-      lineHeight: 1.5,
+      lineHeight: 1.2,
       letterSpacing: '0.5px',
     },
-
     body2: {
       fontSize: '0.875rem',
       fontWeight: 400,
-      lineHeight: 1.4,
+      lineHeight: 1.2,
       letterSpacing: '0.2px',
     },
   },
@@ -102,12 +107,16 @@ const darkTheme = createTheme({
       dark: 'rgb(45, 92, 201)',
       light: 'rgb(130, 185, 255)',
     },
+    info: {
+      main: '#29B6F6',
+      contrastText: 'rgba(0, 0, 0, 0.87)',
+    },
     secondary: {
       main: 'rgb(69, 173, 255)',
     },
     background: {
-      default: 'rgb(49, 51, 56)',
-      paper: 'rgb(62, 64, 68)',
+      default: '#0C0C10',
+      paper: '#050507',
     },
     text: {
       primary: 'rgb(255, 255, 255)',

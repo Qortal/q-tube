@@ -16,7 +16,7 @@ import { Names } from '../../../../state/global/names.ts';
 import { useAuth } from 'qapp-core';
 export interface NavBarMenuProps {
   isShowMenu: boolean;
-  userAvatar: string;
+  userAvatar: string | null;
   userName: string | null;
   allNames: Names;
 }
@@ -56,7 +56,7 @@ export const UserMenu = ({
             MenuHeader={
               <AvatarContainer>
                 {!isScreenSmall && <NavbarName>{userName}</NavbarName>}
-                <Avatar src={userAvatar}>
+                <Avatar src={userAvatar || ''}>
                   {userName?.charAt(0).toUpperCase()}
                 </Avatar>
               </AvatarContainer>

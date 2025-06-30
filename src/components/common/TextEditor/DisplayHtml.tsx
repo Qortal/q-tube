@@ -1,16 +1,15 @@
-import { Box, styled } from "@mui/material";
-import DOMPurify from "dompurify";
-import { useMemo } from "react";
-import { convertQortalLinks } from "./utils";
+import { Box, styled } from '@mui/material';
+import DOMPurify from 'dompurify';
+import { useMemo } from 'react';
+import { convertQortalLinks } from './utils';
 
 const CrowdfundInlineContent = styled(Box)(({ theme }) => ({
-  display: "flex",
-  fontFamily: "Mulish",
-  fontSize: "19px",
+  display: 'flex',
+  fontSize: '19px',
   fontWeight: 400,
   letterSpacing: 0,
   color: theme.palette.text.primary,
-  width: "100%",
+  width: '100%',
 }));
 
 export const DisplayHtml = ({ html }) => {

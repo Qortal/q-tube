@@ -80,7 +80,6 @@ export const BlockedNamesModal: React.FC<PostModalProps> = ({
                 sx={{
                   backgroundColor: theme.palette.primary.light,
                   color: theme.palette.text.primary,
-                  fontFamily: 'Raleway',
                 }}
                 onClick={() => removeFromBlockList(name)}
               >

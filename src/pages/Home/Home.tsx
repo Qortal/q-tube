@@ -12,38 +12,19 @@ import {
   QTUBE_VIDEO_BASE,
 } from '../../constants/Identifiers.ts';
 import { QortalSearchParams, useAuth } from 'qapp-core';
-import { usePersistedState } from '../../state/persist/persist.ts';
 
-interface HomeProps {
-  mode?: string;
-}
-export const Home = ({ mode }: HomeProps) => {
-  const { isLoadingUser } = useAuth();
-  const { tabValue, changeTab } = useHomeState(mode);
-  const [filterName, setFilterName, isHydratedFilterName] = usePersistedState(
-    'filterName',
-    ''
-  );
-  const [subscriptions, setSubscriptions, isHydratedSubscriptions] =
-    usePersistedState('subscriptions', []);
-  const [filterType, setFilterType, isHydratedFilterState] = usePersistedState(
-    'filterType',
-    'videos'
-  );
-  const [filterSearch, setFilterSearch, isHydratedFilterSearch] =
-    usePersistedState('filterSearch', '');
-
-  const [filterCategory, setFilterCategory, isHydratedFilterCategory] =
-    usePersistedState<any>('filterCategory', '');
-  const [filterSubCategory, setFilterSubCategory, isHydratedFilterSubCategory] =
-    usePersistedState<any>('filterSubCategory', '');
-  const isHydrated =
-    isHydratedFilterState &&
-    isHydratedFilterSearch &&
-    isHydratedFilterName &&
-    isHydratedFilterSubCategory &&
-    isHydratedFilterCategory &&
-    !isLoadingUser;
+export const Home = () => {
+  const {
+    tabValue,
+    changeTab,
+    filterName,
+    filterCategory,
+    subscriptions,
+    filterType,
+    filterSearch,
+    filterSubCategory,
+    isHydrated,
+  } = useHomeState();
 
   const tabPaneSX = {
     width: '100%',

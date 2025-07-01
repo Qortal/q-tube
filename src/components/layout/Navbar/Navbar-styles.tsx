@@ -12,9 +12,8 @@ export const CustomAppBar = styled(AppBar)(({ theme }) => ({
   width: '100%',
   padding: '5px 16px 5px 5px',
   backgroundImage: 'none',
-  borderBottom: `1px solid ${theme.palette.primary.light}`,
-  backgroundColor: theme.palette.background.default,
-  height: '50px',
+  backgroundColor: theme.palette.background.paper2,
+  height: '65px',
 }));
 export const LogoContainer = styled('div')({
   cursor: 'pointer',

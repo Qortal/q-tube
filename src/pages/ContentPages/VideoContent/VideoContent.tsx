@@ -21,8 +21,10 @@ import {
   VideoPlayerContainer,
   VideoTitle,
 } from './VideoContent-styles.tsx';
+import { useScrollToTop } from '../../../hooks/useScrollToTop.tsx';
 
 export const VideoContent = () => {
+  useScrollToTop();
   const {
     videoReference,
     channelName,

@@ -102,8 +102,8 @@ export const VideoListItem = ({
         >
           <ResponsiveImage
             src={video?.image}
-            width={266}
-            height={150}
+            width={320}
+            height={180}
             style={{
               maxHeight: '50%',
             }}
@@ -224,30 +224,44 @@ export const VideoListItem = ({
           );
         }}
       >
-        {video?.duration > minDuration && (
-          <Box
-            position="absolute"
-            right={0}
-            bottom={0}
-            bgcolor="#202020"
-            zIndex={999}
-          >
-            <Typography color="white">{formatTime(video.duration)}</Typography>
-          </Box>
-        )}
-        <VideoCardImageContainer
-          width={266}
-          height={150}
-          videoImage={video.videoImage}
-          frameImages={video?.extracts || []}
-        />
-        <Tooltip
+        <Box
+          sx={{
+            position: 'relative',
+          }}
+        >
+          <VideoCardImageContainer
+            width={320}
+            height={180}
+            videoImage={video.videoImage}
+            frameImages={video?.extracts || []}
+          />
+          {video?.duration > minDuration && (
+            <Box
+              position="absolute"
+              right={5}
+              bottom={5}
+              zIndex={999}
+              bgcolor="background.paper2"
+              sx={{
+                padding: '5px',
+                borderRadius: '5px',
+                // backgroundColor: '#050507',
+              }}
+            >
+              <Typography variant="body2">
+                {formatTime(video.duration)}
+              </Typography>
+            </Box>
+          )}
+        </Box>
+
+        {/* <Tooltip
           title={video.title}
           placement="top"
           slotProps={{ tooltip: { sx: { fontSize: fontSizeSmall } } }}
         >
           <VideoCardTitle>{video.title}</VideoCardTitle>
-        </Tooltip>
+        </Tooltip> */}
         <BottomParent>
           <NameContainer
             onClick={(e) => {
@@ -256,11 +270,18 @@ export const VideoListItem = ({
             }}
           >
             <Avatar
-              sx={{ height: 24, width: 24 }}
+              sx={{ height: 40, width: 40 }}
               src={`/arbitrary/THUMBNAIL/${qortalMetadata?.name}/qortal_avatar`}
               alt={`${qortalMetadata?.name}'s avatar`}
             />
-            <VideoCardName
+            <Tooltip
+              title={video.title}
+              placement="top"
+              slotProps={{ tooltip: { sx: { fontSize: fontSizeSmall } } }}
+            >
+              <VideoCardTitle variant="body2">{video.title}</VideoCardTitle>
+            </Tooltip>
+            {/* <VideoCardName
               sx={{
                 ':hover': {
                   textDecoration: 'underline',
@@ -268,12 +289,24 @@ export const VideoListItem = ({
               }}
             >
               {qortalMetadata?.name}
-            </VideoCardName>
+            </VideoCardName> */}
           </NameContainer>
           {qortalMetadata?.created && (
-            <Box sx={{ flexDirection: 'row', width: '100%' }}>
-              <VideoUploadDate sx={{ display: 'inline' }}>
-                {formatDate(qortalMetadata.created)}
+            <Box
+              sx={{
+                flexDirection: 'row',
+                width: '100%',
+                display: 'flex',
+                gap: '15px',
+              }}
+            >
+              <Box
+                sx={{
+                  width: '40px',
+                }}
+              />
+              <VideoUploadDate sx={{ display: 'inline', fontWeight: 500 }}>
+                {qortalMetadata?.name} | {formatDate(qortalMetadata.created)}
               </VideoUploadDate>
             </Box>
           )}

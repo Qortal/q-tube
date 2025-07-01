@@ -1,7 +1,7 @@
-import React, { useState, useEffect, CSSProperties } from "react";
-import Skeleton from "@mui/material/Skeleton";
-import { Box } from "@mui/material";
-import DeletedVideo from "../assets/img/DeletedVideo.jpg";
+import React, { useState, useEffect, CSSProperties } from 'react';
+import Skeleton from '@mui/material/Skeleton';
+import { Box } from '@mui/material';
+import DeletedVideo from '../assets/img/DeletedVideo.jpg';
 interface ResponsiveImageProps {
   src: string;
   width: number;
@@ -33,21 +33,24 @@ const ResponsiveImage: React.FC<ResponsiveImageProps> = ({
   return (
     <Box
       sx={{
-        padding: "2px",
-        height: "100%",
+        padding: '5px',
+        height: '100%',
+        backgroundColor: '#050507',
+
         ...style,
       }}
+      boxShadow={2}
     >
       {loading && (
         <Skeleton
           variant="rectangular"
           style={{
-            width: "100%",
+            width: '100%',
             height: 0,
             paddingBottom: `${(height / width) * 100}%`,
-            objectFit: "contain",
-            visibility: loading ? "visible" : "hidden",
-            borderRadius: "8px",
+            objectFit: 'contain',
+            visibility: loading ? 'visible' : 'hidden',
+            borderRadius: '8px',
           }}
         />
       )}
@@ -56,11 +59,13 @@ const ResponsiveImage: React.FC<ResponsiveImageProps> = ({
         onLoad={() => setLoading(false)}
         src={!src && !loading ? DeletedVideo : src || null}
         style={{
-          width: "100%",
-          height: "100%",
-          borderRadius: "8px",
-          display: loading ? "none" : "unset",
-          objectFit: "contain",
+          width: '100%',
+          height: '100%',
+          borderRadius: '8px',
+          display: loading ? 'none' : 'unset',
+          objectFit: 'contain',
+          maskImage: 'radial-gradient(circle, black 95%, transparent 100%)',
+          maskMode: 'alpha',
         }}
       />
     </Box>

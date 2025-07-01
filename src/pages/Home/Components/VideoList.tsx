@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useRef } from 'react';
 
 import { VideoCardContainer } from './VideoList-styles.tsx';
 import {
@@ -10,8 +10,9 @@ import {
 } from 'qapp-core';
 import { VideoListItem } from './VideoListItem.tsx';
 import { VideoLoaderItem } from './VideoLoaderItem.tsx';
-import { useSetAtom } from 'jotai';
+import { useAtomValue, useSetAtom } from 'jotai';
 import { editVideoAtom } from '../../../state/publish/video.ts';
+import { scrollRefAtom } from '../../../state/global/navbar.ts';
 
 interface VideoListProps {
   searchParameters: QortalSearchParams;
@@ -21,6 +22,8 @@ export const VideoList = ({ searchParameters, listName }: VideoListProps) => {
   const { name: username } = useAuth();
   const setEditVideo = useSetAtom(editVideoAtom);
   const { addToBlockedList } = useBlockedNames();
+
+  const scrollRef = useAtomValue(scrollRefAtom);
 
   const blockUserFunc = async (user: string) => {
     if (user === 'Q-Tube') return;
@@ -58,9 +61,9 @@ export const VideoList = ({ searchParameters, listName }: VideoListProps) => {
     <VideoCardContainer>
       <ResourceListDisplay
         styles={{
-          gap: 20,
+          gap: 40,
           horizontalStyles: {
-            minItemWidth: 200,
+            minItemWidth: 320,
           },
         }}
         retryAttempts={3}
@@ -72,6 +75,7 @@ export const VideoList = ({ searchParameters, listName }: VideoListProps) => {
         loaderItem={renderLoaderItem}
         listItem={renderListItem}
         returnType="JSON"
+        scrollerRef={scrollRef}
       />
     </VideoCardContainer>
   );

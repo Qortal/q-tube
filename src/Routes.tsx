@@ -5,7 +5,7 @@ import { Home } from './pages/Home/Home';
 import { VideoContent } from './pages/ContentPages/VideoContent/VideoContent';
 import { PlaylistContent } from './pages/ContentPages/PlaylistContent/PlaylistContent';
 import { IndividualProfile } from './pages/ContentPages/IndividualProfile/IndividualProfile';
-
+import { Search } from './pages/Search/Search';
 
 interface CustomWindow extends Window {
   _qdnBase: string;
@@ -23,6 +23,10 @@ export function Routes() {
           {
             index: true,
             element: <Home />,
+          },
+          {
+            path: 'search',
+            element: <Search />,
           },
           {
             path: 'video/:name/:id',

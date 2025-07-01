@@ -27,8 +27,8 @@ export const VideoCardContainer = styled('div')(({ theme }) => ({
 }));
 
 export const VideoCardCol = styled('div')({
-  width: '100%', // Minimum width of each item
-  maxWidth: '300px',
+  width: '320px', // Minimum width of each item
+  maxWidth: '320px',
   position: 'relative',
 });
 
@@ -36,28 +36,28 @@ export const VideoCard = styled(Grid)(({ theme }) => ({
   position: 'relative',
   display: 'flex',
   flexDirection: 'column',
-  height: '320px',
+  // height: '320px',
   // width: '300px',
-  backgroundColor: theme.palette.background.paper,
+  // backgroundColor: theme.palette.background.paper,
   borderRadius: '8px',
-  padding: '10px 15px',
+  // padding: '10px 15px',
   gap: '20px',
   cursor: 'pointer',
-  border:
-    theme.palette.mode === 'dark'
-      ? 'none'
-      : `1px solid ${theme.palette.primary.light}`,
-  boxShadow:
-    theme.palette.mode === 'dark'
-      ? '0px 4px 5px 0px hsla(0,0%,0%,0.14),  0px 1px 10px 0px hsla(0,0%,0%,0.12),  0px 2px 4px -1px hsla(0,0%,0%,0.2)'
-      : 'rgba(99, 99, 99, 0.2) 0px 2px 8px 0px',
-  transition: 'all 0.3s ease-in-out',
-  '&:hover': {
-    boxShadow:
-      theme.palette.mode === 'dark'
-        ? '0px 8px 10px 1px hsla(0,0%,0%,0.14), 0px 3px 14px 2px hsla(0,0%,0%,0.12), 0px 5px 5px -3px hsla(0,0%,0%,0.2)'
-        : 'rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;',
-  },
+  // border:
+  //   theme.palette.mode === 'dark'
+  //     ? 'none'
+  //     : `1px solid ${theme.palette.primary.light}`,
+  // boxShadow:
+  //   theme.palette.mode === 'dark'
+  //     ? '0px 4px 5px 0px hsla(0,0%,0%,0.14),  0px 1px 10px 0px hsla(0,0%,0%,0.12),  0px 2px 4px -1px hsla(0,0%,0%,0.2)'
+  //     : 'rgba(99, 99, 99, 0.2) 0px 2px 8px 0px',
+  // transition: 'all 0.3s ease-in-out',
+  // '&:hover': {
+  //   boxShadow:
+  //     theme.palette.mode === 'dark'
+  //       ? '0px 8px 10px 1px hsla(0,0%,0%,0.14), 0px 3px 14px 2px hsla(0,0%,0%,0.12), 0px 5px 5px -3px hsla(0,0%,0%,0.2)'
+  //       : 'rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.06) 0px 2px 4px -1px;',
+  // },
 }));
 
 const DoubleLine = styled(Typography)`
@@ -68,7 +68,6 @@ const DoubleLine = styled(Typography)`
 `;
 
 export const VideoCardTitle = styled(DoubleLine)(({ theme }) => ({
-  fontSize: '16px',
   letterSpacing: '0.4px',
   color: theme.palette.text.primary,
   userSelect: 'none',
@@ -84,9 +83,9 @@ export const VideoCardName = styled(Typography)(({ theme }) => ({
   textOverflow: 'ellipsis',
 }));
 export const VideoUploadDate = styled(Typography)(({ theme }) => ({
-  fontSize: '18px',
+  fontSize: '12px',
   letterSpacing: '0.4px',
-  color: theme.palette.text.primary,
+  color: theme.palette.text.secondary,
   userSelect: 'none',
 }));
 export const BottomParent = styled(Box)(({ theme }) => ({
@@ -100,7 +99,7 @@ export const NameContainer = styled(Box)(({ theme }) => ({
   flexDirection: 'row',
   justifyContent: 'flex-start',
   alignItems: 'center',
-  gap: '10px',
+  gap: '15px',
   marginBottom: '2px',
   width: '100%',
 }));

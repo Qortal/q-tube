@@ -10,8 +10,8 @@ import {
 import AddBoxIcon from '@mui/icons-material/AddBox';
 import { PopMenu, PopMenuRefType } from '../../../common/PopMenu.tsx';
 import { useRef } from 'react';
-import { useMediaQuery } from '@mui/material';
-
+import { Button, useMediaQuery } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
 export interface PublishButtonsProps {
   isDisplayed: boolean;
 }
@@ -27,9 +27,13 @@ export const PublishMenu = ({ isDisplayed }: PublishButtonsProps) => {
     <>
       {isDisplayed && (
         <PopMenu
+          showExpandIcon={false}
           MenuHeader={
             <>
-              {!isScreenSmall && (
+              <Button startIcon={<AddIcon />} color="info" variant="contained">
+                Publish
+              </Button>
+              {/* {!isScreenSmall && (
                 <NavbarName sx={{ marginRight: '5px' }}>Publish</NavbarName>
               )}
               <AddBoxIcon
@@ -38,7 +42,7 @@ export const PublishMenu = ({ isDisplayed }: PublishButtonsProps) => {
                   width: headerIconSize,
                   height: headerIconSize,
                 }}
-              />
+              /> */}
             </>
           }
           ref={popMenuRef}

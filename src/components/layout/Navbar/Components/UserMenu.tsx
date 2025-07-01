@@ -54,8 +54,12 @@ export const UserMenu = ({
           <PopMenu
             ref={popMenuRef}
             MenuHeader={
-              <AvatarContainer>
-                {!isScreenSmall && <NavbarName>{userName}</NavbarName>}
+              <AvatarContainer
+                sx={{
+                  height: '40px',
+                  width: '40px',
+                }}
+              >
                 <Avatar src={userAvatar || ''}>
                   {userName?.charAt(0).toUpperCase()}
                 </Avatar>

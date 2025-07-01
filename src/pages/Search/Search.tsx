@@ -1,19 +1,20 @@
 import { Box } from '@mui/material';
 import { useMemo } from 'react';
 
-import VideoList from './Components/VideoList.tsx';
-import { useHomeState } from './Home-State.ts';
 import {
   QTUBE_PLAYLIST_BASE,
   QTUBE_VIDEO_BASE,
 } from '../../constants/Identifiers.ts';
 import { QortalSearchParams, useAuth } from 'qapp-core';
 import { useSearchParams } from 'react-router-dom';
-import { FilterOptions } from './FilterOptions.tsx';
+import { useHomeState } from '../Home/Home-State.ts';
+import VideoList from '../Home/Components/VideoList.tsx';
 
-export const Home = () => {
+export const Search = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const query = searchParams.get('query'); // "example"
+  const mode = searchParams.get('mode'); // "example"
+
   // const page = searchParams.get('page'); // "2"
   console.log('query', query);
   const {
@@ -26,7 +27,6 @@ export const Home = () => {
     filterSearch,
     filterSubCategory,
     isHydrated,
-    filterMode,
   } = useHomeState();
 
   const searchParameters: QortalSearchParams | null = useMemo(() => {
@@ -47,8 +47,8 @@ export const Home = () => {
       if (filterSubCategory)
         searchOptions.description += `subcategory:${filterSubCategory.id}`;
     }
-    if (filterSearch) {
-      searchOptions.query = filterSearch;
+    if (query) {
+      searchOptions.query = query;
     }
     if (filterName) {
       searchOptions.name = filterName;
@@ -62,15 +62,15 @@ export const Home = () => {
       reverse: true,
       limit: 20,
       ...searchOptions,
-      mode: filterMode === 'recent' ? 'LATEST' : 'ALL',
+      mode: mode || 'ALL',
     };
   }, [
     filterType,
     filterName,
     filterCategory,
     filterSubCategory,
-    filterSearch,
-    filterMode,
+    query,
+    mode,
     isHydrated,
     tabValue,
     subscriptions,
@@ -87,10 +87,9 @@ export const Home = () => {
             alignItems: 'center',
           }}
         >
-          <FilterOptions />
           {searchParameters && (
             <VideoList
-              listName="latestVideos"
+              listName="SearchedVideos"
               searchParameters={searchParameters}
             />
           )}

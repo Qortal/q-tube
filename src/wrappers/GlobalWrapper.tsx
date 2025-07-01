@@ -120,7 +120,6 @@ const GlobalWrapper: React.FC<Props> = ({ children }) => {
       <ConsentModal />
       <EditVideo />
       <EditPlaylist />
-      <NavBar allNames={names} />
 
       {children}
     </>

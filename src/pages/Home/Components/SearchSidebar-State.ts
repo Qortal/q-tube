@@ -3,8 +3,11 @@ import { useEffect, useState } from 'react';
 import { categories } from '../../../constants/Categories.ts';
 import { usePersistedState } from '../../../state/persist/persist.ts';
 import { useAuth } from 'qapp-core';
+import { useSearchParams } from 'react-router-dom';
 
 export const useSidebarState = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const query = searchParams.get('query'); // "example"
   const { isLoadingUser } = useAuth();
   const [filterType, setFilterType, isHydratedFilterState] = usePersistedState(
     'filterType',
@@ -47,7 +50,7 @@ export const useSidebarState = () => {
 
   useEffect(() => {
     if (!isHydrated) return;
-    setFilterStateSearch(filterSearch);
+    setFilterStateSearch(filterSearch || '');
     setFilterStateName(filterName);
     setFilterStateType(filterType);
     setSelectedCategoryVideosState(filterCategory);

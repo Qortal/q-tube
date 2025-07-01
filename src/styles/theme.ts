@@ -1,4 +1,4 @@
-import { createTheme } from '@mui/material/styles';
+import { alpha, createTheme } from '@mui/material/styles';
 
 const commonThemeOptions = {
   typography: {
@@ -103,24 +103,32 @@ const darkTheme = createTheme({
   palette: {
     mode: 'dark',
     primary: {
-      main: 'rgb(100, 155, 240)',
+      // main: '#101115',
+      main: '#90CAF9',
       dark: 'rgb(45, 92, 201)',
       light: 'rgb(130, 185, 255)',
+      contrastText: 'rgba(0, 0, 0, 0.87)',
     },
     info: {
       main: '#29B6F6',
       contrastText: 'rgba(0, 0, 0, 0.87)',
     },
     secondary: {
-      main: 'rgb(69, 173, 255)',
+      main: '#757575',
     },
     background: {
       default: '#0C0C10',
-      paper: '#050507',
+      paper: '#2E2E2E',
+      paper2: '#101115',
+      unSelected: '#333336',
     },
     text: {
-      primary: 'rgb(255, 255, 255)',
+      primary: '#ffffff',
       secondary: 'rgb(179, 179, 179)',
+    },
+    action: {
+      selected: 'rgba(255, 255, 255, 0.16)',
+      active: '#949496',
     },
   },
 });

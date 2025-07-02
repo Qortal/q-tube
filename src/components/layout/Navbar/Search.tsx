@@ -1,5 +1,15 @@
-import { Box, ButtonBase, InputBase, styled, useTheme } from '@mui/material';
-import React from 'react';
+import {
+  Box,
+  ButtonBase,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  IconButton,
+  InputBase,
+  styled,
+  useTheme,
+} from '@mui/material';
+import React, { useState } from 'react';
 import { useSidebarState } from '../../../pages/Home/Components/SearchSidebar-State';
 import { useNavigate } from 'react-router-dom';
 import SearchIcon from '@mui/icons-material/Search';
@@ -50,19 +60,10 @@ export const Search = () => {
   const theme = useTheme();
   const {
     filterSearch,
-    filterName,
-    filterType,
     setFilterSearch,
-    setFilterName,
-    selectedCategoryVideos,
-    handleOptionCategoryChangeVideos,
-    selectedSubCategoryVideos,
-    handleOptionSubCategoryChangeVideos,
-    setFilterType,
-    onSearch,
-    onReset,
-    setFilterSearchGlobal,
     filterSearchGlobal,
+    setFilterSearchGlobal,
+    onSearch,
   } = useSidebarState();
 
   const handleInputKeyDown = (event: any) => {
@@ -73,55 +74,57 @@ export const Search = () => {
   };
 
   return (
-    <SearchParent>
-      <StyledInputBase
-        size="small"
-        placeholder="Search…"
-        inputProps={{ 'aria-label': 'search' }}
-        value={filterSearch}
-        onChange={(e) => setFilterSearch(e.target.value)}
-        onKeyDown={handleInputKeyDown}
-      />
-      <SearchIconWrapper>
-        <ButtonBase
-          onClick={() => {
-            setFilterSearchGlobal('');
-            setFilterSearch('');
-          }}
-          sx={{
-            visibility: filterSearchGlobal ? 'visible' : 'hidden',
-          }}
-        >
-          <CloseIcon
-            sx={{
-              color: theme.palette.action.active,
+    <>
+      <SearchParent>
+        <StyledInputBase
+          size="small"
+          placeholder="Search…"
+          inputProps={{ 'aria-label': 'search' }}
+          value={filterSearch}
+          onChange={(e) => setFilterSearch(e.target.value)}
+          onKeyDown={handleInputKeyDown}
+        />
+        <SearchIconWrapper>
+          <ButtonBase
+            onClick={() => {
+              setFilterSearchGlobal('');
+              setFilterSearch('');
             }}
-          />
-        </ButtonBase>
-        <ButtonBase
-          sx={{
-            height: '100%',
-          }}
-          onClick={onSearch}
-        >
-          <Box
             sx={{
-              height: '100%',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              bgcolor: 'primary.main',
-              width: '40px',
+              visibility: filterSearchGlobal ? 'visible' : 'hidden',
             }}
           >
-            <SearchIcon
+            <CloseIcon
               sx={{
-                color: 'background.paper2',
+                color: theme.palette.action.active,
               }}
             />
-          </Box>
-        </ButtonBase>
-      </SearchIconWrapper>
-    </SearchParent>
+          </ButtonBase>
+          <ButtonBase
+            sx={{
+              height: '100%',
+            }}
+            onClick={onSearch}
+          >
+            <Box
+              sx={{
+                height: '100%',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                bgcolor: 'primary.main',
+                width: '40px',
+              }}
+            >
+              <SearchIcon
+                sx={{
+                  color: 'background.paper2',
+                }}
+              />
+            </Box>
+          </ButtonBase>
+        </SearchIconWrapper>
+      </SearchParent>
+    </>
   );
 };

@@ -1,10 +1,36 @@
-import { Box, Chip, darken, Divider, ListItem, styled } from '@mui/material';
-import React, { useMemo } from 'react';
+import {
+  Box,
+  Chip,
+  darken,
+  Divider,
+  ListItem,
+  styled,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  IconButton,
+  useTheme,
+  Input,
+  FormControl,
+  InputLabel,
+  Select,
+  OutlinedInput,
+  MenuItem,
+  Button,
+} from '@mui/material';
+import React, { useMemo, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useHomeState } from './Home-State';
 import PlaylistPlayIcon from '@mui/icons-material/PlaylistPlay';
 import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
 import AddIcon from '@mui/icons-material/Add';
+import CloseIcon from '@mui/icons-material/Close';
+import {
+  FiltersContainer,
+  FiltersSubContainer,
+} from './Components/VideoList-styles';
+import { useSidebarState } from './Components/SearchSidebar-State';
+import { categories, subCategories } from '../../constants/Categories';
 
 const CustomChip = styled(Chip)(({ theme }) => ({
   backgroundColor: theme.palette.background.unSelected, // dark background
@@ -29,22 +55,30 @@ const CustomChip = styled(Chip)(({ theme }) => ({
 
 export const FilterOptions = () => {
   const navigate = useNavigate();
-
+  const [isOpen, setIsOpen] = useState(false);
+  const theme = useTheme();
   const {
     tabValue,
     changeTab,
     filterName,
     filterCategory,
-    subscriptions,
     filterType,
-    filterSearch,
-    filterSubCategory,
-    isHydrated,
     filterMode,
     setFilterMode,
     setFilterCategory,
     setFilterType,
   } = useHomeState();
+
+  const {
+    filterName: filterNameState,
+    setFilterName: setFilterNameState,
+    onSearch,
+    onReset,
+    selectedCategoryVideos,
+    selectedSubCategoryVideos,
+    handleOptionSubCategoryChangeVideos,
+    handleOptionCategoryChangeVideos,
+  } = useSidebarState();
 
   const handleClick = (query) => {
     if (query?.filterMode) {
@@ -108,110 +142,342 @@ export const FilterOptions = () => {
 
   console.log('filterType', filterType);
 
+  const handleClose = () => {
+    setIsOpen(false);
+  };
+
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        justifyContent: 'center',
-        flexWrap: 'wrap',
-        listStyle: 'none',
-        gap: '15px',
-        p: 0.5,
-        m: 0,
-        marginBottom: '40px',
-      }}
-      component="ul"
-    >
-      <CustomChip
-        icon={<PlayCircleOutlineIcon fontSize="small" />}
-        label="Videos"
-        clickable
-        onClick={() => setFilterType('videos')}
-        sx={(theme) => {
-          const baseColor =
-            filterType === 'videos'
-              ? theme.palette.primary.main
-              : theme.palette.background.unSelected;
-
-          return {
-            color:
-              filterType === 'videos' ? 'primary.contrastText' : 'text.primary',
-            fontWeight: 400,
-            backgroundColor: baseColor,
-            '&:hover': {
-              backgroundColor: darken(baseColor, 0.3), // 10% darker
-            },
-          };
-        }}
-      />
-      <CustomChip
-        icon={<PlaylistPlayIcon fontSize="small" />}
-        label="Playlists"
-        clickable
-        onClick={() => setFilterType('playlists')}
-        sx={(theme) => {
-          const baseColor =
-            filterType === 'playlists'
-              ? theme.palette.primary.main
-              : theme.palette.background.unSelected;
-
-          return {
-            color:
-              filterType === 'playlists'
-                ? 'primary.contrastText'
-                : 'text.primary',
-            fontWeight: 400,
-            backgroundColor: baseColor,
-            '&:hover': {
-              backgroundColor: darken(baseColor, 0.3), // 10% darker
-            },
-          };
-        }}
-      />
-      <Divider
-        flexItem
-        orientation="vertical"
+    <>
+      <Box
         sx={{
-          color: 'primary.main',
+          display: 'flex',
+          justifyContent: 'center',
+          flexWrap: 'wrap',
+          listStyle: 'none',
+          gap: '15px',
+          p: 0.5,
+          m: 0,
+          marginBottom: '40px',
         }}
-      />
+        component="ul"
+      >
+        <CustomChip
+          icon={<PlayCircleOutlineIcon fontSize="small" />}
+          label="Videos"
+          clickable
+          onClick={() => setFilterType('videos')}
+          sx={(theme) => {
+            const baseColor =
+              filterType === 'videos'
+                ? theme.palette.primary.main
+                : theme.palette.background.unSelected;
 
-      {chipData.map((data) => {
-        return (
-          <ListItem
-            key={data.label}
+            return {
+              color:
+                filterType === 'videos'
+                  ? 'primary.contrastText'
+                  : 'text.primary',
+              fontWeight: 400,
+              backgroundColor: baseColor,
+              '&:hover': {
+                backgroundColor: darken(baseColor, 0.3), // 10% darker
+              },
+            };
+          }}
+        />
+        <CustomChip
+          icon={<PlaylistPlayIcon fontSize="small" />}
+          label="Playlists"
+          clickable
+          onClick={() => setFilterType('playlists')}
+          sx={(theme) => {
+            const baseColor =
+              filterType === 'playlists'
+                ? theme.palette.primary.main
+                : theme.palette.background.unSelected;
+
+            return {
+              color:
+                filterType === 'playlists'
+                  ? 'primary.contrastText'
+                  : 'text.primary',
+              fontWeight: 400,
+              backgroundColor: baseColor,
+              '&:hover': {
+                backgroundColor: darken(baseColor, 0.3), // 10% darker
+              },
+            };
+          }}
+        />
+        <Divider
+          flexItem
+          orientation="vertical"
+          sx={{
+            color: 'primary.main',
+          }}
+        />
+
+        {chipData.map((data) => {
+          return (
+            <ListItem
+              key={data.label}
+              sx={{
+                width: 'auto',
+                padding: '0px',
+              }}
+            >
+              <Chip
+                //   icon={icon}
+                label={data.label}
+                onClick={() => handleClick(data)}
+                sx={(theme) => {
+                  const baseColor = data?.isSelected
+                    ? theme.palette.primary.main
+                    : theme.palette.background.unSelected;
+
+                  return {
+                    color: data.color,
+                    fontWeight: 400,
+                    backgroundColor: baseColor,
+                    '&:hover': {
+                      backgroundColor: darken(baseColor, 0.3), // 10% darker
+                    },
+                  };
+                }}
+              />
+            </ListItem>
+          );
+        })}
+        <CustomChip
+          icon={<AddIcon fontSize="small" />}
+          label="More Filters"
+          clickable
+          onClick={() => setIsOpen(true)}
+          sx={(theme) => {
+            const baseColor =
+              filterName || filterCategory
+                ? theme.palette.primary.main
+                : theme.palette.background.unSelected;
+
+            return {
+              color:
+                filterName || filterCategory
+                  ? 'primary.contrastText'
+                  : 'text.primary',
+              fontWeight: 400,
+              backgroundColor: baseColor,
+              '&:hover': {
+                backgroundColor: darken(baseColor, 0.3), // 10% darker
+              },
+            };
+          }}
+        />
+      </Box>
+      <Dialog open={isOpen} fullWidth={true} maxWidth={'sm'}>
+        <DialogTitle>Filters</DialogTitle>
+        <IconButton
+          aria-label="close"
+          onClick={handleClose}
+          sx={(theme) => ({
+            position: 'absolute',
+            right: 8,
+            top: 8,
+          })}
+        >
+          <CloseIcon />
+        </IconButton>
+        <DialogContent
+          sx={{
+            '::-webkit-scrollbar': {
+              width: '16px',
+              height: '10px',
+            },
+
+            '::-webkit-scrollbar-thumb': {
+              backgroundColor: theme.palette.primary.main,
+              borderRadius: '8px',
+              backgroundClip: 'content-box',
+              border: '4px solid transparent',
+              transition: '0.3s background-color',
+            },
+
+            '::-webkit-scrollbar-thumb:hover': {
+              backgroundColor: theme.palette.primary.dark,
+            },
+          }}
+        >
+          <Box
             sx={{
-              width: 'auto',
-              padding: '0px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '20px',
+              width: '100%',
+              alignItems: 'center',
             }}
           >
-            <Chip
-              //   icon={icon}
-              label={data.label}
-              onClick={() => handleClick(data)}
-              sx={(theme) => {
-                const baseColor = data?.isSelected
-                  ? theme.palette.primary.main
-                  : theme.palette.background.unSelected;
+            <FiltersContainer>
+              {/* <StatsData /> */}
 
-                return {
-                  color: data.color,
-                  fontWeight: 400,
-                  backgroundColor: baseColor,
-                  '&:hover': {
-                    backgroundColor: darken(baseColor, 0.3), // 10% darker
+              <Input
+                id="standard-adornment-name"
+                onChange={(e) => {
+                  setFilterNameState(e.target.value);
+                }}
+                value={filterNameState}
+                placeholder="User's Name (Exact)"
+                sx={{
+                  marginTop: '20px',
+                  borderBottom: '1px solid white',
+                  '&&:before': {
+                    borderBottom: 'none',
                   },
-                };
-              }}
-            />
-          </ListItem>
-        );
-      })}
-      <CustomChip
-        icon={<AddIcon fontSize="small" />}
-        label="More Filters"
-        clickable
-      />
-    </Box>
+                  '&&:after': {
+                    borderBottom: 'none',
+                  },
+                  '&&:hover:before': {
+                    borderBottom: 'none',
+                  },
+                  '&&.Mui-focused:before': {
+                    borderBottom: 'none',
+                  },
+                  '&&.Mui-focused': {
+                    outline: 'none',
+                  },
+                  fontSize: '18px',
+                }}
+              />
+
+              <FiltersSubContainer>
+                <FormControl sx={{ width: '98%', marginTop: '30px' }}>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      gap: '20px',
+                      flexDirection: 'column',
+                    }}
+                  >
+                    <FormControl fullWidth sx={{ marginBottom: 1 }}>
+                      <InputLabel
+                        sx={{
+                          fontSize: '16px',
+                        }}
+                        id="Category"
+                      >
+                        Category
+                      </InputLabel>
+                      <Select
+                        labelId="Category"
+                        input={<OutlinedInput label="Category" />}
+                        value={selectedCategoryVideos?.id || ''}
+                        onChange={handleOptionCategoryChangeVideos}
+                        sx={{
+                          // Target the input field
+                          '.MuiSelect-select': {
+                            fontSize: '16px', // Change font size for the selected value
+                            padding: '10px 5px 15px 15px;',
+                          },
+                          // Target the dropdown icon
+                          '.MuiSelect-icon': {
+                            fontSize: '20px', // Adjust if needed
+                          },
+                          // Target the dropdown menu
+                          '& .MuiMenu-paper': {
+                            '.MuiMenuItem-root': {
+                              fontSize: '14px', // Change font size for the menu items
+                            },
+                          },
+                        }}
+                      >
+                        {categories.map((option) => (
+                          <MenuItem key={option.id} value={option.id}>
+                            {option.name}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                    {selectedCategoryVideos &&
+                      subCategories[selectedCategoryVideos?.id] && (
+                        <FormControl fullWidth sx={{ marginBottom: 2 }}>
+                          <InputLabel
+                            sx={{
+                              fontSize: '16px',
+                            }}
+                            id="Sub-Category"
+                          >
+                            Sub-Category
+                          </InputLabel>
+                          <Select
+                            labelId="Sub-Category"
+                            input={<OutlinedInput label="Sub-Category" />}
+                            value={selectedSubCategoryVideos?.id || ''}
+                            onChange={(e) =>
+                              handleOptionSubCategoryChangeVideos(
+                                e,
+                                subCategories[selectedCategoryVideos?.id]
+                              )
+                            }
+                            sx={{
+                              // Target the input field
+                              '.MuiSelect-select': {
+                                fontSize: '16px', // Change font size for the selected value
+                                padding: '10px 5px 15px 15px;',
+                              },
+                              // Target the dropdown icon
+                              '.MuiSelect-icon': {
+                                fontSize: '20px', // Adjust if needed
+                              },
+                              // Target the dropdown menu
+                              '& .MuiMenu-paper': {
+                                '.MuiMenuItem-root': {
+                                  fontSize: '14px', // Change font size for the menu items
+                                },
+                              },
+                            }}
+                          >
+                            {subCategories[selectedCategoryVideos.id].map(
+                              (option) => (
+                                <MenuItem key={option.id} value={option.id}>
+                                  {option.name}
+                                </MenuItem>
+                              )
+                            )}
+                          </Select>
+                        </FormControl>
+                      )}
+                  </Box>
+                </FormControl>
+              </FiltersSubContainer>
+
+              <Button
+                onClick={() => {
+                  onReset();
+                }}
+                sx={{
+                  marginTop: '20px',
+                  width: '80%',
+                  alignSelf: 'center',
+                }}
+                variant="contained"
+              >
+                reset
+              </Button>
+              <Button
+                onClick={() => {
+                  onSearch();
+                }}
+                sx={{
+                  marginTop: '20px',
+                  width: '80%',
+                  alignSelf: 'center',
+                }}
+                variant="contained"
+              >
+                Search
+              </Button>
+            </FiltersContainer>
+          </Box>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };

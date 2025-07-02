@@ -98,6 +98,7 @@ export const useSidebarState = () => {
   return {
     filterSearch: filterStateSearch,
     setFilterSearch: setFilterStateSearch,
+    setFilterSearchGlobal: setFilterSearch,
     handleInputKeyDown,
     filterName: filterStateName,
     setFilterName: setFilterStateName,
@@ -109,5 +110,6 @@ export const useSidebarState = () => {
     setFilterType: setFilterStateType,
     onSearch,
     onReset,
+    filterSearchGlobal: filterSearch,
   };
 };

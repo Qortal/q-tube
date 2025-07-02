@@ -20,58 +20,15 @@ import { isSideBarExpandedAtom } from '../../../state/global/navbar.ts';
 import MenuIcon from '@mui/icons-material/Menu';
 import { COLLAPSED_WIDTH } from '../Sidenav/Sidenav.tsx';
 import SearchIcon from '@mui/icons-material/Search';
-import { useNavigate } from 'react-router-dom';
-import { useSidebarState } from '../../../pages/Home/Components/SearchSidebar-State.ts';
+import { Search } from './Search.tsx';
 
 interface Props {
   allNames: Names;
 }
 
-const Search = styled('div')(({ theme }) => ({
-  position: 'relative',
-  borderRadius: theme.shape.borderRadius,
-  display: 'flex',
-  alignItems: 'center',
-  marginLeft: 0,
-  padding: '0px 12px',
-  height: '90%',
-  width: '100%',
-  outline: `1px ${theme.palette.action.active} solid`,
-  [theme.breakpoints.up('sm')]: {
-    marginLeft: theme.spacing(1),
-    width: 'auto',
-  },
-}));
-
-const SearchIconWrapper = styled('div')(({ theme }) => ({
-  // padding: theme.spacing(0, 2),
-  // height: '100%',
-  position: 'absolute',
-  pointerEvents: 'none',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-}));
-
-const StyledInputBase = styled(InputBase)(({ theme }) => ({
-  color: 'inherit',
-  width: '100%',
-  '& .MuiInputBase-input': {
-    padding: theme.spacing(1, 1, 1, 0),
-    // vertical padding + font size from searchIcon
-    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-    transition: theme.transitions.create('width'),
-    [theme.breakpoints.up('sm')]: {
-      width: '30ch',
-    },
-  },
-}));
-
 const NavBar: React.FC<Props> = ({ allNames }) => {
   const isScreenSmall = !useMediaQuery(`(min-width:600px)`);
   const { name, avatarUrl } = useAuth();
-  const [query, setQuery] = useState('');
-  const navigate = useNavigate();
   const isSecure = !!name;
   const gapSize = 10;
   const [isSideBarExpanded, setIsSideBarExpanded] = useAtom(
@@ -80,28 +37,6 @@ const NavBar: React.FC<Props> = ({ allNames }) => {
   const handleDrawerOpen = (e) => {
     e.stopPropagation();
     setIsSideBarExpanded((prev) => !prev);
-  };
-
-  const {
-    filterSearch,
-    filterName,
-    filterType,
-    setFilterSearch,
-    setFilterName,
-    selectedCategoryVideos,
-    handleOptionCategoryChangeVideos,
-    selectedSubCategoryVideos,
-    handleOptionSubCategoryChangeVideos,
-    setFilterType,
-    onSearch,
-    onReset,
-  } = useSidebarState();
-
-  const handleInputKeyDown = (event: any) => {
-    if (event.key === 'Enter') {
-      onSearch();
-      navigate(`/`);
-    }
   };
 
   return (
@@ -145,23 +80,7 @@ const NavBar: React.FC<Props> = ({ allNames }) => {
           }}
         >
           <QtubeLogo />
-          <Search>
-            <SearchIconWrapper>
-              <SearchIcon
-                sx={{
-                  color: 'action.active',
-                }}
-              />
-            </SearchIconWrapper>
-            <StyledInputBase
-              size="small"
-              placeholder="Search…"
-              inputProps={{ 'aria-label': 'search' }}
-              value={filterSearch}
-              onChange={(e) => setFilterSearch(e.target.value)}
-              onKeyDown={handleInputKeyDown}
-            />
-          </Search>
+          <Search />
           <Box
             sx={{
               display: 'flex',

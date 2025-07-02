@@ -52,6 +52,7 @@ export const useHomeState = () => {
     filterCategory,
     subscriptions,
     filterType,
+    setFilterType,
     filterSearch,
     filterMode,
     filterSubCategory,

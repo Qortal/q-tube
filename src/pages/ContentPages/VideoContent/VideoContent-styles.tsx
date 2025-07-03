@@ -11,7 +11,6 @@ export const VideoContentContainer = styled(Box)(({ theme }) => ({
 export const VideoPlayerContainer = styled(Box)(({ theme }) => ({}));
 
 export const VideoTitle = styled(Typography)(({ theme }) => ({
-  fontSize: fontSizeMedium,
   color: theme.palette.text.primary,
   wordBreak: 'break-word',
 }));

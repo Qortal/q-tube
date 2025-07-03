@@ -1,5 +1,4 @@
-import DownloadIcon from '@mui/icons-material/Download';
-import { Box, SxProps, Theme } from '@mui/material';
+import { Box, ButtonBase, SxProps, Theme } from '@mui/material';
 import { useMemo } from 'react';
 import { CopyLinkButton } from '../../../components/common/ContentButtons/CopyLinkButton.tsx';
 import { IndexButton } from '../../../components/common/ContentButtons/IndexButton.tsx';
@@ -112,7 +111,7 @@ export const VideoActionsBar = ({
           </>
         )}
       </Box>
-      <Box sx={{ display: 'flex', gap: '5px' }}>
+      <Box sx={{ display: 'flex', gap: '10px', marginLeft: 'auto' }}>
         <IndexButton channelName={channelName} />
         <CopyLinkButton
           link={`qortal://APP/Q-Tube/video/${encodeURIComponent(videoData?.user)}/${encodeURIComponent(videoData?.id)}`}
@@ -120,8 +119,7 @@ export const VideoActionsBar = ({
         />
       </Box>
       {videoData && (
-        <FileAttachmentContainer sx={{ width: '100%', maxWidth: '340px' }}>
-          <FileAttachmentFont>Save Video</FileAttachmentFont>
+        <ButtonBase>
           <FileElement
             fileInfo={{
               ...videoReference,
@@ -134,10 +132,8 @@ export const VideoActionsBar = ({
               alignItems: 'center',
               justifyContent: 'flex-end',
             }}
-          >
-            <DownloadIcon />
-          </FileElement>
-        </FileAttachmentContainer>
+          />
+        </ButtonBase>
       )}
     </Box>
   );

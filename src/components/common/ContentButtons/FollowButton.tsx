@@ -1,7 +1,7 @@
 import { Box, Button, ButtonProps } from '@mui/material';
 import Tooltip, { TooltipProps, tooltipClasses } from '@mui/material/Tooltip';
 import { MouseEvent, useEffect, useState } from 'react';
-import { styled } from '@mui/material/styles';
+import { darken, styled } from '@mui/material/styles';
 import { CustomTooltip, TooltipLine } from './CustomTooltip.tsx';
 
 interface FollowButtonProps extends ButtonProps {
@@ -133,10 +133,17 @@ export const FollowButton = ({ followerName, ...props }: FollowButtonProps) => {
       <CustomTooltip title={tooltipTitle} placement={'top'} arrow>
         <Button
           {...props}
-          variant={'contained'}
-          color="success"
-          sx={buttonStyle}
+          variant={'outlined'}
+          color="info"
+          // sx={buttonStyle}
           onClick={(e) => manageFollow(e)}
+          sx={(theme) => {
+            const baseColor = theme.palette.info.main;
+            return {
+              minWidth: '125px',
+              color: isFollowingName() ? darken(baseColor, 0.7) : baseColor,
+            };
+          }}
         >
           {isFollowingName() ? 'Unfollow' : 'Follow'}
         </Button>

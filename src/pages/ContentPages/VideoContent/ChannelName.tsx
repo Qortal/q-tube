@@ -28,6 +28,7 @@ export const ChannelName = ({ channelName }: ChannelParams) => {
           flexDirection: 'row',
           alignItems: 'center',
           cursor: 'pointer',
+          minWidth: '125px',
         }}
         onClick={() => {
           navigate(`/channel/${channelName}`);

@@ -1,4 +1,4 @@
-import { Button, ButtonProps } from '@mui/material';
+import { Button, ButtonProps, darken, lighten } from '@mui/material';
 import { MouseEvent, useMemo } from 'react';
 
 import { CustomTooltip, TooltipLine } from './CustomTooltip.tsx';
@@ -80,9 +80,17 @@ export const SubscribeButton = ({
         {...props}
         variant={'contained'}
         disabled={!isHydratedSubscriptions}
-        color="error"
-        sx={buttonStyle}
+        // color="error"
+        // sx={buttonStyle}
+        color="info"
         onClick={(e) => manageSubscription(e)}
+        sx={(theme) => {
+          const baseColor = theme.palette.info.main;
+          return {
+            minWidth: '125px',
+            backgroundColor: isSubscribed ? darken(baseColor, 0.7) : baseColor,
+          };
+        }}
       >
         {isSubscribed ? 'Unsubscribe' : 'Subscribe'}
       </Button>

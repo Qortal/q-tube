@@ -20,6 +20,7 @@ export const CopyLinkButton = ({ link, tooltipTitle }: CopyLinkButtonProps) => {
       <Box
         sx={{
           cursor: 'pointer',
+          display: 'flex',
         }}
       >
         <ButtonBase

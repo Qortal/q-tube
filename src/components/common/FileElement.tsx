@@ -2,11 +2,14 @@ import * as React from 'react';
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import { CircularProgress } from '@mui/material';
+import { ButtonBase, CircularProgress, Popover } from '@mui/material';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import { useResourceStatus } from 'qapp-core';
 import { useLocation } from 'react-router-dom';
 import { useSetAtom } from 'jotai';
+import SaveIcon from '@mui/icons-material/Save';
+import DownloadIcon from '@mui/icons-material/Download';
+
 import {
   AltertObject,
   setNotificationAtom,
@@ -59,7 +62,6 @@ export default function FileElement({
   description,
   author,
   fileInfo,
-  children,
   mimeType,
   disable,
   customStyles,
@@ -68,6 +70,10 @@ export default function FileElement({
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const [downloadLoader, setDownloadLoader] = React.useState<any>(false);
   const location = useLocation();
+  const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
+    null
+  );
+
   const setNotification = useSetAtom(setNotificationAtom);
   const resourceStatus = useResourceStatus({
     resource: startedDownload ? fileInfo : null,
@@ -79,8 +85,6 @@ export default function FileElement({
     setStartedDownload(true);
     if (resourceStatus?.isReady) {
       if (downloadLoader) return;
-
-      setDownloadLoader(true);
 
       try {
         await qortalRequest({
@@ -96,29 +100,25 @@ export default function FileElement({
           alertType: 'error',
         };
         setNotification(notificationObj);
-      } finally {
-        setDownloadLoader(false);
       }
       return;
     }
-
-    setIsLoading(true);
   };
 
-  React.useEffect(() => {
-    if (resourceStatus?.isReady) {
-      setIsLoading(false);
-      const notificationObj: AltertObject = {
-        msg: 'Download completed. Click to save file',
-        alertType: 'info',
-      };
-      setNotification(notificationObj);
-    }
-  }, [resourceStatus?.isReady]);
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const open = Boolean(anchorEl);
+  const id = open ? 'simple-popover' : undefined;
 
   return (
     <Box
-      onClick={handlePlay}
+      // onClick={handlePlay}
       sx={{
         width: '100%',
         overflow: 'hidden',
@@ -127,176 +127,87 @@ export default function FileElement({
         ...(customStyles || {}),
       }}
     >
-      {children && (
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            position: 'relative',
-            gap: '7px',
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'flex-start',
+          position: 'relative',
+          flexDirection: 'column',
+        }}
+      >
+        <ButtonBase onClick={handleClick}>
+          {resourceStatus?.status === 'READY' ? <SaveIcon /> : <DownloadIcon />}
+        </ButtonBase>
+
+        <Popover
+          id={id}
+          open={open}
+          anchorEl={anchorEl}
+          onClose={handleClose}
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'left',
           }}
         >
-          {children}{' '}
-          {((resourceStatus.status && resourceStatus?.status !== 'READY') ||
-            isLoading) &&
-          startedDownload ? (
-            <>
-              <CircularProgress color="secondary" size={14} />
-              <Typography variant="body2">{`${Math.round(
-                resourceStatus?.percentLoaded || 0
-              ).toFixed(0)}% loaded`}</Typography>
-            </>
-          ) : resourceStatus?.status === 'READY' ? (
-            <>
-              <Typography
-                sx={{
-                  fontSize: '14px',
-                }}
-              >
-                Ready to save: click here
-              </Typography>
-              {downloadLoader && (
-                <CircularProgress color="secondary" size={14} />
+          <Box
+            sx={{
+              width: '240px',
+              height: '75px',
+              padding: '10px',
+            }}
+          >
+            <ButtonBase
+              onClick={handlePlay}
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                position: 'relative',
+
+                padding: '5px',
+              }}
+            >
+              {resourceStatus?.status === 'READY' ? (
+                <SaveIcon />
+              ) : (
+                <DownloadIcon />
               )}
-            </>
-          ) : null}
-        </Box>
-      )}
-      {!children && (
-        <Widget>
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <CoverImage>
-              <AttachFileIcon
-                sx={{
-                  width: '90%',
-                  height: 'auto',
-                }}
-              />
-            </CoverImage>
-            <Box sx={{ ml: 1.5, minWidth: 0 }}>
-              <Typography
-                variant="caption"
-                color="text.secondary"
-                fontWeight={500}
-              >
-                {author}
-              </Typography>
-              <Typography
-                noWrap
-                sx={{
-                  fontSize: '16px',
-                }}
-              >
-                <b>{title}</b>
-              </Typography>
-              <Typography
-                noWrap
-                letterSpacing={-0.25}
-                sx={{
-                  fontSize: '14px',
-                }}
-              >
-                {description}
-              </Typography>
-              {mimeType && (
-                <Typography
-                  noWrap
-                  letterSpacing={-0.25}
-                  sx={{
-                    fontSize: '12px',
-                  }}
-                >
-                  {mimeType}
-                </Typography>
-              )}
-            </Box>
-          </Box>
-          {((resourceStatus.status && resourceStatus?.status !== 'READY') ||
-            isLoading) &&
-            startedDownload && (
-              <Box
-                position="absolute"
-                top={0}
-                left={0}
-                right={0}
-                bottom={0}
-                display="flex"
-                justifyContent="center"
-                alignItems="center"
-                zIndex={4999}
-                bgcolor="rgba(0, 0, 0, 0.6)"
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '10px',
-                  padding: '8px',
-                  borderRadius: '10px',
-                }}
-              >
-                <CircularProgress color="secondary" />
-                {resourceStatus && (
+
+              {resourceStatus.status &&
+              resourceStatus?.status !== 'READY' &&
+              startedDownload ? (
+                <>
+                  <CircularProgress color="secondary" size={14} />
+                  <Typography variant="body2">{`${Math.round(
+                    resourceStatus?.percentLoaded || 0
+                  ).toFixed(0)}% loaded`}</Typography>
+                </>
+              ) : resourceStatus?.status === 'READY' ? (
+                <>
                   <Typography
-                    variant="subtitle2"
-                    component="div"
                     sx={{
-                      color: 'white',
                       fontSize: '14px',
                     }}
                   >
-                    {resourceStatus?.status === 'REFETCHING' ? (
-                      <>
-                        <>{resourceStatus?.percentLoaded?.toFixed(0)}%</>
-
-                        <> Refetching in 2 minutes</>
-                      </>
-                    ) : resourceStatus?.status === 'DOWNLOADED' ? (
-                      <>Download Completed: building file...</>
-                    ) : resourceStatus?.status !== 'READY' ? (
-                      <>{resourceStatus?.percentLoaded?.toFixed(0)}%</>
-                    ) : (
-                      <>Download Completed: fetching file...</>
-                    )}
+                    Ready to save: click here
                   </Typography>
-                )}
-              </Box>
-            )}
-          {resourceStatus?.isReady && (
-            <Box
-              position="absolute"
-              top={0}
-              left={0}
-              right={0}
-              bottom={0}
-              display="flex"
-              justifyContent="center"
-              alignItems="center"
-              zIndex={4999}
-              bgcolor="rgba(0, 0, 0, 0.6)"
-              sx={{
-                display: 'flex',
-                flexDirection: 'row',
-                gap: '10px',
-                padding: '8px',
-                borderRadius: '10px',
-              }}
-            >
-              <Typography
-                variant="subtitle2"
-                component="div"
-                sx={{
-                  color: 'white',
-                  fontSize: '14px',
-                }}
-              >
-                Ready to save: click here
-              </Typography>
-              {downloadLoader && (
-                <CircularProgress color="secondary" size={14} />
+                  {downloadLoader && (
+                    <CircularProgress color="secondary" size={14} />
+                  )}
+                </>
+              ) : null}
+              {!startedDownload && (
+                <Typography
+                  sx={{
+                    fontSize: '14px',
+                  }}
+                >
+                  Start download: click here
+                </Typography>
               )}
-            </Box>
-          )}
-        </Widget>
-      )}
+            </ButtonBase>
+          </Box>
+        </Popover>
+      </Box>
     </Box>
   );
 }

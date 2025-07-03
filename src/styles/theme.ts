@@ -125,6 +125,7 @@ const darkTheme = createTheme({
     text: {
       primary: '#ffffff',
       secondary: 'rgb(179, 179, 179)',
+      tertiary: '#757575',
     },
     action: {
       selected: 'rgba(255, 255, 255, 0.16)',

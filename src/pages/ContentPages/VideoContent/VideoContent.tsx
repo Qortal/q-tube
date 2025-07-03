@@ -1,4 +1,4 @@
-import { Box, Typography, useMediaQuery } from '@mui/material';
+import { Box, Button, Divider, Typography, useMediaQuery } from '@mui/material';
 import { useEffect, useState } from 'react';
 
 import { CommentSection } from '../../../components/common/Comments/CommentSection.tsx';
@@ -14,6 +14,8 @@ import { formatBytes } from '../../../utils/numberFunctions.ts';
 import { formatDate } from '../../../utils/time.ts';
 import { VideoActionsBar } from './VideoActionsBar.tsx';
 import { useVideoContentState } from './VideoContent-State.ts';
+import DOMPurify from 'dompurify';
+
 import {
   Spacer,
   VideoContentContainer,
@@ -22,6 +24,73 @@ import {
   VideoTitle,
 } from './VideoContent-styles.tsx';
 import { useScrollToTop } from '../../../hooks/useScrollToTop.tsx';
+import { CrowdfundInlineContent } from '../../../components/Publish/EditPlaylist/Upload-styles.tsx';
+import { convertQortalLinks } from '../../../components/common/TextEditor/utils.ts';
+
+function flattenHtml(html: string): string {
+  const sanitize: string = DOMPurify.sanitize(html, {
+    USE_PROFILES: { html: true },
+  });
+  const res = convertQortalLinks(sanitize);
+  return res
+    .replace(/<\/p>/gi, ' ') // replace end of paragraph with space
+    .replace(/<p[^>]*>/gi, '') // remove opening <p> tags
+    .replace(/<\/?div[^>]*>/gi, '') // remove divs
+    .replace(/\n/g, ' ') // remove newlines
+    .trim();
+}
+
+const CollapsibleDescription = ({
+  text,
+  html,
+}: {
+  text?: string;
+  html: any;
+}) => {
+  const [expanded, setExpanded] = useState(false);
+
+  return (
+    <Box
+      sx={{
+        maxWidth: '1200px',
+      }}
+    >
+      {text && (
+        <Typography
+          sx={{
+            display: '-webkit-box',
+            WebkitLineClamp: expanded ? 'none' : 2,
+            WebkitBoxOrient: 'vertical',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+          }}
+        >
+          {text}
+        </Typography>
+      )}
+      {html && (
+        <Box
+          sx={{
+            display: '-webkit-box',
+            WebkitLineClamp: expanded ? 'none' : 2,
+            WebkitBoxOrient: 'vertical',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            lineHeight: 1.5,
+          }}
+          dangerouslySetInnerHTML={{ __html: flattenHtml(html) }}
+        />
+      )}
+      <Button
+        onClick={() => setExpanded(!expanded)}
+        size="small"
+        sx={{ mt: 1, textTransform: 'none' }}
+      >
+        {expanded ? 'Show less' : 'Show more'}
+      </Button>
+    </Box>
+  );
+};
 
 export const VideoContent = () => {
   useScrollToTop();
@@ -64,6 +133,8 @@ export const VideoContent = () => {
       setScreenWidth(window.innerWidth + 120);
     });
   }, []);
+  console.log('videoData', videoData);
+  console.log('videoData?.fullDescription', videoData?.fullDescription);
 
   return (
     <>
@@ -106,7 +177,7 @@ export const VideoContent = () => {
           sx={{ paddingLeft: isScreenSmall ? '5px' : '0px' }}
         >
           <VideoTitle
-            variant={isScreenSmall ? 'h2' : 'h1'}
+            variant={isScreenSmall ? 'h2' : 'h4'}
             color="textPrimary"
             sx={{
               textAlign: 'start',
@@ -115,29 +186,32 @@ export const VideoContent = () => {
           >
             {videoData?.title}
           </VideoTitle>
-          <Box>
+          <Spacer height="10px" />
+          <Box
+            sx={{
+              display: 'flex',
+              gap: '14px',
+            }}
+          >
             {videoData?.created && (
               <Typography
-                variant="h2"
                 sx={{
-                  fontSize: fontSizeSmall,
+                  fontSize: '14px',
                   display: 'inline',
                 }}
-                color={theme.palette.text.primary}
+                color={theme.palette.text.tertiary}
               >
                 {formatDate(videoData.created)}
               </Typography>
             )}
-
+            <Divider orientation="vertical" flexItem />
             {videoData?.fileSize > minFileSize && (
               <Typography
-                variant="h1"
                 sx={{
-                  fontSize: '90%',
+                  fontSize: '14px',
                   display: 'inline',
-                  marginLeft: '20px',
                 }}
-                color={'green'}
+                color={theme.palette.text.tertiary}
               >
                 {formatBytes(videoData.fileSize, 2, 'Decimal')}
               </Typography>
@@ -153,7 +227,12 @@ export const VideoContent = () => {
           />
 
           <Spacer height="15px" />
-          {videoData?.fullDescription && (
+          {videoData?.htmlDescription ? (
+            <CollapsibleDescription html={videoData?.htmlDescription} />
+          ) : (
+            <CollapsibleDescription text={videoData?.fullDescription} />
+          )}
+          {/* {videoData?.fullDescription && (
             <Box
               sx={{
                 background: '#333333',
@@ -234,7 +313,7 @@ export const VideoContent = () => {
                 </Typography>
               )}
             </Box>
-          )}
+          )} */}
 
           {id && channelName && (
             <>

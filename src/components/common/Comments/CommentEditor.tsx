@@ -15,6 +15,7 @@ import {
   AltertObject,
   setNotificationAtom,
 } from '../../../state/global/notifications.ts';
+import { Box, Button } from '@mui/material';
 const uid = new ShortUniqueId({ length: 7 });
 
 const notification = localforage.createInstance({
@@ -114,7 +115,7 @@ export const CommentEditor = ({
   const [value, setValue] = useState<string>('');
   const { name, address } = useAuth();
   const setNotification = useSetAtom(setNotificationAtom);
-
+  const [isFocused, setIsFocused] = useState(false);
   useEffect(() => {
     if (isEdit && commentMessage) {
       setValue(commentMessage);
@@ -217,6 +218,8 @@ export const CommentEditor = ({
   return (
     <CommentInputContainer>
       <CommentInput
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setIsFocused(false)}
         id="standard-multiline-flexible"
         label="Your comment"
         multiline
@@ -230,9 +233,26 @@ export const CommentEditor = ({
         onChange={(e) => setValue(e.target.value)}
       />
 
-      <SubmitCommentButton variant="contained" onClick={handleSubmit}>
-        {isReply ? 'Submit reply' : isEdit ? 'Edit' : 'Submit comment'}
-      </SubmitCommentButton>
+      <Box
+        sx={{
+          width: '100%',
+          justifyContent: 'flex-end',
+          display: 'flex',
+          gap: '20px',
+          visibility: value || isFocused ? 'visible' : 'hidden',
+        }}
+      >
+        <Button onClick={() => setValue('')} variant="text">
+          Cancel
+        </Button>
+        <SubmitCommentButton
+          variant="contained"
+          color="info"
+          onClick={handleSubmit}
+        >
+          {isReply ? 'Submit reply' : isEdit ? 'Edit' : 'comment'}
+        </SubmitCommentButton>
+      </Box>
     </CommentInputContainer>
   );
 };

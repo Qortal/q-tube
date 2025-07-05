@@ -166,7 +166,7 @@ export const CommentsContainer = styled(Box)({
 export const CommentContainer = styled(Box)({
   display: 'flex',
   flexDirection: 'column',
-  margin: '25px 0px 50px 0px',
+  margin: '10px 0px 50px 0px',
   maxWidth: '100%',
   width: '100%',
   gap: '10px',
@@ -232,7 +232,6 @@ export const CommentInputContainer = styled(Box)({
   borderRadius: '8px',
   gap: '10px',
   alignItems: 'center',
-  marginBottom: '25px',
 });
 
 export const CommentInput = styled(TextField)(({ theme }) => ({
@@ -266,7 +265,6 @@ export const SubmitCommentButton = styled(Button)(({ theme }) => ({
   fontWeight: 400,
   letterSpacing: '0.2px',
   fontSize: '15px',
-  backgroundColor: theme.palette.primary.main,
-  color: '#ffffff',
-  width: '75%',
+  color: theme.palette.primary.contrastText,
+  minWidth: 100,
 }));

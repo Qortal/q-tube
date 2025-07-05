@@ -45,7 +45,7 @@ const CollapsibleDescription = ({
   html,
 }: {
   text?: string;
-  html: any;
+  html?: any;
 }) => {
   const [expanded, setExpanded] = useState(false);
 
@@ -173,6 +173,7 @@ export const VideoContent = () => {
             sx={{ width: '100%', height: '70vh', background: 'black' }}
           ></Box>
         )}
+        <Spacer height="20px" />
         <VideoContentContainer
           sx={{ paddingLeft: isScreenSmall ? '5px' : '0px' }}
         >

@@ -219,6 +219,13 @@ export const CommentSection = ({ postId, postName }: CommentSectionProps) => {
   return (
     <>
       <Panel>
+        <CommentEditorContainer>
+          <CommentEditor
+            onSubmit={onSubmit}
+            postId={postId}
+            postName={postName}
+          />
+        </CommentEditorContainer>
         <CommentsContainer>
           {loadingComments ? (
             <NoCommentsRow>
@@ -260,13 +267,6 @@ export const CommentSection = ({ postId, postName }: CommentSectionProps) => {
             </LoadMoreCommentsButtonRow>
           )}
         </CommentsContainer>
-        <CommentEditorContainer>
-          <CommentEditor
-            onSubmit={onSubmit}
-            postId={postId}
-            postName={postName}
-          />
-        </CommentEditorContainer>
       </Panel>
     </>
   );

@@ -20,7 +20,7 @@ export const LoadingVideo = () => {
 
   const getDownloadProgress = (current: number, total: number) => {
     const progress = (current / total) * 100;
-    return Number.isNaN(progress) ? "" : progress.toFixed(0) + "%";
+    return Number.isNaN(progress) ? "" : progress.toFixed(1) + "%";
   };
 
   const dispatch = useDispatch();
@@ -68,7 +68,7 @@ export const LoadingVideo = () => {
                     )}
                   </>
 
-                  <> Refetching in 25 seconds</>
+                  <> Refetching in 15 seconds</>
                 </>
               ) : resourceStatus?.status === "DOWNLOADED" ? (
                 <>Download Completed: building video...</>

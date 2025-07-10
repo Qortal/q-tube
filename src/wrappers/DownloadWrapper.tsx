@@ -145,7 +145,7 @@ const DownloadWrapper: React.FC<Props> = ({ children }) => {
                 service,
                 identifier,
               });
-            }, 25000);
+            }, 15000);
             return;
           }
           percentLoaded = res.percentLoaded;

@@ -100,6 +100,7 @@ const lightTheme = createTheme({
 
 const darkTheme = createTheme({
   ...commonThemeOptions,
+
   palette: {
     mode: 'dark',
     primary: {
@@ -130,6 +131,15 @@ const darkTheme = createTheme({
     action: {
       selected: 'rgba(255, 255, 255, 0.16)',
       active: '#949496',
+    },
+  },
+  components: {
+    MuiCssBaseline: {
+      styleOverrides: (theme) => ({
+        body: {
+          backgroundColor: theme.palette.background.default,
+        },
+      }),
     },
   },
 });

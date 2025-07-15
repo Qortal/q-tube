@@ -2,6 +2,7 @@ import { RefObject, useCallback, useRef } from 'react';
 
 import { VideoCardContainer } from './VideoList-styles.tsx';
 import {
+  LoaderListStatus,
   QortalSearchParams,
   ResourceListDisplay,
   useAuth,
@@ -13,6 +14,7 @@ import { VideoLoaderItem } from './VideoLoaderItem.tsx';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { editVideoAtom } from '../../../state/publish/video.ts';
 import { scrollRefAtom } from '../../../state/global/navbar.ts';
+import { Box, Typography } from '@mui/material';
 
 interface VideoListProps {
   searchParameters: QortalSearchParams;
@@ -36,6 +38,23 @@ export const VideoList = ({ searchParameters, listName }: VideoListProps) => {
   };
 
   const renderLoaderItem = useCallback((status) => {
+    return <VideoLoaderItem status={status} />;
+  }, []);
+
+  const renderLoaderList = useCallback((status: LoaderListStatus) => {
+    if (status === 'NO_RESULTS') {
+      return (
+        <Box
+          sx={{
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'center',
+          }}
+        >
+          <Typography>No results</Typography>
+        </Box>
+      );
+    }
     return <VideoLoaderItem status={status} />;
   }, []);
 
@@ -73,6 +92,7 @@ export const VideoList = ({ searchParameters, listName }: VideoListProps) => {
         disablePagination
         search={searchParameters}
         loaderItem={renderLoaderItem}
+        loaderList={renderLoaderList}
         listItem={renderListItem}
         returnType="JSON"
         scrollerRef={scrollRef}

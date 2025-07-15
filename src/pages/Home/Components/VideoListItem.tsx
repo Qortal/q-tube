@@ -3,6 +3,7 @@ import {
   BlockIconContainer,
   BottomParent,
   IconsBox,
+  InlineName,
   NameContainer,
   VideoCard,
   VideoCardCol,
@@ -134,7 +135,14 @@ export const VideoListItem = ({
               }}
             >
               <Avatar
-                sx={{ height: 24, width: 24 }}
+                sx={{
+                  height: 24,
+                  width: 24,
+                  transition: 'scale 0.2s',
+                  ':hover': {
+                    scale: 1.05,
+                  },
+                }}
                 src={`/arbitrary/THUMBNAIL/${qortalMetadata?.name}/qortal_avatar`}
                 alt={`${qortalMetadata?.name}'s avatar`}
               />
@@ -287,7 +295,14 @@ export const VideoListItem = ({
             }}
           >
             <Avatar
-              sx={{ height: 40, width: 40 }}
+              sx={{
+                height: 40,
+                width: 40,
+                transition: 'scale 0.2s',
+                ':hover': {
+                  scale: 1.05,
+                },
+              }}
               src={`/arbitrary/THUMBNAIL/${qortalMetadata?.name}/qortal_avatar`}
               alt={`${qortalMetadata?.name}'s avatar`}
             />
@@ -323,7 +338,16 @@ export const VideoListItem = ({
                 }}
               />
               <VideoUploadDate sx={{ display: 'inline', fontWeight: 500 }}>
-                {qortalMetadata?.name} | {formatDate(qortalMetadata.created)}
+                <InlineName
+                  sx={{}}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigate(`/channel/${qortalMetadata?.name}`);
+                  }}
+                >
+                  {qortalMetadata?.name}
+                </InlineName>{' '}
+                | {formatDate(qortalMetadata.created)}
               </VideoUploadDate>
             </Box>
           )}

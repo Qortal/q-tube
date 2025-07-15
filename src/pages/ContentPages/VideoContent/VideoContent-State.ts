@@ -25,7 +25,7 @@ export const useVideoContentState = () => {
       };
 
   const { resource } = usePublish(2, 'JSON', metadata);
-
+  console.log('resource', resource);
   const [superLikeversion, setSuperLikeVersion] = useState<null | number>(null);
   const [isExpandedDescription, setIsExpandedDescription] =
     useState<boolean>(false);

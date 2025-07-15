@@ -82,6 +82,11 @@ export const VideoCardName = styled(Typography)(({ theme }) => ({
   whiteSpace: 'nowrap',
   textOverflow: 'ellipsis',
 }));
+export const InlineName = styled('span')(({ theme }) => ({
+  ':hover': {
+    textDecoration: 'underline',
+  },
+}));
 export const VideoUploadDate = styled(Typography)(({ theme }) => ({
   fontSize: '12px',
   letterSpacing: '0.4px',

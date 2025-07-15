@@ -100,14 +100,31 @@ export const VideoListItem = ({
             );
           }}
         >
-          <ResponsiveImage
-            src={video?.image}
-            width={320}
-            height={180}
+          <div
             style={{
-              maxHeight: '50%',
+              height: 480,
+              width: 320,
+              maxHeight: '50vh',
+              maxWidth: '100%',
+              position: 'relative',
+              overflow: 'hidden',
             }}
-          />
+          >
+            <ResponsiveImage
+              src={video?.image}
+              width={320}
+              height={180}
+              style={{
+                position: 'absolute',
+                inset: 0,
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+                zIndex: 1,
+              }}
+              fill={true}
+            />
+          </div>
           <VideoCardTitle>{video?.title}</VideoCardTitle>
           <BottomParent>
             <NameContainer

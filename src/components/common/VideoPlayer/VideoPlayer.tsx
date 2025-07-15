@@ -26,6 +26,7 @@ export interface VideoPlayerProps {
   style?: CSS.Properties;
   duration?: number;
   filename: string;
+  parentStyles?: CSS.Properties;
 }
 
 export const VideoPlayer = ({ ...props }: VideoPlayerProps) => {
@@ -34,9 +35,13 @@ export const VideoPlayer = ({ ...props }: VideoPlayerProps) => {
   return (
     <Box
       sx={{
-        width: '100%',
+        // width: '100%',
         height: '70vh',
         background: 'black',
+        width: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        ...(props?.parentStyles || {}),
       }}
     >
       <QappVideoPlayer

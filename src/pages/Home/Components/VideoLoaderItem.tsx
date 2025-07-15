@@ -15,8 +15,7 @@ export const VideoLoaderItem = ({ status }) => {
           style={{
             width: 320,
             height: 180,
-            borderRadius: '8px',
-            marginTop: 10,
+            // borderRadius: '8px',
             alignSelf: 'center',
             maxWidth: '100%',
           }}
@@ -25,11 +24,17 @@ export const VideoLoaderItem = ({ status }) => {
         <BottomParent>
           <NameContainer>
             <Skeleton
+              variant="circular"
+              style={{
+                width: 24,
+                height: 24,
+              }}
+            />
+            <Skeleton
               variant="rectangular"
               style={{
                 width: 200,
-                height: 50,
-                marginTop: 12,
+                height: 34,
                 alignSelf: 'center',
                 maxWidth: '100%',
               }}
@@ -39,18 +44,8 @@ export const VideoLoaderItem = ({ status }) => {
             variant="rectangular"
             style={{
               width: 200,
-              height: 24,
-              marginTop: 15,
-              alignSelf: 'center',
-            }}
-          />
-          <Skeleton
-            variant="rectangular"
-            style={{
-              width: 200,
-              height: 24,
-              marginTop: 15,
-              alignSelf: 'center',
+              height: 15,
+              marginTop: '5px',
             }}
           />
         </BottomParent>

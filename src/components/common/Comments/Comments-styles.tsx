@@ -25,10 +25,10 @@ export const CardContentContainer = styled(Box)(({ theme }) => ({
 }));
 
 export const CardContentContainerComment = styled(Box)(({ theme }) => ({
-  backgroundColor: theme.palette.mode === 'light' ? '#a9d9d038' : '#c3abe414',
-  border: `1px solid ${theme.palette.primary.main}`,
+  // backgroundColor: theme.palette.mode === 'light' ? '#a9d9d038' : '#c3abe414',
+  // border: `1px solid ${theme.palette.primary.main}`,
   margin: '0px',
-  padding: '8px 15px',
+  // padding: '8px 15px',
   borderRadius: '8px',
   width: '100%',
   display: 'flex',
@@ -45,10 +45,10 @@ export const StyledCardHeader = styled(Box)({
 
 export const StyledCardHeaderComment = styled(Box)({
   display: 'flex',
-  alignItems: 'center',
+  alignItems: 'flex-start',
   justifyContent: 'flex-start',
   gap: '7px',
-  padding: '9px 7px',
+  padding: '0px 7px 9px 0px',
 });
 
 export const StyledCardCol = styled(Box)({
@@ -83,13 +83,13 @@ export const StyledCardContentComment = styled(Box)({
   flexDirection: 'column',
   alignItems: 'flex-start',
   justifyContent: 'flex-start',
-  padding: '5px 10px',
+  // padding: '5px 10px',
   gap: '10px',
 });
 
 export const StyledCardComment = styled(Typography)(({ theme }) => ({
   letterSpacing: 0,
-  fontWeight: 400,
+  fontWeight: 300,
   color: theme.palette.text.primary,
   fontSize: '19px',
   wordBreak: 'break-word',
@@ -112,7 +112,14 @@ export const AuthorText = styled(Typography)({
 export const AuthorTextComment = styled(Typography)(({ theme }) => ({
   fontSize: '17px',
   letterSpacing: '0.3px',
-  fontWeight: 400,
+  fontWeight: 500,
+  color: theme.palette.text.primary,
+  userSelect: 'none',
+}));
+export const CreatedTextComment = styled(Typography)(({ theme }) => ({
+  fontSize: '17px',
+  letterSpacing: '0.3px',
+  fontWeight: 300,
   color: theme.palette.text.primary,
   userSelect: 'none',
 }));
@@ -231,7 +238,7 @@ export const CommentInputContainer = styled(Box)({
   maxWidth: '1000px',
   borderRadius: '8px',
   gap: '10px',
-  alignItems: 'center',
+  alignItems: 'flex-start',
 });
 
 export const CommentInput = styled(TextField)(({ theme }) => ({

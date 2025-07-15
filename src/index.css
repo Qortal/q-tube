@@ -1,7 +1,7 @@
 /* Roboto Thin 100 */
 @font-face {
   font-family: 'Roboto';
-  src: url('.styles/fonts/Roboto-Thin.ttf') format('truetype');
+  src: url('./styles/fonts/Roboto-Thin.ttf') format('truetype');
   font-weight: 100;
   font-style: normal;
 }

@@ -191,16 +191,12 @@ export const LoadMoreCommentsButtonRow = styled(Box)({
 export const EditReplyButton = styled(Button)(({ theme }) => ({
   width: '30px',
   alignSelf: 'flex-end',
-  background: theme.palette.primary.light,
-  color: '#ffffff',
 }));
 
 export const LoadMoreCommentsButton = styled(Button)(({ theme }) => ({
   fontWeight: 400,
   letterSpacing: '0.2px',
   fontSize: '15px',
-  backgroundColor: theme.palette.primary.main,
-  color: '#ffffff',
 }));
 
 export const CommentActionButtonRow = styled(Box)({
@@ -266,7 +262,5 @@ export const SubmitCommentButton = styled(Button)(({ theme }) => ({
   fontWeight: 400,
   letterSpacing: '0.2px',
   fontSize: '15px',
-  backgroundColor: theme.palette.primary.main,
-  color: '#ffffff',
   width: '75%',
 }));

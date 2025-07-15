@@ -203,7 +203,11 @@ export const SuperLike = ({
         }}
       >
         <CustomTooltip title="Super Like" placement="top">
-          <Box>
+          <Box
+            sx={{
+              display: 'flex',
+            }}
+          >
             <ThumbUpIcon
               style={{
                 color: 'gold',
@@ -217,6 +221,7 @@ export const SuperLike = ({
                   alignItems: 'center',
                   justifyContent: 'center',
                   userSelect: 'none',
+                  marginLeft: '5px',
                 }}
               >
                 <span style={{ marginRight: '10px', paddingBottom: '4px' }}>

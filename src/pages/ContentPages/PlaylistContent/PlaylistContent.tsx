@@ -61,49 +61,88 @@ export const PlaylistContent = () => {
         alignItems: 'center',
         flexDirection: 'column',
         padding: '0px',
-        marginLeft: '2%',
+        width: '100%',
       }}
     >
       <VideoPlayerContainer
         sx={{
-          width: isScreenSmall ? '100%' : '60%',
           alignSelf: 'start',
           paddingRight: isScreenSmall ? '10px' : '0px',
           marginBottom: '20px',
+          height: '70vh',
+          flexDirection: 'row',
+          width: '100%',
+          gap: '10px',
         }}
       >
-        {videoReference && (
-          <VideoPlayer
-            name={videoReference?.name}
-            service={videoReference?.service}
-            identifier={videoReference?.identifier}
-            user={channelName}
-            jsonId={id}
-            poster={videoCover || ''}
-            nextVideo={nextVideo}
-            onEnd={onEndVideo}
-            autoPlay={doAutoPlay}
-            videoStyles={{
-              video: { aspectRatio: '16 / 9' },
-            }}
-            duration={videoData?.duration}
-            filename={videoData?.filename}
-          />
-        )}
-        {playlistData && (
-          <Playlists
-            playlistData={playlistData}
-            currentVideoIdentifier={videoData?.id}
-            onClick={(name, identifier) => {
-              setVideoMetadataResource({
-                name,
-                identifier,
-                service: 'DOCUMENT',
-              });
-            }}
-            sx={playlistsSX}
-          />
-        )}
+        <Box
+          sx={{
+            display: 'flex',
+            flexGrow: 1,
+            flexBasis: '75%',
+          }}
+        >
+          {videoReference && (
+            <VideoPlayer
+              name={videoReference?.name}
+              service={videoReference?.service}
+              identifier={videoReference?.identifier}
+              user={channelName}
+              jsonId={id}
+              poster={videoCover || ''}
+              nextVideo={nextVideo}
+              onEnd={onEndVideo}
+              autoPlay={doAutoPlay}
+              videoStyles={{
+                video: { aspectRatio: '16 / 9' },
+              }}
+              duration={videoData?.duration}
+              filename={videoData?.filename}
+            />
+          )}
+        </Box>
+        <Box
+          sx={{
+            display: 'flex',
+            flexGrow: 1,
+            height: '100%',
+            overflow: 'auto',
+            '::-webkit-scrollbar-track': {
+              backgroundColor: 'transparent',
+            },
+
+            '::-webkit-scrollbar': {
+              width: '16px',
+              height: '10px',
+            },
+
+            '::-webkit-scrollbar-thumb': {
+              backgroundColor: 'rgba(63, 67, 80, 0.24)',
+              borderRadius: '8px',
+              backgroundClip: 'content-box',
+              border: '4px solid transparent',
+              transition: '0.3s background-color',
+            },
+            '::-webkit-scrollbar-thumb:hover': {
+              backgroundColor: 'rgba(63, 67, 80, 0.50)',
+            },
+          }}
+        >
+          {playlistData && (
+            <Playlists
+              playlistData={playlistData}
+              currentVideoIdentifier={videoData?.id}
+              onClick={(name, identifier) => {
+                setVideoMetadataResource({
+                  name,
+                  identifier,
+                  service: 'DOCUMENT',
+                });
+              }}
+              // sx={playlistsSX}
+            />
+          )}
+        </Box>
       </VideoPlayerContainer>
       <VideoActionsBar
         channelName={channelName}

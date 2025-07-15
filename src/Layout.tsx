@@ -54,11 +54,14 @@ const Layout = () => {
             },
 
             '::-webkit-scrollbar-thumb': {
-              backgroundColor: '#90CAF9',
+              backgroundColor: 'rgba(63, 67, 80, 0.24)',
               borderRadius: '8px',
               backgroundClip: 'content-box',
               border: '4px solid transparent',
               transition: '0.3s background-color',
+            },
+            '::-webkit-scrollbar-thumb:hover': {
+              backgroundColor: 'rgba(63, 67, 80, 0.50)',
             },
           }}
         >

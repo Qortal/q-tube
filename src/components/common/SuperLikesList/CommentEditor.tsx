@@ -277,7 +277,11 @@ export const CommentEditor = ({
         onChange={(e) => setValue(e.target.value)}
       />
 
-      <SubmitCommentButton variant="contained" onClick={handleSubmit}>
+      <SubmitCommentButton
+        color="info"
+        variant="contained"
+        onClick={handleSubmit}
+      >
         {isReply ? 'Submit reply' : isEdit ? 'Edit' : 'Submit comment'}
       </SubmitCommentButton>
     </CommentInputContainer>

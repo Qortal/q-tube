@@ -5,9 +5,9 @@ import {
   Typography,
   useMediaQuery,
   useTheme,
-} from "@mui/material";
-import React from "react";
-import { CardContentContainerComment } from "../common/Comments/Comments-styles";
+} from '@mui/material';
+import React from 'react';
+import { CardContentContainerComment } from '../common/Comments/Comments-styles';
 
 interface PlaylistsProps {
   playlistData;
@@ -23,23 +23,25 @@ export const Playlists = ({
 }: PlaylistsProps) => {
   const theme = useTheme();
   const isScreenSmall = !useMediaQuery(`(min-width:700px)`);
-  const PlaylistsHeight = "36vw"; // This is videoplayer width * 9/16 (inverse of aspect ratio)
+  const PlaylistsHeight = '36vw'; // This is videoplayer width * 9/16 (inverse of aspect ratio)
 
   return (
     <Box
       sx={{
-        width: "100%",
-        height: isScreenSmall ? "200px" : PlaylistsHeight,
+        // width: "100%",
         ...sx,
-        display: "flex",
-        flexDirection: "column",
+        display: 'flex',
+        flexDirection: 'column',
+        width: '100%',
+        height: '100%',
       }}
     >
       <CardContentContainerComment
         sx={{
-          marginTop: "0px",
-          height: "100%",
-          overflow: "auto",
+          marginTop: '0px',
+          height: '100%',
+          gap: '3px',
+          padding: '3px',
         }}
       >
         {playlistData?.videos?.map((vid, index) => {
@@ -50,15 +52,18 @@ export const Playlists = ({
             <Box
               key={vid?.identifier}
               sx={{
-                display: "flex",
-                gap: "10px",
-                width: "100%",
+                display: 'flex',
+                gap: '10px',
+                width: '100%',
                 background: isCurrentVidPlaying && theme.palette.primary.main,
-                alignItems: "center",
-                padding: "10px",
-                borderRadius: "5px",
-                cursor: isCurrentVidPlaying ? "default" : "pointer",
-                userSelect: "none",
+                color:
+                  isCurrentVidPlaying && theme.palette.primary.contrastText,
+                alignItems: 'center',
+                padding: '10px',
+                borderRadius: '5px',
+                cursor: isCurrentVidPlaying ? 'default' : 'pointer',
+                userSelect: 'none',
+                border: '1px solid rgba(255, 255, 255, 0.23)',
               }}
               onClick={() => {
                 if (isCurrentVidPlaying) return;
@@ -68,16 +73,16 @@ export const Playlists = ({
             >
               <Typography
                 sx={{
-                  fontSize: "18px",
-                  fontWeight: "bold",
+                  fontSize: '18px',
+                  fontWeight: 'bold',
                 }}
               >
                 {index + 1}
               </Typography>
               <Typography
                 sx={{
-                  fontSize: "18px",
-                  wordBreak: "break-word",
+                  fontSize: '18px',
+                  wordBreak: 'break-word',
                 }}
               >
                 {vid?.metadata?.title}

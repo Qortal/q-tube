@@ -142,15 +142,19 @@ export const Comment = ({
             </Typography>
           )}
           <CommentActionButtonRow>
-            <CommentActionButton
-              size="small"
-              variant="contained"
-              onClick={() => setIsReplying(true)}
-            >
-              reply
-            </CommentActionButton>
+            {!isReplying && (
+              <CommentActionButton
+                size="small"
+                variant="contained"
+                onClick={() => setIsReplying(true)}
+              >
+                reply
+              </CommentActionButton>
+            )}
+
             {username === comment?.name && hasHash && (
               <CommentActionButton
+                color="info"
                 size="small"
                 variant="contained"
                 onClick={() => setCurrentEdit(comment)}
@@ -161,7 +165,8 @@ export const Comment = ({
             {isReplying && (
               <CommentActionButton
                 size="small"
-                variant="contained"
+                variant="text"
+                color="info"
                 onClick={() => {
                   setIsReplying(false);
                   setIsEditing(false);
@@ -328,6 +333,7 @@ export const CommentCard = ({
                   {username === reply?.name ? (
                     <EditReplyButton
                       size="small"
+                      color="info"
                       variant="contained"
                       onClick={() => setCurrentEdit(reply)}
                       sx={{}}

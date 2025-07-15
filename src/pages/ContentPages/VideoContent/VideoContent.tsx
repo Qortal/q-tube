@@ -1,9 +1,8 @@
 import { Box, Button, Divider, Typography, useMediaQuery } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { CommentSection } from '../../../components/common/Comments/CommentSection.tsx';
 import { SuperLikesSection } from '../../../components/common/SuperLikesList/SuperLikesSection.tsx';
-import { DisplayHtml } from '../../../components/common/TextEditor/DisplayHtml.tsx';
 import { VideoPlayer } from '../../../components/common/VideoPlayer/VideoPlayer.tsx';
 import {
   fontSizeSmall,
@@ -19,19 +18,17 @@ import DOMPurify from 'dompurify';
 import {
   Spacer,
   VideoContentContainer,
-  VideoDescription,
   VideoPlayerContainer,
   VideoTitle,
 } from './VideoContent-styles.tsx';
 import { useScrollToTop } from '../../../hooks/useScrollToTop.tsx';
-import { CrowdfundInlineContent } from '../../../components/Publish/EditPlaylist/Upload-styles.tsx';
-import { convertQortalLinks } from '../../../components/common/TextEditor/utils.ts';
+import { processText } from 'qapp-core';
 
 function flattenHtml(html: string): string {
   const sanitize: string = DOMPurify.sanitize(html, {
     USE_PROFILES: { html: true },
   });
-  const res = convertQortalLinks(sanitize);
+  const res = processText(sanitize);
   return res
     .replace(/<\/p>/gi, ' ') // replace end of paragraph with space
     .replace(/<p[^>]*>/gi, '') // remove opening <p> tags
@@ -48,15 +45,38 @@ const CollapsibleDescription = ({
   html?: any;
 }) => {
   const [expanded, setExpanded] = useState(false);
+  const [showMore, setShowMore] = useState(false);
+  const textRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (textRef.current) {
+      const el = textRef.current;
+
+      // Clone the element to measure full height
+      const clone = el.cloneNode(true) as HTMLElement;
+      clone.style.visibility = 'hidden';
+      clone.style.position = 'absolute';
+      clone.style.pointerEvents = 'none';
+      clone.style.WebkitLineClamp = 'none';
+      clone.style.display = 'block';
+
+      document.body.appendChild(clone);
+      const fullHeight = clone.offsetHeight;
+      document.body.removeChild(clone);
+
+      const clampedHeight = el.offsetHeight;
+
+      if (fullHeight > clampedHeight + 2) {
+        setShowMore(true);
+      }
+    }
+  }, [text, html]);
 
   return (
-    <Box
-      sx={{
-        maxWidth: '1200px',
-      }}
-    >
+    <Box sx={{ maxWidth: '1200px' }}>
       {text && (
         <Typography
+          ref={textRef}
           sx={{
             display: '-webkit-box',
             WebkitLineClamp: expanded ? 'none' : 2,
@@ -70,6 +90,7 @@ const CollapsibleDescription = ({
       )}
       {html && (
         <Box
+          ref={textRef}
           sx={{
             display: '-webkit-box',
             WebkitLineClamp: expanded ? 'none' : 2,
@@ -81,13 +102,15 @@ const CollapsibleDescription = ({
           dangerouslySetInnerHTML={{ __html: flattenHtml(html) }}
         />
       )}
-      <Button
-        onClick={() => setExpanded(!expanded)}
-        size="small"
-        sx={{ mt: 1, textTransform: 'none' }}
-      >
-        {expanded ? 'Show less' : 'Show more'}
-      </Button>
+      {showMore && (
+        <Button
+          onClick={() => setExpanded(!expanded)}
+          size="small"
+          sx={{ mt: 1, textTransform: 'none' }}
+        >
+          {expanded ? 'Show less' : 'Show more'}
+        </Button>
+      )}
     </Box>
   );
 };
@@ -133,8 +156,6 @@ export const VideoContent = () => {
       setScreenWidth(window.innerWidth + 120);
     });
   }, []);
-  console.log('videoData', videoData);
-  console.log('videoData?.fullDescription', videoData?.fullDescription);
 
   return (
     <>
@@ -233,88 +254,6 @@ export const VideoContent = () => {
           ) : (
             <CollapsibleDescription text={videoData?.fullDescription} />
           )}
-          {/* {videoData?.fullDescription && (
-            <Box
-              sx={{
-                background: '#333333',
-                borderRadius: '5px',
-                padding: '5px',
-                width: '95%',
-                cursor: !descriptionHeight
-                  ? 'default'
-                  : isExpandedDescription
-                    ? 'default'
-                    : 'pointer',
-                position: 'relative',
-                marginBottom: '30px',
-              }}
-              className={
-                !descriptionHeight
-                  ? ''
-                  : isExpandedDescription
-                    ? ''
-                    : 'hover-click'
-              }
-            >
-              {descriptionHeight && !isExpandedDescription && (
-                <Box
-                  sx={{
-                    position: 'absolute',
-                    top: '0px',
-                    right: '0px',
-                    left: '0px',
-                    bottom: '0px',
-                    cursor: 'pointer',
-                  }}
-                  onClick={() => {
-                    if (isExpandedDescription) return;
-                    setIsExpandedDescription(true);
-                  }}
-                />
-              )}
-              <Box
-                ref={contentRef}
-                sx={{
-                  height: !descriptionHeight
-                    ? 'auto'
-                    : isExpandedDescription
-                      ? 'auto'
-                      : '200px',
-                  overflow: 'hidden',
-                }}
-              >
-                {videoData?.htmlDescription ? (
-                  <DisplayHtml html={videoData?.htmlDescription} />
-                ) : (
-                  <VideoDescription
-                    variant="body1"
-                    color="textPrimary"
-                    sx={{
-                      cursor: 'default',
-                    }}
-                  >
-                    {videoData?.fullDescription}
-                  </VideoDescription>
-                )}
-              </Box>
-              {descriptionHeight >= descriptionThreshold && (
-                <Typography
-                  onClick={() => {
-                    setIsExpandedDescription((prev) => !prev);
-                  }}
-                  sx={{
-                    fontWeight: 'bold',
-                    fontSize: '16px',
-                    cursor: 'pointer',
-                    paddingLeft: '15px',
-                    paddingTop: '15px',
-                  }}
-                >
-                  {isExpandedDescription ? 'Show less' : '...more'}
-                </Typography>
-              )}
-            </Box>
-          )} */}
 
           {id && channelName && (
             <>

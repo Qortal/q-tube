@@ -105,7 +105,7 @@ const darkTheme = createTheme({
     primary: {
       // main: '#101115',
       main: '#90CAF9',
-      dark: 'rgb(45, 92, 201)',
+      dark: 'rgba(66, 165, 245, 1)',
       light: 'rgb(130, 185, 255)',
       contrastText: 'rgba(0, 0, 0, 0.87)',
     },

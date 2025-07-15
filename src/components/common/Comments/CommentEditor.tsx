@@ -89,6 +89,7 @@ interface CommentEditorProps {
   commentId?: string;
   isEdit?: boolean;
   commentMessage?: string;
+  onCloseReply?: () => void;
 }
 
 function utf8ToBase64(inputString: string): string {
@@ -111,6 +112,7 @@ export const CommentEditor = ({
   commentId,
   isEdit,
   commentMessage,
+  onCloseReply,
 }: CommentEditorProps) => {
   const [value, setValue] = useState<string>('');
   const { name, address } = useAuth();
@@ -215,6 +217,8 @@ export const CommentEditor = ({
     }
   };
 
+  console.log('onCloseReply', onCloseReply);
+
   return (
     <CommentInputContainer>
       <CommentInput
@@ -239,10 +243,21 @@ export const CommentEditor = ({
           justifyContent: 'flex-end',
           display: 'flex',
           gap: '20px',
-          visibility: value || isFocused ? 'visible' : 'hidden',
+          visibility: isReply
+            ? 'visible'
+            : value || isFocused
+              ? 'visible'
+              : 'hidden',
         }}
       >
-        <Button onClick={() => setValue('')} variant="text">
+        <Button
+          onClick={(e) => {
+            setValue('');
+            if (!onCloseReply) return;
+            onCloseReply();
+          }}
+          variant="text"
+        >
           Cancel
         </Button>
         <SubmitCommentButton

@@ -9,6 +9,7 @@ interface ResponsiveImageProps {
   alt?: string;
   className?: string;
   style?: CSSProperties;
+  fill?: boolean;
 }
 
 const ResponsiveImage: React.FC<ResponsiveImageProps> = ({
@@ -18,6 +19,7 @@ const ResponsiveImage: React.FC<ResponsiveImageProps> = ({
   alt,
   className,
   style,
+  fill,
 }) => {
   const [loading, setLoading] = useState(true);
 
@@ -46,8 +48,7 @@ const ResponsiveImage: React.FC<ResponsiveImageProps> = ({
           variant="rectangular"
           style={{
             width: '100%',
-            height: 0,
-            paddingBottom: `${(height / width) * 100}%`,
+            height: '100%',
             objectFit: 'contain',
             visibility: loading ? 'visible' : 'hidden',
             borderRadius: '8px',
@@ -57,13 +58,13 @@ const ResponsiveImage: React.FC<ResponsiveImageProps> = ({
 
       <img
         onLoad={() => setLoading(false)}
-        src={!src && !loading ? DeletedVideo : src || null}
+        src={!src && !loading ? DeletedVideo : src || ''}
         style={{
           width: '100%',
           height: '100%',
           borderRadius: '8px',
           display: loading ? 'none' : 'unset',
-          objectFit: 'contain',
+          objectFit: fill ? 'fill' : 'contain',
           maskImage: 'radial-gradient(circle, black 95%, transparent 100%)',
           maskMode: 'alpha',
         }}

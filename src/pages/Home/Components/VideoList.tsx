@@ -1,4 +1,4 @@
-import { useCallback, useRef } from 'react';
+import { RefObject, useCallback, useRef } from 'react';
 
 import { VideoCardContainer } from './VideoList-styles.tsx';
 import {

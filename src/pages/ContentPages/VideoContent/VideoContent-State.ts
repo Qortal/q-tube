@@ -16,19 +16,16 @@ export const useVideoContentState = () => {
   const { name: channelName, id } = useParams();
   const [videoMetadataResource, setVideoMetadataResource] =
     useState<null | QortalGetMetadata>(null);
-  const { resource } = usePublish(
-    2,
-    'JSON',
-    videoMetadataResource
-      ? videoMetadataResource
-      : !id
-        ? null
-        : {
-            identifier: id,
-            name: channelName,
-            service: 'DOCUMENT',
-          }
-  );
+  const metadata: QortalGetMetadata = videoMetadataResource
+    ? videoMetadataResource
+    : {
+        identifier: id || '',
+        name: channelName || '',
+        service: 'DOCUMENT',
+      };
+
+  const { resource } = usePublish(2, 'JSON', metadata);
+
   const [superLikeversion, setSuperLikeVersion] = useState<null | number>(null);
   const [isExpandedDescription, setIsExpandedDescription] =
     useState<boolean>(false);

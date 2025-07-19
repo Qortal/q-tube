@@ -11,6 +11,7 @@ import {
   FileAttachmentContainer,
   FileAttachmentFont,
 } from './VideoContent-styles.tsx';
+import { AddToBookmarks } from '../../../components/common/ContentButtons/AddToBookmarks.tsx';
 
 export interface VideoActionsBarProps {
   channelName: string;
@@ -33,6 +34,7 @@ export const VideoActionsBar = ({
   setSuperLikeList,
   sx,
 }: VideoActionsBarProps) => {
+  console.log('videoData', videoData);
   const calculateAmountSuperlike = useMemo(() => {
     const totalQort = superLikeList?.reduce((acc, curr) => {
       if (curr?.amount && !isNaN(parseFloat(curr.amount)))
@@ -112,6 +114,13 @@ export const VideoActionsBar = ({
         )}
       </Box>
       <Box sx={{ display: 'flex', gap: '10px', marginLeft: 'auto' }}>
+        <AddToBookmarks
+          metadataReference={{
+            identifier: videoData?.id,
+            service: 'DOCUMENT',
+            name: videoData?.user,
+          }}
+        />
         <IndexButton channelName={channelName} />
         <CopyLinkButton
           link={`qortal://APP/Q-Tube/video/${encodeURIComponent(videoData?.user)}/${encodeURIComponent(videoData?.id)}`}

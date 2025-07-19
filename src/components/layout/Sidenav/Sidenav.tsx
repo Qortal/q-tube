@@ -17,8 +17,9 @@ import HomeIcon from '@mui/icons-material/Home';
 import StarIcon from '@mui/icons-material/Star';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import PlaylistPlayIcon from '@mui/icons-material/PlaylistPlay';
+import BookmarksIcon from '@mui/icons-material/Bookmarks';
 import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 const DRAWER_WIDTH = 240;
 export const COLLAPSED_WIDTH = 68;
 
@@ -39,7 +40,12 @@ const drawerItems = [
     path: '/history',
   },
   {
-    name: 'Playlists',
+    name: 'Bookmarks',
+    icon: BookmarksIcon,
+    path: '/bookmarks',
+  },
+  {
+    name: 'Your playlists',
     icon: PlaylistPlayIcon,
     path: '/playlists',
   },
@@ -51,6 +57,7 @@ const drawerItems = [
 ];
 
 export const Sidenav = () => {
+  const navigate = useNavigate();
   const location = useLocation();
   const [isSideBarExpanded, setIsSideBarExpanded] = useAtom(
     isSideBarExpandedAtom
@@ -88,6 +95,7 @@ export const Sidenav = () => {
               >
                 <ListItemButton
                   selected={isSelected}
+                  onClick={() => navigate(item.path)}
                   sx={{
                     minHeight: 48,
                     padding: '12px 16px',
@@ -177,6 +185,7 @@ export const Sidenav = () => {
                     sx={{ display: 'block', padding: '5px' }}
                   >
                     <ListItemButton
+                      onClick={() => navigate(item.path)}
                       selected={isSelected}
                       sx={{
                         minHeight: 48,

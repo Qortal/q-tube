@@ -2,7 +2,7 @@ import { Button, ButtonProps, darken, lighten } from '@mui/material';
 import { MouseEvent, useMemo } from 'react';
 
 import { CustomTooltip, TooltipLine } from './CustomTooltip.tsx';
-import { useAuth } from 'qapp-core';
+import { useAuth, useGlobal } from 'qapp-core';
 import { usePersistedState } from '../../../state/persist/persist.ts';
 
 interface SubscribeButtonProps extends ButtonProps {
@@ -18,6 +18,7 @@ export const SubscribeButton = ({
   subscriberName,
   ...props
 }: SubscribeButtonProps) => {
+  const { lists } = useGlobal();
   const [subscriptions, setSubscriptions, isHydratedSubscriptions] =
     usePersistedState('subscriptions', []);
 
@@ -36,6 +37,7 @@ export const SubscribeButton = ({
   };
   const subscribeTo = () => {
     setSubscriptions((prev) => [...prev, subscriptionData]);
+    lists.deleteList('subscriptions');
   };
   const unSubscribe = () => {
     setSubscriptions((prev) =>
@@ -43,6 +45,7 @@ export const SubscribeButton = ({
         (item) => item.subscriberName !== subscriptionData.subscriberName
       )
     );
+    lists.deleteList('subscriptions');
   };
 
   const manageSubscription = (e: MouseEvent<HTMLButtonElement>) => {

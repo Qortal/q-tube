@@ -6,6 +6,9 @@ import { VideoContent } from './pages/ContentPages/VideoContent/VideoContent';
 import { PlaylistContent } from './pages/ContentPages/PlaylistContent/PlaylistContent';
 import { IndividualProfile } from './pages/ContentPages/IndividualProfile/IndividualProfile';
 import { Search } from './pages/Search/Search';
+import { Subscriptions } from './pages/Subscriptions/Subscriptions';
+import { Bookmarks } from './pages/Bookmarks/Bookmarks';
+import { History } from './pages/History/History';
 
 interface CustomWindow extends Window {
   _qdnBase: string;
@@ -23,6 +26,18 @@ export function Routes() {
           {
             index: true,
             element: <Home />,
+          },
+          {
+            path: 'subscriptions',
+            element: <Subscriptions />,
+          },
+          {
+            path: 'bookmarks',
+            element: <Bookmarks />,
+          },
+          {
+            path: 'history',
+            element: <History />,
           },
           {
             path: 'search',

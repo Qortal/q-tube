@@ -32,6 +32,9 @@ export const VideoListItem = ({
   username,
   blockUserFunc,
   setEditVideo,
+  isBookmarks,
+  disableActions,
+  handleRemoveVideoFromList,
 }) => {
   const navigate = useNavigate();
   const [showIcons, setShowIcons] = useState(null);
@@ -194,48 +197,68 @@ export const VideoListItem = ({
           zIndex: 2,
         }}
       >
-        {qortalMetadata?.name === username && (
-          <Tooltip title="Edit video properties" placement="top">
-            <BlockIconContainer>
-              <EditIcon
-                onClick={() => {
-                  const resourceData = {
-                    title: qortalMetadata?.metadata?.title,
-                    category: qortalMetadata?.metadata?.category,
-                    categoryName: qortalMetadata?.metadata?.categoryName,
-                    tags: qortalMetadata?.metadata?.tags || [],
-                    description: qortalMetadata?.metadata?.description,
-                    created: qortalMetadata?.created,
-                    updated: qortalMetadata?.updated,
-                    user: qortalMetadata.name,
-                    videoImage: '',
-                    id: qortalMetadata.identifier,
-                  };
+        {qortalMetadata?.name === username &&
+          !isBookmarks &&
+          !disableActions && (
+            <Tooltip title="Edit video properties" placement="top">
+              <BlockIconContainer>
+                <EditIcon
+                  onClick={() => {
+                    const resourceData = {
+                      title: qortalMetadata?.metadata?.title,
+                      category: qortalMetadata?.metadata?.category,
+                      categoryName: qortalMetadata?.metadata?.categoryName,
+                      tags: qortalMetadata?.metadata?.tags || [],
+                      description: qortalMetadata?.metadata?.description,
+                      created: qortalMetadata?.created,
+                      updated: qortalMetadata?.updated,
+                      user: qortalMetadata.name,
+                      videoImage: '',
+                      id: qortalMetadata.identifier,
+                    };
 
-                  setEditVideo({ ...resourceData, ...video });
-                }}
-              />
-            </BlockIconContainer>
-          </Tooltip>
-        )}
+                    setEditVideo({ ...resourceData, ...video });
+                  }}
+                />
+              </BlockIconContainer>
+            </Tooltip>
+          )}
 
-        {qortalMetadata?.name !== username && (
-          <Tooltip title="Block user content" placement="top">
-            <BlockIconContainer>
-              <BlockIcon
-                onClick={() => {
-                  blockUserFunc(qortalMetadata?.name);
-                }}
-              />
-            </BlockIconContainer>
-          </Tooltip>
-        )}
-        {qortalMetadata?.name === username && (
-          <Tooltip title="Delete video" placement="top">
+        {qortalMetadata?.name !== username &&
+          !isBookmarks &&
+          !disableActions && (
+            <Tooltip title="Block user content" placement="top">
+              <BlockIconContainer>
+                <BlockIcon
+                  onClick={() => {
+                    blockUserFunc(qortalMetadata?.name);
+                  }}
+                />
+              </BlockIconContainer>
+            </Tooltip>
+          )}
+        {qortalMetadata?.name === username &&
+          !isBookmarks &&
+          !disableActions && (
+            <Tooltip title="Delete video" placement="top">
+              <BlockIconContainer>
+                <DeleteIcon
+                  onClick={() => {
+                    deleteResource([qortalMetadata, video.videoReference]);
+                  }}
+                />
+              </BlockIconContainer>
+            </Tooltip>
+          )}
+        {isBookmarks && handleRemoveVideoFromList && !disableActions && (
+          <Tooltip title="Remove video from list" placement="top">
             <BlockIconContainer>
               <DeleteIcon
                 onClick={() => {
-                  deleteResource([qortalMetadata, video.videoReference]);
+                  handleRemoveVideoFromList([
+                    qortalMetadata,
+                    video.videoReference,
+                  ]);
                 }}
               />
             </BlockIconContainer>

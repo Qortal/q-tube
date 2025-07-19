@@ -10,9 +10,14 @@ import {
 import { QortalSearchParams, useAuth } from 'qapp-core';
 import { useSearchParams } from 'react-router-dom';
 import { FilterOptions } from './FilterOptions.tsx';
+import { ScrollToTopButton } from '../../components/common/ScrollToTopButton.tsx';
+import { useAtomValue, useSetAtom } from 'jotai';
+import { scrollRefAtom } from '../../state/global/navbar.ts';
 
 export const Home = () => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const scrollRef = useAtomValue(scrollRefAtom);
+
   const query = searchParams.get('query'); // "example"
   // const page = searchParams.get('page'); // "2"
   console.log('query', query);
@@ -96,6 +101,7 @@ export const Home = () => {
           )}
         </Box>
       </Box>
+      <ScrollToTopButton scrollRef={scrollRef} />
     </>
   );
 };

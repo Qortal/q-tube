@@ -90,6 +90,8 @@ const lightTheme = createTheme({
     background: {
       default: 'rgba(250, 250, 250, 1)',
       paper: 'rgb(220, 220, 220)', // darker card background
+      paper2: '#101115',
+      unSelected: '#333336',
     },
     text: {
       primary: 'rgba(0, 0, 0, 0.87)', // 87% black (slightly softened)

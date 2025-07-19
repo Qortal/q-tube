@@ -60,6 +60,7 @@ export const VideoListPreloaded = ({
   }, []);
 
   const renderLoaderList = useCallback((status: LoaderListStatus) => {
+    console.log('status', status);
     if (status === 'NO_RESULTS') {
       return (
         <Box

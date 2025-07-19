@@ -32,6 +32,16 @@ export const useHomeState = () => {
     usePersistedState<any>('filterCategory', '');
   const [filterSubCategory, setFilterSubCategory, isHydratedFilterSubCategory] =
     usePersistedState<any>('filterSubCategory', '');
+  console.log(
+    'hydration',
+    isHydratedFilterState,
+    isHydratedFilterSearch,
+    isHydratedFilterName,
+    isHydratedFilterSubCategory,
+    isHydratedFilterCategory,
+    isHydratedFilterMode,
+    !isLoadingUser
+  );
   const isHydrated =
     isHydratedFilterState &&
     isHydratedFilterSearch &&

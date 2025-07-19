@@ -72,7 +72,7 @@ export const VideoCardImageContainer = ({
 
       {/* Next image fades in on top */}
       <ResponsiveImage
-        src={nextImage || ''}
+        src={nextImage || undefined}
         width={width}
         height={height}
         ref={fadeRef}

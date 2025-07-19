@@ -20,48 +20,55 @@ import PlaylistPlayIcon from '@mui/icons-material/PlaylistPlay';
 import BookmarksIcon from '@mui/icons-material/Bookmarks';
 import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useMemo } from 'react';
+import { useAuth } from 'qapp-core';
 const DRAWER_WIDTH = 240;
 export const COLLAPSED_WIDTH = 68;
-
-const drawerItems = [
-  {
-    name: 'Home',
-    icon: HomeIcon,
-    path: '/',
-  },
-  {
-    name: 'Subscriptions',
-    icon: StarIcon,
-    path: '/subscriptions',
-  },
-  {
-    name: 'Watched videos',
-    icon: AccessTimeIcon,
-    path: '/history',
-  },
-  {
-    name: 'Bookmarks',
-    icon: BookmarksIcon,
-    path: '/bookmarks',
-  },
-  {
-    name: 'Your playlists',
-    icon: PlaylistPlayIcon,
-    path: '/playlists',
-  },
-  {
-    name: 'Your videos',
-    icon: PlayCircleOutlineIcon,
-    path: '/myvideos',
-  },
-];
 
 export const Sidenav = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { name } = useAuth();
   const [isSideBarExpanded, setIsSideBarExpanded] = useAtom(
     isSideBarExpandedAtom
   );
+
+  const drawerItems = useMemo(() => {
+    return [
+      {
+        name: 'Home',
+        icon: HomeIcon,
+        path: '/',
+      },
+      {
+        name: 'Subscriptions',
+        icon: StarIcon,
+        path: '/subscriptions',
+      },
+      {
+        name: 'Watched videos',
+        icon: AccessTimeIcon,
+        path: '/history',
+      },
+      {
+        name: 'Bookmarks',
+        icon: BookmarksIcon,
+        path: '/bookmarks',
+      },
+      {
+        name: 'Your playlists',
+        icon: PlaylistPlayIcon,
+        path: `/channel/${name}/playlists`,
+        disabled: !name,
+      },
+      {
+        name: 'Your videos',
+        icon: PlayCircleOutlineIcon,
+        path: `/channel/${name}/videos`,
+        disabled: !name,
+      },
+    ];
+  }, [name]);
 
   return (
     <>
@@ -94,6 +101,7 @@ export const Sidenav = () => {
                 sx={{ display: 'block', padding: '5px' }}
               >
                 <ListItemButton
+                  disabled={item.disabled}
                   selected={isSelected}
                   onClick={() => navigate(item.path)}
                   sx={{

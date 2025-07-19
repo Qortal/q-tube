@@ -15,6 +15,9 @@ import {
   VideoPlayerContainer,
   VideoTitle,
 } from './PlaylistContent-styles.tsx';
+import { Navigate, useNavigate, useParams } from 'react-router-dom';
+import { useEffect } from 'react';
+import { Service } from 'qapp-core';
 
 export const PlaylistContent = () => {
   const {
@@ -38,12 +41,23 @@ export const PlaylistContent = () => {
     descriptionThreshold,
     loadingSuperLikes,
   } = usePlaylistContentState();
-
+  const navigate = useNavigate();
   const isScreenSmall = !useMediaQuery(`(min-width:950px)`);
-
+  const { s, n, i } = useParams();
+  console.log({ s, n, i });
   const playlistsSX: SxProps<Theme> = isScreenSmall
     ? { width: '100%', marginTop: '10px' }
     : { width: '35%', position: 'absolute', right: '20px' };
+
+  useEffect(() => {
+    if (s && n && i && videoData) {
+      setVideoMetadataResource({
+        name: n,
+        identifier: i,
+        service: s as Service,
+      });
+    }
+  }, [s, n, i, videoData]);
 
   return videoData && videoData?.videos?.length === 0 ? (
     <Box
@@ -133,11 +147,9 @@ export const PlaylistContent = () => {
               playlistData={playlistData}
               currentVideoIdentifier={videoData?.id}
               onClick={(name, identifier) => {
-                setVideoMetadataResource({
-                  name,
-                  identifier,
-                  service: 'DOCUMENT',
-                });
+                navigate(
+                  `/playlist/${channelName}/${id}/DOCUMENT/${name}/${identifier}`
+                );
               }}
               // sx={playlistsSX}
             />

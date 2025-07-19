@@ -52,7 +52,19 @@ export function Routes() {
             element: <PlaylistContent />,
           },
           {
+            path: 'playlist/:name/:id/:s/:n/:i',
+            element: <PlaylistContent />,
+          },
+          {
             path: 'channel/:name',
+            element: <IndividualProfile />,
+          },
+          {
+            path: 'channel/:name/:section',
+            element: <IndividualProfile />,
+          },
+          {
+            path: 'channel/:name/:section',
             element: <IndividualProfile />,
           },
         ],

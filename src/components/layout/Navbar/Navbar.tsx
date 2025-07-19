@@ -29,6 +29,7 @@ interface Props {
 const NavBar: React.FC<Props> = ({ allNames }) => {
   const isScreenSmall = !useMediaQuery(`(min-width:600px)`);
   const { name, avatarUrl } = useAuth();
+
   const isSecure = !!name;
   const gapSize = 10;
   const [isSideBarExpanded, setIsSideBarExpanded] = useAtom(

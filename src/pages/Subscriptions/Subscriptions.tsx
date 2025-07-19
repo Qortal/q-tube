@@ -24,7 +24,7 @@ export const Subscriptions = () => {
   console.log('subscriptions', subscriptions);
 
   const searchParameters: QortalSearchParams | null = useMemo(() => {
-    if (!subscriptions || subscriptions?.length === 0) return null;
+    if (!subscriptions || subscriptions?.length === 0) return [];
     if (!isHydrated) return null;
     const searchOptions: {
       description?: string;

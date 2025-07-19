@@ -57,6 +57,7 @@ export const VideoList = ({ searchParameters, listName }: VideoListProps) => {
     }
     return <VideoLoaderItem status={status} />;
   }, []);
+  console.log('rendering');
 
   const renderListItem = useCallback(
     (item, index) => {

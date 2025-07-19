@@ -81,6 +81,8 @@ export const Home = () => {
     subscriptions,
   ]);
 
+  console.log('searchParameters', searchParameters, isHydrated);
+
   return (
     <>
       <Box>

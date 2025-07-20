@@ -139,7 +139,11 @@ export const VideoListItem = ({
             />
           </Box>
           <VideoCardTitle>{video?.title}</VideoCardTitle>
-          <BottomParent>
+          <BottomParent
+            sx={{
+              padding: isMobile ? '0px 5px' : '0px',
+            }}
+          >
             <NameContainer
               onClick={(e) => {
                 e.stopPropagation();

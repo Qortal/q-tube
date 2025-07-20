@@ -26,8 +26,10 @@ import { usePersistedState } from '../../state/persist/persist.ts';
 import { PageSubTitle } from '../../components/common/General/GeneralStyles.tsx';
 import EditIcon from '@mui/icons-material/Edit';
 import { PageTransition } from '../../components/common/PageTransition.tsx';
+import { useIsSmall } from '../../hooks/useIsSmall.tsx';
 
 export const Bookmarks = () => {
+  const isSmall = useIsSmall();
   const [selectedList, setSelectedList, isHydratedSelectedList] =
     usePersistedState('selectedBookmarkList', 0);
   const [bookmarks, setBookmarks, isHydratedBookmarks] = usePersistedState(
@@ -158,59 +160,71 @@ export const Bookmarks = () => {
   if (!selectedList && isHydratedBookmarks) {
     return (
       <PageTransition>
-        <FormControl fullWidth>
-          <InputLabel id="bookmark-list-label">Select a List</InputLabel>
-
-          <Select
-            labelId="bookmark-list-label"
-            value={selectedList?.id || 0}
-            label="Select a List"
-            onChange={handleChange}
-            displayEmpty
-          >
-            <MenuItem value={0}>
-              <em>All videos</em>
-            </MenuItem>
-            {sortedLists.map((list) => (
-              <MenuItem key={list.id} value={list.id}>
-                {list.title}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <Spacer height="20px" />
-
         <Box
           sx={{
+            paddingTop: '10px',
+            display: 'flex',
+            flexDirection: 'column',
             width: '100%',
+            alignItems: isSmall ? 'center' : 'flex-start',
           }}
         >
-          <PageSubTitle
+          <FormControl
             sx={{
-              alignSelf: 'flex-start',
+              maxWidth: '100%',
+              width: '320px',
             }}
           >
-            all bookmarked videos
-          </PageSubTitle>
-          <Spacer height="14px" />
-          <Divider flexItem />
-          <Spacer height="20px" />
-        </Box>
+            <InputLabel id="bookmark-list-label">Select a List</InputLabel>
 
-        <Box>
+            <Select
+              labelId="bookmark-list-label"
+              value={selectedList?.id || 0}
+              label="Select a List"
+              onChange={handleChange}
+              displayEmpty
+            >
+              <MenuItem value={0}>
+                <em>All videos</em>
+              </MenuItem>
+              {sortedLists.map((list) => (
+                <MenuItem key={list.id} value={list.id}>
+                  {list.title}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <Spacer height="20px" />
+
           <Box
             sx={{
               width: '100%',
-              display: 'flex',
               flexDirection: 'column',
-              alignItems: 'center',
+              display: 'flex',
+              alignItems: isSmall ? 'center' : 'flex-start',
             }}
           >
-            <VideoListPreloaded
-              listName="bookmarks-all"
-              videoList={allVideos}
-              disableActions
-            />
+            <PageSubTitle>all bookmarked videos</PageSubTitle>
+            <Spacer height="14px" />
+            <Divider flexItem />
+            <Spacer height="20px" />
+          </Box>
+
+          <Box>
+            <Box
+              sx={{
+                width: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+              }}
+            >
+              <VideoListPreloaded
+                listName="bookmarks-all"
+                videoList={allVideos}
+                disableActions
+              />
+            </Box>
           </Box>
         </Box>
       </PageTransition>

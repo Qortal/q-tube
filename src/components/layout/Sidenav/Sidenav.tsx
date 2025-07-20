@@ -8,6 +8,7 @@ import {
   ListItemText,
   Box,
   ClickAwayListener,
+  Typography,
 } from '@mui/material';
 import { useAtom } from 'jotai';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
@@ -21,20 +22,22 @@ import BookmarksIcon from '@mui/icons-material/Bookmarks';
 import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useMemo } from 'react';
-import { useAuth } from 'qapp-core';
+import { Spacer, useAuth } from 'qapp-core';
 import { useIsSmall } from '../../../hooks/useIsSmall';
+import { UserMenu } from '../Navbar/Components/UserMenu';
 const DRAWER_WIDTH = 240;
 export const COLLAPSED_WIDTH = 68;
 
-export const Sidenav = () => {
+export const Sidenav = ({ allNames }) => {
   const isSmall = useIsSmall();
   const navigate = useNavigate();
   const location = useLocation();
-  const { name } = useAuth();
+  const { name, avatarUrl } = useAuth();
   const [isSideBarExpanded, setIsSideBarExpanded] = useAtom(
     isSideBarExpandedAtom
   );
 
+  const isSecure = !!name;
   const drawerItems = useMemo(() => {
     return [
       {
@@ -108,7 +111,9 @@ export const Sidenav = () => {
                 <ListItemButton
                   disabled={item.disabled}
                   selected={isSelected}
-                  onClick={() => navigate(item.path)}
+                  onClick={() => {
+                    navigate(item.path);
+                  }}
                   sx={{
                     minHeight: 48,
                     padding: '12px 16px',
@@ -189,6 +194,41 @@ export const Sidenav = () => {
             open
           >
             <List>
+              {isSmall && (
+                <>
+                  <ListItem
+                    disablePadding
+                    sx={{ display: 'block', padding: '5px', gap: '5px' }}
+                  >
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        width: '100%',
+                      }}
+                    >
+                      <UserMenu
+                        isShowMenu={isSecure}
+                        userAvatar={avatarUrl}
+                        userName={name}
+                        allNames={allNames}
+                      />
+                      <Typography
+                        sx={{
+                          whiteSpace: 'nowrap',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                        }}
+                      >
+                        {name}
+                      </Typography>
+                    </Box>
+                  </ListItem>
+                  <Spacer height="10px" />
+                  <Divider />
+                </>
+              )}
+
               {drawerItems.map((item, index) => {
                 const isSelected = location.pathname === item.path;
                 return (
@@ -198,7 +238,10 @@ export const Sidenav = () => {
                     sx={{ display: 'block', padding: '5px' }}
                   >
                     <ListItemButton
-                      onClick={() => navigate(item.path)}
+                      onClick={() => {
+                        setIsSideBarExpanded(false);
+                        navigate(item.path);
+                      }}
                       selected={isSelected}
                       sx={{
                         minHeight: 48,

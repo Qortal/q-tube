@@ -31,8 +31,10 @@ import { usePersistedState } from '../../state/persist/persist.ts';
 import { PageSubTitle } from '../../components/common/General/GeneralStyles.tsx';
 import EditIcon from '@mui/icons-material/Edit';
 import { PageTransition } from '../../components/common/PageTransition.tsx';
+import { useIsSmall } from '../../hooks/useIsSmall.tsx';
 
 export const History = () => {
+  const isSmall = useIsSmall();
   const [watchedHistory, setWatchedHistory, isHydratedWatchedHistory] =
     usePersistedState('watched-v1', []);
 
@@ -44,16 +46,14 @@ export const History = () => {
     <PageTransition>
       <Box
         sx={{
+          paddingTop: '10px',
+          display: 'flex',
+          flexDirection: 'column',
           width: '100%',
+          alignItems: isSmall ? 'center' : 'flex-start',
         }}
       >
-        <PageSubTitle
-          sx={{
-            alignSelf: 'flex-start',
-          }}
-        >
-          Your History
-        </PageSubTitle>
+        <PageSubTitle>Your History</PageSubTitle>
 
         <Spacer height="14px" />
         <Divider flexItem />

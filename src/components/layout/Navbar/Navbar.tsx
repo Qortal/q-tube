@@ -97,13 +97,14 @@ const NavBar: React.FC<Props> = ({ allNames }) => {
             {isSecure && <Notifications />}
 
             <DownloadTaskManager />
-
-            <UserMenu
-              isShowMenu={isSecure}
-              userAvatar={avatarUrl}
-              userName={name}
-              allNames={allNames}
-            />
+            {!isSmall && (
+              <UserMenu
+                isShowMenu={isSecure}
+                userAvatar={avatarUrl}
+                userName={name}
+                allNames={allNames}
+              />
+            )}
           </Box>
         </Box>
       </Box>

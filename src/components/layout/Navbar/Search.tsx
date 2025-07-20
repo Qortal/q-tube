@@ -10,7 +10,7 @@ import {
   useTheme,
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useSidebarState } from '../../../pages/Home/Components/SearchSidebar-State';
 import { useNavigate } from 'react-router-dom';
 import SearchIcon from '@mui/icons-material/Search';
@@ -91,11 +91,24 @@ export const Search = () => {
     }
   };
 
+  useEffect(() => {
+    if (filterSearchGlobal && isSmall) {
+      setIsOpenSearch(true);
+    }
+  }, [filterSearchGlobal, isSmall]);
+
   return (
     <>
       {isSmall && (
         <>
-          <ButtonBase onClick={() => setIsOpenSearch(true)}>
+          <ButtonBase
+            onClick={() => {
+              setIsOpenSearch(true);
+              setTimeout(() => {
+                inputRef.current?.focus();
+              }, 250);
+            }}
+          >
             <SearchIcon
               sx={{
                 fontSize: '35px',
@@ -125,8 +138,12 @@ export const Search = () => {
                 <SearchParent
                   sx={{
                     outline: 'none',
-                    borderBottom: `1px ${theme.palette.action.active} solid`,
+                    borderBottom: isFocused
+                      ? `1px ${theme.palette.action.active} solid`
+                      : 'unset',
                     borderRadius: '0px',
+                    height: '65px',
+                    padding: '3px',
                   }}
                 >
                   <ButtonBase
@@ -158,7 +175,7 @@ export const Search = () => {
                   </ButtonBase>
                   <StyledInputBase
                     inputRef={inputRef}
-                    autoFocus
+                    // autoFocus
                     size="small"
                     placeholder="Search…"
                     inputProps={{

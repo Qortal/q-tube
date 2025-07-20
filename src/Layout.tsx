@@ -92,7 +92,7 @@ const Layout = () => {
           overflow: 'hidden',
         }}
       >
-        <Sidenav />
+        <Sidenav allNames={names} />
 
         {/* Main Content */}
 

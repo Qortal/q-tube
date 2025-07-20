@@ -12,7 +12,11 @@ export const VideoLoaderItem = ({ status }) => {
   return (
     <VideoCardCol
       sx={{
-        ...(isMobile && { width: '100%' }),
+        ...(isMobile && {
+          width: '100%',
+          borderRadius: '0px',
+          maxWidth: '100%',
+        }),
       }}
     >
       <VideoCard>

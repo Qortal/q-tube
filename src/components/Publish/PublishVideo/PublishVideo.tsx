@@ -665,7 +665,11 @@ export const PublishVideo = ({
         aria-labelledby="modal-title"
         aria-describedby="modal-description"
       >
-        <ModalBody>
+        <ModalBody
+          sx={{
+            width: '100%',
+          }}
+        >
           <Box
             sx={{
               display: 'flex',

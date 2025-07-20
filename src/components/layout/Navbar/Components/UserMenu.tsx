@@ -1,4 +1,4 @@
-import { useMediaQuery, useTheme, Avatar } from '@mui/material';
+import { useMediaQuery, useTheme, Avatar, Typography } from '@mui/material';
 import { menuIconSize } from '../../../../constants/Misc.ts';
 import { BlockedNamesModal } from '../../../common/BlockedNamesModal/BlockedNamesModal.tsx';
 import {
@@ -58,7 +58,7 @@ export const UserMenu = ({
               <AvatarContainer
                 sx={{
                   height: isSmall ? '35px' : '40px',
-                  width: isSmall ? '35px' : '40px',
+                  // width: isSmall ? '35px' : '40px',
                 }}
               >
                 <Avatar

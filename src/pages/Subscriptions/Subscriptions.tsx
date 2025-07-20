@@ -51,7 +51,11 @@ export const Subscriptions = () => {
 
   return (
     <PageTransition>
-      <Box>
+      <Box
+        sx={{
+          paddingTop: '10px',
+        }}
+      >
         <Box
           sx={{
             width: '100%',

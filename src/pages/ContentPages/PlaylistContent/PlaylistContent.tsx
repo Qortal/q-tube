@@ -1,4 +1,11 @@
-import { Box, SxProps, Theme, Typography, useMediaQuery } from '@mui/material';
+import {
+  Box,
+  Divider,
+  SxProps,
+  Theme,
+  Typography,
+  useMediaQuery,
+} from '@mui/material';
 import { CommentSection } from '../../../components/common/Comments/CommentSection.tsx';
 import { SuperLikesSection } from '../../../components/common/SuperLikesList/SuperLikesSection.tsx';
 import { DisplayHtml } from '../../../components/common/TextEditor/DisplayHtml.tsx';
@@ -19,6 +26,9 @@ import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import { useEffect } from 'react';
 import { Service } from 'qapp-core';
 import { PageTransition } from '../../../components/common/PageTransition.tsx';
+import { useIsSmall } from '../../../hooks/useIsSmall.tsx';
+import { VideoContentContainer } from '../VideoContent/VideoContent-styles.tsx';
+import { CollapsibleDescription } from '../VideoContent/VideoContent.tsx';
 
 export const PlaylistContent = () => {
   const {
@@ -43,6 +53,7 @@ export const PlaylistContent = () => {
     loadingSuperLikes,
   } = usePlaylistContentState();
   const navigate = useNavigate();
+  const isSmall = useIsSmall();
   const isScreenSmall = !useMediaQuery(`(min-width:950px)`);
   const { s, n, i } = useParams();
   console.log({ s, n, i });
@@ -85,9 +96,8 @@ export const PlaylistContent = () => {
             <VideoPlayerContainer
               sx={{
                 alignSelf: 'start',
-                paddingRight: isScreenSmall ? '10px' : '0px',
-                marginBottom: '20px',
-                height: '70vh',
+                height: isSmall ? '240px' : '70vh',
+                maxHeight: '70vh',
                 flexDirection: 'row',
                 width: '100%',
                 gap: '10px',
@@ -119,34 +129,77 @@ export const PlaylistContent = () => {
                   />
                 )}
               </Box>
-              <Box
-                sx={{
-                  display: 'flex',
-                  flexGrow: 1,
-                  height: '100%',
-                  overflow: 'auto',
-                  '::-webkit-scrollbar-track': {
-                    backgroundColor: 'transparent',
-                  },
+              {!isSmall && (
+                <Box
+                  sx={{
+                    display: 'flex',
+                    flexGrow: 1,
+                    height: '100%',
+                    overflow: 'auto',
+                    '::-webkit-scrollbar-track': {
+                      backgroundColor: 'transparent',
+                    },
 
-                  '::-webkit-scrollbar': {
-                    width: '16px',
-                    height: '10px',
-                  },
+                    '::-webkit-scrollbar': {
+                      width: '16px',
+                      height: '10px',
+                    },
 
-                  '::-webkit-scrollbar-thumb': {
-                    backgroundColor: 'rgba(63, 67, 80, 0.24)',
-                    borderRadius: '8px',
-                    backgroundClip: 'content-box',
-                    border: '4px solid transparent',
-                    transition: '0.3s background-color',
-                  },
-                  '::-webkit-scrollbar-thumb:hover': {
-                    backgroundColor: 'rgba(63, 67, 80, 0.50)',
-                  },
-                }}
-              >
-                {playlistData && (
+                    '::-webkit-scrollbar-thumb': {
+                      backgroundColor: 'rgba(63, 67, 80, 0.24)',
+                      borderRadius: '8px',
+                      backgroundClip: 'content-box',
+                      border: '4px solid transparent',
+                      transition: '0.3s background-color',
+                    },
+                    '::-webkit-scrollbar-thumb:hover': {
+                      backgroundColor: 'rgba(63, 67, 80, 0.50)',
+                    },
+                  }}
+                >
+                  {playlistData && (
+                    <Playlists
+                      playlistData={playlistData}
+                      currentVideoIdentifier={videoData?.id}
+                      onClick={(name, identifier) => {
+                        navigate(
+                          `/playlist/${channelName}/${id}/DOCUMENT/${name}/${identifier}`
+                        );
+                      }}
+                      // sx={playlistsSX}
+                    />
+                  )}
+                </Box>
+              )}
+            </VideoPlayerContainer>
+            <VideoContentContainer sx={{ padding: isSmall ? '5px' : '0px' }}>
+              {playlistData && isSmall && (
+                <Box
+                  sx={{
+                    maxHeight: '175px',
+                    overflow: 'auto',
+                    overflowY: 'scroll',
+                    '::-webkit-scrollbar-track': {
+                      backgroundColor: 'transparent',
+                    },
+
+                    '::-webkit-scrollbar': {
+                      width: '16px',
+                      height: '10px',
+                    },
+
+                    '::-webkit-scrollbar-thumb': {
+                      backgroundColor: 'rgba(63, 67, 80, 0.24)',
+                      borderRadius: '8px',
+                      backgroundClip: 'content-box',
+                      border: '4px solid transparent',
+                      transition: '0.3s background-color',
+                    },
+                    '::-webkit-scrollbar-thumb:hover': {
+                      backgroundColor: 'rgba(63, 67, 80, 0.50)',
+                    },
+                  }}
+                >
                   <Playlists
                     playlistData={playlistData}
                     currentVideoIdentifier={videoData?.id}
@@ -157,164 +210,81 @@ export const PlaylistContent = () => {
                     }}
                     // sx={playlistsSX}
                   />
-                )}
-              </Box>
-            </VideoPlayerContainer>
-            <VideoActionsBar
-              channelName={channelName}
-              videoData={videoData}
-              videoReference={videoReference}
-              superLikeList={superLikeList}
-              setSuperLikeList={setSuperLikeList}
-              sx={{ width: '100%' }}
-            />
-            <Box
-              sx={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                width: '100%',
-                marginTop: '10px',
-                gap: '10px',
-              }}
-            >
+                </Box>
+              )}
+              <VideoActionsBar
+                channelName={channelName}
+                videoData={videoData}
+                videoReference={videoReference}
+                superLikeList={superLikeList}
+                setSuperLikeList={setSuperLikeList}
+                sx={{ width: '100%' }}
+              />
+
               <VideoTitle
-                variant="h1"
+                variant={'h4'}
                 color="textPrimary"
                 sx={{
-                  textAlign: 'center',
+                  textAlign: 'start',
+                  marginTop: isSmall ? '20px' : '10px',
+                  fontSize: isSmall ? '18px' : 'unset',
                 }}
               >
                 {videoData?.title}
               </VideoTitle>
-            </Box>
+              <Spacer height="10px" />
 
-            <Box
-              sx={{
-                display: 'flex',
-                width: '100%',
-                gap: '20px',
-              }}
-            >
-              {videoData?.created && (
-                <Typography
-                  variant="h2"
-                  sx={{
-                    fontSize: fontSizeSmall,
-                  }}
-                  color={theme.palette.text.primary}
-                >
-                  {formatDate(videoData.created)}
-                </Typography>
-              )}
-              {videoData?.fileSize > minFileSize && (
-                <Typography
-                  variant="h1"
-                  sx={{
-                    fontSize: '90%',
-                  }}
-                  color={'green'}
-                >
-                  {formatBytes(videoData.fileSize, 2, 'Decimal')}
-                </Typography>
-              )}
-            </Box>
-            <Spacer height="30px" />
-            {videoData?.fullDescription && (
               <Box
                 sx={{
-                  background: '#333333',
-                  borderRadius: '5px',
-                  padding: '5px',
-                  width: '95%',
-                  alignSelf: 'flex-start',
-                  cursor: !descriptionHeight
-                    ? 'default'
-                    : isExpandedDescription
-                      ? 'default'
-                      : 'pointer',
+                  display: 'flex',
+                  gap: '14px',
                 }}
-                className={
-                  !descriptionHeight
-                    ? ''
-                    : isExpandedDescription
-                      ? ''
-                      : 'hover-click'
-                }
               >
-                {descriptionHeight && !isExpandedDescription && (
-                  <Box
-                    sx={{
-                      position: 'absolute',
-                      top: '0px',
-                      right: '0px',
-                      left: '0px',
-                      bottom: '0px',
-                      cursor: 'pointer',
-                    }}
-                    onClick={() => {
-                      if (isExpandedDescription) return;
-                      setIsExpandedDescription(true);
-                    }}
-                  />
-                )}
-                <Box
-                  ref={contentRef}
-                  sx={{
-                    height: !descriptionHeight
-                      ? 'auto'
-                      : isExpandedDescription
-                        ? 'auto'
-                        : `${descriptionHeight}px`,
-                    overflow: 'hidden',
-                  }}
-                >
-                  {videoData?.htmlDescription ? (
-                    <DisplayHtml html={videoData?.htmlDescription} />
-                  ) : (
-                    <VideoDescription
-                      variant="body1"
-                      color="textPrimary"
-                      sx={{
-                        cursor: 'default',
-                      }}
-                    >
-                      {videoData?.fullDescription}
-                    </VideoDescription>
-                  )}
-                </Box>
-                {descriptionHeight >= descriptionThreshold && (
+                {videoData?.created && (
                   <Typography
-                    onClick={() => {
-                      setIsExpandedDescription((prev) => !prev);
-                    }}
                     sx={{
-                      fontWeight: 'bold',
-                      fontSize: '16px',
-                      cursor: 'pointer',
-                      paddingLeft: '15px',
-                      paddingTop: '15px',
+                      fontSize: '14px',
+                      display: 'inline',
                     }}
+                    color={theme.palette.text.tertiary}
                   >
-                    {isExpandedDescription ? 'Show less' : '...more'}
+                    {formatDate(videoData.created)}
+                  </Typography>
+                )}
+                <Divider orientation="vertical" flexItem />
+                {videoData?.fileSize > minFileSize && (
+                  <Typography
+                    sx={{
+                      fontSize: '14px',
+                      display: 'inline',
+                    }}
+                    color={theme.palette.text.tertiary}
+                  >
+                    {formatBytes(videoData.fileSize, 2, 'Decimal')}
                   </Typography>
                 )}
               </Box>
-            )}
-            {videoData?.id && videoData?.user && (
-              <SuperLikesSection
-                loadingSuperLikes={loadingSuperLikes}
-                superlikes={superLikeList}
-                postId={videoData?.id || ''}
-                postName={videoData?.user || ''}
-              />
-            )}
-            {videoData?.id && channelName && (
-              <CommentSection
-                postId={videoData?.id || ''}
-                postName={channelName || ''}
-              />
-            )}
+              <Spacer height="15px" />
+              {videoData?.htmlDescription ? (
+                <CollapsibleDescription html={videoData?.htmlDescription} />
+              ) : (
+                <CollapsibleDescription text={videoData?.fullDescription} />
+              )}
+              {videoData?.id && videoData?.user && (
+                <SuperLikesSection
+                  loadingSuperLikes={loadingSuperLikes}
+                  superlikes={superLikeList}
+                  postId={videoData?.id || ''}
+                  postName={videoData?.user || ''}
+                />
+              )}
+              {videoData?.id && channelName && (
+                <CommentSection
+                  postId={videoData?.id || ''}
+                  postName={channelName || ''}
+                />
+              )}
+            </VideoContentContainer>
           </Box>
         )}
       </>

@@ -216,9 +216,9 @@ export const EditVideo = () => {
         category,
         subcategory,
         code: editVideoProperties.code,
-        videoType: file?.type || 'video/mp4',
+        videoType: file?.type || editVideoProperties?.videoType || 'video/mp4',
         filename: `${alphanumericString.trim()}.${fileExtension}`,
-        fileSize: file?.size || 0,
+        fileSize: file?.size || editVideoProperties?.fileSize || 0,
         duration: videoDurations[0] || editVideoProperties?.duration || 0,
       };
       const metadescription =

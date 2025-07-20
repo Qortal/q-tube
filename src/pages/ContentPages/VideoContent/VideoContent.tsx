@@ -37,7 +37,7 @@ function flattenHtml(html: string): string {
   return res;
 }
 
-const CollapsibleDescription = ({
+export const CollapsibleDescription = ({
   text,
   html,
 }: {

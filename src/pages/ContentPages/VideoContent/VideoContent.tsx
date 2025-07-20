@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from 'react';
 import { CommentSection } from '../../../components/common/Comments/CommentSection.tsx';
 import { SuperLikesSection } from '../../../components/common/SuperLikesList/SuperLikesSection.tsx';
 import { VideoPlayer } from '../../../components/common/VideoPlayer/VideoPlayer.tsx';
+import { motion } from 'framer-motion';
+
 import {
   fontSizeSmall,
   minFileSize,
@@ -22,19 +24,15 @@ import {
   VideoTitle,
 } from './VideoContent-styles.tsx';
 import { useScrollToTop } from '../../../hooks/useScrollToTop.tsx';
-import { processText } from 'qapp-core';
+import { handleClickText, processText } from 'qapp-core';
+import { PageTransition } from '../../../components/common/PageTransition.tsx';
 
 function flattenHtml(html: string): string {
   const sanitize: string = DOMPurify.sanitize(html, {
     USE_PROFILES: { html: true },
   });
   const res = processText(sanitize);
-  return res
-    .replace(/<\/p>/gi, ' ') // replace end of paragraph with space
-    .replace(/<p[^>]*>/gi, '') // remove opening <p> tags
-    .replace(/<\/?div[^>]*>/gi, '') // remove divs
-    .replace(/\n/g, ' ') // remove newlines
-    .trim();
+  return res;
 }
 
 const CollapsibleDescription = ({
@@ -90,14 +88,15 @@ const CollapsibleDescription = ({
       )}
       {html && (
         <Box
+          onClick={handleClickText}
           ref={textRef}
           sx={{
-            display: '-webkit-box',
+            display: expanded ? 'block' : '-webkit-box',
             WebkitLineClamp: expanded ? 'none' : 2,
             WebkitBoxOrient: 'vertical',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
-            lineHeight: 1.5,
+            lineHeight: 1.2,
           }}
           dangerouslySetInnerHTML={{ __html: flattenHtml(html) }}
         />
@@ -158,7 +157,7 @@ export const VideoContent = () => {
   }, []);
 
   return (
-    <>
+    <PageTransition>
       <Box
         sx={{
           display: 'flex',
@@ -270,6 +269,6 @@ export const VideoContent = () => {
           )}
         </VideoContentContainer>
       </Box>
-    </>
+    </PageTransition>
   );
 };

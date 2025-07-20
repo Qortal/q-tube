@@ -30,6 +30,7 @@ import { VideoListPreloaded } from '../Home/Components/VideoListPreloaded.tsx';
 import { usePersistedState } from '../../state/persist/persist.ts';
 import { PageSubTitle } from '../../components/common/General/GeneralStyles.tsx';
 import EditIcon from '@mui/icons-material/Edit';
+import { PageTransition } from '../../components/common/PageTransition.tsx';
 
 export const History = () => {
   const [watchedHistory, setWatchedHistory, isHydratedWatchedHistory] =
@@ -40,7 +41,7 @@ export const History = () => {
   }
 
   return (
-    <>
+    <PageTransition>
       <Box
         sx={{
           width: '100%',
@@ -74,6 +75,6 @@ export const History = () => {
           />
         </Box>
       </Box>
-    </>
+    </PageTransition>
   );
 };

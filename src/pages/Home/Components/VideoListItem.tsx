@@ -103,15 +103,15 @@ export const VideoListItem = ({
               `/playlist/${qortalMetadata?.name}/${qortalMetadata?.identifier}`
             );
           }}
+          sx={{
+            height: '100%',
+          }}
         >
-          <div
-            style={{
-              height: 480,
-              width: 320,
-              maxHeight: '50vh',
-              maxWidth: '100%',
+          <Box
+            sx={{
               position: 'relative',
-              overflow: 'hidden',
+              height: 180,
+              width: 320,
             }}
           >
             <ResponsiveImage
@@ -126,9 +126,8 @@ export const VideoListItem = ({
                 objectFit: 'cover',
                 zIndex: 1,
               }}
-              fill={true}
             />
-          </div>
+          </Box>
           <VideoCardTitle>{video?.title}</VideoCardTitle>
           <BottomParent>
             <NameContainer

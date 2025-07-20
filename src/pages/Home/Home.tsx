@@ -13,6 +13,7 @@ import { FilterOptions } from './FilterOptions.tsx';
 import { ScrollToTopButton } from '../../components/common/ScrollToTopButton.tsx';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { scrollRefAtom } from '../../state/global/navbar.ts';
+import { PageTransition } from '../../components/common/PageTransition.tsx';
 
 export const Home = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -84,7 +85,7 @@ export const Home = () => {
   console.log('searchParameters', searchParameters, isHydrated);
 
   return (
-    <>
+    <PageTransition>
       <Box>
         <Box
           sx={{
@@ -104,6 +105,6 @@ export const Home = () => {
         </Box>
       </Box>
       <ScrollToTopButton scrollRef={scrollRef} />
-    </>
+    </PageTransition>
   );
 };

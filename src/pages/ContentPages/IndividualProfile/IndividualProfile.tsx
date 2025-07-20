@@ -6,6 +6,7 @@ import { PlayListComponentLevel } from '../../Home/Components/PlayListComponentL
 import { ChannelActions } from '../VideoContent/ChannelActions.tsx';
 import { StyledCardHeaderComment } from '../VideoContent/VideoContent-styles.tsx';
 import { HeaderContainer, ProfileContainer } from './Profile-styles.tsx';
+import { PageTransition } from '../../../components/common/PageTransition.tsx';
 
 export const IndividualProfile = () => {
   const { name: channelName } = useParams();
@@ -26,40 +27,50 @@ export const IndividualProfile = () => {
   }, [section]);
 
   return (
-    <ProfileContainer>
-      <HeaderContainer>
-        <Box
-          sx={{
-            cursor: 'pointer',
-          }}
-        >
-          <StyledCardHeaderComment
+    <PageTransition>
+      <ProfileContainer>
+        <HeaderContainer>
+          <Box
             sx={{
-              '& .MuiCardHeader-content': {
-                overflow: 'hidden',
-              },
+              cursor: 'pointer',
             }}
           >
-            <ChannelActions channelName={channelName} />
-          </StyledCardHeaderComment>
+            <StyledCardHeaderComment
+              sx={{
+                '& .MuiCardHeader-content': {
+                  overflow: 'hidden',
+                },
+              }}
+            >
+              <ChannelActions channelName={channelName} />
+            </StyledCardHeaderComment>
+          </Box>
+        </HeaderContainer>
+
+        {/* Tabs Bar */}
+        <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}>
+          <Tabs
+            value={selectedTab}
+            onChange={handleTabChange}
+            aria-label="profile tabs"
+          >
+            <Tab label="Videos" />
+            <Tab label="Playlists" />
+          </Tabs>
         </Box>
-      </HeaderContainer>
 
-      {/* Tabs Bar */}
-      <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}>
-        <Tabs
-          value={selectedTab}
-          onChange={handleTabChange}
-          aria-label="profile tabs"
-        >
-          <Tab label="Videos" />
-          <Tab label="Playlists" />
-        </Tabs>
-      </Box>
-
-      {/* Tab Content */}
-      {selectedTab === 0 && <VideoListComponentLevel />}
-      {selectedTab === 1 && <PlayListComponentLevel />}
-    </ProfileContainer>
+        {/* Tab Content */}
+        {selectedTab === 0 && (
+          <PageTransition>
+            <VideoListComponentLevel />
+          </PageTransition>
+        )}
+        {selectedTab === 1 && (
+          <PageTransition>
+            <PlayListComponentLevel />
+          </PageTransition>
+        )}
+      </ProfileContainer>
+    </PageTransition>
   );
 };

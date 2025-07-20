@@ -13,7 +13,7 @@ import {
   Select,
   TextField,
 } from '@mui/material';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import {
   QTUBE_PLAYLIST_BASE,
@@ -25,6 +25,7 @@ import { VideoListPreloaded } from '../Home/Components/VideoListPreloaded.tsx';
 import { usePersistedState } from '../../state/persist/persist.ts';
 import { PageSubTitle } from '../../components/common/General/GeneralStyles.tsx';
 import EditIcon from '@mui/icons-material/Edit';
+import { PageTransition } from '../../components/common/PageTransition.tsx';
 
 export const Bookmarks = () => {
   const [selectedList, setSelectedList, isHydratedSelectedList] =
@@ -33,6 +34,7 @@ export const Bookmarks = () => {
     'bookmarks-v1',
     {}
   );
+  const inputRef = useRef(null);
   const [isOpenEdit, setIsOpenEdit] = useState(false);
   const [newTitle, setNewTitle] = useState('');
   const { lists } = useGlobal();
@@ -99,6 +101,14 @@ export const Bookmarks = () => {
         },
       };
     });
+    setNewTitle('');
+    setIsOpenEdit(false);
+  };
+
+  const handleInputKeyDown = (event: any) => {
+    if (event.key === 'Enter' && newTitle?.trim()) {
+      handleEditListTitle(selectedList?.id, newTitle);
+    }
   };
 
   const handleRemoveVideoFromList = (
@@ -147,7 +157,7 @@ export const Bookmarks = () => {
 
   if (!selectedList && isHydratedBookmarks) {
     return (
-      <>
+      <PageTransition>
         <FormControl fullWidth>
           <InputLabel id="bookmark-list-label">Select a List</InputLabel>
 
@@ -203,12 +213,12 @@ export const Bookmarks = () => {
             />
           </Box>
         </Box>
-      </>
+      </PageTransition>
     );
   }
 
   return (
-    <>
+    <PageTransition>
       <FormControl fullWidth>
         <InputLabel id="bookmark-list-label">Select a List</InputLabel>
 
@@ -286,11 +296,21 @@ export const Bookmarks = () => {
             <TextField
               value={newTitle}
               onChange={(e) => setNewTitle(e.target.value)}
+              inputRef={inputRef}
+              onKeyDown={handleInputKeyDown}
+              autoFocus
             />
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button variant="contained" color="danger" onClick={deleteList}>
+          <Button
+            variant="contained"
+            color="error"
+            onClick={deleteList}
+            sx={{
+              marginRight: 'auto',
+            }}
+          >
             Delete
           </Button>
           <Button
@@ -320,6 +340,6 @@ export const Bookmarks = () => {
           </Button>
         </DialogActions>
       </Dialog>
-    </>
+    </PageTransition>
   );
 };

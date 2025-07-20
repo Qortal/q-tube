@@ -13,6 +13,7 @@ import { scrollRefAtom } from '../../state/global/navbar.ts';
 import { useHomeState } from '../Home/Home-State.ts';
 import VideoList from '../Home/Components/VideoList.tsx';
 import { PageSubTitle } from '../../components/common/General/GeneralStyles.tsx';
+import { PageTransition } from '../../components/common/PageTransition.tsx';
 
 export const Subscriptions = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -49,7 +50,7 @@ export const Subscriptions = () => {
   console.log('subs');
 
   return (
-    <>
+    <PageTransition>
       <Box>
         <Box
           sx={{
@@ -85,6 +86,6 @@ export const Subscriptions = () => {
         </Box>
       </Box>
       <ScrollToTopButton scrollRef={scrollRef} />
-    </>
+    </PageTransition>
   );
 };

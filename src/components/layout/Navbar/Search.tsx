@@ -14,6 +14,7 @@ import { useSidebarState } from '../../../pages/Home/Components/SearchSidebar-St
 import { useNavigate } from 'react-router-dom';
 import SearchIcon from '@mui/icons-material/Search';
 import CloseIcon from '@mui/icons-material/Close';
+import { usePersistedState } from '../../../state/persist/persist';
 const SearchParent = styled('div')(({ theme }) => ({
   position: 'relative',
   borderRadius: theme.shape.borderRadius,
@@ -58,6 +59,10 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 export const Search = () => {
   const navigate = useNavigate();
   const theme = useTheme();
+  const [filterMode, setFilterMode, isHydratedFilterMode] = usePersistedState(
+    'filterMode',
+    'recent'
+  );
   const {
     filterSearch,
     setFilterSearch,
@@ -69,6 +74,9 @@ export const Search = () => {
   const handleInputKeyDown = (event: any) => {
     if (event.key === 'Enter') {
       onSearch();
+      if (isHydratedFilterMode) {
+        setFilterMode('all');
+      }
       navigate(`/`);
     }
   };
@@ -104,7 +112,13 @@ export const Search = () => {
             sx={{
               height: '100%',
             }}
-            onClick={onSearch}
+            onClick={() => {
+              onSearch();
+              if (isHydratedFilterMode) {
+                setFilterMode('all');
+              }
+              navigate(`/`);
+            }}
           >
             <Box
               sx={{

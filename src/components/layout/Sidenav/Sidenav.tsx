@@ -84,7 +84,7 @@ export const Sidenav = () => {
             zIndex: 1200,
             top: '0px',
             bottom: 0,
-            // overflow: 'hidden',
+            overflow: 'hidden',
             bgcolor: 'background.default',
             borderRight: 'none',
           },

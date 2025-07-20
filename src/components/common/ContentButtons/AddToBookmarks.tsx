@@ -18,7 +18,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { InstallDesktopRounded } from '@mui/icons-material';
 import { usePersistedState } from '../../../state/persist/persist';
 import ShortUniqueId from 'short-unique-id';
-import { useGlobal } from 'qapp-core';
+import { Spacer, useGlobal } from 'qapp-core';
 
 const uid = new ShortUniqueId({ length: 15, dictionary: 'alphanum' });
 
@@ -34,6 +34,7 @@ export const AddToBookmarks = ({ metadataReference }) => {
   const [mode, setMode] = useState(1);
   const [title, setTitle] = useState('');
   const theme = useTheme();
+  const inputRef = useRef(null);
 
   const ref = useRef<any>(null);
 
@@ -48,6 +49,11 @@ export const AddToBookmarks = ({ metadataReference }) => {
       setIsOpen(false);
     }
   };
+
+  useEffect(() => {
+    if (mode !== 2) return;
+    inputRef.current?.focus();
+  }, [mode]);
 
   const handleCreateList = () => {
     const newId = uid.rnd();
@@ -69,6 +75,14 @@ export const AddToBookmarks = ({ metadataReference }) => {
         },
       };
     });
+    setMode(1);
+    setTitle('');
+  };
+
+  const handleInputKeyDown = (event: any) => {
+    if (event.key === 'Enter' && title?.trim()) {
+      handleCreateList();
+    }
   };
 
   const handleAddVideoToList = (
@@ -227,7 +241,11 @@ export const AddToBookmarks = ({ metadataReference }) => {
                   gap: '10px',
                   width: '100%',
                 }}
-                onClick={() => setIsOpen(false)}
+                onClick={() => {
+                  setIsOpen(false);
+                  setMode(1);
+                  setTitle('');
+                }}
               >
                 <Typography
                   sx={{
@@ -273,7 +291,7 @@ export const AddToBookmarks = ({ metadataReference }) => {
                   },
                 }}
               >
-                {bookmarkList?.length === 0 && (
+                {lists?.length === 0 && (
                   <Typography
                     sx={{
                       fontSize: '1rem',
@@ -285,26 +303,37 @@ export const AddToBookmarks = ({ metadataReference }) => {
                     No bookmark lists
                   </Typography>
                 )}
-                {lists?.map((list) => {
-                  const isInList = isVideoInList(list.id, metadataReference);
-                  console.log('isInList', isInList);
-                  return (
-                    <ButtonBase
-                      key={list.id}
-                      onClick={() =>
-                        isInList
-                          ? handleRemoveVideoFromList(
-                              list.id,
-                              metadataReference
-                            )
-                          : handleAddVideoToList(list.id, metadataReference)
-                      }
-                    >
-                      <Checkbox checked={isInList} />
-                      <Typography>{list?.title}</Typography>
-                    </ButtonBase>
-                  );
-                })}
+                <Spacer height="10px" />
+                <Box
+                  sx={{
+                    width: '100%',
+                  }}
+                >
+                  {lists?.map((list) => {
+                    const isInList = isVideoInList(list.id, metadataReference);
+                    console.log('isInList', isInList);
+                    return (
+                      <ButtonBase
+                        sx={{
+                          width: '100%',
+                          justifyContent: 'flex-start',
+                        }}
+                        key={list.id}
+                        onClick={() =>
+                          isInList
+                            ? handleRemoveVideoFromList(
+                                list.id,
+                                metadataReference
+                              )
+                            : handleAddVideoToList(list.id, metadataReference)
+                        }
+                      >
+                        <Checkbox checked={isInList} />
+                        <Typography>{list?.title}</Typography>
+                      </ButtonBase>
+                    );
+                  })}
+                </Box>
               </Box>
               <Box
                 sx={{
@@ -333,7 +362,13 @@ export const AddToBookmarks = ({ metadataReference }) => {
                   width: '100%',
                 }}
               >
-                <ButtonBase onClick={() => setIsOpen(false)}>
+                <ButtonBase
+                  onClick={() => {
+                    setIsOpen(false);
+                    setMode(1);
+                    setTitle('');
+                  }}
+                >
                   <ArrowBackIosIcon
                     sx={{
                       fontSize: '1.15em',
@@ -342,7 +377,11 @@ export const AddToBookmarks = ({ metadataReference }) => {
                 </ButtonBase>
                 <ButtonBase>
                   <Typography
-                    onClick={() => setIsOpen(false)}
+                    onClick={() => {
+                      setIsOpen(false);
+                      setMode(1);
+                      setTitle('');
+                    }}
                     sx={{
                       fontSize: '0.85rem',
                     }}
@@ -381,15 +420,17 @@ export const AddToBookmarks = ({ metadataReference }) => {
                 }}
               >
                 <TextField
+                  inputRef={inputRef}
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
+                  onKeyDown={handleInputKeyDown}
                 />
               </Box>
               <Box
                 sx={{
                   display: 'flex',
                   width: '100%',
-                  justifyContent: 'center',
+                  justifyContent: 'space-between',
                 }}
               >
                 <Button

@@ -7,7 +7,9 @@ import { isSideBarExpandedAtom, scrollRefAtom } from './state/global/navbar';
 import NavBar from './components/layout/Navbar/Navbar';
 import { Sidenav } from './components/layout/Sidenav/Sidenav';
 import { namesAtom } from './state/global/names';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { PageTransition } from './components/common/PageTransition';
 
 const Layout = () => {
   const scrollRef = useRef<any>(null);
@@ -18,12 +20,66 @@ const Layout = () => {
   }, [setScrollRef]);
 
   const [names] = useAtom(namesAtom);
-
+  const [showNavbar, setShowNavbar] = useState(true);
+  const lastScrollY = useRef(0);
   useIframe();
+
+  useEffect(() => {
+    const scrollElement = scrollRef.current;
+    if (!scrollElement) return;
+
+    let lastY = 0;
+    let ticking = false;
+
+    const handleScroll = () => {
+      const currentY = scrollElement.scrollTop;
+      const deltaY = currentY - lastY;
+
+      if (Math.abs(deltaY) < 70) {
+        ticking = false;
+        return; // skip tiny scrolls
+      }
+
+      if (deltaY > 0 && currentY > 50) {
+        setShowNavbar(false); // scroll down
+      } else {
+        setShowNavbar(true); // scroll up
+      }
+
+      lastY = currentY;
+      ticking = false;
+    };
+
+    const onScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(handleScroll);
+        ticking = true;
+      }
+    };
+
+    scrollElement.addEventListener('scroll', onScroll);
+    return () => scrollElement.removeEventListener('scroll', onScroll);
+  }, []);
 
   return (
     <Box display="flex" flexDirection="column" height="100vh" overflow="hidden">
-      <NavBar allNames={names} />
+      <AnimatePresence>
+        <motion.div
+          animate={
+            showNavbar
+              ? { height: '64px', opacity: 1, y: 0 }
+              : { height: '0px', opacity: 0, y: -20 }
+          }
+          transition={{ duration: 0.3, ease: 'easeInOut' }}
+          style={{
+            overflow: 'hidden',
+            zIndex: 1000,
+          }}
+        >
+          <NavBar allNames={names} />
+        </motion.div>
+      </AnimatePresence>
+
       <Box
         sx={{
           width: '100%',

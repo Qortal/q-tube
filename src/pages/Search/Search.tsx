@@ -9,6 +9,7 @@ import { QortalSearchParams, useAuth } from 'qapp-core';
 import { useSearchParams } from 'react-router-dom';
 import { useHomeState } from '../Home/Home-State.ts';
 import VideoList from '../Home/Components/VideoList.tsx';
+import { PageTransition } from '../../components/common/PageTransition.tsx';
 
 export const Search = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -77,7 +78,7 @@ export const Search = () => {
   ]);
 
   return (
-    <>
+    <PageTransition>
       <Box>
         <Box
           sx={{
@@ -95,6 +96,6 @@ export const Search = () => {
           )}
         </Box>
       </Box>
-    </>
+    </PageTransition>
   );
 };

@@ -17,8 +17,10 @@ import {
   OutlinedInput,
   MenuItem,
   Button,
+  Tabs,
+  Tab,
 } from '@mui/material';
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useHomeState } from './Home-State';
 import PlaylistPlayIcon from '@mui/icons-material/PlaylistPlay';
@@ -31,6 +33,7 @@ import {
 } from './Components/VideoList-styles';
 import { useSidebarState } from './Components/SearchSidebar-State';
 import { categories, subCategories } from '../../constants/Categories';
+import { useIsSmall } from '../../hooks/useIsSmall';
 
 const CustomChip = styled(Chip)(({ theme }) => ({
   backgroundColor: theme.palette.background.unSelected, // dark background
@@ -54,6 +57,9 @@ const CustomChip = styled(Chip)(({ theme }) => ({
 }));
 
 export const FilterOptions = () => {
+  const isSmall = useIsSmall();
+  const tabsRef = useRef(null);
+
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const theme = useTheme();
@@ -148,95 +154,41 @@ export const FilterOptions = () => {
 
   return (
     <>
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'center',
-          flexWrap: 'wrap',
-          listStyle: 'none',
-          gap: '15px',
-          p: 0.5,
-          m: 0,
-          marginBottom: '40px',
-        }}
-        component="ul"
-      >
-        <CustomChip
-          icon={<PlayCircleOutlineIcon fontSize="small" />}
-          label="Videos"
-          clickable
-          onClick={() => setFilterType('videos')}
-          sx={(theme) => {
-            const baseColor =
-              filterType === 'videos'
-                ? theme.palette.primary.main
-                : theme.palette.background.unSelected;
-
-            return {
-              color:
-                filterType === 'videos'
-                  ? 'primary.contrastText'
-                  : 'text.primary',
-              fontWeight: 400,
-              backgroundColor: baseColor,
-              '&:hover': {
-                backgroundColor: darken(baseColor, 0.3), // 10% darker
-              },
-            };
-          }}
-        />
-        <CustomChip
-          icon={<PlaylistPlayIcon fontSize="small" />}
-          label="Playlists"
-          clickable
-          onClick={() => setFilterType('playlists')}
-          sx={(theme) => {
-            const baseColor =
-              filterType === 'playlists'
-                ? theme.palette.primary.main
-                : theme.palette.background.unSelected;
-
-            return {
-              color:
-                filterType === 'playlists'
-                  ? 'primary.contrastText'
-                  : 'text.primary',
-              fontWeight: 400,
-              backgroundColor: baseColor,
-              '&:hover': {
-                backgroundColor: darken(baseColor, 0.3), // 10% darker
-              },
-            };
-          }}
-        />
-        <Divider
-          flexItem
-          orientation="vertical"
+      {isSmall && (
+        <Tabs
+          ref={tabsRef}
+          aria-label="basic tabs example"
+          variant="scrollable" // Make tabs scrollable
+          scrollButtons={true}
           sx={{
-            color: 'primary.main',
+            '& .MuiTabs-indicator': {
+              backgroundColor: 'white',
+            },
+            width: `calc(100vw)`, // Ensure the tabs container fits within the available space
+            overflow: 'hidden', // Prevents overflow on small screens
+            backgroundColor: theme.palette.background.paper,
+            marginBottom: '5px',
           }}
-        />
-
-        {chipData.map((data) => {
-          return (
-            <ListItem
-              key={data.label}
-              sx={{
-                width: 'auto',
-                padding: '0px',
-              }}
-            >
-              <Chip
-                //   icon={icon}
-                label={data.label}
-                onClick={() => handleClick(data)}
+        >
+          <Tab
+            // key={tab.tabId}
+            label={
+              <CustomChip
+                icon={<AddIcon fontSize="small" />}
+                label="More"
+                clickable
+                onClick={() => setIsOpen(true)}
                 sx={(theme) => {
-                  const baseColor = data?.isSelected
-                    ? theme.palette.primary.main
-                    : theme.palette.background.unSelected;
+                  const baseColor =
+                    filterName || filterCategory
+                      ? theme.palette.primary.main
+                      : theme.palette.background.unSelected;
 
                   return {
-                    color: data.color,
+                    color:
+                      filterName || filterCategory
+                        ? 'primary.contrastText'
+                        : 'text.primary',
                     fontWeight: 400,
                     backgroundColor: baseColor,
                     '&:hover': {
@@ -245,34 +197,258 @@ export const FilterOptions = () => {
                   };
                 }}
               />
-            </ListItem>
-          );
-        })}
-        <CustomChip
-          icon={<AddIcon fontSize="small" />}
-          label="More Filters"
-          clickable
-          onClick={() => setIsOpen(true)}
-          sx={(theme) => {
-            const baseColor =
-              filterName || filterCategory
-                ? theme.palette.primary.main
-                : theme.palette.background.unSelected;
-
-            return {
-              color:
-                filterName || filterCategory
-                  ? 'primary.contrastText'
-                  : 'text.primary',
-              fontWeight: 400,
-              backgroundColor: baseColor,
-              '&:hover': {
-                backgroundColor: darken(baseColor, 0.3), // 10% darker
+            } // Pass custom component
+            sx={{
+              '&.Mui-selected': {
+                color: 'white',
               },
-            };
+              padding: '0px 5px',
+
+              margin: '0px',
+              minWidth: '0px',
+            }}
+          />
+          <Tab
+            // key={tab.tabId}
+            label={
+              <CustomChip
+                icon={<PlayCircleOutlineIcon fontSize="small" />}
+                label="Videos"
+                clickable
+                onClick={() => setFilterType('videos')}
+                sx={(theme) => {
+                  const baseColor =
+                    filterType === 'videos'
+                      ? theme.palette.primary.main
+                      : theme.palette.background.unSelected;
+
+                  return {
+                    color:
+                      filterType === 'videos'
+                        ? 'primary.contrastText'
+                        : 'text.primary',
+                    fontWeight: 400,
+                    backgroundColor: baseColor,
+                    '&:hover': {
+                      backgroundColor: darken(baseColor, 0.3), // 10% darker
+                    },
+                  };
+                }}
+              />
+            } // Pass custom component
+            sx={{
+              '&.Mui-selected': {
+                color: 'white',
+              },
+              padding: '0px 5px',
+
+              margin: '0px',
+              minWidth: '0px',
+            }}
+          />
+          <Tab
+            // key={tab.tabId}
+            label={
+              <CustomChip
+                icon={<PlaylistPlayIcon fontSize="small" />}
+                label="Playlists"
+                clickable
+                onClick={() => setFilterType('playlists')}
+                sx={(theme) => {
+                  const baseColor =
+                    filterType === 'playlists'
+                      ? theme.palette.primary.main
+                      : theme.palette.background.unSelected;
+
+                  return {
+                    color:
+                      filterType === 'playlists'
+                        ? 'primary.contrastText'
+                        : 'text.primary',
+                    fontWeight: 400,
+                    backgroundColor: baseColor,
+                    '&:hover': {
+                      backgroundColor: darken(baseColor, 0.3), // 10% darker
+                    },
+                  };
+                }}
+              />
+            } // Pass custom component
+            sx={{
+              '&.Mui-selected': {
+                color: 'white',
+              },
+              padding: '0px 5px',
+              margin: '0px',
+              minWidth: '0px',
+            }}
+          />
+          {chipData.map((data) => {
+            return (
+              <Tab
+                key={data?.label}
+                label={
+                  <Chip
+                    //   icon={icon}
+                    label={data.label}
+                    onClick={() => handleClick(data)}
+                    sx={(theme) => {
+                      const baseColor = data?.isSelected
+                        ? theme.palette.primary.main
+                        : theme.palette.background.unSelected;
+
+                      return {
+                        color: data.color,
+                        fontWeight: 400,
+                        backgroundColor: baseColor,
+                        '&:hover': {
+                          backgroundColor: darken(baseColor, 0.3), // 10% darker
+                        },
+                      };
+                    }}
+                  />
+                } // Pass custom component
+                sx={{
+                  '&.Mui-selected': {
+                    color: 'white',
+                  },
+                  padding: '0px 5px',
+                  margin: '0px',
+                  minWidth: '0px',
+                }}
+              />
+            );
+          })}
+        </Tabs>
+      )}
+      {!isSmall && (
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            flexWrap: 'wrap',
+            listStyle: 'none',
+            gap: '15px',
+            p: 0.5,
+            m: 0,
+            marginBottom: '40px',
           }}
-        />
-      </Box>
+          component="ul"
+        >
+          <CustomChip
+            icon={<PlayCircleOutlineIcon fontSize="small" />}
+            label="Videos"
+            clickable
+            onClick={() => setFilterType('videos')}
+            sx={(theme) => {
+              const baseColor =
+                filterType === 'videos'
+                  ? theme.palette.primary.main
+                  : theme.palette.background.unSelected;
+
+              return {
+                color:
+                  filterType === 'videos'
+                    ? 'primary.contrastText'
+                    : 'text.primary',
+                fontWeight: 400,
+                backgroundColor: baseColor,
+                '&:hover': {
+                  backgroundColor: darken(baseColor, 0.3), // 10% darker
+                },
+              };
+            }}
+          />
+          <CustomChip
+            icon={<PlaylistPlayIcon fontSize="small" />}
+            label="Playlists"
+            clickable
+            onClick={() => setFilterType('playlists')}
+            sx={(theme) => {
+              const baseColor =
+                filterType === 'playlists'
+                  ? theme.palette.primary.main
+                  : theme.palette.background.unSelected;
+
+              return {
+                color:
+                  filterType === 'playlists'
+                    ? 'primary.contrastText'
+                    : 'text.primary',
+                fontWeight: 400,
+                backgroundColor: baseColor,
+                '&:hover': {
+                  backgroundColor: darken(baseColor, 0.3), // 10% darker
+                },
+              };
+            }}
+          />
+          <Divider
+            flexItem
+            orientation="vertical"
+            sx={{
+              color: 'primary.main',
+            }}
+          />
+
+          {chipData.map((data) => {
+            return (
+              <ListItem
+                key={data.label}
+                sx={{
+                  width: 'auto',
+                  padding: '0px',
+                }}
+              >
+                <Chip
+                  //   icon={icon}
+                  label={data.label}
+                  onClick={() => handleClick(data)}
+                  sx={(theme) => {
+                    const baseColor = data?.isSelected
+                      ? theme.palette.primary.main
+                      : theme.palette.background.unSelected;
+
+                    return {
+                      color: data.color,
+                      fontWeight: 400,
+                      backgroundColor: baseColor,
+                      '&:hover': {
+                        backgroundColor: darken(baseColor, 0.3), // 10% darker
+                      },
+                    };
+                  }}
+                />
+              </ListItem>
+            );
+          })}
+          <CustomChip
+            icon={<AddIcon fontSize="small" />}
+            label="More Filters"
+            clickable
+            onClick={() => setIsOpen(true)}
+            sx={(theme) => {
+              const baseColor =
+                filterName || filterCategory
+                  ? theme.palette.primary.main
+                  : theme.palette.background.unSelected;
+
+              return {
+                color:
+                  filterName || filterCategory
+                    ? 'primary.contrastText'
+                    : 'text.primary',
+                fontWeight: 400,
+                backgroundColor: baseColor,
+                '&:hover': {
+                  backgroundColor: darken(baseColor, 0.3), // 10% darker
+                },
+              };
+            }}
+          />
+        </Box>
+      )}
+
       <Dialog open={isOpen} fullWidth={true} maxWidth={'sm'}>
         <DialogTitle>Filters</DialogTitle>
         <IconButton

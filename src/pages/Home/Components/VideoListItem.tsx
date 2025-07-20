@@ -25,6 +25,7 @@ import { useGlobal } from 'qapp-core';
 import { useState } from 'react';
 import { editPlaylistAtom } from '../../../state/publish/playlist';
 import { useSetAtom } from 'jotai';
+import { useIsMobile } from '../../../hooks/useIsMobile';
 
 export const VideoListItem = ({
   qortalMetadata,
@@ -35,7 +36,9 @@ export const VideoListItem = ({
   isBookmarks,
   disableActions,
   handleRemoveVideoFromList,
-}) => {
+}: any) => {
+  const isMobile = useIsMobile();
+
   const navigate = useNavigate();
   const [showIcons, setShowIcons] = useState(null);
   const theme = useTheme();
@@ -52,6 +55,13 @@ export const VideoListItem = ({
         key={qortalMetadata?.identifier}
         onMouseEnter={() => setShowIcons(qortalMetadata?.identifier)}
         onMouseLeave={() => setShowIcons(null)}
+        sx={{
+          ...(isMobile && {
+            width: '100%',
+            borderRadius: '0px',
+            maxWidth: '100%',
+          }),
+        }}
       >
         <IconsBox
           sx={{
@@ -111,7 +121,7 @@ export const VideoListItem = ({
             sx={{
               position: 'relative',
               height: 180,
-              width: 320,
+              width: isMobile ? '100%' : 320,
             }}
           >
             <ResponsiveImage
@@ -189,6 +199,13 @@ export const VideoListItem = ({
       key={qortalMetadata?.identifier}
       onMouseEnter={() => setShowIcons(qortalMetadata?.identifier)}
       onMouseLeave={() => setShowIcons(null)}
+      sx={{
+        ...(isMobile && {
+          width: '100%',
+          borderRadius: '0px',
+          maxWidth: '100%',
+        }),
+      }}
     >
       <IconsBox
         sx={{
@@ -277,7 +294,7 @@ export const VideoListItem = ({
           }}
         >
           <VideoCardImageContainer
-            width={320}
+            width={isMobile ? '100%' : 320}
             height={180}
             videoImage={video.videoImage}
             frameImages={video?.extracts || []}
@@ -309,7 +326,11 @@ export const VideoListItem = ({
         >
           <VideoCardTitle>{video.title}</VideoCardTitle>
         </Tooltip> */}
-        <BottomParent>
+        <BottomParent
+          sx={{
+            padding: isMobile ? '0px 5px' : '0px',
+          }}
+        >
           <NameContainer
             onClick={(e) => {
               e.stopPropagation();

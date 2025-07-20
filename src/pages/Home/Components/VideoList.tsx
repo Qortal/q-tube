@@ -15,6 +15,7 @@ import { useAtomValue, useSetAtom } from 'jotai';
 import { editVideoAtom } from '../../../state/publish/video.ts';
 import { scrollRefAtom } from '../../../state/global/navbar.ts';
 import { Box, Typography } from '@mui/material';
+import { useIsMobile } from '../../../hooks/useIsMobile.tsx';
 
 interface VideoListProps {
   searchParameters: QortalSearchParams;
@@ -24,7 +25,7 @@ export const VideoList = ({ searchParameters, listName }: VideoListProps) => {
   const { name: username } = useAuth();
   const setEditVideo = useSetAtom(editVideoAtom);
   const { addToBlockedList } = useBlockedNames();
-
+  const isMobile = useIsMobile();
   const scrollRef = useAtomValue(scrollRefAtom);
 
   const blockUserFunc = async (user: string) => {
@@ -83,7 +84,7 @@ export const VideoList = ({ searchParameters, listName }: VideoListProps) => {
         styles={{
           gap: 40,
           horizontalStyles: {
-            minItemWidth: 320,
+            minItemWidth: isMobile ? 200 : 320,
           },
         }}
         retryAttempts={3}

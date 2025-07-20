@@ -16,6 +16,7 @@ import {
   setNotificationAtom,
 } from '../../../state/global/notifications.ts';
 import { Box, Button } from '@mui/material';
+import { useIsSmall } from '../../../hooks/useIsSmall.tsx';
 const uid = new ShortUniqueId({ length: 7 });
 
 const notification = localforage.createInstance({
@@ -114,6 +115,7 @@ export const CommentEditor = ({
   commentMessage,
   onCloseReply,
 }: CommentEditorProps) => {
+  const isSmall = useIsSmall();
   const [value, setValue] = useState<string>('');
   const { name, address } = useAuth();
   const setNotification = useSetAtom(setNotificationAtom);
@@ -220,7 +222,11 @@ export const CommentEditor = ({
   console.log('onCloseReply', onCloseReply);
 
   return (
-    <CommentInputContainer>
+    <CommentInputContainer
+      sx={{
+        width: isSmall ? '100%' : 'unset',
+      }}
+    >
       <CommentInput
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}

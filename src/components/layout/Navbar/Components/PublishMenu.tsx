@@ -10,7 +10,7 @@ import {
 import AddBoxIcon from '@mui/icons-material/AddBox';
 import { PopMenu, PopMenuRefType } from '../../../common/PopMenu.tsx';
 import { useRef } from 'react';
-import { Button, useMediaQuery } from '@mui/material';
+import { Button, ButtonBase, useMediaQuery, useTheme } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 export interface PublishButtonsProps {
   isDisplayed: boolean;
@@ -18,11 +18,13 @@ export interface PublishButtonsProps {
 import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
 import { editPlaylistAtom } from '../../../../state/publish/playlist.ts';
 import { useSetAtom } from 'jotai';
+import { useIsSmall } from '../../../../hooks/useIsSmall.tsx';
 
 export const PublishMenu = ({ isDisplayed }: PublishButtonsProps) => {
   const popMenuRef = useRef<PopMenuRefType>(null);
   const setEditPlaylist = useSetAtom(editPlaylistAtom);
-  const isScreenSmall = !useMediaQuery(`(min-width:600px)`);
+  const isSmall = useIsSmall();
+  const theme = useTheme();
   return (
     <>
       {isDisplayed && (
@@ -30,9 +32,25 @@ export const PublishMenu = ({ isDisplayed }: PublishButtonsProps) => {
           showExpandIcon={false}
           MenuHeader={
             <>
-              <Button startIcon={<AddIcon />} color="info" variant="contained">
-                Publish
-              </Button>
+              {!isSmall ? (
+                <Button
+                  startIcon={<AddIcon />}
+                  color="info"
+                  variant="contained"
+                >
+                  Publish
+                </Button>
+              ) : (
+                <ButtonBase>
+                  <AddIcon
+                    sx={{
+                      fontSize: '35px',
+                      color: theme.palette.action.active,
+                    }}
+                  />
+                </ButtonBase>
+              )}
+
               {/* {!isScreenSmall && (
                 <NavbarName sx={{ marginRight: '5px' }}>Publish</NavbarName>
               )}

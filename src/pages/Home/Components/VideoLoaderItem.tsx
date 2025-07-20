@@ -5,15 +5,21 @@ import {
   VideoCard,
   VideoCardCol,
 } from './VideoList-styles';
+import { useIsMobile } from '../../../hooks/useIsMobile';
 
 export const VideoLoaderItem = ({ status }) => {
+  const isMobile = useIsMobile();
   return (
-    <VideoCardCol>
+    <VideoCardCol
+      sx={{
+        ...(isMobile && { width: '100%' }),
+      }}
+    >
       <VideoCard>
         <Skeleton
           variant="rectangular"
           style={{
-            width: 320,
+            width: isMobile ? '100%' : 320,
             height: 180,
             // borderRadius: '8px',
             alignSelf: 'center',

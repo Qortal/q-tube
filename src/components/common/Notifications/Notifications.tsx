@@ -2,6 +2,7 @@ import {
   Badge,
   Box,
   Button,
+  ButtonBase,
   List,
   ListItem,
   ListItemText,
@@ -237,7 +238,7 @@ export const Notifications = () => {
           margin: '0px',
         }}
       >
-        <Button
+        <ButtonBase
           onClick={(e) => {
             openNotificationPopover(e);
             generalLocal.setItem('notification-timestamp', Date.now());
@@ -251,8 +252,13 @@ export const Notifications = () => {
             minWidth: 'unset',
           }}
         >
-          <NotificationsIcon color="action" />
-        </Button>
+          <NotificationsIcon
+            color="action"
+            sx={{
+              fontSize: '35px',
+            }}
+          />
+        </ButtonBase>
       </Badge>
       <Popover
         id={'simple-popover-notification'}

@@ -162,7 +162,7 @@ export const BlockIconContainer = styled(Box)({
 });
 
 export const CommentsContainer = styled(Box)({
-  width: '90%',
+  width: '100%',
   maxWidth: '1000px',
   display: 'flex',
   flexDirection: 'column',

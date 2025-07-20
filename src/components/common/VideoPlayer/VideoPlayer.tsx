@@ -6,6 +6,7 @@ import { Box } from '@mui/material';
 import { useLocation } from 'react-router-dom';
 import { usePersistedState } from '../../../state/persist/persist';
 import { JavascriptOutlined } from '@mui/icons-material';
+import { useIsSmall } from '../../../hooks/useIsSmall';
 export interface VideoStyles {
   videoContainer?: CSS.Properties;
   video?: CSS.Properties;
@@ -32,6 +33,7 @@ export interface VideoPlayerProps {
 }
 
 export const VideoPlayer = ({ ...props }: VideoPlayerProps) => {
+  const isSmall = useIsSmall();
   const videoRef = useRef(null);
   const location = useLocation();
   const { lists } = useGlobal();
@@ -66,7 +68,8 @@ export const VideoPlayer = ({ ...props }: VideoPlayerProps) => {
     <Box
       sx={{
         // width: '100%',
-        height: '70vh',
+        height: isSmall ? '240px' : '70vh',
+        maxHeight: '70vh',
         background: 'black',
         width: '100%',
         display: 'flex',

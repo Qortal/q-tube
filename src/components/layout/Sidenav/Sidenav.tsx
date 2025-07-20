@@ -22,10 +22,12 @@ import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useMemo } from 'react';
 import { useAuth } from 'qapp-core';
+import { useIsSmall } from '../../../hooks/useIsSmall';
 const DRAWER_WIDTH = 240;
 export const COLLAPSED_WIDTH = 68;
 
 export const Sidenav = () => {
+  const isSmall = useIsSmall();
   const navigate = useNavigate();
   const location = useLocation();
   const { name } = useAuth();
@@ -87,6 +89,9 @@ export const Sidenav = () => {
             overflow: 'hidden',
             bgcolor: 'background.default',
             borderRight: 'none',
+            ...(isSmall && {
+              display: 'none',
+            }),
           },
         }}
         open
@@ -175,7 +180,7 @@ export const Sidenav = () => {
                 opacity: isSideBarExpanded ? 1 : 0,
                 position: 'fixed', // key change
                 zIndex: 1200,
-                top: '65px',
+                top: '60px',
                 bottom: 0,
                 bgcolor: 'background.default',
                 borderRight: 'none',

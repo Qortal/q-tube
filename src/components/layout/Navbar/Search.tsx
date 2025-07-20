@@ -9,12 +9,15 @@ import {
   styled,
   useTheme,
 } from '@mui/material';
-import React, { useState } from 'react';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import React, { useRef, useState } from 'react';
 import { useSidebarState } from '../../../pages/Home/Components/SearchSidebar-State';
 import { useNavigate } from 'react-router-dom';
 import SearchIcon from '@mui/icons-material/Search';
 import CloseIcon from '@mui/icons-material/Close';
 import { usePersistedState } from '../../../state/persist/persist';
+import { useIsSmall } from '../../../hooks/useIsSmall';
+import { AnimatePresence, motion } from 'framer-motion';
 const SearchParent = styled('div')(({ theme }) => ({
   position: 'relative',
   borderRadius: theme.shape.borderRadius,
@@ -57,12 +60,16 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 export const Search = () => {
+  const isSmall = useIsSmall();
   const navigate = useNavigate();
   const theme = useTheme();
+  const [isOpenSearch, setIsOpenSearch] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
   const [filterMode, setFilterMode, isHydratedFilterMode] = usePersistedState(
     'filterMode',
     'recent'
   );
+  const inputRef = useRef();
   const {
     filterSearch,
     setFilterSearch,
@@ -77,68 +84,175 @@ export const Search = () => {
       if (isHydratedFilterMode) {
         setFilterMode('all');
       }
+      // setIsOpenSearch(false);
       navigate(`/`);
+      setIsFocused(false);
+      inputRef?.current?.blur();
     }
   };
 
   return (
     <>
-      <SearchParent>
-        <StyledInputBase
-          size="small"
-          placeholder="Search…"
-          inputProps={{ 'aria-label': 'search' }}
-          value={filterSearch}
-          onChange={(e) => setFilterSearch(e.target.value)}
-          onKeyDown={handleInputKeyDown}
-        />
-        <SearchIconWrapper>
-          <ButtonBase
-            onClick={() => {
-              setFilterSearchGlobal('');
-              setFilterSearch('');
-            }}
-            sx={{
-              visibility: filterSearchGlobal ? 'visible' : 'hidden',
-            }}
-          >
-            <CloseIcon
+      {isSmall && (
+        <>
+          <ButtonBase onClick={() => setIsOpenSearch(true)}>
+            <SearchIcon
               sx={{
+                fontSize: '35px',
                 color: theme.palette.action.active,
               }}
             />
           </ButtonBase>
-          <ButtonBase
-            sx={{
-              height: '100%',
-            }}
-            onClick={() => {
-              onSearch();
-              if (isHydratedFilterMode) {
-                setFilterMode('all');
-              }
-              navigate(`/`);
-            }}
-          >
-            <Box
+          <AnimatePresence>
+            {isOpenSearch && (
+              <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.2 }}
+                style={{
+                  display: 'flex',
+                  position: 'fixed',
+                  zIndex: 1001,
+                  top: '0px',
+                  left: '0px',
+                  right: '0px',
+                  bottom: isFocused ? '0px' : 'unset',
+                  height: isFocused ? 'unset' : '65px',
+                  backgroundColor: theme.palette.background.paper2,
+                }}
+              >
+                <SearchParent
+                  sx={{
+                    outline: 'none',
+                    borderBottom: `1px ${theme.palette.action.active} solid`,
+                    borderRadius: '0px',
+                  }}
+                >
+                  <ButtonBase
+                    onClick={() => {
+                      if (isFocused) {
+                        setIsFocused(false);
+                        if (filterSearchGlobal) {
+                          setFilterSearch(filterSearchGlobal);
+                        }
+                        if (!filterSearchGlobal) {
+                          setIsOpenSearch(false);
+                          setFilterSearch('');
+                        }
+                        return;
+                      }
+                      setIsOpenSearch(false);
+                      setFilterSearchGlobal('');
+                      setFilterSearch('');
+                    }}
+                    // sx={{
+                    //   visibility: filterSearchGlobal ? 'visible' : 'hidden',
+                    // }}
+                  >
+                    <ArrowBackIcon
+                      sx={{
+                        color: theme.palette.action.active,
+                      }}
+                    />
+                  </ButtonBase>
+                  <StyledInputBase
+                    inputRef={inputRef}
+                    autoFocus
+                    size="small"
+                    placeholder="Search…"
+                    inputProps={{
+                      'aria-label': 'search',
+                      enterKeyHint: 'search',
+                      inputMode: 'text',
+                    }}
+                    value={filterSearch}
+                    onChange={(e) => setFilterSearch(e.target.value)}
+                    onKeyDown={handleInputKeyDown}
+                    onFocus={() => setIsFocused(true)}
+                  />
+                  <SearchIconWrapper>
+                    <ButtonBase
+                      onClick={() => {
+                        // setFilterSearchGlobal('');
+                        setFilterSearch('');
+                        inputRef?.current?.focus();
+                      }}
+                      sx={{
+                        visibility: filterSearch ? 'visible' : 'hidden',
+                      }}
+                    >
+                      <CloseIcon
+                        sx={{
+                          color: theme.palette.action.active,
+                        }}
+                      />
+                    </ButtonBase>
+                  </SearchIconWrapper>
+                </SearchParent>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </>
+      )}
+      {!isSmall && (
+        <SearchParent>
+          <StyledInputBase
+            size="small"
+            placeholder="Search…"
+            inputProps={{ 'aria-label': 'search' }}
+            value={filterSearch}
+            onChange={(e) => setFilterSearch(e.target.value)}
+            onKeyDown={handleInputKeyDown}
+          />
+          <SearchIconWrapper>
+            <ButtonBase
+              onClick={() => {
+                setFilterSearchGlobal('');
+                setFilterSearch('');
+              }}
               sx={{
-                height: '100%',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                bgcolor: 'primary.main',
-                width: '40px',
+                visibility: filterSearchGlobal ? 'visible' : 'hidden',
               }}
             >
-              <SearchIcon
+              <CloseIcon
                 sx={{
-                  color: 'background.paper2',
+                  color: theme.palette.action.active,
                 }}
               />
-            </Box>
-          </ButtonBase>
-        </SearchIconWrapper>
-      </SearchParent>
+            </ButtonBase>
+            <ButtonBase
+              sx={{
+                height: '100%',
+              }}
+              onClick={() => {
+                onSearch();
+                if (isHydratedFilterMode) {
+                  setFilterMode('all');
+                }
+                navigate(`/`);
+              }}
+            >
+              <Box
+                sx={{
+                  height: '100%',
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  bgcolor: 'primary.main',
+                  width: '40px',
+                }}
+              >
+                <SearchIcon
+                  sx={{
+                    color: 'background.paper2',
+                  }}
+                />
+              </Box>
+            </ButtonBase>
+          </SearchIconWrapper>
+        </SearchParent>
+      )}
     </>
   );
 };

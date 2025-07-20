@@ -34,6 +34,7 @@ import {
 import Portal from '../Portal';
 import { formatDate } from '../../../utils/time';
 import { createAvatarLink, Spacer, useAuth } from 'qapp-core';
+import { useIsSmall } from '../../../hooks/useIsSmall';
 interface CommentProps {
   comment: any;
   postId: string;
@@ -46,6 +47,7 @@ export const Comment = ({
   postName,
   onSubmit,
 }: CommentProps) => {
+  const isSmall = useIsSmall();
   const [isReplying, setIsReplying] = useState<boolean>(false);
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const { name } = useAuth();
@@ -186,7 +188,12 @@ export const Comment = ({
                   />
                 )}
 
-                <Typography color="primary.dark">
+                <Typography
+                  color="primary.dark"
+                  sx={{
+                    fontSize: isSmall ? '14px' : 'unset',
+                  }}
+                >
                   {isOpenReplies
                     ? ` Hide all replies (${comment?.replies?.length})`
                     : ` View all replies (${comment?.replies?.length})`}
@@ -210,6 +217,7 @@ export const CommentCard = ({
   isOpenReplies,
   isReply,
 }: any) => {
+  const isSmall = useIsSmall();
   const { name: username } = useAuth();
   const avatarUrl = createAvatarLink(name);
 
@@ -227,8 +235,8 @@ export const CommentCard = ({
             src={avatarUrl}
             alt={`${name}'s avatar`}
             sx={{
-              width: isReply ? '30px' : '40px',
-              height: isReply ? '30px' : '40px',
+              width: isReply && !isSmall ? '30px' : '40px',
+              height: isReply && !isSmall ? '30px' : '40px',
               marginRight: '5px',
             }}
           />
@@ -257,11 +265,13 @@ export const CommentCard = ({
       <Collapse in={isOpenReplies} timeout="auto" unmountOnExit>
         <Box
           sx={{
-            paddingLeft: '50px',
+            paddingLeft: isSmall ? '2px' : '50px',
             paddingTop: '10px',
             display: 'flex',
             flexDirection: 'column',
             width: '100%',
+            border: isSmall ? '1px solid grey' : 'unset',
+            paddingRight: isSmall ? '2px' : 'unset',
           }}
         >
           {replies?.map((reply: any) => {
@@ -271,7 +281,6 @@ export const CommentCard = ({
                 id={reply?.identifier}
                 sx={{
                   display: 'flex',
-                  // border: '1px solid grey',
                   borderRadius: '10px',
                   marginTop: '8px',
                   width: '100%',

@@ -14,6 +14,7 @@ import { PopMenu, PopMenuRefType } from '../../../common/PopMenu.tsx';
 import { UserDropDown } from '../../../UserDropDown.tsx';
 import { Names } from '../../../../state/global/names.ts';
 import { useAuth } from 'qapp-core';
+import { useIsSmall } from '../../../../hooks/useIsSmall.tsx';
 export interface NavBarMenuProps {
   isShowMenu: boolean;
   userAvatar: string | null;
@@ -27,7 +28,7 @@ export const UserMenu = ({
   userName,
   allNames,
 }: NavBarMenuProps) => {
-  const isScreenSmall = !useMediaQuery(`(min-width:600px)`);
+  const isSmall = useIsSmall();
   const theme = useTheme();
   const { switchName } = useAuth();
   const [isOpenBlockedNamesModal, setIsOpenBlockedNamesModal] =
@@ -56,11 +57,17 @@ export const UserMenu = ({
             MenuHeader={
               <AvatarContainer
                 sx={{
-                  height: '40px',
-                  width: '40px',
+                  height: isSmall ? '35px' : '40px',
+                  width: isSmall ? '35px' : '40px',
                 }}
               >
-                <Avatar src={userAvatar || ''}>
+                <Avatar
+                  sx={{
+                    height: isSmall ? '35px' : '40px',
+                    width: isSmall ? '35px' : '40px',
+                  }}
+                  src={userAvatar || ''}
+                >
                   {userName?.charAt(0).toUpperCase()}
                 </Avatar>
               </AvatarContainer>

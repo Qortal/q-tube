@@ -10,8 +10,12 @@ import { namesAtom } from './state/global/names';
 import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PageTransition } from './components/common/PageTransition';
+import { useIsSmall } from './hooks/useIsSmall';
+import { useIsMobile } from './hooks/useIsMobile';
 
 const Layout = () => {
+  const isSmall = useIsSmall();
+  const isMobile = useIsMobile();
   const scrollRef = useRef<any>(null);
   const setScrollRef = useSetAtom(scrollRefAtom);
   const theme = useTheme();
@@ -97,7 +101,7 @@ const Layout = () => {
           id="main-box"
           component="main"
           flex={1}
-          p={2}
+          p={isMobile ? 0 : 2}
           sx={{
             overflowY: 'scroll',
             '::-webkit-scrollbar-track': {
@@ -105,8 +109,9 @@ const Layout = () => {
             },
 
             '::-webkit-scrollbar': {
-              width: '16px',
+              width: isMobile ? '0px' : '16px',
               height: '10px',
+              display: isMobile ? 'none' : 'initial',
             },
 
             '::-webkit-scrollbar-thumb': {

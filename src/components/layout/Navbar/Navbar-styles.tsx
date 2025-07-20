@@ -10,7 +10,7 @@ export const CustomAppBar = styled(AppBar)(({ theme }) => ({
   justifyContent: 'start',
   alignItems: 'center',
   width: '100%',
-  padding: '5px 16px 5px 5px',
+  padding: '5px 5px 5px 5px',
   backgroundImage: 'none',
   backgroundColor: theme.palette.background.paper2,
   height: '65px',

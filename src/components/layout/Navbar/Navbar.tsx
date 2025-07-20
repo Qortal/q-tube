@@ -21,13 +21,14 @@ import MenuIcon from '@mui/icons-material/Menu';
 import { COLLAPSED_WIDTH } from '../Sidenav/Sidenav.tsx';
 import SearchIcon from '@mui/icons-material/Search';
 import { Search } from './Search.tsx';
+import { useIsSmall } from '../../../hooks/useIsSmall.tsx';
 
 interface Props {
   allNames: Names;
 }
 
 const NavBar: React.FC<Props> = ({ allNames }) => {
-  const isScreenSmall = !useMediaQuery(`(min-width:600px)`);
+  const isSmall = useIsSmall();
   const { name, avatarUrl } = useAuth();
 
   const isSecure = !!name;
@@ -77,23 +78,26 @@ const NavBar: React.FC<Props> = ({ allNames }) => {
             justifyContent: 'space-between',
             alignItems: 'center',
             gap: `${gapSize}px`,
-            padding: '10px',
+            // padding: '10px',
           }}
         >
           <QtubeLogo />
-          <Search />
+          {!isSmall && <Search />}
+
           <Box
             sx={{
               display: 'flex',
-              gap: `${isScreenSmall ? gapSize : gapSize * 2}px`,
+              gap: `${isSmall ? gapSize : gapSize * 2}px`,
               alignItems: 'center',
             }}
           >
+            {isSmall && <Search />}
+            <PublishMenu isDisplayed={isSecure} />
+
             {isSecure && <Notifications />}
 
             <DownloadTaskManager />
 
-            <PublishMenu isDisplayed={isSecure} />
             <UserMenu
               isShowMenu={isSecure}
               userAvatar={avatarUrl}

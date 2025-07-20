@@ -2,6 +2,7 @@ import React, { useState, useEffect, CSSProperties } from 'react';
 import Skeleton from '@mui/material/Skeleton';
 import { Box } from '@mui/material';
 import DeletedVideo from '../assets/img/DeletedVideo.jpg';
+import { useIsMobile } from '../hooks/useIsMobile';
 interface ResponsiveImageProps {
   src: string;
   width: number;
@@ -21,6 +22,8 @@ const ResponsiveImage: React.FC<ResponsiveImageProps> = ({
   style,
   fill,
 }) => {
+  const isMobile = useIsMobile();
+
   const [loading, setLoading] = useState(true);
 
   const endLoading = (endTimeSeconds: number) => {
@@ -35,7 +38,7 @@ const ResponsiveImage: React.FC<ResponsiveImageProps> = ({
   return (
     <Box
       sx={{
-        padding: '5px',
+        padding: isMobile ? '0px' : '5px',
         height: '100%',
         backgroundColor: '#050507',
 
@@ -62,7 +65,7 @@ const ResponsiveImage: React.FC<ResponsiveImageProps> = ({
         style={{
           width: '100%',
           height: '100%',
-          borderRadius: '8px',
+          borderRadius: isMobile ? '0px' : '8px',
           display: loading ? 'none' : 'unset',
           objectFit: fill ? 'fill' : 'contain',
           maskImage: 'radial-gradient(circle, black 95%, transparent 100%)',

@@ -26,6 +26,8 @@ import {
 import { useScrollToTop } from '../../../hooks/useScrollToTop.tsx';
 import { handleClickText, processText } from 'qapp-core';
 import { PageTransition } from '../../../components/common/PageTransition.tsx';
+import { useIsMobile } from '../../../hooks/useIsMobile.tsx';
+import { useIsSmall } from '../../../hooks/useIsSmall.tsx';
 
 function flattenHtml(html: string): string {
   const sanitize: string = DOMPurify.sanitize(html, {
@@ -133,8 +135,9 @@ export const VideoContent = () => {
     superLikeList,
     setSuperLikeList,
   } = useVideoContentState();
-
+  const isSmall = useIsSmall();
   const isScreenSmall = !useMediaQuery(smallVideoSize);
+  const isMobile = useIsMobile();
   const [screenWidth, setScreenWidth] = useState<number>(
     window.innerWidth + 120
   );
@@ -162,14 +165,15 @@ export const VideoContent = () => {
         sx={{
           display: 'flex',
           flexDirection: 'column',
-          padding: '10px',
+          padding: isMobile ? '0px' : '10px',
           width: '100%',
         }}
       >
         {videoReference ? (
           <VideoPlayerContainer
             sx={{
-              height: '70vh',
+              height: isSmall ? '240px' : '70vh',
+              maxHeight: '70vh',
               backgroundColor: 'black',
             }}
           >
@@ -190,19 +194,23 @@ export const VideoContent = () => {
           </VideoPlayerContainer>
         ) : (
           <Box
-            sx={{ width: '100%', height: '70vh', background: 'black' }}
+            sx={{
+              width: '100%',
+              height: isSmall ? '240px' : '70vh',
+              maxHeight: '70vh',
+              background: 'black',
+            }}
           ></Box>
         )}
-        <Spacer height="20px" />
-        <VideoContentContainer
-          sx={{ paddingLeft: isScreenSmall ? '5px' : '0px' }}
-        >
+        {/* <Spacer height="20px" /> */}
+        <VideoContentContainer sx={{ padding: isSmall ? '5px' : '0px' }}>
           <VideoTitle
-            variant={isScreenSmall ? 'h2' : 'h4'}
+            variant={'h4'}
             color="textPrimary"
             sx={{
               textAlign: 'start',
-              marginTop: isScreenSmall ? '20px' : '10px',
+              marginTop: isSmall ? '20px' : '10px',
+              fontSize: isSmall ? '18px' : 'unset',
             }}
           >
             {videoData?.title}

@@ -232,7 +232,7 @@ a:focus {
     fill: #fff;
   }
   50% {
-    transform: scale(1.2);
+    transform: scale(1.1);
     fill: #3498db;
   }
   100% {

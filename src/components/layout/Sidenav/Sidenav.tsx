@@ -25,6 +25,7 @@ import { useMemo } from 'react';
 import { Spacer, useAuth } from 'qapp-core';
 import { useIsSmall } from '../../../hooks/useIsSmall';
 import { UserMenu } from '../Navbar/Components/UserMenu';
+import { DownloadTaskManager } from '../../common/DownloadTaskManager';
 const DRAWER_WIDTH = 240;
 export const COLLAPSED_WIDTH = 68;
 
@@ -225,6 +226,22 @@ export const Sidenav = ({ allNames }) => {
                     </Box>
                   </ListItem>
                   <Spacer height="10px" />
+                  <ListItem
+                    disablePadding
+                    sx={{ display: 'block', padding: '5px' }}
+                  >
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        width: '100%',
+                        gap: '25px',
+                      }}
+                    >
+                      <DownloadTaskManager />
+                      <Typography>Downloads</Typography>
+                    </Box>
+                  </ListItem>
                   <Divider />
                 </>
               )}

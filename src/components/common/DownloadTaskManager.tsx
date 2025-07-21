@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import {
   Box,
   Button,
+  Divider,
   LinearProgress,
   List,
   ListItem,
@@ -15,6 +16,7 @@ import { useNavigate } from 'react-router-dom';
 import { DownloadingLight } from '../../assets/svgs/DownloadingLight';
 import { DownloadedLight } from '../../assets/svgs/DownloadedLight';
 import { useAllResourceStatus } from 'qapp-core';
+import CheckIcon from '@mui/icons-material/Check';
 
 export const DownloadTaskManager: React.FC = () => {
   const theme = useTheme();
@@ -56,12 +58,12 @@ export const DownloadTaskManager: React.FC = () => {
       >
         {downloadInProgress ? (
           <DownloadingLight
-            height="24px"
-            width="24px"
+            height="35px"
+            width="35px"
             className="download-icon"
           />
         ) : (
-          <DownloadedLight height="24px" width="24px" />
+          <DownloadedLight height="35px" width="35px" />
         )}
       </Button>
 
@@ -102,10 +104,11 @@ export const DownloadTaskManager: React.FC = () => {
                     flexDirection: 'column',
                     width: '100%',
                     justifyContent: 'center',
-                    background: theme.palette.primary.main,
-                    color: theme.palette.text.primary,
                     cursor: 'pointer',
                     padding: '2px',
+                    '&:hover': {
+                      backgroundColor: theme.palette.action.hover,
+                    },
                   }}
                   onClick={() => {
                     navigate(download?.path);
@@ -133,16 +136,18 @@ export const DownloadTaskManager: React.FC = () => {
                         }}
                       />
                     </Box>
-                    <Typography
-                      sx={{
-                        color: theme.palette.text.primary,
-                      }}
-                      variant="caption"
-                    >
-                      {`${progress}%`}{' '}
-                      {status && status === 'REFETCHING' && '- refetching'}
-                      {status && status === 'DOWNLOADED' && '- building'}
-                    </Typography>
+                    {status === 'READY' ? (
+                      <CheckIcon />
+                    ) : (
+                      <Typography
+                        sx={{
+                          color: theme.palette.text.primary,
+                        }}
+                        variant="caption"
+                      >
+                        {`${progress?.toFixed(1)}%`}{' '}
+                      </Typography>
+                    )}
                   </Box>
                   <Typography
                     sx={{
@@ -157,6 +162,7 @@ export const DownloadTaskManager: React.FC = () => {
                   >
                     {download?.filename}
                   </Typography>
+                  <Divider flexItem />
                 </ListItem>
               );
             })}

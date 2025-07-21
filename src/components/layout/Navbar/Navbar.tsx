@@ -95,8 +95,7 @@ const NavBar: React.FC<Props> = ({ allNames }) => {
             <PublishMenu isDisplayed={isSecure} />
 
             {isSecure && <Notifications />}
-
-            <DownloadTaskManager />
+            {!isSmall && <DownloadTaskManager />}
             {!isSmall && (
               <UserMenu
                 isShowMenu={isSecure}

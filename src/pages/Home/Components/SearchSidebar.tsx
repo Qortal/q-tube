@@ -62,7 +62,7 @@ export const SearchSidebar = () => {
           placeholder="Search"
           onKeyDown={handleInputKeyDown}
           sx={{
-            borderBottom: '1px solid white',
+            borderBottom: '1px solid',
             '&&:before': {
               borderBottom: 'none',
             },
@@ -91,7 +91,7 @@ export const SearchSidebar = () => {
           onKeyDown={handleInputKeyDown}
           sx={{
             marginTop: '20px',
-            borderBottom: '1px solid white',
+            borderBottom: '1px solid',
             '&&:before': {
               borderBottom: 'none',
             },

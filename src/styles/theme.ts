@@ -80,22 +80,41 @@ const lightTheme = createTheme({
   palette: {
     mode: 'light',
     primary: {
-      main: 'rgb(63, 81, 181)',
-      dark: 'rgb(113, 198, 212)',
-      light: 'rgb(180, 200, 235)',
+      main: '#1976d2',
+      dark: '#115293',
+      light: '#63a4ff',
+      contrastText: '#ffffff',
+    },
+    info: {
+      main: '#0288d1',
+      contrastText: '#ffffff',
     },
     secondary: {
-      main: 'rgba(194, 222, 236, 1)',
+      main: '#757575',
     },
     background: {
-      default: 'rgba(250, 250, 250, 1)',
-      paper: 'rgb(220, 220, 220)', // darker card background
-      paper2: '#101115',
-      unSelected: '#333336',
+      default: '#f5f7fa', // soft off-white background
+      paper: '#ffffff', // card/dialog base
+      paper2: '#f0f2f5', // secondary surface
+      unSelected: '#e0e0e0', // e.g., unselected tabs or nav
     },
     text: {
-      primary: 'rgba(0, 0, 0, 0.87)', // 87% black (slightly softened)
-      secondary: 'rgba(0, 0, 0, 0.6)', // 60% black
+      primary: '#1a1a1a', // near-black for contrast
+      secondary: '#4f4f4f', // dimmed text
+      tertiary: '#9e9e9e', // labels, hints, etc
+    },
+    action: {
+      selected: 'rgba(0, 0, 0, 0.08)',
+      active: '#4a4a4a',
+    },
+  },
+  components: {
+    MuiCssBaseline: {
+      styleOverrides: (theme) => ({
+        body: {
+          backgroundColor: theme.palette.background.default,
+        },
+      }),
     },
   },
 });
@@ -106,7 +125,6 @@ const darkTheme = createTheme({
   palette: {
     mode: 'dark',
     primary: {
-      // main: '#101115',
       main: '#90CAF9',
       dark: 'rgba(66, 165, 245, 1)',
       light: 'rgb(130, 185, 255)',

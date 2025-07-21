@@ -515,7 +515,7 @@ export const FilterOptions = () => {
                 placeholder="User's Name (Exact)"
                 sx={{
                   marginTop: '20px',
-                  borderBottom: '1px solid white',
+                  borderBottom: '1px solid',
                   '&&:before': {
                     borderBottom: 'none',
                   },

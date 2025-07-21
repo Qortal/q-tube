@@ -34,8 +34,9 @@ import {
 import { useSidebarState } from './Components/SearchSidebar-State';
 import { categories, subCategories } from '../../constants/Categories';
 import { useIsSmall } from '../../hooks/useIsSmall';
+import { ListSuperLikeContainer } from '../../components/common/ListSuperLikes/ListSuperLikeContainer';
 
-const CustomChip = styled(Chip)(({ theme }) => ({
+export const CustomChip = styled(Chip)(({ theme }) => ({
   backgroundColor: theme.palette.background.unSelected, // dark background
   color: theme.palette.text.primary, // white text
   borderRadius: '20px', // pill shape
@@ -319,6 +320,19 @@ export const FilterOptions = () => {
               />
             );
           })}
+          {isSmall && (
+            <Tab
+              label={<ListSuperLikeContainer from="filters" />}
+              sx={{
+                '&.Mui-selected': {
+                  color: 'white',
+                },
+                padding: '0px 5px',
+                margin: '0px',
+                minWidth: '0px',
+              }}
+            />
+          )}
         </Tabs>
       )}
       {!isSmall && (
@@ -446,6 +460,7 @@ export const FilterOptions = () => {
               };
             }}
           />
+          {/* <ListSuperLikeContainer /> */}
         </Box>
       )}
 

@@ -224,7 +224,7 @@ export const CommentEditor = ({
   return (
     <CommentInputContainer
       sx={{
-        width: isSmall ? '100%' : 'unset',
+        width: isSmall ? '100%' : '90%',
       }}
     >
       <CommentInput

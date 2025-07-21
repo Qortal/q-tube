@@ -14,6 +14,7 @@ import { ScrollToTopButton } from '../../components/common/ScrollToTopButton.tsx
 import { useAtomValue, useSetAtom } from 'jotai';
 import { scrollRefAtom } from '../../state/global/navbar.ts';
 import { PageTransition } from '../../components/common/PageTransition.tsx';
+import { ListSuperLikeContainer } from '../../components/common/ListSuperLikes/ListSuperLikeContainer.tsx';
 
 export const Home = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -96,12 +97,20 @@ export const Home = () => {
           }}
         >
           <FilterOptions />
-          {searchParameters && (
-            <VideoList
-              listName="latestVideos"
-              searchParameters={searchParameters}
-            />
-          )}
+          <Box
+            sx={{
+              display: 'flex',
+              width: '100%',
+            }}
+          >
+            {searchParameters && (
+              <VideoList
+                listName="latestVideos"
+                searchParameters={searchParameters}
+              />
+            )}
+            {searchParameters && <ListSuperLikeContainer from="home" />}
+          </Box>
         </Box>
       </Box>
       <ScrollToTopButton scrollRef={scrollRef} />

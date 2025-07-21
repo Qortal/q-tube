@@ -1,28 +1,68 @@
-import { Box, Tooltip, Typography, useMediaQuery } from '@mui/material';
+import {
+  Box,
+  Tooltip,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from '@mui/material';
 import { useRef } from 'react';
-import { fontSizeSmall } from '../../../constants/Misc.ts';
 import { CrowdfundActionButton } from '../../Publish/PublishVideo/PublishVideo-styles.tsx';
 import { PopMenu, PopMenuRefType } from '../PopMenu.tsx';
 import ListSuperLikes from './ListSuperLikes';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import { useAtom } from 'jotai';
 import { superlikesAtom } from '../../../state/global/superlikes.ts';
-export const ListSuperLikeContainer = () => {
+import { Spacer } from 'qapp-core';
+import { AnimatePresence, motion } from 'framer-motion';
+import { CustomChip } from '../../../pages/Home/FilterOptions.tsx';
+import { useIsSmall } from '../../../hooks/useIsSmall.tsx';
+export const ListSuperLikeContainer = ({ from }) => {
   const [superlikelist] = useAtom(superlikesAtom);
-
-  const isScreenLarge = useMediaQuery('(min-width:1200px)');
-
-  const headerSX = { fontSize: fontSizeSmall, color: 'gold' };
-
+  const isSmall = useIsSmall();
+  const headerSX = { color: 'gold' };
+  const theme = useTheme();
   const popoverRef = useRef<PopMenuRefType>(null);
   return (
-    <Box sx={{ paddingLeft: '5px' }}>
-      {isScreenLarge ? (
-        <>
-          <Typography sx={headerSX}>Recent Super likes</Typography>
-          <ListSuperLikes superlikes={superlikelist} />
-        </>
-      ) : (
+    <Box>
+      {from === 'home' && !isSmall ? (
+        <Box
+          sx={{
+            paddingLeft: '5px',
+            maxHeight: '55vh',
+            outline: '1px solid gold',
+            padding: '5px',
+            overflow: 'hidden',
+            width: 300,
+            maxWidth: '100%',
+            flexShrink: 0,
+            borderRadius: '5px',
+            display: 'flex',
+            flexDirection: 'column',
+            visibility: superlikelist?.length === 0 ? 'hidden' : 'visible',
+          }}
+        >
+          <AnimatePresence>
+            {superlikelist?.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.2 }}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  height: '100%',
+                  overflow: 'hidden',
+                }}
+              >
+                <Typography sx={headerSX}>Recent Superlikes</Typography>
+                <Spacer height="10px" />
+                <ListSuperLikes superlikes={superlikelist} />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </Box>
+      ) : from === 'filters' ? (
         <PopMenu
           showExpandIcon={false}
           popoverProps={{
@@ -32,51 +72,54 @@ export const ListSuperLikeContainer = () => {
               justifyContent: 'center',
               alignItems: 'center',
               marginTop: '40px',
+              '& .MuiPaper-root': {
+                backgroundColor: theme.palette.background.default,
+                overflow: 'hidden',
+                minHeight: '400px',
+                maxHeight: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+              },
+              '& .MuiPaper-root > .MuiBox-root': {
+                flexGrow: 1,
+              },
             },
             anchorReference: 'none',
           }}
           ref={popoverRef}
           MenuHeader={
-            <Tooltip title={'Show recent Superlikes'} placement={'left'} arrow>
-              <Box
-                sx={{
-                  padding: '5px',
-                  borderRadius: '7px',
-                  outline: '1px gold solid',
-                  height: '53px',
-                  position: 'absolute',
-                  top: '60px',
-                  right: '2%',
-                  display: 'flex',
-                  alignItems: 'center',
-                }}
-              >
+            <CustomChip
+              icon={
                 <ThumbUpIcon
+                  fontSize="small"
                   style={{
                     color: 'gold',
                   }}
                 />
-              </Box>
-            </Tooltip>
+              }
+              label="Superlikes"
+              sx={(theme) => {
+                return {
+                  fontWeight: 400,
+                };
+              }}
+            />
           }
         >
           <Box
             sx={{
               display: 'flex',
-              backgroundColor: '#1A1C1E',
               justifyContent: 'space-between',
               alignItems: 'center',
+              gap: '10px',
+              padding: '10px',
             }}
           >
             <Typography sx={headerSX}>Recent Superlikes</Typography>
             <CrowdfundActionButton
               variant="contained"
               color="error"
-              sx={{
-                height: '25px',
-                width: '75px',
-                marginRight: '5px',
-              }}
+              size="small"
               onClick={() => {
                 if (popoverRef?.current) popoverRef.current.closePopover();
               }}
@@ -86,7 +129,7 @@ export const ListSuperLikeContainer = () => {
           </Box>
           <ListSuperLikes superlikes={superlikelist} />
         </PopMenu>
-      )}
+      ) : null}
     </Box>
   );
 };

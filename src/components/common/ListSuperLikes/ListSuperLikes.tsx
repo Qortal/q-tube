@@ -1,6 +1,6 @@
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
-import { Box } from '@mui/material';
+import { Box, useTheme } from '@mui/material';
 import Avatar from '@mui/material/Avatar';
 import Divider from '@mui/material/Divider';
 import List from '@mui/material/List';
@@ -14,6 +14,7 @@ import { fontSizeSmall } from '../../../constants/Misc.ts';
 import { formatDate } from '../../../utils/time.ts';
 import { useAtomValue } from 'jotai';
 import { hashMapSuperlikesAtom } from '../../../state/global/superlikes.ts';
+import { Spacer } from 'qapp-core';
 
 const truncateMessage = (message) => {
   return message.length > 40 ? message.slice(0, 40) + '...' : message;
@@ -21,10 +22,42 @@ const truncateMessage = (message) => {
 
 export default function ListSuperLikes({ superlikes }) {
   const hashMapSuperlikes = useAtomValue(hashMapSuperlikesAtom);
-
+  const theme = useTheme();
   const navigate = useNavigate();
+
+  console.log('superlikes', superlikes);
   return (
-    <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
+    <List
+      sx={{
+        maxWidth: '100%',
+        width: 300,
+        flexGrow: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'auto',
+        overflowY: 'scroll',
+        '::-webkit-scrollbar-track': {
+          backgroundColor: 'transparent',
+        },
+
+        '::-webkit-scrollbar': {
+          width: '16px',
+          height: '10px',
+          background: 'none',
+        },
+
+        '::-webkit-scrollbar-thumb': {
+          backgroundColor: 'gold',
+          borderRadius: '8px',
+          backgroundClip: 'content-box',
+          border: '4px solid transparent',
+          transition: '0.3s background-color',
+        },
+        '::-webkit-scrollbar-thumb:hover': {
+          backgroundColor: 'rgba(255,215,0, 0.5)',
+        },
+      }}
+    >
       {superlikes?.map((superlike, index) => {
         //  let hasHash = false
         let message = '';
@@ -54,8 +87,15 @@ export default function ListSuperLikes({ superlikes }) {
             <ListItem
               alignItems="flex-start"
               sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                flexShrink: 0,
                 cursor: url ? 'pointer' : 'default',
                 minHeight: '130px',
+                transition: 'all 0.2s',
+                '&:hover': {
+                  backgroundColor: theme.palette.action.hover,
+                },
               }}
               onClick={async () => {
                 if (url) {
@@ -66,66 +106,69 @@ export default function ListSuperLikes({ superlikes }) {
               <Box
                 sx={{
                   width: '100%',
+                  height: '100%',
                 }}
               >
-                <List sx={{ padding: '0px' }}>
-                  <ListItem
-                    sx={{
-                      padding: '0px',
-                    }}
-                    alignItems="flex-start"
-                  >
-                    <ListItemAvatar>
-                      <Avatar
-                        alt="Remy Sharp"
-                        src={`/arbitrary/THUMBNAIL/${superlike?.name}/qortal_avatar`}
-                      />
-                    </ListItemAvatar>
-                    <ListItemText
-                      primary={
-                        <Box
+                <Box
+                  sx={{
+                    padding: '0px',
+                    display: 'flex',
+                  }}
+                  alignItems="flex-start"
+                  gap={1}
+                >
+                  <Avatar
+                    alt="Remy Sharp"
+                    src={`/arbitrary/THUMBNAIL/${superlike?.name}/qortal_avatar`}
+                  />
+
+                  <ListItemText
+                    primary={
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '5px',
+                          fontSize: '18px',
+                        }}
+                      >
+                        <ThumbUpIcon
+                          style={{
+                            color: 'gold',
+                          }}
+                        />
+                        <Typography
                           sx={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '5px',
                             fontSize: '18px',
                           }}
                         >
-                          <ThumbUpIcon
-                            style={{
-                              color: 'gold',
-                            }}
-                          />
-                          <Typography
-                            sx={{
-                              fontSize: '18px',
-                            }}
-                          >
-                            {amount ? amount : ''} QORT
-                          </Typography>
-                        </Box>
-                      }
-                      secondary={
-                        <>
-                          <Typography
-                            sx={{
-                              display: 'inline',
-                              wordBreak: 'break-word',
-                              fontSize: '15px',
-                            }}
-                            component="span"
-                            variant="body2"
-                            color="text.primary"
-                          >
-                            {superlike?.name}
-                          </Typography>
+                          {amount ? amount : ''} QORT
+                        </Typography>
+                      </Box>
+                    }
+                  />
+                </Box>
+                <Spacer height="10px" />
+                {message && (
+                  <Typography
+                    sx={{
+                      wordBreak: 'break-word',
+                      fontSize: '15px',
+                      display: '-webkit-box',
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: 'vertical',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                    }}
+                    component="span"
+                    variant="body2"
+                    color="text.primary"
+                  >
+                    {message}
+                  </Typography>
+                )}
 
-                          {` - ${truncateMessage(message)}`}
-                        </>
-                      }
-                    />
-                  </ListItem>
-                </List>
+                <Spacer height="10px" />
                 {forName && (
                   <Box
                     sx={{
@@ -133,13 +176,15 @@ export default function ListSuperLikes({ superlikes }) {
                       alignItems: 'center',
                       fontSize: '17px',
                       gap: '10px',
-                      justifyContent: 'flex-end',
+                      justifyContent: 'flex-start',
+                      marginTop: 'auto',
                     }}
                   >
                     <EmojiEventsIcon />
                     {forName}
                   </Box>
                 )}
+                <Spacer height="10px" />
                 <span style={{ fontSize: fontSizeSmall }}>
                   {formatDate(superlike.created)}
                 </span>

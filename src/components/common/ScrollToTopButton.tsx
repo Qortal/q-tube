@@ -1,12 +1,14 @@
 import React, { useEffect, useState, RefObject } from 'react';
 import { Fab, Zoom } from '@mui/material';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import { useIsSmall } from '../../hooks/useIsSmall';
 
 interface Props {
   scrollRef: RefObject<HTMLElement> | null;
 }
 
 export const ScrollToTopButton: React.FC<Props> = ({ scrollRef }) => {
+  const isSmall = useIsSmall();
   const [visible, setVisible] = useState(false);
   const [userActive, setUserActive] = useState(true);
   let inactivityTimer: ReturnType<typeof setTimeout>;
@@ -29,17 +31,22 @@ export const ScrollToTopButton: React.FC<Props> = ({ scrollRef }) => {
 
   // Mouse activity listener
   useEffect(() => {
-    const handleMouseMove = () => {
+    const handleActivity = () => {
       setUserActive(true);
       clearTimeout(inactivityTimer);
       inactivityTimer = setTimeout(() => setUserActive(false), 3000);
     };
 
-    window.addEventListener('mousemove', handleMouseMove);
-    handleMouseMove(); // trigger on mount
+    window.addEventListener('mousemove', handleActivity); // desktop
+    window.addEventListener('touchstart', handleActivity); // mobile tap
+    window.addEventListener('scroll', handleActivity, true); // any scroll
+
+    handleActivity(); // run on mount
 
     return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mousemove', handleActivity);
+      window.removeEventListener('touchstart', handleActivity);
+      window.removeEventListener('scroll', handleActivity, true);
       clearTimeout(inactivityTimer);
     };
   }, []);
@@ -52,6 +59,7 @@ export const ScrollToTopButton: React.FC<Props> = ({ scrollRef }) => {
   return (
     <Zoom in={visible && userActive}>
       <Fab
+        size={isSmall ? 'small' : 'large'}
         color="primary"
         onClick={scrollToTop}
         sx={{

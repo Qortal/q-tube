@@ -20,7 +20,8 @@ import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import AddIcon from '@mui/icons-material/Add';
 import { QTUBE_VIDEO_BASE } from '../../../constants/Identifiers.ts';
-import { useAuth } from 'qapp-core';
+import { Spacer, useAuth } from 'qapp-core';
+import { useIsSmall } from '../../../hooks/useIsSmall.tsx';
 export const PlaylistListEdit = ({
   playlistData,
   updateVideoList,
@@ -28,6 +29,7 @@ export const PlaylistListEdit = ({
   addVideo,
 }) => {
   const theme = useTheme();
+  const isSmall = useIsSmall();
   const { name: username } = useAuth();
 
   const [searchResults, setSearchResults] = useState([]);
@@ -78,6 +80,7 @@ export const PlaylistListEdit = ({
     <Box
       sx={{
         display: 'flex',
+        flexDirection: isSmall ? 'column' : 'row',
         gap: '10px',
         width: '100%',
         justifyContent: 'center',
@@ -87,7 +90,10 @@ export const PlaylistListEdit = ({
         sx={{
           display: 'flex',
           flexDirection: 'column',
-          width: '100%',
+          flex: '1 1 50%',
+          outline: `1px ${theme.palette.action.active} solid`,
+          padding: '5px',
+          borderRadius: '5px',
         }}
       >
         <CrowdfundSubTitleRow>
@@ -96,7 +102,7 @@ export const PlaylistListEdit = ({
         <CardContentContainerComment
           sx={{
             marginTop: '25px',
-            height: '450px',
+            maxHeight: '450px',
             overflow: 'auto',
           }}
         >
@@ -173,7 +179,10 @@ export const PlaylistListEdit = ({
         sx={{
           display: 'flex',
           flexDirection: 'column',
-          width: '100%',
+          flex: '1 1 50%',
+          outline: `1px ${theme.palette.action.active} solid`,
+          padding: '5px',
+          borderRadius: '5px',
         }}
       >
         <CrowdfundSubTitleRow>
@@ -182,7 +191,7 @@ export const PlaylistListEdit = ({
         <CardContentContainerComment
           sx={{
             marginTop: '25px',
-            height: '450px',
+            maxHeight: '450px',
             overflow: 'auto',
           }}
         >
@@ -246,6 +255,7 @@ export const PlaylistListEdit = ({
             />
           </Box>
           <Box>
+            <Spacer height="20px" />
             <Button
               onClick={() => {
                 search();

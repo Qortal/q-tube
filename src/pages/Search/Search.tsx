@@ -17,7 +17,6 @@ export const Search = () => {
   const mode = searchParams.get('mode'); // "example"
 
   // const page = searchParams.get('page'); // "2"
-  console.log('query', query);
   const {
     tabValue,
     changeTab,

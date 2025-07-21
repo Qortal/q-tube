@@ -92,7 +92,6 @@ export const FilterOptions = () => {
       setFilterMode(query.filterMode);
     }
     if (query?.filterCategory) {
-      console.log('filterCat');
       setFilterCategory({ id: query.filterCategory });
     } else {
       setFilterCategory('');
@@ -147,8 +146,6 @@ export const FilterOptions = () => {
     ];
   }, [filterMode, filterCategory]);
 
-  console.log('filterType', filterType);
-
   const handleClose = () => {
     setIsOpen(false);
   };
@@ -165,7 +162,7 @@ export const FilterOptions = () => {
             '& .MuiTabs-indicator': {
               backgroundColor: 'white',
             },
-            width: `calc(100vw)`, // Ensure the tabs container fits within the available space
+            width: `100%`, // Ensure the tabs container fits within the available space
             overflow: 'hidden', // Prevents overflow on small screens
             backgroundColor: theme.palette.background.paper,
             marginBottom: '5px',

@@ -40,9 +40,9 @@ export const useSidebarState = () => {
   const [selectedSubCategoryVideosState, setSelectedSubCategoryVideosState] =
     useState(null);
 
-  const onSearch = () => {
+  const onSearch = (term?: string) => {
     setFilterType(filterStateType);
-    setFilterSearch(filterStateSearch);
+    setFilterSearch(term || filterStateSearch);
     setFilterName(filterStateName);
     setFilterCategory(selectedCategoryVideosState);
     setFilterSubCategory(selectedSubCategoryVideosState);

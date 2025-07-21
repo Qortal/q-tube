@@ -8,7 +8,6 @@ export const useHomeState = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const query = searchParams.get('query'); // "example"
   // const page = searchParams.get('page'); // "2"
-  console.log('query', query);
   const [videoListTab, setVideoListTab, isHydratedVideoListTab] =
     usePersistedState<VideoListType>('videoListTab', 'all');
   const [filterName, setFilterName, isHydratedFilterName] = usePersistedState(
@@ -27,21 +26,11 @@ export const useHomeState = () => {
   );
   const [filterSearch, setFilterSearch, isHydratedFilterSearch] =
     usePersistedState('filterSearch', '');
-  console.log('filterSearch', filterSearch);
   const [filterCategory, setFilterCategory, isHydratedFilterCategory] =
     usePersistedState<any>('filterCategory', '');
   const [filterSubCategory, setFilterSubCategory, isHydratedFilterSubCategory] =
     usePersistedState<any>('filterSubCategory', '');
-  console.log(
-    'hydration',
-    isHydratedFilterState,
-    isHydratedFilterSearch,
-    isHydratedFilterName,
-    isHydratedFilterSubCategory,
-    isHydratedFilterCategory,
-    isHydratedFilterMode,
-    !isLoadingUser
-  );
+
   const isHydrated =
     isHydratedFilterState &&
     isHydratedFilterSearch &&

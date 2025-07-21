@@ -71,6 +71,10 @@ export const PublishMenu = ({ isDisplayed }: PublishButtonsProps) => {
           <DropdownContainer onClick={popMenuRef?.current?.closePopover}>
             <StyledButton
               color="primary"
+              sx={{
+                justifyContent: 'flex-start',
+                width: '100%',
+              }}
               startIcon={
                 <PlaylistAddIcon
                   sx={{

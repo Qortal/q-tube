@@ -38,7 +38,6 @@ export const VideoListPreloaded = ({
   listId,
   handleRemoveVideoFromList,
 }: VideoListProps) => {
-  console.log('videoList', videoList);
   const { name: username } = useAuth();
   const setEditVideo = useSetAtom(editVideoAtom);
   const { addToBlockedList } = useBlockedNames();
@@ -60,7 +59,6 @@ export const VideoListPreloaded = ({
   }, []);
 
   const renderLoaderList = useCallback((status: LoaderListStatus) => {
-    console.log('status', status);
     if (status === 'NO_RESULTS') {
       return (
         <Box

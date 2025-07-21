@@ -22,7 +22,6 @@ export const Subscriptions = () => {
   const query = searchParams.get('query'); // "example"
   // const page = searchParams.get('page'); // "2"
   const { isHydrated, subscriptions } = useHomeState();
-  console.log('subscriptions', subscriptions);
 
   const searchParameters: QortalSearchParams | null = useMemo(() => {
     if (!subscriptions || subscriptions?.length === 0) return [];
@@ -46,8 +45,6 @@ export const Subscriptions = () => {
       mode: 'ALL',
     };
   }, [isHydrated, subscriptions]);
-
-  console.log('subs');
 
   return (
     <PageTransition>

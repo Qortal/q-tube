@@ -28,7 +28,6 @@ export const AddToBookmarks = ({ metadataReference }) => {
     'bookmarks-v1',
     {}
   );
-  console.log('metadataReference', metadataReference);
   const [bookmarkList, setBookmarkList] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [mode, setMode] = useState(1);
@@ -134,10 +133,8 @@ export const AddToBookmarks = ({ metadataReference }) => {
       service: string;
     }
   ) => {
-    console.log('hello');
     setBookmarks((prev) => {
       const list = prev[listId];
-      console.log('list', list);
       if (!list || list.type !== 'list') return prev;
 
       const updatedVideos = list.videos.filter(
@@ -148,7 +145,6 @@ export const AddToBookmarks = ({ metadataReference }) => {
             v.service === video.service
           )
       );
-      console.log('updatedVideos', updatedVideos);
       // If no change, avoid unnecessary update
       if (updatedVideos.length === list.videos.length) return prev;
 
@@ -203,7 +199,6 @@ export const AddToBookmarks = ({ metadataReference }) => {
     .filter((bookmark) => bookmark?.type === 'list' && !!bookmark?.title)
     .sort((a, b) => a.title.localeCompare(b.title));
 
-  console.log('lists', lists, bookmarks);
   return (
     <>
       <ButtonBase onClick={() => setIsOpen(true)}>
@@ -311,7 +306,6 @@ export const AddToBookmarks = ({ metadataReference }) => {
                 >
                   {lists?.map((list) => {
                     const isInList = isVideoInList(list.id, metadataReference);
-                    console.log('isInList', isInList);
                     return (
                       <ButtonBase
                         sx={{

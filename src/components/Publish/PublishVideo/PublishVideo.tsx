@@ -640,6 +640,10 @@ export const PublishVideo = ({
         <>
           {editId ? null : (
             <StyledButton
+              sx={{
+                width: '100%',
+                justifyContent: 'flex-start',
+              }}
               color="primary"
               startIcon={
                 <VideoLibraryIcon

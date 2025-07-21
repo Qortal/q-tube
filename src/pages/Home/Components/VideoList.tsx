@@ -50,6 +50,7 @@ export const VideoList = ({ searchParameters, listName }: VideoListProps) => {
             width: '100%',
             display: 'flex',
             justifyContent: 'center',
+            marginTop: '20px',
           }}
         >
           <Typography>No results</Typography>
@@ -58,7 +59,6 @@ export const VideoList = ({ searchParameters, listName }: VideoListProps) => {
     }
     return <VideoLoaderItem status={status} />;
   }, []);
-  console.log('rendering');
 
   const renderListItem = useCallback(
     (item, index) => {

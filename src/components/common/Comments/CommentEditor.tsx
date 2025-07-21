@@ -219,8 +219,6 @@ export const CommentEditor = ({
     }
   };
 
-  console.log('onCloseReply', onCloseReply);
-
   return (
     <CommentInputContainer
       sx={{

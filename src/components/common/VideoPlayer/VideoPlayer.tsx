@@ -48,8 +48,6 @@ export const VideoPlayer = ({ ...props }: VideoPlayerProps) => {
       watchedAt: Date.now(),
     };
 
-    console.log('playing');
-
     setWatchedHistory((prev) => {
       const exists = prev.some(
         (v) =>

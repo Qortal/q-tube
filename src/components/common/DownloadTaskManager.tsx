@@ -112,6 +112,7 @@ export const DownloadTaskManager: React.FC = () => {
                   }}
                   onClick={() => {
                     navigate(download?.path);
+                    handleCloseDownload();
                   }}
                 >
                   <Box

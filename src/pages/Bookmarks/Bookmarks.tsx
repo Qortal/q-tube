@@ -62,8 +62,6 @@ export const Bookmarks = () => {
       .sort((a, b) => a.title.localeCompare(b.title));
   }, [bookmarks]);
 
-  console.log('sortedLists', sortedLists);
-
   const handleChange = (event) => {
     const listId = event.target.value;
     if (!listId) {
@@ -123,7 +121,6 @@ export const Bookmarks = () => {
   ) => {
     setBookmarks((prev) => {
       const list = prev[listId];
-      console.log('list', list);
       if (!list || list.type !== 'list') return prev;
 
       const updatedVideos = list.videos.filter(
@@ -134,7 +131,6 @@ export const Bookmarks = () => {
             v.service === video.service
           )
       );
-      console.log('updatedVideos', updatedVideos);
       // If no change, avoid unnecessary update
       if (updatedVideos.length === list.videos.length) return prev;
 

@@ -21,8 +21,6 @@ export const Home = () => {
   const scrollRef = useAtomValue(scrollRefAtom);
 
   const query = searchParams.get('query'); // "example"
-  // const page = searchParams.get('page'); // "2"
-  console.log('query', query);
   const {
     tabValue,
     changeTab,
@@ -82,8 +80,6 @@ export const Home = () => {
     tabValue,
     subscriptions,
   ]);
-
-  console.log('searchParameters', searchParameters, isHydrated);
 
   return (
     <PageTransition>

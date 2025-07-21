@@ -25,7 +25,6 @@ export default function ListSuperLikes({ superlikes }) {
   const theme = useTheme();
   const navigate = useNavigate();
 
-  console.log('superlikes', superlikes);
   return (
     <List
       sx={{

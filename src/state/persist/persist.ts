@@ -14,7 +14,6 @@ const hydrationStatusCache = new Map<
 export function usePersistAtom<T>(key: string, initialValue: T) {
   const { address: authAddress } = useAuth();
   const address = authAddress || 'anonymous';
-  console.log('address', address);
   const scopedKey = `${address}/${key}`;
 
   return useMemo(() => {

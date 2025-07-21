@@ -56,7 +56,6 @@ export const PlaylistContent = () => {
   const isSmall = useIsSmall();
   const isScreenSmall = !useMediaQuery(`(min-width:950px)`);
   const { s, n, i } = useParams();
-  console.log({ s, n, i });
   const playlistsSX: SxProps<Theme> = isScreenSmall
     ? { width: '100%', marginTop: '10px' }
     : { width: '35%', position: 'absolute', right: '20px' };

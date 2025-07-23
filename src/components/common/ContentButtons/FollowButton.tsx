@@ -128,14 +128,14 @@ export const FollowButton = ({ followerName, ...props }: FollowButtonProps) => {
       <br />
       <TooltipLine>
         {' '}
-        {t('core:downloads.currentSize', {
+        {t('core:video.currentSize', {
           followerName,
           followingSize,
           postProcess: 'capitalizeFirstChar',
         })}
       </TooltipLine>
       <TooltipLine>
-        {t('core:downloads.itemCount', {
+        {t('core:video.itemCount', {
           followingItemCount,
           postProcess: 'capitalizeFirstChar',
         })}

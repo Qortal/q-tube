@@ -274,7 +274,7 @@ export const Sidenav = ({ allNames }) => {
                     >
                       <DownloadTaskManager />
                       <Typography>
-                        {t('core:sidenav.downloads', {
+                        {t('core:publish.downloads', {
                           postProcess: 'capitalizeFirstChar',
                         })}
                       </Typography>

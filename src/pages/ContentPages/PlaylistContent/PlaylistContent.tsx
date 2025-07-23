@@ -53,7 +53,7 @@ export const PlaylistContent = () => {
     descriptionThreshold,
     loadingSuperLikes,
   } = usePlaylistContentState();
-  const { t } = useTranslation(['core']);
+  const { t, i18n } = useTranslation(['core']);
 
   const navigate = useNavigate();
   const isSmall = useIsSmall();
@@ -178,7 +178,9 @@ export const PlaylistContent = () => {
                 </Box>
               )}
             </VideoPlayerContainer>
-            <VideoContentContainer sx={{ padding: isSmall ? '5px' : '0px' }}>
+            <VideoContentContainer
+              sx={{ padding: isSmall ? '5px' : '0px', width: '100%' }}
+            >
               {playlistData && isSmall && (
                 <Box
                   sx={{
@@ -254,7 +256,7 @@ export const PlaylistContent = () => {
                     }}
                     color={theme.palette.text.tertiary}
                   >
-                    {formatDate(videoData.created)}
+                    {formatDate(videoData.created, i18n.language)}
                   </Typography>
                 )}
                 <Divider orientation="vertical" flexItem />

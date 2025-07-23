@@ -38,7 +38,7 @@ export const VideoListItem = ({
   disableActions,
   handleRemoveVideoFromList,
 }: any) => {
-  const { t } = useTranslation(['core']);
+  const { t, i18n } = useTranslation(['core']);
 
   const isMobile = useIsMobile();
 
@@ -187,7 +187,7 @@ export const VideoListItem = ({
 
               {qortalMetadata?.created && (
                 <VideoUploadDate>
-                  {formatDate(qortalMetadata.created)}
+                  {formatDate(qortalMetadata.created, i18n.language)}
                 </VideoUploadDate>
               )}
             </NameContainer>
@@ -346,7 +346,6 @@ export const VideoListItem = ({
               sx={{
                 padding: '5px',
                 borderRadius: '5px',
-                // backgroundColor: '#050507',
               }}
             >
               <Typography variant="body2">
@@ -356,13 +355,6 @@ export const VideoListItem = ({
           )}
         </Box>
 
-        {/* <Tooltip
-          title={video.title}
-          placement="top"
-          slotProps={{ tooltip: { sx: { fontSize: fontSizeSmall } } }}
-        >
-          <VideoCardTitle>{video.title}</VideoCardTitle>
-        </Tooltip> */}
         <BottomParent
           sx={{
             padding: isMobile ? '0px 5px' : '0px',
@@ -427,7 +419,7 @@ export const VideoListItem = ({
                 >
                   {qortalMetadata?.name}
                 </InlineName>{' '}
-                | {formatDate(qortalMetadata.created)}
+                | {formatDate(qortalMetadata.created, i18n.language)}
               </VideoUploadDate>
             </Box>
           )}

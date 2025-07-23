@@ -15,6 +15,7 @@ import {
   setNotificationAtom,
 } from '../../../state/global/notifications.ts';
 import { addToHashMapSuperlikesAtom } from '../../../state/global/superlikes.ts';
+import { useTranslation } from 'react-i18next';
 
 const uid = new ShortUniqueId({ length: 7 });
 
@@ -118,6 +119,8 @@ export const CommentEditor = ({
   comment,
   hasHash,
 }: CommentEditorProps) => {
+  const { t } = useTranslation(['core']);
+
   const [value, setValue] = useState<string>('');
   const setNotification = useSetAtom(setNotificationAtom);
   const addSuperlike = useSetAtom(addToHashMapSuperlikesAtom);
@@ -265,7 +268,9 @@ export const CommentEditor = ({
     <CommentInputContainer>
       <CommentInput
         id="standard-multiline-flexible"
-        label="Your comment"
+        label={t('core:comments.your_comment', {
+          postProcess: 'capitalizeFirstChar',
+        })}
         multiline
         maxRows={4}
         variant="filled"

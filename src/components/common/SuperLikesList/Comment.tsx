@@ -36,6 +36,7 @@ import {
 import Portal from '../Portal';
 import { formatDate } from '../../../utils/time';
 import { createAvatarLink, useAuth } from 'qapp-core';
+import { useTranslation } from 'react-i18next';
 interface CommentProps {
   comment: any;
   postId: string;
@@ -54,6 +55,8 @@ export const Comment = ({
   isSuperLike,
   hasHash,
 }: CommentProps) => {
+  const { t, i18n } = useTranslation(['core']);
+
   const [isReplying, setIsReplying] = useState<boolean>(false);
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const { name: username } = useAuth();
@@ -107,7 +110,9 @@ export const Comment = ({
             </DialogContent>
             <DialogActions>
               <Button variant="contained" onClick={() => setCurrentEdit(null)}>
-                Close
+                {t('core:action.close', {
+                  postProcess: 'capitalizeFirstChar',
+                })}
               </Button>
             </DialogActions>
           </Dialog>
@@ -138,7 +143,7 @@ export const Comment = ({
               }}
               color={theme.palette.text.primary}
             >
-              {formatDate(+comment?.created)}
+              {formatDate(+comment?.created, i18n.language)}
             </Typography>
           )}
           <CommentActionButtonRow>
@@ -148,7 +153,9 @@ export const Comment = ({
                 variant="contained"
                 onClick={() => setIsReplying(true)}
               >
-                reply
+                {t('core:action.reply', {
+                  postProcess: 'capitalizeFirstChar',
+                })}
               </CommentActionButton>
             )}
 
@@ -211,6 +218,8 @@ export const CommentCard = ({
   isReply,
   amount,
 }: any) => {
+  const { t, i18n } = useTranslation(['core']);
+
   const [avatarUrl, setAvatarUrl] = React.useState<string>('');
 
   const { name: username } = useAuth();
@@ -327,7 +336,7 @@ export const CommentCard = ({
                 >
                   {reply?.created && (
                     <CommentDateText>
-                      {formatDate(+reply?.created)}
+                      {formatDate(+reply?.created, i18n.language)}
                     </CommentDateText>
                   )}
                   {username === reply?.name ? (
@@ -338,7 +347,9 @@ export const CommentCard = ({
                       onClick={() => setCurrentEdit(reply)}
                       sx={{}}
                     >
-                      edit
+                      {t('core:action.edit', {
+                        postProcess: 'capitalizeFirstChar',
+                      })}
                     </EditReplyButton>
                   ) : (
                     <Box />

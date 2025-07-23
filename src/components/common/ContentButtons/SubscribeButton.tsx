@@ -103,7 +103,7 @@ export const SubscribeButton = ({
           ? t('core:action.unsubscribe', {
               postProcess: 'capitalizeFirstChar',
             })
-          : t('core:video.subscribe', {
+          : t('core:action.subscribe', {
               postProcess: 'capitalizeFirstChar',
             })}
       </Button>

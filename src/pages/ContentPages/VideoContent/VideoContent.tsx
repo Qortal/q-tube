@@ -145,6 +145,8 @@ export const VideoContent = () => {
     setSuperLikeList,
   } = useVideoContentState();
   const isSmall = useIsSmall();
+  const { i18n } = useTranslation(['core']);
+
   const isScreenSmall = !useMediaQuery(smallVideoSize);
   const isMobile = useIsMobile();
   const [screenWidth, setScreenWidth] = useState<number>(
@@ -241,7 +243,7 @@ export const VideoContent = () => {
                 }}
                 color={theme.palette.text.tertiary}
               >
-                {formatDate(videoData.created)}
+                {formatDate(videoData.created, i18n.language)}
               </Typography>
             )}
             <Divider orientation="vertical" flexItem />

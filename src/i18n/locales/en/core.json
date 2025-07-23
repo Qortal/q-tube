@@ -13,7 +13,8 @@
     "create": "create",
     "edit": "edit",
     "comment": "comment",
-    "reply": "reply"
+    "reply": "reply",
+    "bookmark_video": "bookmark video"
   },
   "navbar": {
     "search": "search"
@@ -121,6 +122,17 @@
     "load_more_comments": "load more comments",
     "submit_reply": "submit reply",
     "hide_replies": "hide all replies",
-    "view_replies": "view all replies"
+    "view_replies": "view all replies",
+    "your_comment": "your comment"
+  },
+  "download": {
+    "ready": "ready to save: click here",
+    "start": "start download: click here"
+  },
+  "index": {
+    "index_video": "index video"
+  },
+  "search": {
+    "clear_search": "clear search history"
   }
 }

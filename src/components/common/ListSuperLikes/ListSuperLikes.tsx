@@ -15,12 +15,15 @@ import { formatDate } from '../../../utils/time.ts';
 import { useAtomValue } from 'jotai';
 import { hashMapSuperlikesAtom } from '../../../state/global/superlikes.ts';
 import { Spacer } from 'qapp-core';
+import { useTranslation } from 'react-i18next';
 
 const truncateMessage = (message) => {
   return message.length > 40 ? message.slice(0, 40) + '...' : message;
 };
 
 export default function ListSuperLikes({ superlikes }) {
+  const { i18n } = useTranslation(['core']);
+
   const hashMapSuperlikes = useAtomValue(hashMapSuperlikesAtom);
   const theme = useTheme();
   const navigate = useNavigate();
@@ -185,7 +188,7 @@ export default function ListSuperLikes({ superlikes }) {
                 )}
                 <Spacer height="10px" />
                 <span style={{ fontSize: fontSizeSmall }}>
-                  {formatDate(superlike.created)}
+                  {formatDate(superlike.created, i18n.language)}
                 </span>
               </Box>
             </ListItem>

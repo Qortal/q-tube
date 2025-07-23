@@ -36,6 +36,7 @@ import { formatDate } from '../../../utils/time';
 import { createAvatarLink, Spacer, useAuth } from 'qapp-core';
 import { useIsSmall } from '../../../hooks/useIsSmall';
 import { useTranslation } from 'react-i18next';
+import i18n from '../../../i18n/i18n';
 interface CommentProps {
   comment: any;
   postId: string;
@@ -231,6 +232,8 @@ export const CommentCard = ({
   isOpenReplies,
   isReply,
 }: any) => {
+  const { i18n } = useTranslation(['core']);
+
   const isSmall = useIsSmall();
   const { name: username } = useAuth();
   const avatarUrl = createAvatarLink(name);
@@ -267,7 +270,9 @@ export const CommentCard = ({
             }}
           >
             <AuthorTextComment>{name}</AuthorTextComment>
-            <CreatedTextComment>{formatDate(+created)}</CreatedTextComment>
+            <CreatedTextComment>
+              {formatDate(+created, i18n.language)}
+            </CreatedTextComment>
           </StyledCardColComment>
           <Spacer height="10px" />
           <StyledCardContentComment>
@@ -314,20 +319,7 @@ export const CommentCard = ({
                       gap: '5px',
                       justifyContent: 'space-between',
                     }}
-                  >
-                    {/* {username === reply?.name ? (
-                      <EditReplyButton
-                        size="small"
-                        variant="contained"
-                        onClick={() => setCurrentEdit(reply)}
-                        sx={{}}
-                      >
-                        edit
-                      </EditReplyButton>
-                    ) : (
-                      <Box />
-                    )} */}
-                  </Box>
+                  ></Box>
                 </CommentCard>
               </Box>
             );

@@ -192,7 +192,9 @@ export const Search = () => {
               }}
             >
               <ClearAllIcon fontSize="small" />
-              Clear search history
+              {t('core:search.clear_search', {
+                postProcess: 'capitalizeFirstChar',
+              })}
             </Box>
             {searchHistory.map((term, index) => (
               <Box

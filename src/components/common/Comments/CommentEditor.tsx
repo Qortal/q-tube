@@ -232,7 +232,9 @@ export const CommentEditor = ({
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
         id="standard-multiline-flexible"
-        label="Your comment"
+        label={t('core:comments.your_comment', {
+          postProcess: 'capitalizeFirstChar',
+        })}
         multiline
         maxRows={4}
         variant="filled"

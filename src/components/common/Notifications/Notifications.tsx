@@ -65,7 +65,7 @@ export function extractIdValue(metadescription) {
 }
 
 export const Notifications = () => {
-  const { t } = useTranslation(['core']);
+  const { t, i18n } = useTranslation(['core']);
 
   const [anchorElNotification, setAnchorElNotification] =
     useState<HTMLButtonElement | null>(null);
@@ -339,7 +339,7 @@ export const Notifications = () => {
                         }}
                         color="textSecondary"
                       >
-                        {formatDate(notification.created)}
+                        {formatDate(notification.created, i18n.language)}
                       </Typography>
                       <Typography
                         component="span"

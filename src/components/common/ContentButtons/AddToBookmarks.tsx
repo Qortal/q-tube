@@ -20,6 +20,7 @@ import { usePersistedState } from '../../../state/persist/persist';
 import ShortUniqueId from 'short-unique-id';
 import { Spacer, useGlobal } from 'qapp-core';
 import { useTranslation } from 'react-i18next';
+import { CustomTooltip } from './CustomTooltip';
 
 const uid = new ShortUniqueId({ length: 15, dictionary: 'alphanum' });
 
@@ -204,9 +205,17 @@ export const AddToBookmarks = ({ metadataReference }) => {
 
   return (
     <>
-      <ButtonBase onClick={() => setIsOpen(true)}>
-        <BookmarksIcon color={isInABookmark ? 'success' : 'info'} />
-      </ButtonBase>
+      <CustomTooltip
+        title={t('core:action.bookmark_video', {
+          postProcess: 'capitalizeFirstChar',
+        })}
+        arrow
+        placement={'top'}
+      >
+        <ButtonBase onClick={() => setIsOpen(true)}>
+          <BookmarksIcon color={isInABookmark ? 'success' : 'info'} />
+        </ButtonBase>
+      </CustomTooltip>
       {isOpen && (
         <Box
           ref={ref}

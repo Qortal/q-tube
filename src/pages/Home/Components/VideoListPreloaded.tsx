@@ -15,6 +15,7 @@ import { useAtomValue, useSetAtom } from 'jotai';
 import { editVideoAtom } from '../../../state/publish/video.ts';
 import { scrollRefAtom } from '../../../state/global/navbar.ts';
 import { Box, Typography } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 interface VideoListProps {
   listName: string;
@@ -38,6 +39,8 @@ export const VideoListPreloaded = ({
   listId,
   handleRemoveVideoFromList,
 }: VideoListProps) => {
+  const { t } = useTranslation(['core']);
+
   const { name: username } = useAuth();
   const setEditVideo = useSetAtom(editVideoAtom);
   const { addToBlockedList } = useBlockedNames();
@@ -68,7 +71,12 @@ export const VideoListPreloaded = ({
             justifyContent: 'center',
           }}
         >
-          <Typography>No results</Typography>
+          <Typography>
+            {' '}
+            {t('core:lists.no_results', {
+              postProcess: 'capitalizeFirstChar',
+            })}
+          </Typography>
         </Box>
       );
     }

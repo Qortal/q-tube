@@ -14,6 +14,7 @@ import {
   AltertObject,
   setNotificationAtom,
 } from '../../state/global/notifications';
+import { useTranslation } from 'react-i18next';
 
 const Widget = styled('div')(({ theme }) => ({
   padding: 8,
@@ -66,6 +67,8 @@ export default function FileElement({
   disable,
   customStyles,
 }: IAudioElement) {
+  const { t } = useTranslation(['core']);
+
   const [startedDownload, setStartedDownload] = React.useState<boolean>(false);
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const [downloadLoader, setDownloadLoader] = React.useState<any>(false);
@@ -188,7 +191,9 @@ export default function FileElement({
                       fontSize: '14px',
                     }}
                   >
-                    Ready to save: click here
+                    {t('core:download.ready', {
+                      postProcess: 'capitalizeFirstChar',
+                    })}
                   </Typography>
                   {downloadLoader && (
                     <CircularProgress color="secondary" size={14} />
@@ -201,7 +206,9 @@ export default function FileElement({
                     fontSize: '14px',
                   }}
                 >
-                  Start download: click here
+                  {t('core:download.start', {
+                    postProcess: 'capitalizeFirstChar',
+                  })}
                 </Typography>
               )}
             </ButtonBase>

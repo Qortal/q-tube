@@ -190,7 +190,11 @@ export const Bookmarks = () => {
               displayEmpty
             >
               <MenuItem value={0}>
-                <em>All videos</em>
+                <em>
+                  {t('core:publish.all_videos', {
+                    postProcess: 'capitalizeFirstChar',
+                  })}
+                </em>
               </MenuItem>
               {sortedLists.map((list) => (
                 <MenuItem key={list.id} value={list.id}>
@@ -259,7 +263,11 @@ export const Bookmarks = () => {
           displayEmpty
         >
           <MenuItem value={0}>
-            <em>All videos</em>
+            <em>
+              {t('core:publish.all_videos', {
+                postProcess: 'capitalizeFirstChar',
+              })}
+            </em>
           </MenuItem>
           {sortedLists.map((list) => (
             <MenuItem key={list.id} value={list.id}>

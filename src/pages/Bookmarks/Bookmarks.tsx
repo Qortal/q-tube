@@ -27,8 +27,11 @@ import { PageSubTitle } from '../../components/common/General/GeneralStyles.tsx'
 import EditIcon from '@mui/icons-material/Edit';
 import { PageTransition } from '../../components/common/PageTransition.tsx';
 import { useIsSmall } from '../../hooks/useIsSmall.tsx';
+import { useTranslation } from 'react-i18next';
 
 export const Bookmarks = () => {
+  const { t } = useTranslation(['core']);
+
   const isSmall = useIsSmall();
   const [selectedList, setSelectedList, isHydratedSelectedList] =
     usePersistedState('selectedBookmarkList', 0);
@@ -171,12 +174,18 @@ export const Bookmarks = () => {
               width: '320px',
             }}
           >
-            <InputLabel id="bookmark-list-label">Select a List</InputLabel>
+            <InputLabel id="bookmark-list-label">
+              {t('core:bookmarks.select_list', {
+                postProcess: 'capitalizeFirstChar',
+              })}
+            </InputLabel>
 
             <Select
               labelId="bookmark-list-label"
               value={selectedList?.id || 0}
-              label="Select a List"
+              label={t('core:bookmarks.select_list', {
+                postProcess: 'capitalizeFirstChar',
+              })}
               onChange={handleChange}
               displayEmpty
             >
@@ -200,7 +209,11 @@ export const Bookmarks = () => {
               alignItems: isSmall ? 'center' : 'flex-start',
             }}
           >
-            <PageSubTitle>all bookmarked videos</PageSubTitle>
+            <PageSubTitle>
+              {t('core:bookmarks.all_bookmarks', {
+                postProcess: 'capitalizeFirstChar',
+              })}
+            </PageSubTitle>
             <Spacer height="14px" />
             <Divider flexItem />
             <Spacer height="20px" />
@@ -230,12 +243,18 @@ export const Bookmarks = () => {
   return (
     <PageTransition>
       <FormControl fullWidth>
-        <InputLabel id="bookmark-list-label">Select a List</InputLabel>
+        <InputLabel id="bookmark-list-label">
+          {t('core:bookmarks.select_list', {
+            postProcess: 'capitalizeFirstChar',
+          })}
+        </InputLabel>
 
         <Select
           labelId="bookmark-list-label"
           value={selectedList?.id || 0}
-          label="Select a List"
+          label={t('core:bookmarks.select_list', {
+            postProcess: 'capitalizeFirstChar',
+          })}
           onChange={handleChange}
           displayEmpty
         >
@@ -261,7 +280,10 @@ export const Bookmarks = () => {
             alignSelf: 'flex-start',
           }}
         >
-          Bookmark list: {selectedList?.title}
+          {t('core:bookmarks.bookmark_list', {
+            postProcess: 'capitalizeFirstChar',
+          })}
+          : {selectedList?.title}
         </PageSubTitle>
         <ButtonBase>
           <EditIcon onClick={() => setIsOpenEdit(true)} />
@@ -321,7 +343,9 @@ export const Bookmarks = () => {
               marginRight: 'auto',
             }}
           >
-            Delete
+            {t('core:action.delete', {
+              postProcess: 'capitalizeFirstChar',
+            })}
           </Button>
           <Button
             variant="contained"
@@ -330,7 +354,9 @@ export const Bookmarks = () => {
               setNewTitle(selectedList?.title);
             }}
           >
-            Close
+            {t('core:action.close', {
+              postProcess: 'capitalizeFirstChar',
+            })}
           </Button>
           <Button
             disabled={!newTitle.trim() || selectedList?.title === newTitle}
@@ -346,7 +372,9 @@ export const Bookmarks = () => {
               setIsOpenEdit(false);
             }}
           >
-            save
+            {t('core:action.save', {
+              postProcess: 'capitalizeFirstChar',
+            })}
           </Button>
         </DialogActions>
       </Dialog>

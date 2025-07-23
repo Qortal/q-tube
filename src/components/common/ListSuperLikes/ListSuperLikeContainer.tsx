@@ -16,7 +16,10 @@ import { Spacer } from 'qapp-core';
 import { AnimatePresence, motion } from 'framer-motion';
 import { CustomChip } from '../../../pages/Home/FilterOptions.tsx';
 import { useIsSmall } from '../../../hooks/useIsSmall.tsx';
+import { useTranslation } from 'react-i18next';
 export const ListSuperLikeContainer = ({ from }) => {
+  const { t } = useTranslation(['core']);
+
   const [superlikelist] = useAtom(superlikesAtom);
   const isSmall = useIsSmall();
   const headerSX = { color: 'gold' };
@@ -55,7 +58,11 @@ export const ListSuperLikeContainer = ({ from }) => {
                   overflow: 'hidden',
                 }}
               >
-                <Typography sx={headerSX}>Recent Superlikes</Typography>
+                <Typography sx={headerSX}>
+                  {t('core:likes.recent_super_likes', {
+                    postProcess: 'capitalizeEachFirstChar',
+                  })}
+                </Typography>
                 <Spacer height="10px" />
                 <ListSuperLikes superlikes={superlikelist} />
               </motion.div>
@@ -115,7 +122,12 @@ export const ListSuperLikeContainer = ({ from }) => {
               padding: '10px',
             }}
           >
-            <Typography sx={headerSX}>Recent Superlikes</Typography>
+            <Typography sx={headerSX}>
+              {' '}
+              {t('core:likes.recent_super_likes', {
+                postProcess: 'capitalizeEachFirstChar',
+              })}
+            </Typography>
             <CrowdfundActionButton
               variant="contained"
               color="error"

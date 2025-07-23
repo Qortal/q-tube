@@ -22,12 +22,15 @@ import AddIcon from '@mui/icons-material/Add';
 import { QTUBE_VIDEO_BASE } from '../../../constants/Identifiers.ts';
 import { Spacer, useAuth } from 'qapp-core';
 import { useIsSmall } from '../../../hooks/useIsSmall.tsx';
+import { useTranslation } from 'react-i18next';
 export const PlaylistListEdit = ({
   playlistData,
   updateVideoList,
   removeVideo,
   addVideo,
 }) => {
+  const { t } = useTranslation(['core']);
+
   const theme = useTheme();
   const isSmall = useIsSmall();
   const { name: username } = useAuth();
@@ -97,7 +100,11 @@ export const PlaylistListEdit = ({
         }}
       >
         <CrowdfundSubTitleRow>
-          <CrowdfundSubTitle>Playlist</CrowdfundSubTitle>
+          <CrowdfundSubTitle>
+            {t('core:publish.playlist', {
+              postProcess: 'capitalizeFirstChar',
+            })}
+          </CrowdfundSubTitle>
         </CrowdfundSubTitleRow>
         <CardContentContainerComment
           sx={{
@@ -186,7 +193,11 @@ export const PlaylistListEdit = ({
         }}
       >
         <CrowdfundSubTitleRow>
-          <CrowdfundSubTitle>Add videos to playlist</CrowdfundSubTitle>
+          <CrowdfundSubTitle>
+            {t('core:publish.add_videos_playlist', {
+              postProcess: 'capitalizeFirstChar',
+            })}
+          </CrowdfundSubTitle>
         </CrowdfundSubTitleRow>
         <CardContentContainerComment
           sx={{
@@ -205,7 +216,9 @@ export const PlaylistListEdit = ({
               <FormControlLabel
                 value="myVideos"
                 control={<Radio />}
-                label="My Videos"
+                label={t('core:publish.my_videos', {
+                  postProcess: 'capitalizeFirstChar',
+                })}
                 componentsProps={{
                   typography: { sx: { fontSize: '14px' } },
                 }}
@@ -213,7 +226,9 @@ export const PlaylistListEdit = ({
               <FormControlLabel
                 value="allVideos"
                 control={<Radio />}
-                label="All Videos"
+                label={t('core:publish.all_videos', {
+                  postProcess: 'capitalizeFirstChar',
+                })}
                 componentsProps={{
                   typography: { sx: { fontSize: '14px' } },
                 }}
@@ -232,7 +247,9 @@ export const PlaylistListEdit = ({
                 setFilterSearch(e.target.value);
               }}
               value={filterSearch}
-              placeholder="Search by title"
+              placeholder={t('core:publish.search_by_title', {
+                postProcess: 'capitalizeFirstChar',
+              })}
               sx={{
                 borderBottom: '1px solid white',
                 '&&:before': {
@@ -262,7 +279,9 @@ export const PlaylistListEdit = ({
               }}
               variant="contained"
             >
-              Search
+              {t('core:navbar.search', {
+                postProcess: 'capitalizeFirstChar',
+              })}
             </Button>
           </Box>
 

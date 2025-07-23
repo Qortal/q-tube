@@ -35,6 +35,7 @@ import Portal from '../Portal';
 import { formatDate } from '../../../utils/time';
 import { createAvatarLink, Spacer, useAuth } from 'qapp-core';
 import { useIsSmall } from '../../../hooks/useIsSmall';
+import { useTranslation } from 'react-i18next';
 interface CommentProps {
   comment: any;
   postId: string;
@@ -47,6 +48,8 @@ export const Comment = ({
   postName,
   onSubmit,
 }: CommentProps) => {
+  const { t } = useTranslation(['core']);
+
   const isSmall = useIsSmall();
   const [isReplying, setIsReplying] = useState<boolean>(false);
   const [isEditing, setIsEditing] = useState<boolean>(false);
@@ -98,7 +101,9 @@ export const Comment = ({
             </DialogContent>
             <DialogActions>
               <Button variant="contained" onClick={() => setCurrentEdit(null)}>
-                Close
+                {t('core:action.close', {
+                  postProcess: 'capitalizeFirstChar',
+                })}
               </Button>
             </DialogActions>
           </Dialog>
@@ -151,7 +156,12 @@ export const Comment = ({
           >
             {!isReplying && (
               <ButtonBase onClick={() => setIsReplying(true)}>
-                <Typography>Reply</Typography>
+                <Typography>
+                  {' '}
+                  {t('core:action.reply', {
+                    postProcess: 'capitalizeFirstChar',
+                  })}
+                </Typography>
               </ButtonBase>
             )}
 
@@ -195,8 +205,12 @@ export const Comment = ({
                   }}
                 >
                   {isOpenReplies
-                    ? ` Hide all replies (${comment?.replies?.length})`
-                    : ` View all replies (${comment?.replies?.length})`}
+                    ? ` ${t('core:comments.hide_replies', {
+                        postProcess: 'capitalizeFirstChar',
+                      })} (${comment?.replies?.length})`
+                    : ` ${t('core:comments.view_replies', {
+                        postProcess: 'capitalizeFirstChar',
+                      })} (${comment?.replies?.length})`}
                 </Typography>
               </ButtonBase>
             )}

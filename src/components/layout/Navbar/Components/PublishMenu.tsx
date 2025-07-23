@@ -19,8 +19,11 @@ import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
 import { editPlaylistAtom } from '../../../../state/publish/playlist.ts';
 import { useSetAtom } from 'jotai';
 import { useIsSmall } from '../../../../hooks/useIsSmall.tsx';
+import { useTranslation } from 'react-i18next';
 
 export const PublishMenu = ({ isDisplayed }: PublishButtonsProps) => {
+  const { t } = useTranslation(['core']);
+
   const popMenuRef = useRef<PopMenuRefType>(null);
   const setEditPlaylist = useSetAtom(editPlaylistAtom);
   const isSmall = useIsSmall();
@@ -38,7 +41,9 @@ export const PublishMenu = ({ isDisplayed }: PublishButtonsProps) => {
                   color="info"
                   variant="contained"
                 >
-                  Publish
+                  {t('core:publish.publish_action', {
+                    postProcess: 'capitalizeFirstChar',
+                  })}
                 </Button>
               ) : (
                 <ButtonBase>
@@ -88,7 +93,9 @@ export const PublishMenu = ({ isDisplayed }: PublishButtonsProps) => {
                 setEditPlaylist({ mode: 'new' });
               }}
             >
-              Playlist
+              {t('core:publish.playlist', {
+                postProcess: 'capitalizeFirstChar',
+              })}
             </StyledButton>
           </DropdownContainer>
         </PopMenu>

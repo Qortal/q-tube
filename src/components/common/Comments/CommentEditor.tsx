@@ -17,6 +17,7 @@ import {
 } from '../../../state/global/notifications.ts';
 import { Box, Button } from '@mui/material';
 import { useIsSmall } from '../../../hooks/useIsSmall.tsx';
+import { useTranslation } from 'react-i18next';
 const uid = new ShortUniqueId({ length: 7 });
 
 const notification = localforage.createInstance({
@@ -115,6 +116,8 @@ export const CommentEditor = ({
   commentMessage,
   onCloseReply,
 }: CommentEditorProps) => {
+  const { t } = useTranslation(['core']);
+
   const isSmall = useIsSmall();
   const [value, setValue] = useState<string>('');
   const { name, address } = useAuth();
@@ -262,14 +265,26 @@ export const CommentEditor = ({
           }}
           variant="text"
         >
-          Cancel
+          {t('core:action.cancel', {
+            postProcess: 'capitalizeEachFirstChar',
+          })}
         </Button>
         <SubmitCommentButton
           variant="contained"
           color="info"
           onClick={handleSubmit}
         >
-          {isReply ? 'Submit reply' : isEdit ? 'Edit' : 'comment'}
+          {isReply
+            ? t('core:comments.submit_reply', {
+                postProcess: 'capitalizeFirstChar',
+              })
+            : isEdit
+              ? t('core:action.edit', {
+                  postProcess: 'capitalizeFirstChar',
+                })
+              : t('core:action.comment', {
+                  postProcess: 'capitalizeFirstChar',
+                })}
         </SubmitCommentButton>
       </Box>
     </CommentInputContainer>

@@ -1,0 +1,74 @@
+{
+  "action": {
+    "back": "atrás",
+    "next": "siguiente",
+    "cancel": "cancelar"
+  },
+  "navbar": {
+    "search": "buscar"
+  },
+  "publish": {
+    "publish_action": "publicar",
+    "video": "video",
+    "playlist": "lista de reproducción",
+    "downloads": "descargas",
+    "update_video": "actualizar video",
+    "publish_videos": "publicar videos",
+    "populate_titles": "Rellenar títulos por nombre de archivo (cuando se seleccionan los archivos)",
+    "same_cover_images": "Todos los videos usan la misma imagen de portada",
+    "populate_description": "Rellenar todas las descripciones por título",
+    "drag_drop_videos": "Arrastra y suelta archivos de video aquí o haz clic para seleccionar archivos",
+    "supported_containers": "Contenedores de archivos compatibles",
+    "audio_codecs": "códecs de audio",
+    "video_codecs": "códecs de video",
+    "unsupported_codecs_description": "Usar códecs no compatibles puede hacer que el video o audio no funcionen correctamente",
+    "select_category": "Seleccionar una categoría",
+    "select_subcategory": "Seleccionar una subcategoría",
+    "add_cover_image": "agregar imagen de portada",
+    "description_video": "descripción del video",
+    "add_vids_playlist": "¿Quieres agregar estos videos a una lista de reproducción?",
+    "add_vids_playlist_optional": "agregar a una lista de reproducción es OPCIONAL",
+    "no_playlist": "sin lista de reproducción",
+    "new_playlist": "nueva lista de reproducción",
+    "existing_playlist": "lista de reproducción existente",
+    "select_existing_playlist": "seleccionar lista de reproducción existente",
+    "playlist_search_by_title": "buscar por título",
+    "title_playlist": "título de la lista de reproducción",
+    "description_playlist": "descripción de la lista de reproducción",
+    "generationg_extracts": "generando extractos de imagen",
+    "create_new_playlist": "crear nueva lista de reproducción",
+    "update_playlist_properties": "actualizar propiedades de la lista"
+  },
+  "notification": {
+    "no_new_notification": "no hay nuevas notificaciones",
+    "from_user": "de {{user}}"
+  },
+  "likes": {
+    "super_like": "súper me gusta",
+    "recent_super_likes": "súper me gustas recientes"
+  },
+  "blocked": {
+    "blocked_names": "nombres bloqueados"
+  },
+  "sidenav": {
+    "home": "inicio",
+    "subscriptions": "suscripciones",
+    "watched_videos": "videos vistos",
+    "bookmarks": "marcadores",
+    "your_playlists": "tus listas de reproducción",
+    "your_videos": "tus videos"
+  },
+  "filters": {
+    "most_recent": "más reciente",
+    "all": "todos",
+    "videos": "videos",
+    "playlists": "listas de reproducción",
+    "more_filters": "más filtros",
+    "more": "más",
+    "user_name": "Nombre del usuario (exacto)",
+    "category": "categoría",
+    "sub_category": "subcategoría",
+    "reset": "reiniciar",
+    "filters": "filtros"
+  }
+}

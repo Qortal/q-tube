@@ -14,8 +14,11 @@ import { useHomeState } from '../Home/Home-State.ts';
 import VideoList from '../Home/Components/VideoList.tsx';
 import { PageSubTitle } from '../../components/common/General/GeneralStyles.tsx';
 import { PageTransition } from '../../components/common/PageTransition.tsx';
+import { useTranslation } from 'react-i18next';
 
 export const Subscriptions = () => {
+  const { t } = useTranslation(['core']);
+
   const [searchParams, setSearchParams] = useSearchParams();
   const scrollRef = useAtomValue(scrollRefAtom);
 
@@ -71,7 +74,9 @@ export const Subscriptions = () => {
                 alignSelf: 'flex-start',
               }}
             >
-              subscriptions
+              {t('core:sidenav.subscriptions', {
+                postProcess: 'capitalizeFirstChar',
+              })}
             </PageSubTitle>
             <Spacer height="14px" />
             <Divider flexItem />

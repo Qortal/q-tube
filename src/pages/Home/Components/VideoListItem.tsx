@@ -26,6 +26,7 @@ import { useState } from 'react';
 import { editPlaylistAtom } from '../../../state/publish/playlist';
 import { useSetAtom } from 'jotai';
 import { useIsMobile } from '../../../hooks/useIsMobile';
+import { useTranslation } from 'react-i18next';
 
 export const VideoListItem = ({
   qortalMetadata,
@@ -37,6 +38,8 @@ export const VideoListItem = ({
   disableActions,
   handleRemoveVideoFromList,
 }: any) => {
+  const { t } = useTranslation(['core']);
+
   const isMobile = useIsMobile();
 
   const navigate = useNavigate();
@@ -70,7 +73,12 @@ export const VideoListItem = ({
           }}
         >
           {qortalMetadata?.name === username && (
-            <Tooltip title="Edit playlist" placement="top">
+            <Tooltip
+              title={t('core:publish.edit_playlist', {
+                postProcess: 'capitalizeFirstChar',
+              })}
+              placement="top"
+            >
               <BlockIconContainer>
                 <EditIcon
                   onClick={() => {
@@ -95,7 +103,12 @@ export const VideoListItem = ({
           )}
 
           {qortalMetadata?.name !== username && (
-            <Tooltip title="Block user content" placement="top">
+            <Tooltip
+              title={t('core:publish.block_user_content', {
+                postProcess: 'capitalizeFirstChar',
+              })}
+              placement="top"
+            >
               <BlockIconContainer>
                 <BlockIcon
                   onClick={() => {
@@ -220,7 +233,12 @@ export const VideoListItem = ({
         {qortalMetadata?.name === username &&
           !isBookmarks &&
           !disableActions && (
-            <Tooltip title="Edit video properties" placement="top">
+            <Tooltip
+              title={t('core:publish.edit_video', {
+                postProcess: 'capitalizeFirstChar',
+              })}
+              placement="top"
+            >
               <BlockIconContainer>
                 <EditIcon
                   onClick={() => {
@@ -247,7 +265,12 @@ export const VideoListItem = ({
         {qortalMetadata?.name !== username &&
           !isBookmarks &&
           !disableActions && (
-            <Tooltip title="Block user content" placement="top">
+            <Tooltip
+              title={t('core:publish.block_user_content', {
+                postProcess: 'capitalizeFirstChar',
+              })}
+              placement="top"
+            >
               <BlockIconContainer>
                 <BlockIcon
                   onClick={() => {
@@ -260,7 +283,12 @@ export const VideoListItem = ({
         {qortalMetadata?.name === username &&
           !isBookmarks &&
           !disableActions && (
-            <Tooltip title="Delete video" placement="top">
+            <Tooltip
+              title={t('core:publish.delete_video', {
+                postProcess: 'capitalizeFirstChar',
+              })}
+              placement="top"
+            >
               <BlockIconContainer>
                 <DeleteIcon
                   onClick={() => {
@@ -271,7 +299,12 @@ export const VideoListItem = ({
             </Tooltip>
           )}
         {isBookmarks && handleRemoveVideoFromList && !disableActions && (
-          <Tooltip title="Remove video from list" placement="top">
+          <Tooltip
+            title={t('core:publish.remove_video_list', {
+              postProcess: 'capitalizeFirstChar',
+            })}
+            placement="top"
+          >
             <BlockIconContainer>
               <DeleteIcon
                 onClick={() => {

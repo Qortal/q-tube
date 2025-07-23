@@ -43,11 +43,14 @@ import {
 } from '../../../state/global/notifications.ts';
 import { useAtom, useSetAtom } from 'jotai';
 import { editPlaylistAtom } from '../../../state/publish/playlist.ts';
+import { useTranslation } from 'react-i18next';
 
 const uid = new ShortUniqueId();
 const shortuid = new ShortUniqueId({ length: 5 });
 
 export const EditPlaylist = () => {
+  const { t } = useTranslation(['core', 'category']);
+
   const theme = useTheme();
   const { name: username, address: userAddress } = useAuth();
   const setNotification = useSetAtom(setNotificationAtom);
@@ -374,9 +377,17 @@ export const EditPlaylist = () => {
             }}
           >
             {isNew ? (
-              <NewCrowdfundTitle>Create new playlist</NewCrowdfundTitle>
+              <NewCrowdfundTitle>
+                {t('core:publish.create_new_playlist', {
+                  postProcess: 'capitalizeFirstChar',
+                })}
+              </NewCrowdfundTitle>
             ) : (
-              <NewCrowdfundTitle>Update Playlist properties</NewCrowdfundTitle>
+              <NewCrowdfundTitle>
+                {t('core:publish.update_playlist_properties', {
+                  postProcess: 'capitalizeFirstChar',
+                })}
+              </NewCrowdfundTitle>
             )}
           </Box>
           <>
@@ -388,16 +399,26 @@ export const EditPlaylist = () => {
               }}
             >
               <FormControl fullWidth sx={{ marginBottom: 2 }}>
-                <InputLabel id="Category">Select a Category</InputLabel>
+                <InputLabel id="Category">
+                  {t('core:publish.select_category', {
+                    postProcess: 'capitalizeFirstChar',
+                  })}
+                </InputLabel>
                 <Select
                   labelId="Category"
-                  input={<OutlinedInput label="Select a Category" />}
+                  input={
+                    <OutlinedInput
+                      label={t('core:publish.select_category', {
+                        postProcess: 'capitalizeFirstChar',
+                      })}
+                    />
+                  }
                   value={selectedCategoryVideos?.id || ''}
                   onChange={handleOptionCategoryChangeVideos}
                 >
                   {categories.map((option) => (
                     <MenuItem key={option.id} value={option.id}>
-                      {option.name}
+                      {t(`category:categories.${option.id}`)}
                     </MenuItem>
                   ))}
                 </Select>
@@ -405,10 +426,20 @@ export const EditPlaylist = () => {
               {selectedCategoryVideos &&
                 subCategories[selectedCategoryVideos?.id] && (
                   <FormControl fullWidth sx={{ marginBottom: 2 }}>
-                    <InputLabel id="Category">Select a Sub-Category</InputLabel>
+                    <InputLabel id="Category">
+                      {t('core:publish.select_subcategory', {
+                        postProcess: 'capitalizeFirstChar',
+                      })}
+                    </InputLabel>
                     <Select
                       labelId="Sub-Category"
-                      input={<OutlinedInput label="Select a Sub-Category" />}
+                      input={
+                        <OutlinedInput
+                          label={t('core:publish.select_subcategory', {
+                            postProcess: 'capitalizeFirstChar',
+                          })}
+                        />
+                      }
                       value={selectedSubCategoryVideos?.id || ''}
                       onChange={(e) =>
                         handleOptionSubCategoryChangeVideos(
@@ -420,7 +451,7 @@ export const EditPlaylist = () => {
                       {subCategories[selectedCategoryVideos.id].map(
                         (option) => (
                           <MenuItem key={option.id} value={option.id}>
-                            {option.name}
+                            {t(`category:subcategories.${option.id}`)}
                           </MenuItem>
                         )
                       )}
@@ -432,7 +463,9 @@ export const EditPlaylist = () => {
               {!coverImage ? (
                 <ImageUploader onPick={(img: string) => setCoverImage(img)}>
                   <AddCoverImageButton variant="contained">
-                    Add Cover Image
+                    {t('core:publish.add_cover_image', {
+                      postProcess: 'capitalizeFirstChar',
+                    })}
                     <AddLogoIcon
                       sx={{
                         height: '25px',
@@ -454,7 +487,9 @@ export const EditPlaylist = () => {
               )}
               <CustomInputField
                 name="title"
-                label="Title of playlist"
+                label={t('core:publish.title_playlist', {
+                  postProcess: 'capitalizeFirstChar',
+                })}
                 variant="filled"
                 value={title}
                 onChange={(e) => {
@@ -484,7 +519,9 @@ export const EditPlaylist = () => {
                   fontSize: '18px',
                 }}
               >
-                Description of playlist
+                {t('core:publish.description_playlist', {
+                  postProcess: 'capitalizeFirstChar',
+                })}
               </Typography>
               <TextEditor
                 inlineContent={description}
@@ -510,7 +547,9 @@ export const EditPlaylist = () => {
               variant="contained"
               color="error"
             >
-              Cancel
+              {t('core:action.cancel', {
+                postProcess: 'capitalizeFirstChar',
+              })}
             </CrowdfundActionButton>
             <Box
               sx={{
@@ -525,7 +564,9 @@ export const EditPlaylist = () => {
                   publishQDNResource();
                 }}
               >
-                Publish
+                {t('core:publish.publish_action', {
+                  postProcess: 'capitalizeFirstChar',
+                })}
               </CrowdfundActionButton>
             </Box>
           </CrowdfundActionButtonRow>

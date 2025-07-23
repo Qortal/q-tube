@@ -15,6 +15,7 @@ import { UserDropDown } from '../../../UserDropDown.tsx';
 import { Names } from '../../../../state/global/names.ts';
 import { useAuth } from 'qapp-core';
 import { useIsSmall } from '../../../../hooks/useIsSmall.tsx';
+import { useTranslation } from 'react-i18next';
 export interface NavBarMenuProps {
   isShowMenu: boolean;
   userAvatar: string | null;
@@ -28,6 +29,8 @@ export const UserMenu = ({
   userName,
   allNames,
 }: NavBarMenuProps) => {
+  const { t } = useTranslation(['core']);
+
   const isSmall = useIsSmall();
   const theme = useTheme();
   const { switchName } = useAuth();
@@ -58,7 +61,6 @@ export const UserMenu = ({
               <AvatarContainer
                 sx={{
                   height: isSmall ? '35px' : '40px',
-                  // width: isSmall ? '35px' : '40px',
                 }}
               >
                 <Avatar
@@ -95,7 +97,12 @@ export const UserMenu = ({
                   height: menuIconSize,
                 }}
               />
-              <DropdownText>Blocked Names</DropdownText>
+              <DropdownText>
+                {' '}
+                {t('core:blocked.blocked_names', {
+                  postProcess: 'capitalizeEachFirstChar',
+                })}
+              </DropdownText>
             </DropdownContainer>
           </PopMenu>
           {isOpenBlockedNamesModal && (

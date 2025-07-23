@@ -70,6 +70,7 @@ import {
   AltertObject,
   setNotificationAtom,
 } from '../../../state/global/notifications.ts';
+import { useTranslation } from 'react-i18next';
 
 export const toBase64 = (file: File): Promise<string | ArrayBuffer | null> =>
   new Promise((resolve, reject) => {
@@ -105,6 +106,8 @@ export const PublishVideo = ({
   editContent,
   afterClose,
 }: PublishVideoProps) => {
+  const { t } = useTranslation(['core', 'category']);
+
   const theme = useTheme();
   const [isOpenMultiplePublish, setIsOpenMultiplePublish] = useState(false);
   const setNotification = useSetAtom(setNotificationAtom);
@@ -658,7 +661,9 @@ export const PublishVideo = ({
                 setIsOpen(true);
               }}
             >
-              Video
+              {t('core:publish.video', {
+                postProcess: 'capitalizeFirstChar',
+              })}
             </StyledButton>
           )}
         </>
@@ -682,9 +687,17 @@ export const PublishVideo = ({
             }}
           >
             {editId ? (
-              <NewCrowdfundTitle>Update Videos</NewCrowdfundTitle>
+              <NewCrowdfundTitle>
+                {t('core:publish.update_video', {
+                  postProcess: 'capitalizeEachFirstChar',
+                })}
+              </NewCrowdfundTitle>
             ) : (
-              <NewCrowdfundTitle>Publish Videos</NewCrowdfundTitle>
+              <NewCrowdfundTitle>
+                {t('core:publish.publish_videos', {
+                  postProcess: 'capitalizeEachFirstChar',
+                })}
+              </NewCrowdfundTitle>
             )}
           </Box>
 
@@ -692,7 +705,9 @@ export const PublishVideo = ({
             <>
               <FiltersSubContainer>
                 <FiltersRow>
-                  Populate Titles by filename (when the files are picked)
+                  {t('core:publish.populate_titles', {
+                    postProcess: 'capitalizeFirstChar',
+                  })}
                   <FiltersCheckbox
                     checked={isCheckTitleByFile}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
@@ -702,7 +717,9 @@ export const PublishVideo = ({
                   />
                 </FiltersRow>
                 <FiltersRow>
-                  All videos use the same Cover Image
+                  {t('core:publish.same_cover_images', {
+                    postProcess: 'capitalizeFirstChar',
+                  })}
                   <FiltersCheckbox
                     checked={isCheckSameCoverImage}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
@@ -712,7 +729,9 @@ export const PublishVideo = ({
                   />
                 </FiltersRow>
                 <FiltersRow>
-                  Populate all descriptions by Title
+                  {t('core:publish.populate_description', {
+                    postProcess: 'capitalizeFirstChar',
+                  })}
                   <FiltersCheckbox
                     checked={isCheckDescriptionIsTitle}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
@@ -744,26 +763,37 @@ export const PublishVideo = ({
               >
                 <input {...getInputProps()} />
                 <Typography>
-                  Drag and drop a video files here or click to select files
+                  {t('core:publish.drag_drop_videos', {
+                    postProcess: 'capitalizeFirstChar',
+                  })}
                 </Typography>
               </Box>
               <Box>
                 <CodecTypography>
-                  Supported File Containers:{' '}
-                  <span style={{ fontWeight: 'bold' }}>MP4</span>, M4V, OGG,
+                  {t('core:publish.supported_containers', {
+                    postProcess: 'capitalizeFirstChar',
+                  })}
+                  : <span style={{ fontWeight: 'bold' }}>MP4</span>, M4V, OGG,
                   WEBM, WAV
                 </CodecTypography>
                 <CodecTypography>
-                  Audio Codecs: <span style={{ fontWeight: 'bold' }}>Opus</span>
-                  , MP3, FLAC, PCM (8/16/32-bit, μ-law), Vorbis
+                  {t('core:publish.audio_codecs', {
+                    postProcess: 'capitalizeEachFirstChar',
+                  })}
+                  : <span style={{ fontWeight: 'bold' }}>Opus</span>, MP3, FLAC,
+                  PCM (8/16/32-bit, μ-law), Vorbis
                 </CodecTypography>
                 <CodecTypography>
-                  Video Codecs: <span style={{ fontWeight: 'bold' }}>AV1</span>,
-                  VP8, VP9, H.264
+                  {t('core:publish.video_codecs', {
+                    postProcess: 'capitalizeEachFirstChar',
+                  })}
+                  : <span style={{ fontWeight: 'bold' }}>AV1</span>, VP8, VP9,
+                  H.264
                 </CodecTypography>
                 <CodecTypography sx={{ fontWeight: '800', color: 'red' }}>
-                  Using unsupported Codecs may result in video or audio not
-                  working properly
+                  {t('core:publish.unsupported_codecs_description', {
+                    postProcess: 'capitalizeEachFirstChar',
+                  })}
                 </CodecTypography>
               </Box>
 
@@ -777,16 +807,26 @@ export const PublishVideo = ({
                 {files?.length > 0 && (
                   <>
                     <FormControl fullWidth sx={{ marginBottom: 2 }}>
-                      <InputLabel id="Category">Select a Category</InputLabel>
+                      <InputLabel id="Category">
+                        {t('core:publish.select_category', {
+                          postProcess: 'capitalizeEachFirstChar',
+                        })}
+                      </InputLabel>
                       <Select
                         labelId="Category"
-                        input={<OutlinedInput label="Select a Category" />}
+                        input={
+                          <OutlinedInput
+                            label={t('core:publish.select_category', {
+                              postProcess: 'capitalizeEachFirstChar',
+                            })}
+                          />
+                        }
                         value={selectedCategoryVideos?.id || ''}
                         onChange={handleOptionCategoryChangeVideos}
                       >
                         {categories.map((option) => (
                           <MenuItem key={option.id} value={option.id}>
-                            {option.name}
+                            {t(`category:categories.${option.id}`)}
                           </MenuItem>
                         ))}
                       </Select>
@@ -795,12 +835,18 @@ export const PublishVideo = ({
                       subCategories[selectedCategoryVideos?.id] && (
                         <FormControl fullWidth sx={{ marginBottom: 2 }}>
                           <InputLabel id="Category">
-                            Select a Sub-Category
+                            {t('core:publish.select_subcategory', {
+                              postProcess: 'capitalizeEachFirstChar',
+                            })}
                           </InputLabel>
                           <Select
                             labelId="Sub-Category"
                             input={
-                              <OutlinedInput label="Select a Sub-Category" />
+                              <OutlinedInput
+                                label={t('core:publish.select_subcategory', {
+                                  postProcess: 'capitalizeEachFirstChar',
+                                })}
+                              />
                             }
                             value={selectedSubCategoryVideos?.id || ''}
                             onChange={(e) =>
@@ -813,7 +859,7 @@ export const PublishVideo = ({
                             {subCategories[selectedCategoryVideos.id].map(
                               (option) => (
                                 <MenuItem key={option.id} value={option.id}>
-                                  {option.name}
+                                  {t(`category:subcategories.${option.id}`)}
                                 </MenuItem>
                               )
                             )}
@@ -830,7 +876,9 @@ export const PublishVideo = ({
                       onPick={(img: string) => setCoverImageForAll(img)}
                     >
                       <AddCoverImageButton variant="contained">
-                        Add Cover Image
+                        {t('core:publish.add_cover_image', {
+                          postProcess: 'capitalizeEachFirstChar',
+                        })}
                         <AddLogoIcon
                           sx={{
                             height: '25px',
@@ -875,7 +923,9 @@ export const PublishVideo = ({
                             }
                           >
                             <AddCoverImageButton variant="contained">
-                              Add Cover Image
+                              {t('core:publish.add_cover_image', {
+                                postProcess: 'capitalizeEachFirstChar',
+                              })}
                               <AddLogoIcon
                                 sx={{
                                   height: '25px',
@@ -921,7 +971,9 @@ export const PublishVideo = ({
                             fontSize: '18px',
                           }}
                         >
-                          Description of video
+                          {t('core:publish.description_video', {
+                            postProcess: 'capitalizeEachFirstChar',
+                          })}
                         </Typography>
                         <TextEditor
                           inlineContent={file?.description}
@@ -945,7 +997,11 @@ export const PublishVideo = ({
                   display: 'flex',
                 }}
               >
-                <Typography>Playlist</Typography>
+                <Typography>
+                  {t('core:publish.playlist', {
+                    postProcess: 'capitalizeFirstChar',
+                  })}
+                </Typography>
               </Box>
               <Box
                 sx={{
@@ -963,14 +1019,18 @@ export const PublishVideo = ({
                     marginTop: '20px',
                   }}
                 >
-                  Would you like to add these videos to a playlist?
+                  {t('core:publish.add_vids_playlist', {
+                    postProcess: 'capitalizeFirstChar',
+                  })}
                 </Typography>
                 <Typography
                   sx={{
                     fontSize: '16px',
                   }}
                 >
-                  Add to a playlist is OPTIONAL
+                  {t('core:publish.add_vids_playlist_optional', {
+                    postProcess: 'capitalizeFirstChar',
+                  })}
                 </Typography>
               </Box>
               <Box
@@ -988,7 +1048,9 @@ export const PublishVideo = ({
                     setPlaylistSetting(null);
                   }}
                 >
-                  no playlist
+                  {t('core:publish.no_playlist', {
+                    postProcess: 'capitalizeFirstChar',
+                  })}
                 </CrowdfundActionButton>
                 <CrowdfundActionButton
                   color={playlistSetting === 'new' ? 'success' : 'primary'}
@@ -997,7 +1059,9 @@ export const PublishVideo = ({
                     setPlaylistSetting('new');
                   }}
                 >
-                  New playlist
+                  {t('core:publish.new_playlist', {
+                    postProcess: 'capitalizeFirstChar',
+                  })}
                 </CrowdfundActionButton>
                 <CrowdfundActionButton
                   color={playlistSetting === 'existing' ? 'success' : 'primary'}
@@ -1006,7 +1070,9 @@ export const PublishVideo = ({
                     setPlaylistSetting('existing');
                   }}
                 >
-                  Existing playlist
+                  {t('core:publish.existing_playlist', {
+                    postProcess: 'capitalizeFirstChar',
+                  })}
                 </CrowdfundActionButton>
               </Box>
               {playlistSetting === 'existing' && (
@@ -1020,7 +1086,9 @@ export const PublishVideo = ({
                 >
                   <CrowdfundSubTitleRow>
                     <CrowdfundSubTitle>
-                      Select existing playlist
+                      {t('core:publish.select_existing_playlist', {
+                        postProcess: 'capitalizeFirstChar',
+                      })}
                     </CrowdfundSubTitle>
                   </CrowdfundSubTitleRow>
                   <Typography>
@@ -1048,7 +1116,12 @@ export const PublishVideo = ({
                           setFilterSearch(e.target.value);
                         }}
                         value={filterSearch}
-                        placeholder="Search by title"
+                        placeholder={t(
+                          'core:publish.playlist_search_by_title',
+                          {
+                            postProcess: 'capitalizeFirstChar',
+                          }
+                        )}
                         sx={{
                           borderBottom: '1px solid white',
                           '&&:before': {
@@ -1075,7 +1148,9 @@ export const PublishVideo = ({
                         }}
                         variant="contained"
                       >
-                        Search
+                        {t('core:navbar.search', {
+                          postProcess: 'capitalizeFirstChar',
+                        })}
                       </Button>
                     </Box>
 
@@ -1129,7 +1204,9 @@ export const PublishVideo = ({
                       onPick={(img: string) => setPlaylistCoverImage(img)}
                     >
                       <AddCoverImageButton variant="contained">
-                        Add Cover Image
+                        {t('core:publish.add_cover_image', {
+                          postProcess: 'capitalizeFirstChar',
+                        })}
                         <AddLogoIcon
                           sx={{
                             height: '25px',
@@ -1151,7 +1228,9 @@ export const PublishVideo = ({
                   )}
                   <CustomInputField
                     name="title"
-                    label="Title of playlist"
+                    label={t('core:publish.title_playlist', {
+                      postProcess: 'capitalizeFirstChar',
+                    })}
                     variant="filled"
                     value={playlistTitle}
                     onChange={(e) => {
@@ -1171,7 +1250,9 @@ export const PublishVideo = ({
                       fontSize: '18px',
                     }}
                   >
-                    Description of playlist
+                    {t('core:publish.description_playlist', {
+                      postProcess: 'capitalizeFirstChar',
+                    })}
                   </Typography>
                   <TextEditor
                     inlineContent={playlistDescription}
@@ -1180,16 +1261,26 @@ export const PublishVideo = ({
                     }}
                   />
                   <FormControl fullWidth sx={{ marginBottom: 2, marginTop: 2 }}>
-                    <InputLabel id="Category">Select a Category</InputLabel>
+                    <InputLabel id="Category">
+                      {t('core:publish.select_category', {
+                        postProcess: 'capitalizeFirstChar',
+                      })}
+                    </InputLabel>
                     <Select
                       labelId="Category"
-                      input={<OutlinedInput label="Select a Category" />}
+                      input={
+                        <OutlinedInput
+                          label={t('core:publish.select_category', {
+                            postProcess: 'capitalizeFirstChar',
+                          })}
+                        />
+                      }
                       value={selectedCategory?.id || ''}
                       onChange={handleOptionCategoryChange}
                     >
                       {categories.map((option) => (
                         <MenuItem key={option.id} value={option.id}>
-                          {option.name}
+                          {t(`category:categories.${option.id}`)}
                         </MenuItem>
                       ))}
                     </Select>
@@ -1197,11 +1288,19 @@ export const PublishVideo = ({
                   {selectedCategory && subCategories[selectedCategory?.id] && (
                     <FormControl fullWidth sx={{ marginBottom: 2 }}>
                       <InputLabel id="Category">
-                        Select a Sub-Category
+                        {t('core:publish.select_subcategory', {
+                          postProcess: 'capitalizeFirstChar',
+                        })}
                       </InputLabel>
                       <Select
                         labelId="Sub-Category"
-                        input={<OutlinedInput label="Select a Sub-Category" />}
+                        input={
+                          <OutlinedInput
+                            label={t('core:publish.select_subcategory', {
+                              postProcess: 'capitalizeFirstChar',
+                            })}
+                          />
+                        }
                         value={selectedSubCategory?.id || ''}
                         onChange={(e) =>
                           handleOptionSubCategoryChange(
@@ -1212,7 +1311,7 @@ export const PublishVideo = ({
                       >
                         {subCategories[selectedCategory.id].map((option) => (
                           <MenuItem key={option.id} value={option.id}>
-                            {option.name}
+                            {t(`category:subcategories.${option.id}`)}
                           </MenuItem>
                         ))}
                       </Select>
@@ -1247,7 +1346,9 @@ export const PublishVideo = ({
                     setStep('videos');
                   }}
                 >
-                  Back
+                  {t('core:action.back', {
+                    postProcess: 'capitalizeFirstChar',
+                  })}
                 </CrowdfundActionButton>
               )}
               {step === 'playlist' ? (
@@ -1257,7 +1358,9 @@ export const PublishVideo = ({
                     publishQDNResource();
                   }}
                 >
-                  Publish
+                  {t('core:publish.publish_action', {
+                    postProcess: 'capitalizeFirstChar',
+                  })}
                 </CrowdfundActionButton>
               ) : (
                 <CrowdfundActionButton
@@ -1270,12 +1373,16 @@ export const PublishVideo = ({
                   }}
                 >
                   {files?.length !== Object.keys(imageExtracts)?.length
-                    ? 'Generating image extracts'
+                    ? t('core:publish.generationg_extracts', {
+                        postProcess: 'capitalizeFirstChar',
+                      })
                     : ''}
                   {files?.length !== Object.keys(imageExtracts)?.length && (
                     <CircularProgress color="secondary" size={14} />
                   )}
-                  Next
+                  {t('core:publish.next', {
+                    postProcess: 'capitalizeFirstChar',
+                  })}
                 </CrowdfundActionButton>
               )}
             </Box>

@@ -34,6 +34,7 @@ import {
 } from '../../../constants/Identifiers.ts';
 import { minPriceSuperLike } from '../../../constants/Misc.ts';
 import { useAuth } from 'qapp-core';
+import { useTranslation } from 'react-i18next';
 
 const generalLocal = localForage.createInstance({
   name: 'q-tube-general',
@@ -64,6 +65,8 @@ export function extractIdValue(metadescription) {
 }
 
 export const Notifications = () => {
+  const { t } = useTranslation(['core']);
+
   const [anchorElNotification, setAnchorElNotification] =
     useState<HTMLButtonElement | null>(null);
   const [notifications, setNotifications] = useState<any[]>([]);
@@ -280,7 +283,11 @@ export const Notifications = () => {
           >
             {fullNotifications.length === 0 && (
               <ListItem>
-                <ListItemText primary="No new notifications"></ListItemText>
+                <ListItemText
+                  primary={t('core:notification.no_new_notification', {
+                    postProcess: 'capitalizeFirstChar',
+                  })}
+                ></ListItemText>
               </ListItem>
             )}
             {fullNotifications.map((notification: any, index: number) => (
@@ -312,7 +319,9 @@ export const Notifications = () => {
                         variant="body1"
                         color="textPrimary"
                       >
-                        Super Like
+                        {t('core:likes.super_like', {
+                          postProcess: 'capitalizeEachFirstChar',
+                        })}
                       </Typography>
                       <ThumbUpIcon
                         style={{
@@ -339,7 +348,9 @@ export const Notifications = () => {
                         }}
                         color="textSecondary"
                       >
-                        {` from ${notification.name}`}
+                        {` ${t('core:notification.from_user', {
+                          user: notification.name,
+                        })}`}
                       </Typography>
                     </React.Fragment>
                   }

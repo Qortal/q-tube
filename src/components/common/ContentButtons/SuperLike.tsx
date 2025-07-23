@@ -42,6 +42,7 @@ import {
   AltertObject,
   setNotificationAtom,
 } from '../../../state/global/notifications.ts';
+import { useTranslation } from 'react-i18next';
 
 const uid = new ShortUniqueId({ length: 7 });
 
@@ -53,6 +54,8 @@ export const SuperLike = ({
   totalAmount,
   numberOfSuperlikes,
 }) => {
+  const { t } = useTranslation(['core']);
+
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const [superlikeDonationAmount, setSuperlikeDonationAmount] =
@@ -202,7 +205,12 @@ export const SuperLike = ({
           flexShrink: 0,
         }}
       >
-        <CustomTooltip title="Super Like" placement="top">
+        <CustomTooltip
+          title={t('core:likes.super_like', {
+            postProcess: 'capitalizeFirstChar',
+          })}
+          placement="top"
+        >
           <Box
             sx={{
               display: 'flex',
@@ -266,7 +274,11 @@ export const SuperLike = ({
               width: '100%',
             }}
           >
-            <NewCrowdfundTitle>Super Like</NewCrowdfundTitle>
+            <NewCrowdfundTitle>
+              {t('core:likes.super_like', {
+                postProcess: 'capitalizeFirstChar',
+              })}
+            </NewCrowdfundTitle>
           </Box>
           <DialogContent sx={{ padding: '10px 12px' }}>
             <Box>
@@ -274,7 +286,9 @@ export const SuperLike = ({
                 sx={{ color: 'white' }}
                 htmlFor="standard-adornment-amount"
               >
-                Amount
+                {t('core:payments.amount', {
+                  postProcess: 'capitalizeFirstChar',
+                })}
               </InputLabel>
               <BoundedNumericTextField
                 addIconButtons={!isScreenSmall}
@@ -322,7 +336,9 @@ export const SuperLike = ({
 
               <CommentInput
                 id="standard-multiline-flexible"
-                label="Comment Here"
+                label={t('core:comments.comment_here', {
+                  postProcess: 'capitalizeFirstChar',
+                })}
                 multiline
                 minRows={8}
                 maxRows={8}
@@ -359,7 +375,9 @@ export const SuperLike = ({
                 variant="contained"
                 color="error"
               >
-                Cancel
+                {t('core:action.cancel', {
+                  postProcess: 'capitalizeFirstChar',
+                })}
               </CrowdfundActionButton>
 
               <CrowdfundActionButton
@@ -368,7 +386,9 @@ export const SuperLike = ({
                   publishSuperLike();
                 }}
               >
-                Publish
+                {t('core:publish.publish_action', {
+                  postProcess: 'capitalizeFirstChar',
+                })}
               </CrowdfundActionButton>
             </Box>
           </CrowdfundActionButtonRow>

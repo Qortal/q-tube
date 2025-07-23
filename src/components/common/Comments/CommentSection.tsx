@@ -18,6 +18,7 @@ import {
 } from '../../Publish/PublishVideo/PublishVideo-styles.tsx';
 import { COMMENT_BASE } from '../../../constants/Identifiers.ts';
 import { hashWordWithoutPublicSalt } from 'qapp-core';
+import { useTranslation } from 'react-i18next';
 
 interface CommentSectionProps {
   postId: string;
@@ -49,6 +50,8 @@ const Panel = styled('div')`
   }
 `;
 export const CommentSection = ({ postId, postName }: CommentSectionProps) => {
+  const { t } = useTranslation(['core']);
+
   const navigate = useNavigate();
   const location = useLocation();
   const [listComments, setListComments] = useState<any[]>([]);
@@ -262,7 +265,9 @@ export const CommentSection = ({ postId, postName }: CommentSectionProps) => {
                 variant="contained"
                 size="small"
               >
-                Load More Comments
+                {t('core:comments.load_more_comments', {
+                  postProcess: 'capitalizeEachFirstChar',
+                })}
               </LoadMoreCommentsButton>
             </LoadMoreCommentsButtonRow>
           )}

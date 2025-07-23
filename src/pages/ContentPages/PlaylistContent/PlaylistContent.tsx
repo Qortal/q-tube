@@ -29,6 +29,7 @@ import { PageTransition } from '../../../components/common/PageTransition.tsx';
 import { useIsSmall } from '../../../hooks/useIsSmall.tsx';
 import { VideoContentContainer } from '../VideoContent/VideoContent-styles.tsx';
 import { CollapsibleDescription } from '../VideoContent/VideoContent.tsx';
+import { useTranslation } from 'react-i18next';
 
 export const PlaylistContent = () => {
   const {
@@ -52,6 +53,8 @@ export const PlaylistContent = () => {
     descriptionThreshold,
     loadingSuperLikes,
   } = usePlaylistContentState();
+  const { t } = useTranslation(['core']);
+
   const navigate = useNavigate();
   const isSmall = useIsSmall();
   const isScreenSmall = !useMediaQuery(`(min-width:950px)`);
@@ -80,7 +83,11 @@ export const PlaylistContent = () => {
               display: 'flex',
             }}
           >
-            <Typography>This playlist doesn't exist</Typography>
+            <Typography>
+              {t('core:publish.playlist_not_exist', {
+                postProcess: 'capitalizeFirstChar',
+              })}
+            </Typography>
           </Box>
         ) : (
           <Box

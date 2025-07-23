@@ -19,6 +19,7 @@ import {
   AltertObject,
   setNotificationAtom,
 } from '../../../state/global/notifications.ts';
+import { useTranslation } from 'react-i18next';
 
 interface LikeAndDislikeProps {
   name: string;
@@ -33,6 +34,8 @@ export const LIKE = LikeType.Like;
 export const DISLIKE = LikeType.Dislike;
 export const NEUTRAL = LikeType.Neutral;
 export const LikeAndDislike = ({ name, identifier }: LikeAndDislikeProps) => {
+  const { t } = useTranslation(['core']);
+
   const { name: username } = useAuth();
   const [likeCount, setLikeCount] = useState<number>(0);
   const [dislikeCount, setDislikeCount] = useState<number>(0);
@@ -158,7 +161,12 @@ export const LikeAndDislike = ({ name, identifier }: LikeAndDislikeProps) => {
           flexShrink: 0,
         }}
       >
-        <CustomTooltip title="Like or Dislike Video" placement="top">
+        <CustomTooltip
+          title={t('core:likes.like_dislike', {
+            postProcess: 'capitalizeFirstChar',
+          })}
+          placement="top"
+        >
           <Box
             sx={{
               padding: '5px',

@@ -19,6 +19,7 @@ import ClearAllIcon from '@mui/icons-material/ClearAll';
 import { usePersistedState } from '../../../state/persist/persist';
 import { useIsSmall } from '../../../hooks/useIsSmall';
 import { AnimatePresence, motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 
 const SearchParent = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -51,6 +52,8 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 export const Search = () => {
+  const { t } = useTranslation(['core']);
+
   const isSmall = useIsSmall();
   const navigate = useNavigate();
   const searchWrapperRef = useRef<HTMLDivElement>(null);
@@ -377,7 +380,9 @@ export const Search = () => {
                       }}
                     >
                       <ClearAllIcon fontSize="small" />
-                      Clear search history
+                      {t('core:navbar.clear_history', {
+                        postProcess: 'capitalizeFirstChar',
+                      })}
                     </Box>
                     {searchHistory.map((term, index) => (
                       <Box
@@ -419,7 +424,7 @@ export const Search = () => {
               <StyledInputBase
                 inputRef={inputRef}
                 size="small"
-                placeholder="Search…"
+                placeholder={`${t('core:navbar.search', { postProcess: 'capitalizeFirstChar' })}...`}
                 inputProps={{ 'aria-label': 'search' }}
                 value={filterSearch}
                 onChange={(e) => setFilterSearch(e.target.value)}

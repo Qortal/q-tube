@@ -7,8 +7,11 @@ import { ChannelActions } from '../VideoContent/ChannelActions.tsx';
 import { StyledCardHeaderComment } from '../VideoContent/VideoContent-styles.tsx';
 import { HeaderContainer, ProfileContainer } from './Profile-styles.tsx';
 import { PageTransition } from '../../../components/common/PageTransition.tsx';
+import { useTranslation } from 'react-i18next';
 
 export const IndividualProfile = () => {
+  const { t } = useTranslation(['core']);
+
   const { name: channelName } = useParams();
   const [selectedTab, setSelectedTab] = useState(0);
   const { name, section } = useParams();
@@ -54,8 +57,16 @@ export const IndividualProfile = () => {
             onChange={handleTabChange}
             aria-label="profile tabs"
           >
-            <Tab label="Videos" />
-            <Tab label="Playlists" />
+            <Tab
+              label={t('core:filters.videos', {
+                postProcess: 'capitalizeFirstChar',
+              })}
+            />
+            <Tab
+              label={t('core:filters.playlists', {
+                postProcess: 'capitalizeFirstChar',
+              })}
+            />
           </Tabs>
         </Box>
 

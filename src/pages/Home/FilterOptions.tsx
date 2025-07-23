@@ -35,6 +35,7 @@ import { useSidebarState } from './Components/SearchSidebar-State';
 import { categories, subCategories } from '../../constants/Categories';
 import { useIsSmall } from '../../hooks/useIsSmall';
 import { ListSuperLikeContainer } from '../../components/common/ListSuperLikes/ListSuperLikeContainer';
+import { useTranslation } from 'react-i18next';
 
 export const CustomChip = styled(Chip)(({ theme }) => ({
   backgroundColor: theme.palette.background.unSelected, // dark background
@@ -58,6 +59,8 @@ export const CustomChip = styled(Chip)(({ theme }) => ({
 }));
 
 export const FilterOptions = () => {
+  const { t } = useTranslation(['core', 'category']);
+
   const isSmall = useIsSmall();
   const tabsRef = useRef(null);
 
@@ -102,7 +105,9 @@ export const FilterOptions = () => {
     const hasCategory = !!filterCategory;
     return [
       {
-        label: 'Most Recent',
+        label: t('core:filters.most_recent', {
+          postProcess: 'capitalizeFirstChar',
+        }),
         filterMode: 'recent',
         isSelected: !hasCategory && filterMode === 'recent',
         color:
@@ -111,7 +116,9 @@ export const FilterOptions = () => {
             : 'text.primary',
       },
       {
-        label: 'All',
+        label: t('core:filters.all', {
+          postProcess: 'capitalizeFirstChar',
+        }),
         filterMode: 'all',
         isSelected: !hasCategory && filterMode === 'all',
         color:
@@ -120,7 +127,7 @@ export const FilterOptions = () => {
             : 'text.primary',
       },
       {
-        label: 'Politics',
+        label: t(`category:categories.${9}`),
         filterMode: 'all',
         filterCategory: 9,
         isSelected: filterCategory?.id === 9,
@@ -128,7 +135,7 @@ export const FilterOptions = () => {
           filterCategory?.id === 9 ? 'primary.contrastText' : 'text.primary',
       },
       {
-        label: 'TV Shows',
+        label: t(`category:categories.${2}`),
         filterMode: 'all',
         filterCategory: 2,
         isSelected: filterCategory?.id === 2,
@@ -136,7 +143,7 @@ export const FilterOptions = () => {
           filterCategory?.id === 2 ? 'primary.contrastText' : 'text.primary',
       },
       {
-        label: 'Movies',
+        label: t(`category:categories.${1}`),
         filterMode: 'all',
         filterCategory: 1,
         isSelected: filterCategory?.id === 1,
@@ -144,7 +151,7 @@ export const FilterOptions = () => {
           filterCategory?.id === 1 ? 'primary.contrastText' : 'text.primary',
       },
     ];
-  }, [filterMode, filterCategory]);
+  }, [filterMode, filterCategory, t]);
 
   const handleClose = () => {
     setIsOpen(false);
@@ -173,7 +180,9 @@ export const FilterOptions = () => {
             label={
               <CustomChip
                 icon={<AddIcon fontSize="small" />}
-                label="More"
+                label={t('core:filters.more', {
+                  postProcess: 'capitalizeFirstChar',
+                })}
                 clickable
                 onClick={() => setIsOpen(true)}
                 sx={(theme) => {
@@ -211,7 +220,9 @@ export const FilterOptions = () => {
             label={
               <CustomChip
                 icon={<PlayCircleOutlineIcon fontSize="small" />}
-                label="Videos"
+                label={t('core:filters.videos', {
+                  postProcess: 'capitalizeFirstChar',
+                })}
                 clickable
                 onClick={() => setFilterType('videos')}
                 sx={(theme) => {
@@ -249,7 +260,9 @@ export const FilterOptions = () => {
             label={
               <CustomChip
                 icon={<PlaylistPlayIcon fontSize="small" />}
-                label="Playlists"
+                label={t('core:filters.playlists', {
+                  postProcess: 'capitalizeFirstChar',
+                })}
                 clickable
                 onClick={() => setFilterType('playlists')}
                 sx={(theme) => {
@@ -348,7 +361,9 @@ export const FilterOptions = () => {
         >
           <CustomChip
             icon={<PlayCircleOutlineIcon fontSize="small" />}
-            label="Videos"
+            label={t('core:filters.videos', {
+              postProcess: 'capitalizeFirstChar',
+            })}
             clickable
             onClick={() => setFilterType('videos')}
             sx={(theme) => {
@@ -372,7 +387,9 @@ export const FilterOptions = () => {
           />
           <CustomChip
             icon={<PlaylistPlayIcon fontSize="small" />}
-            label="Playlists"
+            label={t('core:filters.playlists', {
+              postProcess: 'capitalizeFirstChar',
+            })}
             clickable
             onClick={() => setFilterType('playlists')}
             sx={(theme) => {
@@ -435,7 +452,9 @@ export const FilterOptions = () => {
           })}
           <CustomChip
             icon={<AddIcon fontSize="small" />}
-            label="More Filters"
+            label={t('core:filters.more_filters', {
+              postProcess: 'capitalizeFirstChar',
+            })}
             clickable
             onClick={() => setIsOpen(true)}
             sx={(theme) => {
@@ -462,7 +481,11 @@ export const FilterOptions = () => {
       )}
 
       <Dialog open={isOpen} fullWidth={true} maxWidth={'sm'}>
-        <DialogTitle>Filters</DialogTitle>
+        <DialogTitle>
+          {t('core:filters.filters', {
+            postProcess: 'capitalizeFirstChar',
+          })}
+        </DialogTitle>
         <IconButton
           aria-label="close"
           onClick={handleClose}
@@ -512,7 +535,9 @@ export const FilterOptions = () => {
                   setFilterNameState(e.target.value);
                 }}
                 value={filterNameState}
-                placeholder="User's Name (Exact)"
+                placeholder={t('core:filters.user_name', {
+                  postProcess: 'capitalizeFirstChar',
+                })}
                 sx={{
                   marginTop: '20px',
                   borderBottom: '1px solid',
@@ -551,11 +576,19 @@ export const FilterOptions = () => {
                         }}
                         id="Category"
                       >
-                        Category
+                        {t('core:filters.category', {
+                          postProcess: 'capitalizeFirstChar',
+                        })}
                       </InputLabel>
                       <Select
-                        labelId="Category"
-                        input={<OutlinedInput label="Category" />}
+                        labelId={'category'}
+                        input={
+                          <OutlinedInput
+                            label={t('core:filters.category', {
+                              postProcess: 'capitalizeFirstChar',
+                            })}
+                          />
+                        }
                         value={selectedCategoryVideos?.id || ''}
                         onChange={handleOptionCategoryChangeVideos}
                         sx={{
@@ -578,7 +611,7 @@ export const FilterOptions = () => {
                       >
                         {categories.map((option) => (
                           <MenuItem key={option.id} value={option.id}>
-                            {option.name}
+                            {t(`category:categories.${option.id}`)}
                           </MenuItem>
                         ))}
                       </Select>
@@ -592,11 +625,19 @@ export const FilterOptions = () => {
                             }}
                             id="Sub-Category"
                           >
-                            Sub-Category
+                            {t('core:filters.sub_category', {
+                              postProcess: 'capitalizeFirstChar',
+                            })}
                           </InputLabel>
                           <Select
                             labelId="Sub-Category"
-                            input={<OutlinedInput label="Sub-Category" />}
+                            input={
+                              <OutlinedInput
+                                label={t('core:filters.sub_category', {
+                                  postProcess: 'capitalizeFirstChar',
+                                })}
+                              />
+                            }
                             value={selectedSubCategoryVideos?.id || ''}
                             onChange={(e) =>
                               handleOptionSubCategoryChangeVideos(
@@ -625,7 +666,7 @@ export const FilterOptions = () => {
                             {subCategories[selectedCategoryVideos.id].map(
                               (option) => (
                                 <MenuItem key={option.id} value={option.id}>
-                                  {option.name}
+                                  {t(`category:subcategories.${option.id}`)}
                                 </MenuItem>
                               )
                             )}
@@ -647,7 +688,9 @@ export const FilterOptions = () => {
                 }}
                 variant="contained"
               >
-                reset
+                {t('core:filters.reset', {
+                  postProcess: 'capitalizeFirstChar',
+                })}
               </Button>
               <Button
                 onClick={() => {
@@ -660,7 +703,9 @@ export const FilterOptions = () => {
                 }}
                 variant="contained"
               >
-                Search
+                {t('core:navbar.search', {
+                  postProcess: 'capitalizeFirstChar',
+                })}
               </Button>
             </FiltersContainer>
           </Box>

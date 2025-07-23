@@ -28,6 +28,7 @@ import { handleClickText, processText } from 'qapp-core';
 import { PageTransition } from '../../../components/common/PageTransition.tsx';
 import { useIsMobile } from '../../../hooks/useIsMobile.tsx';
 import { useIsSmall } from '../../../hooks/useIsSmall.tsx';
+import { useTranslation } from 'react-i18next';
 
 function flattenHtml(html: string): string {
   const sanitize: string = DOMPurify.sanitize(html, {
@@ -44,6 +45,8 @@ export const CollapsibleDescription = ({
   text?: string;
   html?: any;
 }) => {
+  const { t } = useTranslation(['core']);
+
   const [expanded, setExpanded] = useState(false);
   const [showMore, setShowMore] = useState(false);
   const textRef = useRef<HTMLDivElement>(null);
@@ -109,7 +112,13 @@ export const CollapsibleDescription = ({
           size="small"
           sx={{ mt: 1, textTransform: 'none' }}
         >
-          {expanded ? 'Show less' : 'Show more'}
+          {expanded
+            ? t('core:video.show_less', {
+                postProcess: 'capitalizeFirstChar',
+              })
+            : t('core:video.show_more', {
+                postProcess: 'capitalizeFirstChar',
+              })}
         </Button>
       )}
     </Box>
@@ -209,8 +218,10 @@ export const VideoContent = () => {
             color="textPrimary"
             sx={{
               textAlign: 'start',
-              marginTop: isSmall ? '20px' : '10px',
-              fontSize: isSmall ? '18px' : 'unset',
+              marginTop: '20px',
+              ...(isSmall && {
+                fontSize: '18px',
+              }),
             }}
           >
             {videoData?.title}

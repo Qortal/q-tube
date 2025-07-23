@@ -26,10 +26,13 @@ import { Spacer, useAuth } from 'qapp-core';
 import { useIsSmall } from '../../../hooks/useIsSmall';
 import { UserMenu } from '../Navbar/Components/UserMenu';
 import { DownloadTaskManager } from '../../common/DownloadTaskManager';
+import { useTranslation } from 'react-i18next';
 const DRAWER_WIDTH = 240;
 export const COLLAPSED_WIDTH = 68;
 
 export const Sidenav = ({ allNames }) => {
+  const { t } = useTranslation(['core']);
+
   const isSmall = useIsSmall();
   const navigate = useNavigate();
   const location = useLocation();
@@ -42,39 +45,51 @@ export const Sidenav = ({ allNames }) => {
   const drawerItems = useMemo(() => {
     return [
       {
-        name: 'Home',
+        name: t('core:sidenav.home', {
+          postProcess: 'capitalizeFirstChar',
+        }),
         icon: HomeIcon,
         path: '/',
       },
       {
-        name: 'Subscriptions',
+        name: t('core:sidenav.subscriptions', {
+          postProcess: 'capitalizeFirstChar',
+        }),
         icon: StarIcon,
         path: '/subscriptions',
       },
       {
-        name: 'Watched videos',
+        name: t('core:sidenav.watched_videos', {
+          postProcess: 'capitalizeFirstChar',
+        }),
         icon: AccessTimeIcon,
         path: '/history',
       },
       {
-        name: 'Bookmarks',
+        name: t('core:sidenav.bookmarks', {
+          postProcess: 'capitalizeFirstChar',
+        }),
         icon: BookmarksIcon,
         path: '/bookmarks',
       },
       {
-        name: 'Your playlists',
+        name: t('core:sidenav.your_playlists', {
+          postProcess: 'capitalizeFirstChar',
+        }),
         icon: PlaylistPlayIcon,
         path: `/channel/${name}/playlists`,
         disabled: !name,
       },
       {
-        name: 'Your videos',
+        name: t('core:sidenav.your_videos', {
+          postProcess: 'capitalizeFirstChar',
+        }),
         icon: PlayCircleOutlineIcon,
         path: `/channel/${name}/videos`,
         disabled: !name,
       },
     ];
-  }, [name]);
+  }, [name, t]);
 
   return (
     <>
@@ -84,6 +99,7 @@ export const Sidenav = ({ allNames }) => {
         sx={{
           flexShrink: 0,
           whiteSpace: 'nowrap',
+          overflow: 'hidden',
           '& .MuiDrawer-paper': {
             width: COLLAPSED_WIDTH,
             position: 'relative', // key change
@@ -100,14 +116,18 @@ export const Sidenav = ({ allNames }) => {
         }}
         open
       >
-        <List>
+        <List
+          sx={{
+            overflow: 'hidden',
+          }}
+        >
           {drawerItems.map((item, index) => {
             const isSelected = location.pathname === item.path;
             return (
               <ListItem
                 key={item.name}
                 disablePadding
-                sx={{ display: 'block', padding: '5px' }}
+                sx={{ display: 'block', padding: '5px', overflow: 'hidden' }}
               >
                 <ListItemButton
                   disabled={item.disabled}
@@ -141,7 +161,12 @@ export const Sidenav = ({ allNames }) => {
                       }}
                     />
                   </ListItemIcon>
-                  <ListItemText primary={item.name} sx={{ opacity: 0 }} />
+                  <ListItemText
+                    primary={item.name}
+                    sx={{
+                      opacity: 0,
+                    }}
+                  />
                 </ListItemButton>
               </ListItem>
             );
@@ -159,6 +184,7 @@ export const Sidenav = ({ allNames }) => {
           height: '100vh',
           width: '100vw',
           display: isSideBarExpanded ? 'block' : 'none',
+          overflow: 'hidden',
         }}
         onClick={() => {
           if (isSideBarExpanded) {
@@ -180,9 +206,12 @@ export const Sidenav = ({ allNames }) => {
             sx={{
               flexShrink: 0,
               whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              transition: 'opacity 0.3s',
               '& .MuiDrawer-paper': {
-                width: isSideBarExpanded ? DRAWER_WIDTH : 0,
-                transition: 'all 0.3s',
+                width: DRAWER_WIDTH,
+                left: isSideBarExpanded ? 0 : -100000,
+                transition: 'opacity 0.3s',
                 opacity: isSideBarExpanded ? 1 : 0,
                 position: 'fixed', // key change
                 zIndex: 1200,
@@ -190,11 +219,16 @@ export const Sidenav = ({ allNames }) => {
                 bottom: 0,
                 bgcolor: 'background.default',
                 borderRight: 'none',
+                overFlow: 'hidden',
               },
             }}
             open
           >
-            <List>
+            <List
+              sx={{
+                overflow: 'hidden',
+              }}
+            >
               {isSmall && (
                 <>
                   <ListItem
@@ -239,7 +273,11 @@ export const Sidenav = ({ allNames }) => {
                       }}
                     >
                       <DownloadTaskManager />
-                      <Typography>Downloads</Typography>
+                      <Typography>
+                        {t('core:sidenav.downloads', {
+                          postProcess: 'capitalizeFirstChar',
+                        })}
+                      </Typography>
                     </Box>
                   </ListItem>
                   <Divider />
@@ -252,7 +290,11 @@ export const Sidenav = ({ allNames }) => {
                   <ListItem
                     key={item.name}
                     disablePadding
-                    sx={{ display: 'block', padding: '5px' }}
+                    sx={{
+                      display: 'block',
+                      padding: '5px',
+                      overflow: 'hidden',
+                    }}
                   >
                     <ListItemButton
                       onClick={() => {
@@ -292,7 +334,12 @@ export const Sidenav = ({ allNames }) => {
                       </ListItemIcon>
                       <ListItemText
                         primary={item.name}
-                        sx={{ opacity: isSideBarExpanded ? 1 : 0 }}
+                        sx={{
+                          opacity: isSideBarExpanded ? 1 : 0,
+                          whiteSpace: 'normal',
+                          wordBreak: 'break-word',
+                          overflow: 'hidden',
+                        }}
                       />
                     </ListItemButton>
                   </ListItem>

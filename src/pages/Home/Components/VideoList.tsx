@@ -16,12 +16,15 @@ import { editVideoAtom } from '../../../state/publish/video.ts';
 import { scrollRefAtom } from '../../../state/global/navbar.ts';
 import { Box, Typography } from '@mui/material';
 import { useIsMobile } from '../../../hooks/useIsMobile.tsx';
+import { useTranslation } from 'react-i18next';
 
 interface VideoListProps {
   searchParameters: QortalSearchParams;
   listName: string;
 }
 export const VideoList = ({ searchParameters, listName }: VideoListProps) => {
+  const { t } = useTranslation(['core']);
+
   const { name: username } = useAuth();
   const setEditVideo = useSetAtom(editVideoAtom);
   const { addToBlockedList } = useBlockedNames();
@@ -42,23 +45,31 @@ export const VideoList = ({ searchParameters, listName }: VideoListProps) => {
     return <VideoLoaderItem status={status} />;
   }, []);
 
-  const renderLoaderList = useCallback((status: LoaderListStatus) => {
-    if (status === 'NO_RESULTS') {
-      return (
-        <Box
-          sx={{
-            width: '100%',
-            display: 'flex',
-            justifyContent: 'center',
-            marginTop: '20px',
-          }}
-        >
-          <Typography>No results</Typography>
-        </Box>
-      );
-    }
-    return <VideoLoaderItem status={status} />;
-  }, []);
+  const renderLoaderList = useCallback(
+    (status: LoaderListStatus) => {
+      if (status === 'NO_RESULTS') {
+        return (
+          <Box
+            sx={{
+              width: '100%',
+              display: 'flex',
+              justifyContent: 'center',
+              marginTop: '20px',
+            }}
+          >
+            <Typography>
+              {' '}
+              {t('core:lists.no_results', {
+                postProcess: 'capitalizeFirstChar',
+              })}
+            </Typography>
+          </Box>
+        );
+      }
+      return <VideoLoaderItem status={status} />;
+    },
+    [t]
+  );
 
   const renderListItem = useCallback(
     (item, index) => {

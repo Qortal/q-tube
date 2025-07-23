@@ -2,6 +2,7 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import {
   capitalizeAll,
+  capitalizeEachFirstChar,
   capitalizeFirstChar,
   capitalizeFirstWord,
 } from './processors';
@@ -41,6 +42,7 @@ i18n
   .use(capitalizeAll as any)
   .use(capitalizeFirstChar as any)
   .use(capitalizeFirstWord as any)
+  .use(capitalizeEachFirstChar as any)
   .init({
     resources,
     fallbackLng: 'en',

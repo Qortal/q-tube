@@ -12,6 +12,7 @@ import {
   FileAttachmentFont,
 } from './VideoContent-styles.tsx';
 import { AddToBookmarks } from '../../../components/common/ContentButtons/AddToBookmarks.tsx';
+import { useTranslation } from 'react-i18next';
 
 export interface VideoActionsBarProps {
   channelName: string;
@@ -34,6 +35,8 @@ export const VideoActionsBar = ({
   setSuperLikeList,
   sx,
 }: VideoActionsBarProps) => {
+  const { t } = useTranslation(['core']);
+
   const calculateAmountSuperlike = useMemo(() => {
     const totalQort = superLikeList?.reduce((acc, curr) => {
       if (curr?.amount && !isNaN(parseFloat(curr.amount)))
@@ -123,7 +126,9 @@ export const VideoActionsBar = ({
         <IndexButton channelName={channelName} />
         <CopyLinkButton
           link={`qortal://APP/Q-Tube/video/${encodeURIComponent(videoData?.user)}/${encodeURIComponent(videoData?.id)}`}
-          tooltipTitle={`Copy video link`}
+          tooltipTitle={t('core:video.copy_link_video', {
+            postProcess: 'capitalizeFirstChar',
+          })}
         />
       </Box>
       {videoData && (

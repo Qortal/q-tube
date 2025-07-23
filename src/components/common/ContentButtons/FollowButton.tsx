@@ -3,6 +3,7 @@ import Tooltip, { TooltipProps, tooltipClasses } from '@mui/material/Tooltip';
 import { MouseEvent, useEffect, useState } from 'react';
 import { darken, styled } from '@mui/material/styles';
 import { CustomTooltip, TooltipLine } from './CustomTooltip.tsx';
+import { useTranslation } from 'react-i18next';
 
 interface FollowButtonProps extends ButtonProps {
   followerName: string;
@@ -14,6 +15,8 @@ export type FollowData = {
 };
 
 export const FollowButton = ({ followerName, ...props }: FollowButtonProps) => {
+  const { t } = useTranslation(['core']);
+
   const [followingList, setFollowingList] = useState<string[]>([]);
   const [followingSize, setFollowingSize] = useState<string>('');
   const [followingItemCount, setFollowingItemCount] = useState<string>('');
@@ -118,13 +121,25 @@ export const FollowButton = ({ followerName, ...props }: FollowButtonProps) => {
   const tooltipTitle = followingSize && (
     <>
       <TooltipLine>
-        Following a name automatically downloads all of its content to your
-        node. The more followers a name has, the faster its content will
-        download for everyone.
+        {t('core:video.follow_description', {
+          postProcess: 'capitalizeFirstChar',
+        })}
       </TooltipLine>
       <br />
-      <TooltipLine>{`${followerName}'s Current Download Size: ${followingSize}`}</TooltipLine>
-      <TooltipLine>{`Number of Files: ${followingItemCount}`}</TooltipLine>
+      <TooltipLine>
+        {' '}
+        {t('core:downloads.currentSize', {
+          followerName,
+          followingSize,
+          postProcess: 'capitalizeFirstChar',
+        })}
+      </TooltipLine>
+      <TooltipLine>
+        {t('core:downloads.itemCount', {
+          followingItemCount,
+          postProcess: 'capitalizeFirstChar',
+        })}
+      </TooltipLine>
     </>
   );
 
@@ -145,7 +160,13 @@ export const FollowButton = ({ followerName, ...props }: FollowButtonProps) => {
             };
           }}
         >
-          {isFollowingName() ? 'Unfollow' : 'Follow'}
+          {isFollowingName()
+            ? t('core:action.unfollow', {
+                postProcess: 'capitalizeFirstChar',
+              })
+            : t('core:action.follow', {
+                postProcess: 'capitalizeFirstChar',
+              })}
         </Button>
       </CustomTooltip>
     </>

@@ -19,10 +19,13 @@ import { InstallDesktopRounded } from '@mui/icons-material';
 import { usePersistedState } from '../../../state/persist/persist';
 import ShortUniqueId from 'short-unique-id';
 import { Spacer, useGlobal } from 'qapp-core';
+import { useTranslation } from 'react-i18next';
 
 const uid = new ShortUniqueId({ length: 15, dictionary: 'alphanum' });
 
 export const AddToBookmarks = ({ metadataReference }) => {
+  const { t } = useTranslation(['core']);
+
   const { lists: globalLists } = useGlobal();
   const [bookmarks, setBookmarks, isHydratedSubscriptions] = usePersistedState(
     'bookmarks-v1',
@@ -247,7 +250,9 @@ export const AddToBookmarks = ({ metadataReference }) => {
                     fontSize: '0.85rem',
                   }}
                 >
-                  Bookmark lists
+                  {t('core:bookmarks.bookmarks_lists', {
+                    postProcess: 'capitalizeFirstChar',
+                  })}
                 </Typography>
 
                 <CloseIcon
@@ -295,7 +300,9 @@ export const AddToBookmarks = ({ metadataReference }) => {
                       marginTop: '20px',
                     }}
                   >
-                    No bookmark lists
+                    {t('core:bookmarks.no_bookmarks_lists', {
+                      postProcess: 'capitalizeFirstChar',
+                    })}
                   </Typography>
                 )}
                 <Spacer height="10px" />
@@ -341,7 +348,9 @@ export const AddToBookmarks = ({ metadataReference }) => {
                   variant="contained"
                   size="small"
                 >
-                  New list
+                  {t('core:bookmarks.new_list', {
+                    postProcess: 'capitalizeFirstChar',
+                  })}
                 </Button>
               </Box>
             </>
@@ -380,7 +389,9 @@ export const AddToBookmarks = ({ metadataReference }) => {
                       fontSize: '0.85rem',
                     }}
                   >
-                    Bookmark lists
+                    {t('core:bookmarks.bookmarks_lists', {
+                      postProcess: 'capitalizeFirstChar',
+                    })}
                   </Typography>
                 </ButtonBase>
               </Box>
@@ -432,7 +443,9 @@ export const AddToBookmarks = ({ metadataReference }) => {
                   variant="contained"
                   size="small"
                 >
-                  Cancel
+                  {t('core:action.cancel', {
+                    postProcess: 'capitalizeFirstChar',
+                  })}
                 </Button>
                 <Button
                   onClick={handleCreateList}
@@ -440,7 +453,9 @@ export const AddToBookmarks = ({ metadataReference }) => {
                   variant="contained"
                   size="small"
                 >
-                  Create
+                  {t('core:action.create', {
+                    postProcess: 'capitalizeFirstChar',
+                  })}
                 </Button>
               </Box>
             </>

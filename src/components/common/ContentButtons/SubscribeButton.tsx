@@ -4,6 +4,7 @@ import { MouseEvent, useMemo } from 'react';
 import { CustomTooltip, TooltipLine } from './CustomTooltip.tsx';
 import { useAuth, useGlobal } from 'qapp-core';
 import { usePersistedState } from '../../../state/persist/persist.ts';
+import { useTranslation } from 'react-i18next';
 
 interface SubscribeButtonProps extends ButtonProps {
   subscriberName: string;
@@ -18,6 +19,8 @@ export const SubscribeButton = ({
   subscriberName,
   ...props
 }: SubscribeButtonProps) => {
+  const { t } = useTranslation(['core']);
+
   const { lists } = useGlobal();
   const [subscriptions, setSubscriptions, isHydratedSubscriptions] =
     usePersistedState('subscriptions', []);
@@ -71,8 +74,9 @@ export const SubscribeButton = ({
   const tooltipTitle = (
     <>
       <TooltipLine>
-        Subscribing to a name lets you see their content on the Subscriptions
-        tab of the Home Page. This does NOT download any data to your node.
+        {t('core:video.subscribe_description', {
+          postProcess: 'capitalizeFirstChar',
+        })}
       </TooltipLine>
     </>
   );
@@ -95,7 +99,13 @@ export const SubscribeButton = ({
           };
         }}
       >
-        {isSubscribed ? 'Unsubscribe' : 'Subscribe'}
+        {isSubscribed
+          ? t('core:action.unsubscribe', {
+              postProcess: 'capitalizeFirstChar',
+            })
+          : t('core:video.subscribe', {
+              postProcess: 'capitalizeFirstChar',
+            })}
       </Button>
     </CustomTooltip>
   );

@@ -1,0 +1,138 @@
+{
+  "action": {
+    "back": "назад",
+    "next": "далее",
+    "cancel": "отмена",
+    "delete": "удалить",
+    "close": "закрыть",
+    "save": "сохранить",
+    "subscribe": "подписаться",
+    "unsubscribe": "отписаться",
+    "follow": "подписаться",
+    "unfollow": "отписаться",
+    "create": "создать",
+    "edit": "редактировать",
+    "comment": "комментировать",
+    "reply": "ответить",
+    "bookmark_video": "добавить видео в закладки"
+  },
+  "navbar": {
+    "search": "поиск"
+  },
+  "publish": {
+    "publish_action": "опубликовать",
+    "video": "видео",
+    "playlist": "плейлист",
+    "downloads": "загрузки",
+    "update_video": "обновить видео",
+    "publish_videos": "опубликовать видео",
+    "populate_titles": "Заполнить названия по имени файла (при выборе файлов)",
+    "same_cover_images": "Все видео используют одно и то же обложку",
+    "populate_description": "Заполнить все описания по названию",
+    "drag_drop_videos": "Перетащите видеофайлы сюда или нажмите для выбора",
+    "supported_containers": "Поддерживаемые форматы файлов",
+    "audio_codecs": "аудио кодеки",
+    "video_codecs": "видео кодеки",
+    "unsupported_codecs_description": "Использование неподдерживаемых кодеков может привести к неправильной работе видео или аудио",
+    "select_category": "Выберите категорию",
+    "select_subcategory": "Выберите подкатегорию",
+    "add_cover_image": "добавить обложку",
+    "description_video": "описание видео",
+    "add_vids_playlist": "Хотите добавить эти видео в плейлист?",
+    "add_vids_playlist_optional": "добавление в плейлист — НЕОБЯЗАТЕЛЬНО",
+    "no_playlist": "нет плейлиста",
+    "new_playlist": "новый плейлист",
+    "existing_playlist": "существующий плейлист",
+    "select_existing_playlist": "выбрать существующий плейлист",
+    "playlist_search_by_title": "поиск по названию",
+    "title_playlist": "название плейлиста",
+    "description_playlist": "описание плейлиста",
+    "generationg_extracts": "создание изображений-превью",
+    "create_new_playlist": "создать новый плейлист",
+    "update_playlist_properties": "обновить свойства плейлиста",
+    "add_videos_playlist": "добавить видео в плейлист",
+    "my_videos": "мои видео",
+    "all_videos": "все видео",
+    "search_by_title": "поиск по названию",
+    "edit_playlist": "редактировать плейлист",
+    "block_user_content": "заблокировать контент пользователя",
+    "edit_video": "редактировать свойства видео",
+    "delete_video": "удалить видео",
+    "remove_video_list": "удалить видео из списка",
+    "playlist_not_exist": "этот плейлист не существует"
+  },
+  "notification": {
+    "no_new_notification": "новых уведомлений нет",
+    "from_user": "от {{user}}"
+  },
+  "likes": {
+    "super_like": "super like",
+    "recent_super_likes": "недавние super likes",
+    "like_dislike": "Поставьте лайк или дизлайк видео"
+  },
+  "blocked": {
+    "blocked_names": "заблокированные имена"
+  },
+  "sidenav": {
+    "home": "главная",
+    "subscriptions": "подписки",
+    "watched_videos": "просмотренные видео",
+    "bookmarks": "закладки",
+    "your_playlists": "ваши плейлисты",
+    "your_videos": "ваши видео"
+  },
+  "filters": {
+    "most_recent": "самые новые",
+    "all": "все",
+    "videos": "видео",
+    "playlists": "плейлисты",
+    "more_filters": "дополнительные фильтры",
+    "more": "больше",
+    "user_name": "Имя пользователя (точно)",
+    "category": "категория",
+    "sub_category": "подкатегория",
+    "reset": "сбросить",
+    "filters": "фильтры"
+  },
+  "lists": {
+    "no_results": "нет результатов"
+  },
+  "bookmarks": {
+    "select_list": "выбрать список",
+    "all_bookmarks": "все видео в закладках",
+    "bookmark_list": "список закладок",
+    "bookmark_lists": "списки закладок",
+    "no_bookmarks_lists": "нет списков закладок",
+    "new_list": "новый список"
+  },
+  "video": {
+    "show_more": "показать больше",
+    "show_less": "показать меньше",
+    "copy_link_video": "скопировать ссылку на видео",
+    "subscribe_description": "Подписка на имя позволяет видеть его контент во вкладке «Подписки» на главной странице. Это НЕ загружает данные на ваш узел.",
+    "follow_description": "Фолловинг имени автоматически загружает весь его контент на ваш узел. Чем больше у имени фолловеров, тем быстрее загружается контент для всех.",
+    "currentSize": "Текущий размер загрузки {{followerName}}: {{followingSize}}",
+    "itemCount": "количество файлов: {{followingItemCount}}"
+  },
+  "payments": {
+    "amount": "сумма"
+  },
+  "comments": {
+    "comment_here": "напишите комментарий здесь",
+    "load_more_comments": "загрузить больше комментариев",
+    "submit_reply": "отправить ответ",
+    "hide_replies": "скрыть все ответы",
+    "view_replies": "показать все ответы",
+    "your_comment": "ваш комментарий"
+  },
+  "download": {
+    "ready": "готово к сохранению: нажмите здесь",
+    "start": "начать загрузку: нажмите здесь"
+  },
+  "index": {
+    "index_video": "проиндексировать видео"
+  },
+  "search": {
+    "clear_search": "очистить историю поиска"
+  }
+}

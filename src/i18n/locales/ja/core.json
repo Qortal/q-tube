@@ -1,0 +1,138 @@
+{
+  "action": {
+    "back": "戻る",
+    "next": "次へ",
+    "cancel": "キャンセル",
+    "delete": "削除",
+    "close": "閉じる",
+    "save": "保存",
+    "subscribe": "購読する",
+    "unsubscribe": "購読を解除する",
+    "follow": "フォローする",
+    "unfollow": "フォローを解除する",
+    "create": "作成する",
+    "edit": "編集する",
+    "comment": "コメント",
+    "reply": "返信",
+    "bookmark_video": "動画をブックマーク"
+  },
+  "navbar": {
+    "search": "検索"
+  },
+  "publish": {
+    "publish_action": "公開",
+    "video": "動画",
+    "playlist": "再生リスト",
+    "downloads": "ダウンロード",
+    "update_video": "動画を更新",
+    "publish_videos": "動画を公開",
+    "populate_titles": "ファイル名からタイトルを自動入力（ファイル選択時）",
+    "same_cover_images": "すべての動画に同じカバー画像を使用",
+    "populate_description": "タイトルから説明文を自動入力",
+    "drag_drop_videos": "ここに動画ファイルをドラッグ＆ドロップ、またはクリックして選択",
+    "supported_containers": "対応ファイル形式",
+    "audio_codecs": "音声コーデック",
+    "video_codecs": "動画コーデック",
+    "unsupported_codecs_description": "非対応のコーデックを使用すると、動画や音声が正しく再生されない場合があります",
+    "select_category": "カテゴリを選択",
+    "select_subcategory": "サブカテゴリを選択",
+    "add_cover_image": "カバー画像を追加",
+    "description_video": "動画の説明",
+    "add_vids_playlist": "これらの動画を再生リストに追加しますか？",
+    "add_vids_playlist_optional": "再生リストへの追加は任意です",
+    "no_playlist": "再生リストなし",
+    "new_playlist": "新しい再生リスト",
+    "existing_playlist": "既存の再生リスト",
+    "select_existing_playlist": "既存の再生リストを選択",
+    "playlist_search_by_title": "タイトルで検索",
+    "title_playlist": "再生リストのタイトル",
+    "description_playlist": "再生リストの説明",
+    "generationg_extracts": "画像を抽出中",
+    "create_new_playlist": "新しい再生リストを作成",
+    "update_playlist_properties": "再生リストの設定を更新",
+    "add_videos_playlist": "再生リストに動画を追加",
+    "my_videos": "自分の動画",
+    "all_videos": "すべての動画",
+    "search_by_title": "タイトルで検索",
+    "edit_playlist": "再生リストを編集",
+    "block_user_content": "ユーザーのコンテンツをブロック",
+    "edit_video": "動画の設定を編集",
+    "delete_video": "動画を削除",
+    "remove_video_list": "リストから動画を削除",
+    "playlist_not_exist": "この再生リストは存在しません"
+  },
+  "notification": {
+    "no_new_notification": "新しい通知はありません",
+    "from_user": "{{user}}から"
+  },
+  "likes": {
+    "super_like": "super like",
+    "recent_super_likes": "最近のsuper like",
+    "like_dislike": "動画に「いいね」または「よくないね」"
+  },
+  "blocked": {
+    "blocked_names": "ブロックされた名前"
+  },
+  "sidenav": {
+    "home": "ホーム",
+    "subscriptions": "購読中",
+    "watched_videos": "視聴済み動画",
+    "bookmarks": "ブックマーク",
+    "your_playlists": "自分の再生リスト",
+    "your_videos": "自分の動画"
+  },
+  "filters": {
+    "most_recent": "最新",
+    "all": "すべて",
+    "videos": "動画",
+    "playlists": "再生リスト",
+    "more_filters": "さらに絞り込む",
+    "more": "もっと見る",
+    "user_name": "ユーザー名（正確に）",
+    "category": "カテゴリ",
+    "sub_category": "サブカテゴリ",
+    "reset": "リセット",
+    "filters": "フィルター"
+  },
+  "lists": {
+    "no_results": "結果がありません"
+  },
+  "bookmarks": {
+    "select_list": "リストを選択",
+    "all_bookmarks": "すべてのブックマーク動画",
+    "bookmark_list": "ブックマークリスト",
+    "bookmark_lists": "ブックマークリスト一覧",
+    "no_bookmarks_lists": "ブックマークリストがありません",
+    "new_list": "新しいリスト"
+  },
+  "video": {
+    "show_more": "もっと見る",
+    "show_less": "表示を減らす",
+    "copy_link_video": "動画リンクをコピー",
+    "subscribe_description": "名前を購読すると、ホームページの「購読」タブでそのコンテンツを確認できます。ノードにデータはダウンロードされません。",
+    "follow_description": "名前をフォローすると、そのすべてのコンテンツが自動的にあなたのノードにダウンロードされます。フォロワーが多いほど、他の人にも早く届きます。",
+    "currentSize": "{{followerName}} の現在のダウンロードサイズ: {{followingSize}}",
+    "itemCount": "ファイル数: {{followingItemCount}}"
+  },
+  "payments": {
+    "amount": "金額"
+  },
+  "comments": {
+    "comment_here": "ここにコメントを書く",
+    "load_more_comments": "さらにコメントを読み込む",
+    "submit_reply": "返信を送信",
+    "hide_replies": "すべての返信を非表示",
+    "view_replies": "すべての返信を見る",
+    "your_comment": "あなたのコメント"
+  },
+  "download": {
+    "ready": "保存の準備ができました：ここをクリック",
+    "start": "ダウンロードを開始：ここをクリック"
+  },
+  "index": {
+    "index_video": "動画をインデックス化"
+  },
+  "search": {
+    "clear_search": "検索履歴をクリア"
+  }
+}

@@ -66,8 +66,8 @@
     "from_user": "de {{user}}"
   },
   "likes": {
-    "super_like": "super me gusta",
-    "recent_super_likes": "super me gustas recientes",
+    "super_like": "super like",
+    "recent_super_likes": "super likes recientes",
     "like_dislike": "Me gusta o No me gusta el video"
   },
   "blocked": {

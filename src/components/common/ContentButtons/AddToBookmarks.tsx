@@ -259,7 +259,7 @@ export const AddToBookmarks = ({ metadataReference }) => {
                     fontSize: '0.85rem',
                   }}
                 >
-                  {t('core:bookmarks.bookmarks_lists', {
+                  {t('core:bookmarks.bookmark_lists', {
                     postProcess: 'capitalizeFirstChar',
                   })}
                 </Typography>
@@ -398,7 +398,7 @@ export const AddToBookmarks = ({ metadataReference }) => {
                       fontSize: '0.85rem',
                     }}
                   >
-                    {t('core:bookmarks.bookmarks_lists', {
+                    {t('core:bookmarks.bookmark_lists', {
                       postProcess: 'capitalizeFirstChar',
                     })}
                   </Typography>

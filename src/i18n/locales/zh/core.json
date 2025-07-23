@@ -1,0 +1,138 @@
+{
+  "action": {
+    "back": "返回",
+    "next": "下一步",
+    "cancel": "取消",
+    "delete": "删除",
+    "close": "关闭",
+    "save": "保存",
+    "subscribe": "订阅",
+    "unsubscribe": "取消订阅",
+    "follow": "关注",
+    "unfollow": "取消关注",
+    "create": "创建",
+    "edit": "编辑",
+    "comment": "评论",
+    "reply": "回复",
+    "bookmark_video": "收藏视频"
+  },
+  "navbar": {
+    "search": "搜索"
+  },
+  "publish": {
+    "publish_action": "发布",
+    "video": "视频",
+    "playlist": "播放列表",
+    "downloads": "下载",
+    "update_video": "更新视频",
+    "publish_videos": "发布视频",
+    "populate_titles": "根据文件名填充标题（选择文件时）",
+    "same_cover_images": "所有视频使用相同的封面图片",
+    "populate_description": "根据标题填充所有描述",
+    "drag_drop_videos": "将视频文件拖放到此处或点击选择文件",
+    "supported_containers": "支持的文件格式",
+    "audio_codecs": "音频编码器",
+    "video_codecs": "视频编码器",
+    "unsupported_codecs_description": "使用不受支持的编码器可能导致视频或音频无法正常播放",
+    "select_category": "选择类别",
+    "select_subcategory": "选择子类别",
+    "add_cover_image": "添加封面图片",
+    "description_video": "视频描述",
+    "add_vids_playlist": "是否将这些视频添加到播放列表？",
+    "add_vids_playlist_optional": "添加到播放列表是可选的",
+    "no_playlist": "没有播放列表",
+    "new_playlist": "新建播放列表",
+    "existing_playlist": "已有播放列表",
+    "select_existing_playlist": "选择已有播放列表",
+    "playlist_search_by_title": "按标题搜索",
+    "title_playlist": "播放列表标题",
+    "description_playlist": "播放列表描述",
+    "generationg_extracts": "正在生成图像预览",
+    "create_new_playlist": "创建新播放列表",
+    "update_playlist_properties": "更新播放列表属性",
+    "add_videos_playlist": "将视频添加到播放列表",
+    "my_videos": "我的视频",
+    "all_videos": "所有视频",
+    "search_by_title": "按标题搜索",
+    "edit_playlist": "编辑播放列表",
+    "block_user_content": "屏蔽用户内容",
+    "edit_video": "编辑视频属性",
+    "delete_video": "删除视频",
+    "remove_video_list": "从列表中移除视频",
+    "playlist_not_exist": "该播放列表不存在"
+  },
+  "notification": {
+    "no_new_notification": "暂无新通知",
+    "from_user": "来自 {{user}}"
+  },
+  "likes": {
+    "super_like": "super like",
+    "recent_super_likes": "最近的 super likes",
+    "like_dislike": "点赞或点踩视频"
+  },
+  "blocked": {
+    "blocked_names": "已屏蔽的名称"
+  },
+  "sidenav": {
+    "home": "首页",
+    "subscriptions": "订阅",
+    "watched_videos": "已观看视频",
+    "bookmarks": "收藏",
+    "your_playlists": "你的播放列表",
+    "your_videos": "你的视频"
+  },
+  "filters": {
+    "most_recent": "最新",
+    "all": "全部",
+    "videos": "视频",
+    "playlists": "播放列表",
+    "more_filters": "更多筛选条件",
+    "more": "更多",
+    "user_name": "用户名（精确匹配）",
+    "category": "类别",
+    "sub_category": "子类别",
+    "reset": "重置",
+    "filters": "筛选"
+  },
+  "lists": {
+    "no_results": "无结果"
+  },
+  "bookmarks": {
+    "select_list": "选择列表",
+    "all_bookmarks": "所有已收藏视频",
+    "bookmark_list": "收藏列表",
+    "bookmark_lists": "收藏列表",
+    "no_bookmarks_lists": "没有收藏列表",
+    "new_list": "新建列表"
+  },
+  "video": {
+    "show_more": "显示更多",
+    "show_less": "显示更少",
+    "copy_link_video": "复制视频链接",
+    "subscribe_description": "订阅某个名称可以在主页的“订阅”标签中看到其内容。不会将任何数据下载到您的节点。",
+    "follow_description": "关注某个名称将自动将其所有内容下载到您的节点。关注者越多，内容下载速度越快。",
+    "currentSize": "{{followerName}} 当前下载大小：{{followingSize}}",
+    "itemCount": "文件数量：{{followingItemCount}}"
+  },
+  "payments": {
+    "amount": "金额"
+  },
+  "comments": {
+    "comment_here": "在此发表评论",
+    "load_more_comments": "加载更多评论",
+    "submit_reply": "提交回复",
+    "hide_replies": "隐藏所有回复",
+    "view_replies": "查看所有回复",
+    "your_comment": "你的评论"
+  },
+  "download": {
+    "ready": "准备保存：点击此处",
+    "start": "开始下载：点击此处"
+  },
+  "index": {
+    "index_video": "索引视频"
+  },
+  "search": {
+    "clear_search": "清除搜索记录"
+  }
+}

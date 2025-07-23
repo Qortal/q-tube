@@ -81,7 +81,7 @@ export const Notifications = () => {
   const interval = useRef<any>(null);
 
   const getInitialTimestamp = async () => {
-    const timestamp: undefined | number = await generalLocal.getItem(
+    const timestamp: undefined | number | null = await generalLocal.getItem(
       'notification-timestamp'
     );
     if (timestamp) {
@@ -130,7 +130,7 @@ export const Notifications = () => {
         },
       });
       const responseDataSearch = await response.json();
-      let notifys = [];
+      let notifys: any[] = [];
       for (const comment of responseDataSearch) {
         if (
           comment.identifier &&
@@ -163,15 +163,6 @@ export const Notifications = () => {
               } catch (error) {
                 console.error(error);
               }
-              //   const url = `/arbitrary/BLOG_COMMENT/${comment.name}/${comment.identifier}`;
-              //   const response = await fetch(url, {
-              //     method: "GET",
-              //     headers: {
-              //       "Content-Type": "application/json",
-              //     },
-              //   });
-              //   if(!response.ok) continue
-              //   const responseData2 = await response.text();
 
               notifys = [
                 ...notifys,

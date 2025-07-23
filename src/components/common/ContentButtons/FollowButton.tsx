@@ -53,7 +53,7 @@ export const FollowButton = ({ followerName, ...props }: FollowButtonProps) => {
       qortalRequest({
         action: 'DELETE_LIST_ITEM',
         list_name: 'followedNames',
-        item: followerName,
+        items: [followerName],
       }).then((response) => {
         if (response === false) console.error('unfollowName failed');
         else {

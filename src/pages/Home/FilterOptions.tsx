@@ -589,7 +589,7 @@ export const FilterOptions = () => {
                             })}
                           />
                         }
-                        value={selectedCategoryVideos?.id || ''}
+                        value={selectedCategoryVideos?.id || null}
                         onChange={handleOptionCategoryChangeVideos}
                         sx={{
                           // Target the input field
@@ -638,7 +638,7 @@ export const FilterOptions = () => {
                                 })}
                               />
                             }
-                            value={selectedSubCategoryVideos?.id || ''}
+                            value={selectedSubCategoryVideos?.id || null}
                             onChange={(e) =>
                               handleOptionSubCategoryChangeVideos(
                                 e,

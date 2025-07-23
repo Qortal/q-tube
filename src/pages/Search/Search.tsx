@@ -5,7 +5,7 @@ import {
   QTUBE_PLAYLIST_BASE,
   QTUBE_VIDEO_BASE,
 } from '../../constants/Identifiers.ts';
-import { QortalSearchParams, useAuth } from 'qapp-core';
+import { QortalSearchParams } from 'qapp-core';
 import { useSearchParams } from 'react-router-dom';
 import { useHomeState } from '../Home/Home-State.ts';
 import VideoList from '../Home/Components/VideoList.tsx';
@@ -16,15 +16,12 @@ export const Search = () => {
   const query = searchParams.get('query'); // "example"
   const mode = searchParams.get('mode'); // "example"
 
-  // const page = searchParams.get('page'); // "2"
   const {
     tabValue,
-    changeTab,
     filterName,
     filterCategory,
     subscriptions,
     filterType,
-    filterSearch,
     filterSubCategory,
     isHydrated,
   } = useHomeState();
@@ -62,7 +59,7 @@ export const Search = () => {
       reverse: true,
       limit: 20,
       ...searchOptions,
-      mode: mode || 'ALL',
+      mode: (mode as 'LATEST' | 'ALL') || 'ALL',
     };
   }, [
     filterType,

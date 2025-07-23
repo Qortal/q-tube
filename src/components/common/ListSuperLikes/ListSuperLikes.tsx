@@ -80,7 +80,7 @@ export default function ListSuperLikes({ superlikes }) {
           //  hasHash = true
           //  hash = hashMapSuperlikes[superlike?.identifier]
         }
-        let amount = null;
+        let amount: null | string = null;
         if (!isNaN(parseFloat(superlike?.amount))) {
           amount = parseFloat(superlike?.amount).toFixed(2);
         }

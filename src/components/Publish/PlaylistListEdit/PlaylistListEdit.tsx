@@ -20,7 +20,7 @@ import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import AddIcon from '@mui/icons-material/Add';
 import { QTUBE_VIDEO_BASE } from '../../../constants/Identifiers.ts';
-import { Spacer, useAuth } from 'qapp-core';
+import { QortalMetadata, Spacer, useAuth } from 'qapp-core';
 import { useIsSmall } from '../../../hooks/useIsSmall.tsx';
 import { useTranslation } from 'react-i18next';
 export const PlaylistListEdit = ({
@@ -35,7 +35,7 @@ export const PlaylistListEdit = ({
   const isSmall = useIsSmall();
   const { name: username } = useAuth();
 
-  const [searchResults, setSearchResults] = useState([]);
+  const [searchResults, setSearchResults] = useState<QortalMetadata[]>([]);
   const [filterSearch, setFilterSearch] = useState('');
   const [userSearch, setUserSearch] = useState(
     `name=${username}&exactmatchnames=true&`

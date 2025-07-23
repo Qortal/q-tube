@@ -5,9 +5,7 @@ import {
   Box,
   Button,
   ButtonBase,
-  ClickAwayListener,
   Divider,
-  Drawer,
   TextField,
   Typography,
   useTheme,
@@ -15,12 +13,12 @@ import {
 } from '@mui/material';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import CloseIcon from '@mui/icons-material/Close';
-import { InstallDesktopRounded } from '@mui/icons-material';
 import { usePersistedState } from '../../../state/persist/persist';
 import ShortUniqueId from 'short-unique-id';
-import { Spacer, useGlobal } from 'qapp-core';
+import { Service, Spacer, useGlobal } from 'qapp-core';
 import { useTranslation } from 'react-i18next';
 import { CustomTooltip } from './CustomTooltip';
+import { BookmarkList } from '../../../types/bookmark';
 
 const uid = new ShortUniqueId({ length: 15, dictionary: 'alphanum' });
 
@@ -28,16 +26,15 @@ export const AddToBookmarks = ({ metadataReference }) => {
   const { t } = useTranslation(['core']);
 
   const { lists: globalLists } = useGlobal();
-  const [bookmarks, setBookmarks, isHydratedSubscriptions] = usePersistedState(
-    'bookmarks-v1',
-    {}
-  );
+  const [bookmarks, setBookmarks, isHydratedSubscriptions] = usePersistedState<
+    Record<string, BookmarkList>
+  >('bookmarks-v1', {});
   const [bookmarkList, setBookmarkList] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [mode, setMode] = useState(1);
   const [title, setTitle] = useState('');
   const theme = useTheme();
-  const inputRef = useRef(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const ref = useRef<any>(null);
 
@@ -93,7 +90,7 @@ export const AddToBookmarks = ({ metadataReference }) => {
     video: {
       name: string;
       identifier: string;
-      service: string;
+      service: Service;
     }
   ) => {
     globalLists.deleteList('bookmarks-all');

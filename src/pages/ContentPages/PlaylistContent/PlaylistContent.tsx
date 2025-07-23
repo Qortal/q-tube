@@ -221,7 +221,7 @@ export const PlaylistContent = () => {
                 </Box>
               )}
               <VideoActionsBar
-                channelName={channelName}
+                channelName={channelName || ''}
                 videoData={videoData}
                 videoReference={videoReference}
                 superLikeList={superLikeList}

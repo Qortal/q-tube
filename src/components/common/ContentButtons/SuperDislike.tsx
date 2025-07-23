@@ -105,7 +105,7 @@ export const SuperDislike = ({
           `The amount is ${superDislikeDonationAmount}, but it needs to be at least ${minPriceSuperDislike} QORT`
         );
 
-      const listOfPublishes = [];
+      const listOfPublishes: any[] = [];
 
       const res = await qortalRequest({
         action: 'SEND_COIN',

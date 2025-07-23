@@ -1,4 +1,4 @@
-import { RefObject, useCallback, useRef } from 'react';
+import { useCallback } from 'react';
 
 import { VideoCardContainer } from './VideoList-styles.tsx';
 import {
@@ -7,7 +7,6 @@ import {
   ResourceListDisplay,
   useAuth,
   useBlockedNames,
-  useGlobal,
 } from 'qapp-core';
 import { VideoListItem } from './VideoListItem.tsx';
 import { VideoLoaderItem } from './VideoLoaderItem.tsx';

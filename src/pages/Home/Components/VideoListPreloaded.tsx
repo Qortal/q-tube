@@ -1,13 +1,12 @@
-import { RefObject, useCallback, useRef } from 'react';
+import { useCallback } from 'react';
 
 import { VideoCardContainer } from './VideoList-styles.tsx';
 import {
   LoaderListStatus,
-  QortalSearchParams,
+  QortalMetadata,
   ResourceListPreloadedDisplay,
   useAuth,
   useBlockedNames,
-  useGlobal,
 } from 'qapp-core';
 import { VideoListItem } from './VideoListItem.tsx';
 import { VideoLoaderItem } from './VideoLoaderItem.tsx';
@@ -22,6 +21,7 @@ interface VideoListProps {
   isBookmarks?: boolean;
   disableActions?: boolean;
   listId?: string;
+  videoList: QortalMetadata[];
   handleRemoveVideoFromList?: (
     listId: string,
     video: {

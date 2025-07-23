@@ -73,7 +73,7 @@ export const ListSuperLikeContainer = ({ from }) => {
         <PopMenu
           showExpandIcon={false}
           popoverProps={{
-            open: undefined,
+            open: false,
             sx: {
               display: 'flex',
               justifyContent: 'center',
@@ -136,7 +136,9 @@ export const ListSuperLikeContainer = ({ from }) => {
                 if (popoverRef?.current) popoverRef.current.closePopover();
               }}
             >
-              CLOSE
+              {t('core:action.close', {
+                postProcess: 'capitalizeFirstWord',
+              })}
             </CrowdfundActionButton>
           </Box>
           <ListSuperLikes superlikes={superlikelist} />

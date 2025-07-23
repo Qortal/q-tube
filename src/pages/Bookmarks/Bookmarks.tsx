@@ -15,11 +15,7 @@ import {
 } from '@mui/material';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
-import {
-  QTUBE_PLAYLIST_BASE,
-  QTUBE_VIDEO_BASE,
-} from '../../constants/Identifiers.ts';
-import { QortalSearchParams, Spacer, useAuth, useGlobal } from 'qapp-core';
+import { Spacer, useGlobal } from 'qapp-core';
 
 import { VideoListPreloaded } from '../Home/Components/VideoListPreloaded.tsx';
 import { usePersistedState } from '../../state/persist/persist.ts';
@@ -28,17 +24,17 @@ import EditIcon from '@mui/icons-material/Edit';
 import { PageTransition } from '../../components/common/PageTransition.tsx';
 import { useIsSmall } from '../../hooks/useIsSmall.tsx';
 import { useTranslation } from 'react-i18next';
+import { BookmarkList } from '../../types/bookmark.ts';
 
 export const Bookmarks = () => {
   const { t } = useTranslation(['core']);
 
   const isSmall = useIsSmall();
   const [selectedList, setSelectedList, isHydratedSelectedList] =
-    usePersistedState('selectedBookmarkList', 0);
-  const [bookmarks, setBookmarks, isHydratedBookmarks] = usePersistedState(
-    'bookmarks-v1',
-    {}
-  );
+    usePersistedState<number | any>('selectedBookmarkList', 0);
+  const [bookmarks, setBookmarks, isHydratedBookmarks] = usePersistedState<
+    Record<string, BookmarkList>
+  >('bookmarks-v1', {});
   const inputRef = useRef(null);
   const [isOpenEdit, setIsOpenEdit] = useState(false);
   const [newTitle, setNewTitle] = useState('');
@@ -155,6 +151,8 @@ export const Bookmarks = () => {
     handleDeleteList(selectedList?.id);
     setIsOpenEdit(false);
   };
+
+  console.log('sortedLists', sortedLists);
 
   if (!selectedList && isHydratedBookmarks) {
     return (

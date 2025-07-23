@@ -5,6 +5,7 @@ import { CustomTooltip, TooltipLine } from './CustomTooltip.tsx';
 import { useAuth, useGlobal } from 'qapp-core';
 import { usePersistedState } from '../../../state/persist/persist.ts';
 import { useTranslation } from 'react-i18next';
+import { Subscription } from '../../../types/subscription.ts';
 
 interface SubscribeButtonProps extends ButtonProps {
   subscriberName: string;
@@ -23,7 +24,7 @@ export const SubscribeButton = ({
 
   const { lists } = useGlobal();
   const [subscriptions, setSubscriptions, isHydratedSubscriptions] =
-    usePersistedState('subscriptions', []);
+    usePersistedState<Subscription[]>('subscriptions', []);
 
   const { name } = useAuth();
   const userName = name;
@@ -35,7 +36,7 @@ export const SubscribeButton = ({
     );
   }, [subscriptions]);
   const subscriptionData: SubscriptionData = {
-    userName: userName,
+    userName: userName || '',
     subscriberName: subscriberName,
   };
   const subscribeTo = () => {

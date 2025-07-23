@@ -45,7 +45,7 @@ export const IndividualProfile = () => {
                 },
               }}
             >
-              <ChannelActions channelName={channelName} />
+              <ChannelActions channelName={channelName || ''} />
             </StyledCardHeaderComment>
           </Box>
         </HeaderContainer>

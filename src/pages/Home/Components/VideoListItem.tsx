@@ -385,15 +385,6 @@ export const VideoListItem = ({
             >
               <VideoCardTitle variant="body2">{video.title}</VideoCardTitle>
             </Tooltip>
-            {/* <VideoCardName
-              sx={{
-                ':hover': {
-                  textDecoration: 'underline',
-                },
-              }}
-            >
-              {qortalMetadata?.name}
-            </VideoCardName> */}
           </NameContainer>
           {qortalMetadata?.created && (
             <Box

@@ -83,7 +83,7 @@ export const EditPlaylist = () => {
   const checkforPlaylist = React.useCallback(async (videoList) => {
     try {
       const combinedData: any = {};
-      const videos = [];
+      const videos: any[] = [];
       if (videoList) {
         for (const vid of videoList) {
           const url = `/arbitrary/resources/search?mode=ALL&service=DOCUMENT&identifier=${vid.identifier}&limit=1&includemetadata=true&reverse=true&name=${vid.name}&exactmatchnames=true&offset=0`;
@@ -97,7 +97,9 @@ export const EditPlaylist = () => {
 
           if (responseDataSearchVid?.length > 0) {
             const resourceData2 = responseDataSearchVid[0];
-            videos.push(resourceData2);
+            if (resourceData2) {
+              videos.push(resourceData2);
+            }
           }
         }
       }
@@ -288,7 +290,7 @@ export const EditPlaylist = () => {
             qortalMetadata: {
               identifier: identifier,
               service: 'PLAYLIST',
-              name: username,
+              name: username || '',
               size: 100,
               updated: Date.now(),
               metadata: {

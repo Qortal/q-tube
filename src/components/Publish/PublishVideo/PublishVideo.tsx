@@ -1380,7 +1380,7 @@ export const PublishVideo = ({
                   {files?.length !== Object.keys(imageExtracts)?.length && (
                     <CircularProgress color="secondary" size={14} />
                   )}
-                  {t('core:publish.next', {
+                  {t('core:action.next', {
                     postProcess: 'capitalizeFirstChar',
                   })}
                 </CrowdfundActionButton>

@@ -4,6 +4,7 @@ import { categories } from '../../../constants/Categories.ts';
 import { usePersistedState } from '../../../state/persist/persist.ts';
 import { useAuth } from 'qapp-core';
 import { useSearchParams } from 'react-router-dom';
+import { Category } from '../../../types/category.ts';
 
 export const useSidebarState = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -21,9 +22,9 @@ export const useSidebarState = () => {
     ''
   );
   const [filterCategory, setFilterCategory, isHydratedFilterCategory] =
-    usePersistedState('filterCategory', '');
+    usePersistedState<null | Category>('filterCategory', null);
   const [filterSubCategory, setFilterSubCategory, isHydratedFilterSubCategory] =
-    usePersistedState('filterSubCategory', '');
+    usePersistedState<null | Category>('filterSubCategory', null);
   const isHydrated =
     isHydratedFilterState &&
     isHydratedFilterSearch &&
@@ -36,9 +37,9 @@ export const useSidebarState = () => {
   const [filterStateType, setFilterStateType] = useState('videos');
   const [filterStateName, setFilterStateName] = useState('');
   const [selectedCategoryVideosState, setSelectedCategoryVideosState] =
-    useState(null);
+    useState<null | Category>(null);
   const [selectedSubCategoryVideosState, setSelectedSubCategoryVideosState] =
-    useState(null);
+    useState<null | Category>(null);
 
   const onSearch = (term?: string) => {
     setFilterType(filterStateType);
@@ -67,8 +68,8 @@ export const useSidebarState = () => {
   const onReset = () => {
     setFilterSearch('');
     setFilterName('');
-    setFilterCategory('');
-    setFilterSubCategory('');
+    setFilterCategory(null);
+    setFilterSubCategory(null);
   };
 
   const handleInputKeyDown = (event: any) => {
@@ -78,17 +79,25 @@ export const useSidebarState = () => {
   };
 
   const handleOptionCategoryChangeVideos = (
-    event: SelectChangeEvent<string>
+    event: SelectChangeEvent<number | null>
   ) => {
     const optionId = event.target.value;
+    if (optionId === null) {
+      setSelectedCategoryVideosState(null);
+      return;
+    }
     const selectedOption = categories.find((option) => option.id === +optionId);
     setSelectedCategoryVideosState(selectedOption || null);
   };
   const handleOptionSubCategoryChangeVideos = (
-    event: SelectChangeEvent<string>,
+    event: SelectChangeEvent<number | null>,
     subcategories: any[]
   ) => {
     const optionId = event.target.value;
+    if (optionId === null) {
+      setSelectedSubCategoryVideosState(null);
+      return;
+    }
     const selectedOption = subcategories.find(
       (option) => option.id === +optionId
     );

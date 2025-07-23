@@ -45,7 +45,8 @@ export const LikeAndDislike = ({ name, identifier }: LikeAndDislikeProps) => {
   const setNotification = useSetAtom(setNotificationAtom);
 
   useEffect(() => {
-    type PromiseReturn = [LikeType, LikesAndDislikes];
+    if (!username) return;
+    type PromiseReturn = [LikeType, LikesAndDislikes | undefined];
 
     Promise.all([
       getCurrentLikeType(username, likeIdentifier),

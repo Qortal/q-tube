@@ -60,7 +60,7 @@ export const VideoActionsBar = ({
         // nb. this regex copied from https://stackoverflow.com/a/680982
         const re = /(?:\.([^.]+))?$/;
         const match = re.exec(videoData.filename);
-        if (match[1]) {
+        if (match && match[1]) {
           ext = '.' + match[1];
         }
       }

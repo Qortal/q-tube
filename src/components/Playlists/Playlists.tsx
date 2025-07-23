@@ -57,15 +57,17 @@ export const Playlists = ({
                 display: 'flex',
                 gap: '10px',
                 width: '100%',
-                background: isCurrentVidPlaying && theme.palette.primary.main,
-                color:
-                  isCurrentVidPlaying && theme.palette.primary.contrastText,
+
                 alignItems: 'center',
                 padding: '10px',
                 borderRadius: '5px',
                 cursor: isCurrentVidPlaying ? 'default' : 'pointer',
                 userSelect: 'none',
                 border: '1px solid rgba(255, 255, 255, 0.23)',
+                ...(isCurrentVidPlaying && {
+                  background: theme.palette.primary.main,
+                  color: theme.palette.primary.contrastText,
+                }),
               }}
               onClick={() => {
                 if (isCurrentVidPlaying) return;

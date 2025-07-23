@@ -60,7 +60,7 @@ export const CollapsibleDescription = ({
       clone.style.visibility = 'hidden';
       clone.style.position = 'absolute';
       clone.style.pointerEvents = 'none';
-      clone.style.WebkitLineClamp = 'none';
+      clone.style.webkitLineClamp = 'none';
       clone.style.display = 'block';
 
       document.body.appendChild(clone);
@@ -260,7 +260,7 @@ export const VideoContent = () => {
             )}
           </Box>
           <VideoActionsBar
-            channelName={channelName}
+            channelName={channelName || ''}
             videoData={videoData}
             setSuperLikeList={setSuperLikeList}
             superLikeList={superLikeList}

@@ -159,7 +159,7 @@ export const CommentEditor = ({
     try {
       const resourceResponse = await qortalRequest({
         action: 'PUBLISH_QDN_RESOURCE',
-        name: name,
+        name: name!,
         service: 'BLOG_COMMENT',
         data64: utf8ToBase64(value),
         identifier: identifier,

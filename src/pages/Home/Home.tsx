@@ -17,13 +17,10 @@ import { PageTransition } from '../../components/common/PageTransition.tsx';
 import { ListSuperLikeContainer } from '../../components/common/ListSuperLikes/ListSuperLikeContainer.tsx';
 
 export const Home = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
   const scrollRef = useAtomValue(scrollRefAtom);
 
-  const query = searchParams.get('query'); // "example"
   const {
     tabValue,
-    changeTab,
     filterName,
     filterCategory,
     subscriptions,

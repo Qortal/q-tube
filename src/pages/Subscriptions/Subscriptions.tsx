@@ -27,7 +27,7 @@ export const Subscriptions = () => {
   const { isHydrated, subscriptions } = useHomeState();
 
   const searchParameters: QortalSearchParams | null = useMemo(() => {
-    if (!subscriptions || subscriptions?.length === 0) return [];
+    if (!subscriptions || subscriptions?.length === 0) return null;
     if (!isHydrated) return null;
     const searchOptions: {
       description?: string;

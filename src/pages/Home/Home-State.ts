@@ -2,12 +2,10 @@ import { useAuth } from 'qapp-core';
 import { usePersistedState } from '../../state/persist/persist.ts';
 import { VideoListType } from '../../types/video.ts';
 import { useSearchParams } from 'react-router-dom';
+import { Subscription } from '../../types/subscription.ts';
 
 export const useHomeState = () => {
   const { isLoadingUser } = useAuth();
-  const [searchParams, setSearchParams] = useSearchParams();
-  const query = searchParams.get('query'); // "example"
-  // const page = searchParams.get('page'); // "2"
   const [videoListTab, setVideoListTab, isHydratedVideoListTab] =
     usePersistedState<VideoListType>('videoListTab', 'all');
   const [filterName, setFilterName, isHydratedFilterName] = usePersistedState(
@@ -19,7 +17,8 @@ export const useHomeState = () => {
     'recent'
   );
   const [subscriptions, setSubscriptions, isHydratedSubscriptions] =
-    usePersistedState('subscriptions', []);
+    usePersistedState<Subscription[]>('subscriptions', []);
+
   const [filterType, setFilterType, isHydratedFilterState] = usePersistedState(
     'filterType',
     'videos'

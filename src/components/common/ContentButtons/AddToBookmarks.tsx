@@ -18,7 +18,8 @@ import { Service, useGlobal } from 'qapp-core';
 import { useTranslation } from 'react-i18next';
 import { CustomTooltip } from './CustomTooltip';
 import { BookmarkList } from '../../../types/bookmark';
-
+import FolderIcon from '@mui/icons-material/Folder';
+import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
 const uid = new ShortUniqueId({ length: 15, dictionary: 'alphanum' });
 const MAX_NESTING_LEVEL = 1;
 
@@ -214,13 +215,20 @@ export const AddToBookmarks = ({ metadataReference, type = 'video' }) => {
               alignItems: 'center',
             }}
           >
-            <Typography sx={{ fontWeight: 'bold' }}>{node.title}</Typography>
+            <FolderIcon />
+            <Typography sx={{ fontWeight: 'bold', wordBreak: 'break-word' }}>
+              {node.title}
+            </Typography>
             {depth < MAX_NESTING_LEVEL && (
               <Button
+                startIcon={<PlaylistAddIcon />}
                 size="small"
                 onClick={() => {
                   setMode(2);
                   setParentId(node.id);
+                }}
+                sx={{
+                  marginLeft: 'auto',
                 }}
               >
                 {t('core:bookmarks.new_list')}
@@ -248,7 +256,13 @@ export const AddToBookmarks = ({ metadataReference, type = 'video' }) => {
         sx={{ pl: depth * 2, justifyContent: 'flex-start', width: '100%' }}
       >
         <Checkbox checked={isInList} />
-        <Typography>{node.title}</Typography>
+        <Typography
+          sx={{
+            wordBreak: 'break-word',
+          }}
+        >
+          {node.title}
+        </Typography>
       </ButtonBase>
     );
   };
@@ -256,9 +270,14 @@ export const AddToBookmarks = ({ metadataReference, type = 'video' }) => {
   return (
     <>
       <CustomTooltip
-        title={t('core:action.bookmark_playlist', {
-          postProcess: 'capitalizeFirstChar',
-        })}
+        title={t(
+          type === 'playlist'
+            ? 'core:action.bookmark_playlist'
+            : 'core:action.bookmark_video',
+          {
+            postProcess: 'capitalizeFirstChar',
+          }
+        )}
         arrow
         placement="top"
       >
@@ -311,7 +330,31 @@ export const AddToBookmarks = ({ metadataReference, type = 'video' }) => {
                 <CloseIcon sx={{ fontSize: '1.15em' }} />
               </ButtonBase>
               <Divider />
-              <Box sx={{ flexGrow: 1, overflow: 'auto' }}>
+              <Box
+                sx={{
+                  flexGrow: 1,
+                  overflow: 'auto',
+                  '::-webkit-scrollbar-track': {
+                    backgroundColor: 'transparent',
+                  },
+
+                  '::-webkit-scrollbar': {
+                    width: '16px',
+                    height: '10px',
+                  },
+
+                  '::-webkit-scrollbar-thumb': {
+                    backgroundColor: 'rgba(63, 67, 80, 0.24)',
+                    borderRadius: '8px',
+                    backgroundClip: 'content-box',
+                    border: '4px solid transparent',
+                    transition: '0.3s background-color',
+                  },
+                  '::-webkit-scrollbar-thumb:hover': {
+                    backgroundColor: 'rgba(63, 67, 80, 0.50)',
+                  },
+                }}
+              >
                 {buildBookmarkTree(bookmarks).length === 0 ? (
                   <Typography
                     sx={{ fontSize: '1rem', textAlign: 'center', mt: 2 }}
@@ -326,7 +369,13 @@ export const AddToBookmarks = ({ metadataReference, type = 'video' }) => {
                   )
                 )}
               </Box>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  gap: '10px',
+                }}
+              >
                 <Button
                   onClick={() => setMode(2)}
                   size="small"
@@ -364,7 +413,31 @@ export const AddToBookmarks = ({ metadataReference, type = 'video' }) => {
                 </Typography>
               </Box>
               <Divider />
-              <Box sx={{ flexGrow: 1, overflow: 'auto' }}>
+              <Box
+                sx={{
+                  flexGrow: 1,
+                  overflow: 'auto',
+                  '::-webkit-scrollbar-track': {
+                    backgroundColor: 'transparent',
+                  },
+
+                  '::-webkit-scrollbar': {
+                    width: '16px',
+                    height: '10px',
+                  },
+
+                  '::-webkit-scrollbar-thumb': {
+                    backgroundColor: 'rgba(63, 67, 80, 0.24)',
+                    borderRadius: '8px',
+                    backgroundClip: 'content-box',
+                    border: '4px solid transparent',
+                    transition: '0.3s background-color',
+                  },
+                  '::-webkit-scrollbar-thumb:hover': {
+                    backgroundColor: 'rgba(63, 67, 80, 0.50)',
+                  },
+                }}
+              >
                 <TextField
                   inputRef={inputRef}
                   value={title}

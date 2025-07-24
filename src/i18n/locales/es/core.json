@@ -14,7 +14,8 @@
     "edit": "editar",
     "comment": "comentar",
     "reply": "responder",
-    "bookmark_video": "marcar video"
+    "bookmark_video": "marcar video",
+    "bookmark_playlist": "marcar lista de reproducción"
   },
   "navbar": {
     "search": "buscar"
@@ -103,7 +104,9 @@
     "bookmark_list": "lista de marcadores",
     "bookmark_lists": "listas de marcadores",
     "no_bookmarks_lists": "no hay listas de marcadores",
-    "new_list": "nueva lista"
+    "new_list": "nueva lista",
+    "new_folder": "nueva carpeta",
+    "delete_folder": "eliminar carpeta"
   },
   "video": {
     "show_more": "mostrar más",

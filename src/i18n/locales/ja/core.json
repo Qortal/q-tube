@@ -14,7 +14,8 @@
     "edit": "編集する",
     "comment": "コメント",
     "reply": "返信",
-    "bookmark_video": "動画をブックマーク"
+    "bookmark_video": "動画をブックマーク",
+    "bookmark_playlist": "プレイリストをブックマーク"
   },
   "navbar": {
     "search": "検索"
@@ -103,7 +104,9 @@
     "bookmark_list": "ブックマークリスト",
     "bookmark_lists": "ブックマークリスト一覧",
     "no_bookmarks_lists": "ブックマークリストがありません",
-    "new_list": "新しいリスト"
+    "new_list": "新しいリスト",
+    "new_folder": "新しいフォルダー",
+    "delete_folder": "フォルダーを削除"
   },
   "video": {
     "show_more": "もっと見る",

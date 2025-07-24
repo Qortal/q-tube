@@ -14,7 +14,8 @@
     "edit": "تعديل",
     "comment": "تعليق",
     "reply": "رد",
-    "bookmark_video": "حفظ الفيديو"
+    "bookmark_video": "حفظ الفيديو",
+    "bookmark_playlist": "إشارة مرجعية لقائمة التشغيل"
   },
   "navbar": {
     "search": "بحث"
@@ -103,7 +104,9 @@
     "bookmark_list": "قائمة المحفوظات",
     "bookmark_lists": "قوائم المحفوظات",
     "no_bookmarks_lists": "لا توجد قوائم محفوظات",
-    "new_list": "قائمة جديدة"
+    "new_list": "قائمة جديدة",
+    "new_folder": "مجلد جديد",
+    "delete_folder": "حذف المجلد"
   },
   "video": {
     "show_more": "عرض المزيد",

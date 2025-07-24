@@ -25,9 +25,7 @@ export const Playlists = ({
 }: PlaylistsProps) => {
   const isSmall = useIsSmall();
   const theme = useTheme();
-  const isScreenSmall = !useMediaQuery(`(min-width:700px)`);
-  const PlaylistsHeight = '36vw'; // This is videoplayer width * 9/16 (inverse of aspect ratio)
-  console.log('playlistData', playlistData);
+
   return (
     <Box
       sx={{

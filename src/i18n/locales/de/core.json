@@ -14,7 +14,8 @@
     "edit": "bearbeiten",
     "comment": "kommentieren",
     "reply": "antworten",
-    "bookmark_video": "Video mit Lesezeichen versehen"
+    "bookmark_video": "Video mit Lesezeichen versehen",
+    "bookmark_playlist": "Playlist speichern"
   },
   "navbar": {
     "search": "suchen"
@@ -103,7 +104,9 @@
     "bookmark_list": "Lesezeichenliste",
     "bookmark_lists": "Lesezeichenlisten",
     "no_bookmarks_lists": "Keine Lesezeichenlisten",
-    "new_list": "Neue Liste"
+    "new_list": "Neue Liste",
+    "new_folder": "neuer Ordner",
+    "delete_folder": "Ordner löschen"
   },
   "video": {
     "show_more": "mehr anzeigen",

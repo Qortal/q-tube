@@ -14,7 +14,8 @@
     "edit": "modifier",
     "comment": "commenter",
     "reply": "répondre",
-    "bookmark_video": "ajouter la vidéo aux favoris"
+    "bookmark_video": "ajouter la vidéo aux favoris",
+    "bookmark_playlist": "ajouter la playlist aux favoris"
   },
   "navbar": {
     "search": "rechercher"
@@ -103,7 +104,9 @@
     "bookmark_list": "liste de favoris",
     "bookmark_lists": "listes de favoris",
     "no_bookmarks_lists": "aucune liste de favoris",
-    "new_list": "nouvelle liste"
+    "new_list": "nouvelle liste",
+    "new_folder": "nouveau dossier",
+    "delete_folder": "supprimer le dossier"
   },
   "video": {
     "show_more": "afficher plus",

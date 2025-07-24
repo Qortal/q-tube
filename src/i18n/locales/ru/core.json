@@ -14,7 +14,8 @@
     "edit": "редактировать",
     "comment": "комментировать",
     "reply": "ответить",
-    "bookmark_video": "добавить видео в закладки"
+    "bookmark_video": "добавить видео в закладки",
+    "bookmark_playlist": "добавить плейлист в закладки"
   },
   "navbar": {
     "search": "поиск"
@@ -103,7 +104,9 @@
     "bookmark_list": "список закладок",
     "bookmark_lists": "списки закладок",
     "no_bookmarks_lists": "нет списков закладок",
-    "new_list": "новый список"
+    "new_list": "новый список",
+    "new_folder": "новая папка",
+    "delete_folder": "удалить папку"
   },
   "video": {
     "show_more": "показать больше",

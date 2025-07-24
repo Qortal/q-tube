@@ -19,7 +19,7 @@ import {
 import FolderIcon from '@mui/icons-material/Folder';
 import ListIcon from '@mui/icons-material/List';
 import { useEffect, useMemo, useRef, useState } from 'react';
-
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import { Spacer, useGlobal } from 'qapp-core';
 
 import { VideoListPreloaded } from '../Home/Components/VideoListPreloaded.tsx';
@@ -181,8 +181,6 @@ export const Bookmarks = () => {
     setFolderView(null);
   };
 
-  console.log('bookmark', bookmarks);
-
   if (!selectedList) {
     return (
       <PageTransition>
@@ -195,7 +193,15 @@ export const Bookmarks = () => {
             alignItems: 'flex-start',
           }}
         >
-          <Box display="flex" alignItems="center" gap={2}>
+          <Box
+            display="flex"
+            alignItems="center"
+            justifyContent="space-between"
+            gap={2}
+            sx={{
+              width: '100%',
+            }}
+          >
             {(folderView !== null || selectedList !== 0) && (
               <Button
                 onClick={() => {
@@ -214,14 +220,10 @@ export const Bookmarks = () => {
                 color="error"
                 size="small"
                 onClick={() => {
-                  const confirm = window.confirm(
-                    t('core:bookmarks.confirm_delete_folder') ||
-                      'Are you sure you want to delete this folder and all its lists?'
-                  );
-                  if (confirm) handleDeleteFolder(folderView);
+                  handleDeleteFolder(folderView);
                 }}
               >
-                {t('core:action.delete', {
+                {t('core:bookmarks.delete_folder', {
                   postProcess: 'capitalizeFirstChar',
                 })}
               </Button>
@@ -246,6 +248,7 @@ export const Bookmarks = () => {
               gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))',
               gap: 2,
               width: '100%',
+              paddingTop: '20px',
             }}
           >
             {currentLists.map((item) => (
@@ -274,13 +277,14 @@ export const Bookmarks = () => {
   return (
     <PageTransition>
       <Button
+        startIcon={<ArrowBackIosIcon />}
         onClick={() => {
           setSelectedList(0);
           setFolderView(null);
         }}
         size="small"
       >
-        ← {t('core:action.back', { postProcess: 'capitalizeFirstChar' })}
+        {t('core:action.back', { postProcess: 'capitalizeFirstChar' })}
       </Button>
       <Spacer height="10px" />
 

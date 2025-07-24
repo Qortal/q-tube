@@ -14,7 +14,8 @@
     "edit": "编辑",
     "comment": "评论",
     "reply": "回复",
-    "bookmark_video": "收藏视频"
+    "bookmark_video": "收藏视频",
+    "bookmark_playlist": "收藏播放列表"
   },
   "navbar": {
     "search": "搜索"
@@ -103,7 +104,9 @@
     "bookmark_list": "收藏列表",
     "bookmark_lists": "收藏列表",
     "no_bookmarks_lists": "没有收藏列表",
-    "new_list": "新建列表"
+    "new_list": "新建列表",
+    "new_folder": "新建文件夹",
+    "delete_folder": "删除文件夹"
   },
   "video": {
     "show_more": "显示更多",

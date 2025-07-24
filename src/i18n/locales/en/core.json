@@ -34,7 +34,6 @@
     "supported_containers": "Supported File Containers",
     "audio_codecs": "audio codecs",
     "video_codecs": "video codecs",
-    "unsupported_codecs_description": "Using unsupported Codecs may result in video or audio not working properly",
     "select_category": "Select a Category",
     "select_subcategory": "Select a Sub-Category",
     "add_cover_image": "add cover image",

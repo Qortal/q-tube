@@ -37,7 +37,11 @@ import {
   FiltersSubContainer,
 } from '../../../pages/Home/Components/VideoList-styles.tsx';
 
-import { getFileName } from '../../../utils/stringFunctions.ts';
+import {
+  getFileExtension,
+  getFileExtensionIndex,
+  getFileName,
+} from '../../../utils/stringFunctions.ts';
 import { CardContentContainerComment } from '../../common/Comments/Comments-styles.tsx';
 import { FrameExtractor } from '../../common/FrameExtractor/FrameExtractor.tsx';
 
@@ -64,7 +68,13 @@ import {
   TimesIcon,
 } from './PublishVideo-styles.tsx';
 import VideoLibraryIcon from '@mui/icons-material/VideoLibrary';
-import { objectToBase64, useAuth, useGlobal, usePublish } from 'qapp-core';
+import {
+  objectToBase64,
+  showError,
+  useAuth,
+  useGlobal,
+  usePublish,
+} from 'qapp-core';
 import { useSetAtom } from 'jotai';
 import {
   AltertObject,
@@ -165,8 +175,7 @@ export const PublishVideo = ({
     },
     maxSize,
     onDrop: async (acceptedFiles, rejectedFiles) => {
-      const unsupportedFiles = [];
-      const formattedFiles = [];
+      const formattedFiles: VideoFile[] = [];
 
       for (const file of acceptedFiles) {
         let filteredTitle = '';
@@ -177,8 +186,15 @@ export const PublishVideo = ({
         }
 
         const notSupportedCodec = await isHEVC(file);
-        if (notSupportedCodec) {
-          unsupportedFiles.push(file);
+
+        const isMKV = getFileExtension(file) === 'mkv';
+        const isUnsupportedFile = notSupportedCodec || isMKV;
+
+        if (isUnsupportedFile) {
+          if (notSupportedCodec)
+            showError(`${file.name} uses the unsupported encoding: HEVC`);
+          if (isMKV)
+            showError(`${file.name} uses the unsupported file container: MKV`);
           continue;
         }
         formattedFiles.push({
@@ -360,7 +376,7 @@ export const PublishVideo = ({
           title: title.slice(0, 50),
           description: metadescription,
           identifier,
-          filename: `${alphanumericString.trim()}.${fileExtension}`,
+          filename: file.name,
           tag1: QTUBE_VIDEO_BASE,
         };
         listOfPublishes.push(requestBodyJson);
@@ -801,11 +817,6 @@ export const PublishVideo = ({
                   })}
                   : <span style={{ fontWeight: 'bold' }}>AV1</span>, VP8, VP9,
                   H.264
-                </CodecTypography>
-                <CodecTypography sx={{ fontWeight: '800', color: 'red' }}>
-                  {t('core:publish.unsupported_codecs_description', {
-                    postProcess: 'capitalizeEachFirstChar',
-                  })}
                 </CodecTypography>
               </Box>
 
@@ -1378,7 +1389,8 @@ export const PublishVideo = ({
                 <CrowdfundActionButton
                   variant="contained"
                   disabled={
-                    files?.length !== Object.keys(imageExtracts)?.length
+                    files?.length !== Object.keys(imageExtracts)?.length ||
+                    files?.length === 0
                   }
                   onClick={() => {
                     next();

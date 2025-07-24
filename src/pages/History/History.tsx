@@ -8,12 +8,14 @@ import {
   DialogTitle,
   Divider,
   FormControl,
+  IconButton,
   InputLabel,
   MenuItem,
   Select,
   TextField,
 } from '@mui/material';
 import { useEffect, useMemo, useState } from 'react';
+import ClearAllIcon from '@mui/icons-material/ClearAll';
 
 import {
   QTUBE_PLAYLIST_BASE,
@@ -34,6 +36,7 @@ import { PageTransition } from '../../components/common/PageTransition.tsx';
 import { useIsSmall } from '../../hooks/useIsSmall.tsx';
 
 export const History = () => {
+  const { lists } = useGlobal();
   const isSmall = useIsSmall();
   const [watchedHistory, setWatchedHistory, isHydratedWatchedHistory] =
     usePersistedState('watched-v1', []);
@@ -55,7 +58,24 @@ export const History = () => {
       >
         <PageSubTitle>Your History</PageSubTitle>
 
-        <Spacer height="14px" />
+        <Spacer height="10px" />
+        {watchedHistory?.length > 0 && isHydratedWatchedHistory && (
+          <Button
+            size="small"
+            onClick={() => {
+              if (isHydratedWatchedHistory) {
+                setWatchedHistory([]);
+                lists.deleteList('watched-history');
+              }
+            }}
+            variant="outlined"
+            startIcon={<ClearAllIcon />}
+          >
+            Clear
+          </Button>
+        )}
+        <Spacer height="10px" />
+
         <Divider flexItem />
         <Spacer height="20px" />
       </Box>

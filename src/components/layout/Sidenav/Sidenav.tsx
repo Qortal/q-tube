@@ -199,7 +199,7 @@ export const Sidenav = ({ allNames }) => {
           }
         }}
       >
-        <>
+        <Box>
           <Drawer
             elevation={1}
             variant="permanent"
@@ -347,7 +347,7 @@ export const Sidenav = ({ allNames }) => {
               })}
             </List>
           </Drawer>
-        </>
+        </Box>
       </ClickAwayListener>
     </>
   );

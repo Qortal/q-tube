@@ -63,6 +63,7 @@ export const FilterOptions = () => {
 
   const isSmall = useIsSmall();
   const tabsRef = useRef(null);
+  const [tabIndex, setTabIndex] = useState(0);
 
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
@@ -161,13 +162,15 @@ export const FilterOptions = () => {
     <>
       {isSmall && (
         <Tabs
+          value={tabIndex}
+          onChange={(event, newValue) => setTabIndex(newValue)}
           ref={tabsRef}
           aria-label="basic tabs example"
           variant="scrollable" // Make tabs scrollable
           scrollButtons={true}
           sx={{
             '& .MuiTabs-indicator': {
-              backgroundColor: 'white',
+              display: 'none',
             },
             width: `100%`, // Ensure the tabs container fits within the available space
             overflow: 'hidden', // Prevents overflow on small screens

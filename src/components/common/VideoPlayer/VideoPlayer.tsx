@@ -38,7 +38,7 @@ export const VideoPlayer = ({ ...props }: VideoPlayerProps) => {
   const location = useLocation();
   const { lists } = useGlobal();
   const [watchedHistory, setWatchedHistory, isHydratedWatchedHistory] =
-    usePersistedState('watched-v1', []);
+    usePersistedState<any[]>('watched-v1', []);
   const onPlay = useCallback(() => {
     if (!isHydratedWatchedHistory) return;
     const videoReference = {
@@ -79,15 +79,22 @@ export const VideoPlayer = ({ ...props }: VideoPlayerProps) => {
         poster={props.poster}
         videoRef={videoRef}
         qortalVideoResource={{
-          name: props.name,
+          name: props.name!,
           service: props.service as Service,
-          identifier: props.identifier,
+          identifier: props.identifier!,
         }}
         autoPlay={props?.autoPlay}
         onEnded={props?.onEnd}
         onPlay={onPlay}
         filename={props?.filename}
         path={location.pathname}
+        styling={{
+          progressSlider: {
+            thumbColor: 'white',
+            railColor: '',
+            trackColor: '#4285f4',
+          },
+        }}
       />
     </Box>
   );

@@ -152,8 +152,6 @@ export const Bookmarks = () => {
     setIsOpenEdit(false);
   };
 
-  console.log('sortedLists', sortedLists);
-
   if (!selectedList && isHydratedBookmarks) {
     return (
       <PageTransition>
@@ -291,10 +289,18 @@ export const Bookmarks = () => {
           })}
           : {selectedList?.title}
         </PageSubTitle>
-        <ButtonBase>
-          <EditIcon onClick={() => setIsOpenEdit(true)} />
-        </ButtonBase>
-        <Spacer height="14px" />
+        <Spacer height="10px" />
+
+        <Button
+          size="small"
+          onClick={() => setIsOpenEdit(true)}
+          variant="outlined"
+          startIcon={<EditIcon />}
+        >
+          Edit
+        </Button>
+
+        <Spacer height="10px" />
         <Divider flexItem />
         <Spacer height="20px" />
       </Box>

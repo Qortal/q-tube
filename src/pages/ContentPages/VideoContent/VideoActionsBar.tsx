@@ -132,21 +132,19 @@ export const VideoActionsBar = ({
         />
       </Box>
       {videoData && (
-        <ButtonBase>
-          <FileElement
-            fileInfo={{
-              ...videoReference,
-              filename: saveAsFilename,
-              mimeType: videoData?.videoType || '"video/mp4',
-            }}
-            title={videoData?.filename || videoData?.title?.slice(0, 20)}
-            customStyles={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'flex-end',
-            }}
-          />
-        </ButtonBase>
+        <FileElement
+          fileInfo={{
+            ...videoReference,
+            filename: saveAsFilename,
+            mimeType: videoData?.videoType || '"video/mp4',
+          }}
+          title={videoData?.filename || videoData?.title?.slice(0, 20)}
+          customStyles={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'flex-end',
+          }}
+        />
       )}
     </Box>
   );

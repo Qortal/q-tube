@@ -71,6 +71,7 @@ import {
   setNotificationAtom,
 } from '../../../state/global/notifications.ts';
 import { useTranslation } from 'react-i18next';
+import { useMediaInfo } from '../../../hooks/useMediaInfo.tsx';
 
 export const toBase64 = (file: File): Promise<string | ArrayBuffer | null> =>
   new Promise((resolve, reject) => {
@@ -146,6 +147,7 @@ export const PublishVideo = ({
     useState(false);
   const [imageExtracts, setImageExtracts] = useState<any>({});
   const publishFromLibrary = usePublish();
+  const { isHEVC } = useMediaInfo();
 
   const assembleVideoDurations = () => {
     if (files.length === videoDurations.length) return;
@@ -162,33 +164,40 @@ export const PublishVideo = ({
       'video/*': [],
     },
     maxSize,
-    onDrop: (acceptedFiles, rejectedFiles) => {
-      const formatArray = acceptedFiles.map((item) => {
+    onDrop: async (acceptedFiles, rejectedFiles) => {
+      const formattedFiles = [];
+
+      for (const file of acceptedFiles) {
         let filteredTitle = '';
 
         if (isCheckTitleByFile) {
-          const fileName = getFileName(item?.name || '');
+          const fileName = getFileName(file?.name || '');
           filteredTitle = (titlesPrefix + fileName).replace(titleFormatter, '');
         }
-        return {
-          file: item,
+
+        const notSupportedCodec = await isHEVC(file);
+        console.log('isGood', isGood);
+        formattedFiles.push({
+          isHEVC: notSupportedCodec,
+          file,
           title: filteredTitle || '',
           description: '',
           coverImage: '',
-        };
-      });
+        });
+      }
 
-      setFiles((prev) => [...prev, ...formatArray]);
+      setFiles((prev) => [...prev, ...formattedFiles]);
 
       let errorString: string | null = null;
-      rejectedFiles.forEach(({ file, errors }) => {
-        errors.forEach((error) => {
+      for (const { file, errors } of rejectedFiles) {
+        for (const error of errors) {
           if (error.code === 'file-too-large') {
             errorString = `File must be under ${videoMaxSize}MB`;
           }
           console.error(`Error with file ${file.name}: ${error.message}`);
-        });
-      });
+        }
+      }
+
       if (errorString) {
         const notificationObj: AltertObject = {
           msg: errorString,

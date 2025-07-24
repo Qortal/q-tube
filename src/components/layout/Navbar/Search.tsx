@@ -69,7 +69,7 @@ export const Search = () => {
     'filterMode',
     'recent'
   );
-  const [searchHistory, setSearchHistory] = usePersistedState(
+  const [searchHistory, setSearchHistory] = usePersistedState<any[]>(
     'search-history-v1',
     []
   );
@@ -114,7 +114,7 @@ export const Search = () => {
     }
   };
 
-  const handleClickAway = (event: MouseEvent) => {
+  const handleClickAway = (event: MouseEvent | TouchEvent) => {
     const target = event.target as Node;
     if (!searchWrapperRef.current?.contains(target)) {
       setShowPopover(false);

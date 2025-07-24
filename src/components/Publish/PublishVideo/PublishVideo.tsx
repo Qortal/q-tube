@@ -165,6 +165,7 @@ export const PublishVideo = ({
     },
     maxSize,
     onDrop: async (acceptedFiles, rejectedFiles) => {
+      const unsupportedFiles = [];
       const formattedFiles = [];
 
       for (const file of acceptedFiles) {
@@ -176,9 +177,11 @@ export const PublishVideo = ({
         }
 
         const notSupportedCodec = await isHEVC(file);
-        console.log('isGood', isGood);
+        if (notSupportedCodec) {
+          unsupportedFiles.push(file);
+          continue;
+        }
         formattedFiles.push({
-          isHEVC: notSupportedCodec,
           file,
           title: filteredTitle || '',
           description: '',

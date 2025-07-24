@@ -122,6 +122,7 @@ export const VideoActionsBar = ({
             service: 'DOCUMENT',
             name: videoData?.user,
           }}
+          type="video"
         />
         <IndexButton channelName={channelName} />
         <CopyLinkButton

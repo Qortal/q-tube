@@ -1,7 +1,6 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import BookmarksIcon from '@mui/icons-material/Bookmarks';
 import {
-  alpha,
   Box,
   Button,
   ButtonBase,
@@ -15,129 +14,128 @@ import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import CloseIcon from '@mui/icons-material/Close';
 import { usePersistedState } from '../../../state/persist/persist';
 import ShortUniqueId from 'short-unique-id';
-import { Service, Spacer, useGlobal } from 'qapp-core';
+import { Service, useGlobal } from 'qapp-core';
 import { useTranslation } from 'react-i18next';
 import { CustomTooltip } from './CustomTooltip';
 import { BookmarkList } from '../../../types/bookmark';
 
 const uid = new ShortUniqueId({ length: 15, dictionary: 'alphanum' });
+const MAX_NESTING_LEVEL = 1;
 
-export const AddToBookmarks = ({ metadataReference }) => {
+export const AddToBookmarks = ({ metadataReference, type = 'video' }) => {
   const { t } = useTranslation(['core']);
-
   const { lists: globalLists } = useGlobal();
-  const [bookmarks, setBookmarks, isHydratedSubscriptions] = usePersistedState<
+  const [bookmarks, setBookmarks] = usePersistedState<
     Record<string, BookmarkList>
   >('bookmarks-v1', {});
-  const [bookmarkList, setBookmarkList] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
-  const [mode, setMode] = useState(1);
+  const [mode, setMode] = useState(1); // 1: main, 2: new list, 3: new folder
   const [title, setTitle] = useState('');
+  const [parentId, setParentId] = useState<string | null>(null);
   const theme = useTheme();
   const inputRef = useRef<HTMLInputElement>(null);
-
   const ref = useRef<any>(null);
 
   useEffect(() => {
-    if (isOpen) {
-      ref?.current?.focus();
-    }
+    if (isOpen) ref?.current?.focus();
   }, [isOpen]);
 
-  const handleBlur = (e: React.FocusEvent) => {
-    if (!e.currentTarget.contains(e.relatedTarget) && isOpen) {
-      setIsOpen(false);
-    }
-  };
-
   useEffect(() => {
-    if (mode !== 2) return;
-    inputRef.current?.focus();
+    if (mode === 2 || mode === 3) inputRef.current?.focus();
   }, [mode]);
 
-  const handleCreateList = () => {
+  const handleCreateList = (parentId?: string) => {
     const newId = uid.rnd();
     setBookmarks((prev) => {
-      return {
+      const updated: Record<string, BookmarkList> = {
         ...prev,
         [newId]: {
           id: newId,
-          title: title,
+          title,
           description: '',
           created: Date.now(),
           updated: Date.now(),
           lastAdded: 0,
           videos: [],
           lastAccessed: 0,
-          type: 'list', // list, playlist, folder
-          playlistReference: null,
-          folderName: null,
+          type: 'list',
         },
       };
+      if (parentId && prev[parentId]?.type === 'folder') {
+        updated[parentId] = {
+          ...prev[parentId],
+          children: [...(prev[parentId].children || []), newId],
+          updated: Date.now(),
+        };
+      }
+      return updated;
     });
+    setMode(1);
+    setTitle('');
+    setParentId(null);
+  };
+
+  const handleCreateFolder = () => {
+    const newId = uid.rnd();
+    setBookmarks((prev) => ({
+      ...prev,
+      [newId]: {
+        id: newId,
+        title,
+        description: '',
+        created: Date.now(),
+        updated: Date.now(),
+        lastAdded: 0,
+        videos: [],
+        lastAccessed: 0,
+        type: 'folder',
+        children: [],
+      },
+    }));
     setMode(1);
     setTitle('');
   };
 
-  const handleInputKeyDown = (event: any) => {
-    if (event.key === 'Enter' && title?.trim()) {
-      handleCreateList();
-    }
-  };
-
-  const handleAddVideoToList = (
-    listId: string,
-    video: {
-      name: string;
-      identifier: string;
-      service: Service;
-    }
-  ) => {
+  const handleAddVideoToList = (listId: string, video: any) => {
     globalLists.deleteList('bookmarks-all');
     globalLists.deleteList(`bookmarks-all-${listId}`);
     setBookmarks((prev) => {
       const list = prev[listId];
       if (!list || list.type !== 'list') return prev;
-
-      const videoExists = list.videos.some(
-        (v) =>
-          v.name === video.name &&
-          v.identifier === video.identifier &&
-          v.service === video.service
-      );
-
-      if (videoExists) return prev;
-
-      const newVideo = {
-        ...video,
-        addedAt: Date.now(),
-        created: Date.now(),
-        size: 200,
-      };
-
+      if (
+        list.videos.some(
+          (v) =>
+            v.name === video.name &&
+            v.identifier === video.identifier &&
+            v.service === video.service
+        )
+      ) {
+        return prev;
+      }
       return {
         ...prev,
         [listId]: {
           ...list,
-          videos: [...list.videos, newVideo],
+          videos: [
+            ...list.videos,
+            {
+              ...video,
+              addedAt: Date.now(),
+              created: Date.now(),
+              size: 200,
+              type,
+            },
+          ],
           updated: Date.now(),
         },
       };
     });
   };
 
-  const handleRemoveVideoFromList = (
-    listId: string,
-    video: {
-      name: string;
-      identifier: string;
-      service: string;
-    }
-  ) => {
+  const handleRemoveVideoFromList = (listId: string, video: any) => {
     setBookmarks((prev) => {
       const list = prev[listId];
       if (!list || list.type !== 'list') return prev;
-
       const updatedVideos = list.videos.filter(
         (v) =>
           !(
@@ -146,9 +144,7 @@ export const AddToBookmarks = ({ metadataReference }) => {
             v.service === video.service
           )
       );
-      // If no change, avoid unnecessary update
       if (updatedVideos.length === list.videos.length) return prev;
-
       return {
         ...prev,
         [listId]: {
@@ -160,26 +156,20 @@ export const AddToBookmarks = ({ metadataReference }) => {
     });
   };
 
-  const isVideoInList = (
-    listId: string,
-    video: { name: string; identifier: string; service: string }
-  ): boolean => {
+  const isVideoInList = (listId: string, video: any): boolean => {
     const list = bookmarks[listId];
-    if (!list || list.type !== 'list') return false;
-
-    return list.videos.some(
-      (v) =>
-        v.name === video.name &&
-        v.identifier === video.identifier &&
-        v.service === video.service
+    return (
+      list?.type === 'list' &&
+      list.videos.some(
+        (v) =>
+          v.name === video.name &&
+          v.identifier === video.identifier &&
+          v.service === video.service
+      )
     );
   };
 
-  const isVideoInAnyList = (video: {
-    name: string;
-    identifier: string;
-    service: string;
-  }): boolean => {
+  const isVideoInAnyList = (video: any): boolean => {
     return Object.values(bookmarks).some(
       (b) =>
         b.type === 'list' &&
@@ -192,32 +182,96 @@ export const AddToBookmarks = ({ metadataReference }) => {
     );
   };
 
-  const isInABookmark = useMemo(() => {
-    return isVideoInAnyList(metadataReference);
-  }, [bookmarks]);
+  const buildBookmarkTree = (
+    bookmarks: Record<string, BookmarkList>
+  ): BookmarkList[] => {
+    const roots: BookmarkList[] = [];
+    const childSet = new Set(
+      Object.values(bookmarks).flatMap((b) => b.children ?? [])
+    );
+    Object.values(bookmarks).forEach((item) => {
+      if (
+        !childSet.has(item.id) &&
+        (item.type === 'list' || item.type === 'folder')
+      ) {
+        roots.push(item);
+      }
+    });
+    return roots.sort((a, b) => a.title.localeCompare(b.title));
+  };
 
-  const lists = Object.values(bookmarks)
-    .filter((bookmark) => bookmark?.type === 'list' && !!bookmark?.title)
-    .sort((a, b) => a.title.localeCompare(b.title));
+  const renderBookmarkNode = (
+    node: BookmarkList,
+    depth = 0
+  ): React.ReactNode => {
+    if (node.type === 'folder') {
+      return (
+        <Box key={node.id} sx={{ ml: depth + 1, mt: 1 }}>
+          <Box
+            sx={{
+              display: 'flex',
+              gap: '10px',
+              alignItems: 'center',
+            }}
+          >
+            <Typography sx={{ fontWeight: 'bold' }}>{node.title}</Typography>
+            {depth < MAX_NESTING_LEVEL && (
+              <Button
+                size="small"
+                onClick={() => {
+                  setMode(2);
+                  setParentId(node.id);
+                }}
+              >
+                {t('core:bookmarks.new_list')}
+              </Button>
+            )}
+          </Box>
+          {depth < MAX_NESTING_LEVEL &&
+            (node.children || []).map((childId) => {
+              const child = bookmarks[childId];
+              return child ? renderBookmarkNode(child, depth + 1) : null;
+            })}
+        </Box>
+      );
+    }
+
+    const isInList = isVideoInList(node.id, metadataReference);
+    return (
+      <ButtonBase
+        key={node.id}
+        onClick={() =>
+          isInList
+            ? handleRemoveVideoFromList(node.id, metadataReference)
+            : handleAddVideoToList(node.id, metadataReference)
+        }
+        sx={{ pl: depth * 2, justifyContent: 'flex-start', width: '100%' }}
+      >
+        <Checkbox checked={isInList} />
+        <Typography>{node.title}</Typography>
+      </ButtonBase>
+    );
+  };
 
   return (
     <>
       <CustomTooltip
-        title={t('core:action.bookmark_video', {
+        title={t('core:action.bookmark_playlist', {
           postProcess: 'capitalizeFirstChar',
         })}
         arrow
-        placement={'top'}
+        placement="top"
       >
         <ButtonBase onClick={() => setIsOpen(true)}>
-          <BookmarksIcon color={isInABookmark ? 'success' : 'info'} />
+          <BookmarksIcon
+            color={isVideoInAnyList(metadataReference) ? 'success' : 'info'}
+          />
         </ButtonBase>
       </CustomTooltip>
       {isOpen && (
         <Box
           ref={ref}
           tabIndex={-1}
-          //   onBlur={handleBlur}
           bgcolor={theme.palette.background.paper}
           sx={{
             position: 'fixed',
@@ -238,230 +292,112 @@ export const AddToBookmarks = ({ metadataReference }) => {
           {mode === 1 && (
             <>
               <ButtonBase
-                sx={{
-                  padding: '5px 0px 10px 0px',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  gap: '10px',
-                  width: '100%',
-                }}
                 onClick={() => {
                   setIsOpen(false);
                   setMode(1);
                   setTitle('');
                 }}
+                sx={{
+                  p: '5px 0 10px',
+                  justifyContent: 'space-between',
+                  width: '100%',
+                }}
               >
-                <Typography
-                  sx={{
-                    fontSize: '0.85rem',
-                  }}
-                >
+                <Typography sx={{ fontSize: '0.85rem' }}>
                   {t('core:bookmarks.bookmark_lists', {
                     postProcess: 'capitalizeFirstChar',
                   })}
                 </Typography>
-
-                <CloseIcon
-                  sx={{
-                    fontSize: '1.15em',
-                  }}
-                />
+                <CloseIcon sx={{ fontSize: '1.15em' }} />
               </ButtonBase>
-
               <Divider />
-              <Box
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  flexGrow: 1,
-                  overflow: 'auto',
-                  '::-webkit-scrollbar-track': {
-                    backgroundColor: 'transparent',
-                  },
-
-                  '::-webkit-scrollbar': {
-                    width: '16px',
-                    height: '10px',
-                  },
-
-                  '::-webkit-scrollbar-thumb': {
-                    backgroundColor: theme.palette.primary.main,
-                    borderRadius: '8px',
-                    backgroundClip: 'content-box',
-                    border: '4px solid transparent',
-                    transition: '0.3s background-color',
-                  },
-
-                  '::-webkit-scrollbar-thumb:hover': {
-                    backgroundColor: theme.palette.primary.dark,
-                  },
-                }}
-              >
-                {lists?.length === 0 && (
+              <Box sx={{ flexGrow: 1, overflow: 'auto' }}>
+                {buildBookmarkTree(bookmarks).length === 0 ? (
                   <Typography
-                    sx={{
-                      fontSize: '1rem',
-                      width: '100%',
-                      textAlign: 'center',
-                      marginTop: '20px',
-                    }}
+                    sx={{ fontSize: '1rem', textAlign: 'center', mt: 2 }}
                   >
                     {t('core:bookmarks.no_bookmarks_lists', {
                       postProcess: 'capitalizeFirstChar',
                     })}
                   </Typography>
+                ) : (
+                  buildBookmarkTree(bookmarks).map((node) =>
+                    renderBookmarkNode(node, 0)
+                  )
                 )}
-                <Spacer height="10px" />
-                <Box
-                  sx={{
-                    width: '100%',
-                  }}
-                >
-                  {lists?.map((list) => {
-                    const isInList = isVideoInList(list.id, metadataReference);
-                    return (
-                      <ButtonBase
-                        sx={{
-                          width: '100%',
-                          justifyContent: 'flex-start',
-                        }}
-                        key={list.id}
-                        onClick={() =>
-                          isInList
-                            ? handleRemoveVideoFromList(
-                                list.id,
-                                metadataReference
-                              )
-                            : handleAddVideoToList(list.id, metadataReference)
-                        }
-                      >
-                        <Checkbox checked={isInList} />
-                        <Typography>{list?.title}</Typography>
-                      </ButtonBase>
-                    );
-                  })}
-                </Box>
               </Box>
-              <Box
-                sx={{
-                  display: 'flex',
-                  width: '100%',
-                  justifyContent: 'center',
-                }}
-              >
+              <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                 <Button
                   onClick={() => setMode(2)}
-                  variant="contained"
                   size="small"
+                  variant="contained"
                 >
-                  {t('core:bookmarks.new_list', {
-                    postProcess: 'capitalizeFirstChar',
-                  })}
+                  {t('core:bookmarks.new_list')}
+                </Button>
+                <Button
+                  onClick={() => setMode(3)}
+                  size="small"
+                  variant="contained"
+                >
+                  {t('core:bookmarks.new_folder')}
                 </Button>
               </Box>
             </>
           )}
-          {mode === 2 && (
+
+          {(mode === 2 || mode === 3) && (
             <>
-              <Box
-                sx={{
-                  padding: '5px 0px 10px 0px',
-                  display: 'flex',
-                  gap: '10px',
-                  width: '100%',
-                }}
-              >
+              <Box sx={{ display: 'flex', gap: '10px', width: '100%', py: 1 }}>
                 <ButtonBase
                   onClick={() => {
-                    setIsOpen(false);
                     setMode(1);
                     setTitle('');
+                    setParentId(null);
                   }}
                 >
-                  <ArrowBackIosIcon
-                    sx={{
-                      fontSize: '1.15em',
-                    }}
-                  />
+                  <ArrowBackIosIcon sx={{ fontSize: '1.15em' }} />
                 </ButtonBase>
-                <ButtonBase>
-                  <Typography
-                    onClick={() => {
-                      setIsOpen(false);
-                      setMode(1);
-                      setTitle('');
-                    }}
-                    sx={{
-                      fontSize: '0.85rem',
-                    }}
-                  >
-                    {t('core:bookmarks.bookmark_lists', {
-                      postProcess: 'capitalizeFirstChar',
-                    })}
-                  </Typography>
-                </ButtonBase>
+                <Typography sx={{ fontSize: '0.85rem' }}>
+                  {t('core:bookmarks.bookmark_lists', {
+                    postProcess: 'capitalizeFirstChar',
+                  })}
+                </Typography>
               </Box>
               <Divider />
-              <Box
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  flexGrow: 1,
-                  overflow: 'auto',
-                  '::-webkit-scrollbar-track': {
-                    backgroundColor: 'transparent',
-                  },
-
-                  '::-webkit-scrollbar': {
-                    width: '16px',
-                    height: '10px',
-                  },
-
-                  '::-webkit-scrollbar-thumb': {
-                    backgroundColor: theme.palette.primary.main,
-                    borderRadius: '8px',
-                    backgroundClip: 'content-box',
-                    border: '4px solid transparent',
-                    transition: '0.3s background-color',
-                  },
-
-                  '::-webkit-scrollbar-thumb:hover': {
-                    backgroundColor: theme.palette.primary.dark,
-                  },
-                }}
-              >
+              <Box sx={{ flexGrow: 1, overflow: 'auto' }}>
                 <TextField
                   inputRef={inputRef}
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  onKeyDown={handleInputKeyDown}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && title.trim()) {
+                      mode === 2
+                        ? handleCreateList(parentId ?? undefined)
+                        : handleCreateFolder();
+                    }
+                  }}
+                  fullWidth
                 />
               </Box>
-              <Box
-                sx={{
-                  display: 'flex',
-                  width: '100%',
-                  justifyContent: 'space-between',
-                }}
-              >
+              <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                 <Button
                   onClick={() => setMode(1)}
                   variant="contained"
                   size="small"
                 >
-                  {t('core:action.cancel', {
-                    postProcess: 'capitalizeFirstChar',
-                  })}
+                  {t('core:action.cancel')}
                 </Button>
                 <Button
-                  onClick={handleCreateList}
+                  onClick={() =>
+                    mode === 2
+                      ? handleCreateList(parentId ?? undefined)
+                      : handleCreateFolder()
+                  }
                   disabled={!title}
                   variant="contained"
                   size="small"
                 >
-                  {t('core:action.create', {
-                    postProcess: 'capitalizeFirstChar',
-                  })}
+                  {t('core:action.create')}
                 </Button>
               </Box>
             </>

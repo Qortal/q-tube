@@ -9,6 +9,7 @@ import {
 import React from 'react';
 import { CardContentContainerComment } from '../common/Comments/Comments-styles';
 import { useIsSmall } from '../../hooks/useIsSmall';
+import { AddToBookmarks } from '../common/ContentButtons/AddToBookmarks';
 
 interface PlaylistsProps {
   playlistData;
@@ -26,7 +27,7 @@ export const Playlists = ({
   const theme = useTheme();
   const isScreenSmall = !useMediaQuery(`(min-width:700px)`);
   const PlaylistsHeight = '36vw'; // This is videoplayer width * 9/16 (inverse of aspect ratio)
-
+  console.log('playlistData', playlistData);
   return (
     <Box
       sx={{
@@ -38,6 +39,14 @@ export const Playlists = ({
         height: '100%',
       }}
     >
+      <AddToBookmarks
+        metadataReference={{
+          identifier: playlistData?.identifier,
+          service: 'PLAYLIST',
+          name: playlistData?.name,
+        }}
+        type="playlist"
+      />
       <CardContentContainerComment
         sx={{
           marginTop: '0px',

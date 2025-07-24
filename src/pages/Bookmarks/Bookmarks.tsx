@@ -2,6 +2,8 @@ import {
   Box,
   Button,
   ButtonBase,
+  Card,
+  CardContent,
   Dialog,
   DialogActions,
   DialogContent,
@@ -12,7 +14,10 @@ import {
   MenuItem,
   Select,
   TextField,
+  Typography,
 } from '@mui/material';
+import FolderIcon from '@mui/icons-material/Folder';
+import ListIcon from '@mui/icons-material/List';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { Spacer, useGlobal } from 'qapp-core';
@@ -28,13 +33,15 @@ import { BookmarkList } from '../../types/bookmark.ts';
 
 export const Bookmarks = () => {
   const { t } = useTranslation(['core']);
-
   const isSmall = useIsSmall();
-  const [selectedList, setSelectedList, isHydratedSelectedList] =
-    usePersistedState<number | any>('selectedBookmarkList', 0);
-  const [bookmarks, setBookmarks, isHydratedBookmarks] = usePersistedState<
+  const [selectedList, setSelectedList] = usePersistedState<any>(
+    'selectedBookmarkList',
+    0
+  );
+  const [bookmarks, setBookmarks] = usePersistedState<
     Record<string, BookmarkList>
   >('bookmarks-v1', {});
+  const [folderView, setFolderView] = useState<string | null>(null);
   const inputRef = useRef(null);
   const [isOpenEdit, setIsOpenEdit] = useState(false);
   const [newTitle, setNewTitle] = useState('');
@@ -61,6 +68,22 @@ export const Bookmarks = () => {
       .sort((a, b) => a.title.localeCompare(b.title));
   }, [bookmarks]);
 
+  const rootLists = useMemo(() => {
+    const childIds = new Set(
+      Object.values(bookmarks).flatMap((b) => b.children ?? [])
+    );
+    return Object.values(bookmarks).filter(
+      (b) => (b.type === 'list' || b.type === 'folder') && !childIds.has(b.id)
+    );
+  }, [bookmarks]);
+
+  const currentLists = useMemo(() => {
+    if (!folderView) return rootLists;
+    const folder = bookmarks[folderView];
+    if (!folder || folder.type !== 'folder') return [];
+    return (folder.children || []).map((id) => bookmarks[id]).filter(Boolean);
+  }, [folderView, bookmarks, rootLists]);
+
   const handleChange = (event) => {
     const listId = event.target.value;
     if (!listId) {
@@ -79,9 +102,8 @@ export const Bookmarks = () => {
 
   const handleDeleteList = (listId: string) => {
     setBookmarks((prev) => {
-      if (!prev[listId]) return prev; // List doesn't exist
-
-      const { [listId]: _, ...rest } = prev; // Remove the key using object destructuring
+      if (!prev[listId]) return prev;
+      const { [listId]: _, ...rest } = prev;
       return rest;
     });
   };
@@ -90,7 +112,6 @@ export const Bookmarks = () => {
     setBookmarks((prev) => {
       const list = prev[listId];
       if (!list || list.type !== 'list') return prev;
-
       return {
         ...prev,
         [listId]: {
@@ -110,18 +131,10 @@ export const Bookmarks = () => {
     }
   };
 
-  const handleRemoveVideoFromList = (
-    listId: string,
-    video: {
-      name: string;
-      identifier: string;
-      service: string;
-    }
-  ) => {
+  const handleRemoveVideoFromList = (listId: string, video: any) => {
     setBookmarks((prev) => {
       const list = prev[listId];
       if (!list || list.type !== 'list') return prev;
-
       const updatedVideos = list.videos.filter(
         (v) =>
           !(
@@ -130,9 +143,7 @@ export const Bookmarks = () => {
             v.service === video.service
           )
       );
-      // If no change, avoid unnecessary update
       if (updatedVideos.length === list.videos.length) return prev;
-
       return {
         ...prev,
         [listId]: {
@@ -152,7 +163,27 @@ export const Bookmarks = () => {
     setIsOpenEdit(false);
   };
 
-  if (!selectedList && isHydratedBookmarks) {
+  const handleDeleteFolder = (folderId: string) => {
+    if (!bookmarks[folderId] || bookmarks[folderId].type !== 'folder') return;
+
+    const folder = bookmarks[folderId];
+    const children = folder.children || [];
+
+    setBookmarks((prev) => {
+      const updated = { ...prev };
+      delete updated[folderId];
+      children.forEach((childId) => {
+        delete updated[childId];
+      });
+      return updated;
+    });
+
+    setFolderView(null);
+  };
+
+  console.log('bookmark', bookmarks);
+
+  if (!selectedList) {
     return (
       <PageTransition>
         <Box
@@ -161,79 +192,79 @@ export const Bookmarks = () => {
             display: 'flex',
             flexDirection: 'column',
             width: '100%',
-            alignItems: isSmall ? 'center' : 'flex-start',
+            alignItems: 'flex-start',
           }}
         >
-          <FormControl
-            sx={{
-              maxWidth: '100%',
-              width: '320px',
-            }}
-          >
-            <InputLabel id="bookmark-list-label">
-              {t('core:bookmarks.select_list', {
-                postProcess: 'capitalizeFirstChar',
-              })}
-            </InputLabel>
+          <Box display="flex" alignItems="center" gap={2}>
+            {(folderView !== null || selectedList !== 0) && (
+              <Button
+                onClick={() => {
+                  setFolderView(null);
+                  setSelectedList(0);
+                }}
+                size="small"
+              >
+                ←{' '}
+                {t('core:action.back', { postProcess: 'capitalizeFirstChar' })}
+              </Button>
+            )}
 
-            <Select
-              labelId="bookmark-list-label"
-              value={selectedList?.id || 0}
-              label={t('core:bookmarks.select_list', {
-                postProcess: 'capitalizeFirstChar',
-              })}
-              onChange={handleChange}
-              displayEmpty
+            {folderView && (
+              <Button
+                color="error"
+                size="small"
+                onClick={() => {
+                  const confirm = window.confirm(
+                    t('core:bookmarks.confirm_delete_folder') ||
+                      'Are you sure you want to delete this folder and all its lists?'
+                  );
+                  if (confirm) handleDeleteFolder(folderView);
+                }}
+              >
+                {t('core:action.delete', {
+                  postProcess: 'capitalizeFirstChar',
+                })}
+              </Button>
+            )}
+          </Box>
+          {/* {folderView && (
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
+              }}
             >
-              <MenuItem value={0}>
-                <em>
-                  {t('core:publish.all_videos', {
-                    postProcess: 'capitalizeFirstChar',
-                  })}
-                </em>
-              </MenuItem>
-              {sortedLists.map((list) => (
-                <MenuItem key={list.id} value={list.id}>
-                  {list.title}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <Spacer height="20px" />
+              <FolderIcon />
+              <Typography>{bookmarks[folderView]?.title}</Typography>
+            </Box>
+          )} */}
 
           <Box
             sx={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))',
+              gap: 2,
               width: '100%',
-              flexDirection: 'column',
-              display: 'flex',
-              alignItems: isSmall ? 'center' : 'flex-start',
             }}
           >
-            <PageSubTitle>
-              {t('core:bookmarks.all_bookmarks', {
-                postProcess: 'capitalizeFirstChar',
-              })}
-            </PageSubTitle>
-            <Spacer height="14px" />
-            <Divider flexItem />
-            <Spacer height="20px" />
-          </Box>
-
-          <Box>
-            <Box
-              sx={{
-                width: '100%',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-              }}
-            >
-              <VideoListPreloaded
-                listName="bookmarks-all"
-                videoList={allVideos}
-                disableActions
-              />
-            </Box>
+            {currentLists.map((item) => (
+              <Card
+                key={item.id}
+                sx={{ cursor: 'pointer' }}
+                onClick={() => {
+                  if (item.type === 'folder') setFolderView(item.id);
+                  else setSelectedList(item);
+                }}
+              >
+                <CardContent
+                  sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
+                >
+                  {item.type === 'folder' ? <FolderIcon /> : <ListIcon />}
+                  <Typography>{item?.title}</Typography>
+                </CardContent>
+              </Card>
+            ))}
           </Box>
         </Box>
       </PageTransition>
@@ -242,85 +273,55 @@ export const Bookmarks = () => {
 
   return (
     <PageTransition>
-      <FormControl fullWidth>
-        <InputLabel id="bookmark-list-label">
-          {t('core:bookmarks.select_list', {
-            postProcess: 'capitalizeFirstChar',
-          })}
-        </InputLabel>
+      <Button
+        onClick={() => {
+          setSelectedList(0);
+          setFolderView(null);
+        }}
+        size="small"
+      >
+        ← {t('core:action.back', { postProcess: 'capitalizeFirstChar' })}
+      </Button>
+      <Spacer height="10px" />
 
-        <Select
-          labelId="bookmark-list-label"
-          value={selectedList?.id || 0}
-          label={t('core:bookmarks.select_list', {
-            postProcess: 'capitalizeFirstChar',
-          })}
-          onChange={handleChange}
-          displayEmpty
-        >
-          <MenuItem value={0}>
-            <em>
-              {t('core:publish.all_videos', {
-                postProcess: 'capitalizeFirstChar',
-              })}
-            </em>
-          </MenuItem>
-          {sortedLists.map((list) => (
-            <MenuItem key={list.id} value={list.id}>
-              {list.title}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
+      <PageSubTitle>
+        {t('core:bookmarks.bookmark_list', {
+          postProcess: 'capitalizeFirstChar',
+        })}
+        : {selectedList?.title}
+      </PageSubTitle>
+
+      <Spacer height="10px" />
+
+      <Button
+        size="small"
+        onClick={() => setIsOpenEdit(true)}
+        variant="outlined"
+        startIcon={<EditIcon />}
+      >
+        Edit
+      </Button>
+
+      <Spacer height="10px" />
+      <Divider flexItem />
       <Spacer height="20px" />
 
       <Box
         sx={{
           width: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
         }}
       >
-        <PageSubTitle
-          sx={{
-            alignSelf: 'flex-start',
-          }}
-        >
-          {t('core:bookmarks.bookmark_list', {
-            postProcess: 'capitalizeFirstChar',
-          })}
-          : {selectedList?.title}
-        </PageSubTitle>
-        <Spacer height="10px" />
-
-        <Button
-          size="small"
-          onClick={() => setIsOpenEdit(true)}
-          variant="outlined"
-          startIcon={<EditIcon />}
-        >
-          Edit
-        </Button>
-
-        <Spacer height="10px" />
-        <Divider flexItem />
-        <Spacer height="20px" />
+        <VideoListPreloaded
+          listName={`bookmarks-all-${selectedList?.id}`}
+          videoList={allVideos}
+          handleRemoveVideoFromList={handleRemoveVideoFromList}
+          listId={selectedList?.id}
+        />
       </Box>
-      <Box>
-        <Box
-          sx={{
-            width: '100%',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-          }}
-        >
-          <VideoListPreloaded
-            listName={`bookmarks-all-${selectedList?.id}`}
-            videoList={allVideos}
-            handleRemoveVideoFromList={handleRemoveVideoFromList}
-            listId={selectedList?.id}
-          />
-        </Box>
-      </Box>
+
       <Dialog
         open={isOpenEdit}
         onClose={() => setIsOpenEdit(false)}
@@ -351,13 +352,9 @@ export const Bookmarks = () => {
             variant="contained"
             color="error"
             onClick={deleteList}
-            sx={{
-              marginRight: 'auto',
-            }}
+            sx={{ marginRight: 'auto' }}
           >
-            {t('core:action.delete', {
-              postProcess: 'capitalizeFirstChar',
-            })}
+            {t('core:action.delete', { postProcess: 'capitalizeFirstChar' })}
           </Button>
           <Button
             variant="contained"
@@ -366,9 +363,7 @@ export const Bookmarks = () => {
               setNewTitle(selectedList?.title);
             }}
           >
-            {t('core:action.close', {
-              postProcess: 'capitalizeFirstChar',
-            })}
+            {t('core:action.close', { postProcess: 'capitalizeFirstChar' })}
           </Button>
           <Button
             disabled={!newTitle.trim() || selectedList?.title === newTitle}
@@ -384,9 +379,7 @@ export const Bookmarks = () => {
               setIsOpenEdit(false);
             }}
           >
-            {t('core:action.save', {
-              postProcess: 'capitalizeFirstChar',
-            })}
+            {t('core:action.save', { postProcess: 'capitalizeFirstChar' })}
           </Button>
         </DialogActions>
       </Dialog>

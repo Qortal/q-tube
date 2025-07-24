@@ -72,47 +72,70 @@ export const VideoListItem = ({
             zIndex: 2,
           }}
         >
-          {qortalMetadata?.name === username && (
-            <Tooltip
-              title={t('core:publish.edit_playlist', {
-                postProcess: 'capitalizeFirstChar',
-              })}
-              placement="top"
-            >
-              <BlockIconContainer>
-                <EditIcon
-                  onClick={() => {
-                    const resourceData = {
-                      title: qortalMetadata?.metadata?.title,
-                      category: qortalMetadata?.metadata?.category,
-                      categoryName: qortalMetadata?.metadata?.categoryName,
-                      tags: qortalMetadata?.metadata?.tags || [],
-                      description: qortalMetadata?.metadata?.description,
-                      created: qortalMetadata?.created,
-                      updated: qortalMetadata?.updated,
-                      name: qortalMetadata.name,
-                      videoImage: '',
-                      identifier: qortalMetadata.identifier,
-                      service: qortalMetadata.service,
-                    };
-                    setEditPlaylist({ ...resourceData, ...video });
-                  }}
-                />
-              </BlockIconContainer>
-            </Tooltip>
-          )}
+          {qortalMetadata?.name === username &&
+            !isBookmarks &&
+            !disableActions && (
+              <Tooltip
+                title={t('core:publish.edit_playlist', {
+                  postProcess: 'capitalizeFirstChar',
+                })}
+                placement="top"
+              >
+                <BlockIconContainer>
+                  <EditIcon
+                    onClick={() => {
+                      const resourceData = {
+                        title: qortalMetadata?.metadata?.title,
+                        category: qortalMetadata?.metadata?.category,
+                        categoryName: qortalMetadata?.metadata?.categoryName,
+                        tags: qortalMetadata?.metadata?.tags || [],
+                        description: qortalMetadata?.metadata?.description,
+                        created: qortalMetadata?.created,
+                        updated: qortalMetadata?.updated,
+                        name: qortalMetadata.name,
+                        videoImage: '',
+                        identifier: qortalMetadata.identifier,
+                        service: qortalMetadata.service,
+                      };
+                      setEditPlaylist({ ...resourceData, ...video });
+                    }}
+                  />
+                </BlockIconContainer>
+              </Tooltip>
+            )}
 
-          {qortalMetadata?.name !== username && (
+          {qortalMetadata?.name !== username &&
+            !isBookmarks &&
+            !disableActions && (
+              <Tooltip
+                title={t('core:publish.block_user_content', {
+                  postProcess: 'capitalizeFirstChar',
+                })}
+                placement="top"
+              >
+                <BlockIconContainer>
+                  <BlockIcon
+                    onClick={() => {
+                      blockUserFunc(qortalMetadata?.name);
+                    }}
+                  />
+                </BlockIconContainer>
+              </Tooltip>
+            )}
+          {isBookmarks && handleRemoveVideoFromList && !disableActions && (
             <Tooltip
-              title={t('core:publish.block_user_content', {
+              title={t('core:publish.remove_playlist_list', {
                 postProcess: 'capitalizeFirstChar',
               })}
               placement="top"
             >
               <BlockIconContainer>
-                <BlockIcon
+                <DeleteIcon
                   onClick={() => {
-                    blockUserFunc(qortalMetadata?.name);
+                    handleRemoveVideoFromList([
+                      qortalMetadata,
+                      video.videoReference,
+                    ]);
                   }}
                 />
               </BlockIconContainer>

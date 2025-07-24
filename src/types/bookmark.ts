@@ -2,6 +2,7 @@ import { QortalMetadata } from 'qapp-core';
 
 interface VideoBookmark extends QortalMetadata {
   addedAt: number;
+  type: 'video' | 'playlist';
 }
 
 export interface BookmarkList {
@@ -13,7 +14,7 @@ export interface BookmarkList {
   lastAdded: number;
   videos: VideoBookmark[];
   lastAccessed: number;
-  type: 'list' | 'playlist' | 'folder';
-  playlistReference: string | null;
-  folderName: string | null;
+  type: 'list' | 'folder';
+  // New: for folders only
+  children?: string[];
 }

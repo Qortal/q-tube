@@ -21,14 +21,15 @@ export const FrameExtractor = ({
 
   useEffect(() => {
     const video = videoRef.current;
-    video.addEventListener('loadedmetadata', () => {
+    if (!video) return;
+
+    const handleLoadedMetadata = () => {
       const duration = video.duration;
       if (isFinite(duration)) {
-        // Proceed with your logic
-
         const newVideoDurations = [...videoDurations];
         newVideoDurations[index] = duration;
-        setVideoDurations([...newVideoDurations]);
+        setVideoDurations(newVideoDurations);
+
         const section = duration / 4;
         const timestamps = [];
 
@@ -41,9 +42,13 @@ export const FrameExtractor = ({
       } else {
         onFramesExtracted([]);
       }
-    });
-  }, [videoFile]);
+    };
 
+    video.addEventListener('loadedmetadata', handleLoadedMetadata);
+    return () => {
+      video.removeEventListener('loadedmetadata', handleLoadedMetadata);
+    };
+  }, [videoFile]);
   useEffect(() => {
     if (durations.length === 4) {
       extractFrames();
@@ -54,12 +59,24 @@ export const FrameExtractor = ({
     return URL.createObjectURL(videoFile);
   }, [videoFile]);
 
+  useEffect(() => {
+    return () => {
+      URL.revokeObjectURL(fileUrl);
+    };
+  }, [fileUrl]);
+
   const extractFrames = async () => {
     const video = videoRef.current;
     const canvas = canvasRef.current;
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
+    if (!video || !canvas) return;
+
+    const MAX_WIDTH = 800;
+    const scale = Math.min(1, MAX_WIDTH / video.videoWidth);
+
+    canvas.width = video.videoWidth * scale;
+    canvas.height = video.videoHeight * scale;
     const context = canvas.getContext('2d');
+    if (!context) return;
 
     const frameData = [];
 
@@ -69,7 +86,9 @@ export const FrameExtractor = ({
         const onSeeked = () => {
           context.drawImage(video, 0, 0, canvas.width, canvas.height);
           canvas.toBlob((blob) => {
-            frameData.push(blob);
+            if (blob) {
+              frameData.push(blob);
+            }
             resolve();
           }, 'image/png');
           video.removeEventListener('seeked', onSeeked);
@@ -78,9 +97,8 @@ export const FrameExtractor = ({
       });
     }
 
-    onFramesExtracted(frameData);
+    await onFramesExtracted(frameData);
   };
-
   return (
     <div>
       <video ref={videoRef} style={{ display: 'none' }} src={fileUrl}></video>

@@ -121,9 +121,7 @@ export default function FileElement({
 
   return (
     <Box
-      // onClick={handlePlay}
       sx={{
-        width: '100%',
         overflow: 'hidden',
         position: 'relative',
         cursor: 'pointer',

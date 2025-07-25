@@ -26,7 +26,7 @@ const MAX_NESTING_LEVEL = 1;
 export const AddToBookmarks = ({ metadataReference, type = 'video' }) => {
   const { t } = useTranslation(['core']);
   const { lists: globalLists } = useGlobal();
-  const [bookmarks, setBookmarks] = usePersistedState<
+  const [bookmarks, setBookmarks, isHydratedBookmarks] = usePersistedState<
     Record<string, BookmarkList>
   >('bookmarks-v1', {});
   const [isOpen, setIsOpen] = useState(false);
@@ -46,6 +46,7 @@ export const AddToBookmarks = ({ metadataReference, type = 'video' }) => {
   }, [mode]);
 
   const handleCreateList = (parentId?: string) => {
+    if (!isHydratedBookmarks) return;
     const newId = uid.rnd();
     setBookmarks((prev) => {
       const updated: Record<string, BookmarkList> = {
@@ -77,6 +78,7 @@ export const AddToBookmarks = ({ metadataReference, type = 'video' }) => {
   };
 
   const handleCreateFolder = () => {
+    if (!isHydratedBookmarks) return;
     const newId = uid.rnd();
     setBookmarks((prev) => ({
       ...prev,
@@ -98,6 +100,7 @@ export const AddToBookmarks = ({ metadataReference, type = 'video' }) => {
   };
 
   const handleAddVideoToList = (listId: string, video: any) => {
+    if (!isHydratedBookmarks) return;
     globalLists.deleteList('bookmarks-all');
     globalLists.deleteList(`bookmarks-all-${listId}`);
     setBookmarks((prev) => {
@@ -134,6 +137,7 @@ export const AddToBookmarks = ({ metadataReference, type = 'video' }) => {
   };
 
   const handleRemoveVideoFromList = (listId: string, video: any) => {
+    if (!isHydratedBookmarks) return;
     setBookmarks((prev) => {
       const list = prev[listId];
       if (!list || list.type !== 'list') return prev;

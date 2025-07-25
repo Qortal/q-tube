@@ -38,7 +38,7 @@ export const Bookmarks = () => {
     'selectedBookmarkList',
     0
   );
-  const [bookmarks, setBookmarks] = usePersistedState<
+  const [bookmarks, setBookmarks, isHydratedBookmarks] = usePersistedState<
     Record<string, BookmarkList>
   >('bookmarks-v1', {});
   const [folderView, setFolderView] = useState<string | null>(null);
@@ -101,6 +101,7 @@ export const Bookmarks = () => {
   }, [selectedList]);
 
   const handleDeleteList = (listId: string) => {
+    if (!isHydratedBookmarks) return;
     setBookmarks((prev) => {
       if (!prev[listId]) return prev;
       const { [listId]: _, ...rest } = prev;
@@ -109,6 +110,7 @@ export const Bookmarks = () => {
   };
 
   const handleEditListTitle = (listId: string, newTitle: string) => {
+    if (!isHydratedBookmarks) return;
     setBookmarks((prev) => {
       const list = prev[listId];
       if (!list || list.type !== 'list') return prev;
@@ -132,6 +134,7 @@ export const Bookmarks = () => {
   };
 
   const handleRemoveVideoFromList = (listId: string, video: any) => {
+    if (!isHydratedBookmarks) return;
     setBookmarks((prev) => {
       const list = prev[listId];
       if (!list || list.type !== 'list') return prev;
@@ -164,6 +167,7 @@ export const Bookmarks = () => {
   };
 
   const handleDeleteFolder = (folderId: string) => {
+    if (!isHydratedBookmarks) return;
     if (!bookmarks[folderId] || bookmarks[folderId].type !== 'folder') return;
 
     const folder = bookmarks[folderId];
@@ -193,6 +197,24 @@ export const Bookmarks = () => {
             alignItems: 'flex-start',
           }}
         >
+          <Box
+            sx={{
+              width: '95%',
+            }}
+          >
+            <PageSubTitle
+              sx={{
+                alignSelf: 'flex-start',
+              }}
+            >
+              {t('core:sidenav.bookmarks', {
+                postProcess: 'capitalizeFirstChar',
+              })}
+            </PageSubTitle>
+            <Spacer height="14px" />
+            <Divider flexItem />
+            <Spacer height="20px" />
+          </Box>
           <Box
             display="flex"
             alignItems="center"
@@ -229,19 +251,24 @@ export const Bookmarks = () => {
               </Button>
             )}
           </Box>
-          {/* {folderView && (
+
+          {currentLists?.length === 0 && (
             <Box
               sx={{
+                width: '100%',
                 display: 'flex',
-                alignItems: 'center',
-                gap: '10px',
+                justifyContent: 'center',
+                marginTop: '20px',
               }}
             >
-              <FolderIcon />
-              <Typography>{bookmarks[folderView]?.title}</Typography>
+              <Typography>
+                {' '}
+                {t('core:bookmarks.no_bookmarks_lists', {
+                  postProcess: 'capitalizeFirstChar',
+                })}
+              </Typography>
             </Box>
-          )} */}
-
+          )}
           <Box
             sx={{
               display: 'grid',

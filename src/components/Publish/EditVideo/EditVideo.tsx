@@ -24,6 +24,10 @@ import {
 
 import BoundedNumericTextField from '../../../utils/BoundedNumericTextField.tsx';
 import { objectToBase64 } from '../../../utils/PublishFormatter.ts';
+import {
+  getFileExtension,
+  getFileExtensionIndex,
+} from '../../../utils/stringFunctions.ts';
 import { FrameExtractor } from '../../common/FrameExtractor/FrameExtractor.tsx';
 import ImageUploader from '../../common/ImageUploader.tsx';
 import { TextEditor } from '../../common/TextEditor/TextEditor.tsx';
@@ -42,14 +46,14 @@ import {
   NewCrowdfundTitle,
   TimesIcon,
 } from './EditVideo-styles.tsx';
-import { useAuth, useGlobal, usePublish } from 'qapp-core';
+import { showError, useAuth, useGlobal, usePublish } from 'qapp-core';
 import { useAtom, useSetAtom } from 'jotai';
 import {
   AltertObject,
   setNotificationAtom,
 } from '../../../state/global/notifications.ts';
 import { editVideoAtom } from '../../../state/publish/video.ts';
-
+import { useMediaInfo } from '../../../hooks/useMediaInfo.tsx';
 export const EditVideo = () => {
   const theme = useTheme();
   const setNotification = useSetAtom(setNotificationAtom);
@@ -72,6 +76,7 @@ export const EditVideo = () => {
   const [videoDurations, setVideoDurations] = useState<number[]>([
     editVideoProperties?.duration || 0,
   ]);
+  const { isHEVC } = useMediaInfo();
 
   useEffect(() => {
     if (editVideoProperties?.duration) {
@@ -85,10 +90,22 @@ export const EditVideo = () => {
     },
     maxFiles: 1,
     maxSize,
-    onDrop: (acceptedFiles, rejectedFiles) => {
+    onDrop: async (acceptedFiles, rejectedFiles) => {
       const firstFile = acceptedFiles[0];
 
-      setFile(firstFile);
+      const notSupportedCodec = await isHEVC(firstFile);
+
+      const isMKV = getFileExtension(firstFile) === 'mkv';
+      const isUnsupportedFile = notSupportedCodec || isMKV;
+
+      if (isUnsupportedFile) {
+        if (notSupportedCodec)
+          showError(`${firstFile.name} uses the unsupported encoding: HEVC`);
+        if (isMKV)
+          showError(
+            `${firstFile.name} uses the unsupported file container: MKV`
+          );
+      } else setFile(firstFile);
 
       let errorString: null | string = null;
 
@@ -249,7 +266,7 @@ export const EditVideo = () => {
           description: metadescription,
           identifier: editVideoProperties.videoReference?.identifier,
           tag1: QTUBE_VIDEO_BASE,
-          filename: `${alphanumericString.trim()}.${fileExtension}`,
+          filename: file.name,
         };
         listOfPublishes.push(requestBodyVideo);
       }

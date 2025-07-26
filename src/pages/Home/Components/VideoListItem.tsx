@@ -233,7 +233,6 @@ export const VideoListItem = ({
       </VideoCardCol>
     );
   }
-
   return (
     <VideoCardCol
       key={qortalMetadata?.identifier}
@@ -383,12 +382,7 @@ export const VideoListItem = ({
             padding: isMobile ? '0px 5px' : '0px',
           }}
         >
-          <NameContainer
-            onClick={(e) => {
-              e.stopPropagation();
-              navigate(`/channel/${qortalMetadata?.name}`);
-            }}
-          >
+          <NameContainer>
             <Avatar
               sx={{
                 height: 40,
@@ -400,6 +394,10 @@ export const VideoListItem = ({
               }}
               src={`/arbitrary/THUMBNAIL/${qortalMetadata?.name}/qortal_avatar`}
               alt={`${qortalMetadata?.name}'s avatar`}
+              onClick={(e) => {
+                e.stopPropagation();
+                navigate(`/channel/${qortalMetadata?.name}`);
+              }}
             />
             <Tooltip
               title={video.title}

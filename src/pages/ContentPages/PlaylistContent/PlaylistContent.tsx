@@ -118,6 +118,7 @@ export const PlaylistContent = () => {
               >
                 {videoReference && (
                   <VideoPlayer
+                    created={videoReference?.created}
                     name={videoReference?.name}
                     service={videoReference?.service}
                     identifier={videoReference?.identifier}

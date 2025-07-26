@@ -125,7 +125,7 @@ export const AddToBookmarks = ({ metadataReference, type = 'video' }) => {
             {
               ...video,
               addedAt: Date.now(),
-              created: Date.now(),
+              created: video?.created || Date.now(),
               size: 200,
               type,
             },

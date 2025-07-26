@@ -30,6 +30,7 @@ export interface VideoPlayerProps {
   duration?: number;
   filename: string;
   parentStyles?: CSS.Properties;
+  created: number;
 }
 
 export const VideoPlayer = ({ ...props }: VideoPlayerProps) => {
@@ -39,13 +40,13 @@ export const VideoPlayer = ({ ...props }: VideoPlayerProps) => {
   const { lists } = useGlobal();
   const [watchedHistory, setWatchedHistory, isHydratedWatchedHistory] =
     usePersistedState<any[]>('watched-v1', []);
-
   const onPlay = useCallback(() => {
     if (!isHydratedWatchedHistory) return;
     const videoReference = {
       identifier: props?.jsonId,
       name: props?.user,
       service: 'DOCUMENT',
+      created: props?.created || Date.now(),
       watchedAt: Date.now(),
     };
 

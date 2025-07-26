@@ -192,6 +192,7 @@ export const VideoContent = () => {
               name={videoReference?.name}
               service={videoReference?.service}
               identifier={videoReference?.identifier}
+              created={videoData?.created}
               user={channelName}
               jsonId={id}
               poster={videoCover || ''}

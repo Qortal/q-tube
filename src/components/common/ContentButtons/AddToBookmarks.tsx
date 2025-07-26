@@ -285,7 +285,13 @@ export const AddToBookmarks = ({ metadataReference, type = 'video' }) => {
         arrow
         placement="top"
       >
-        <ButtonBase onClick={() => setIsOpen(true)}>
+        <ButtonBase
+          onClick={() => setIsOpen(true)}
+          sx={{
+            alignSelf: 'flex-start',
+            marginBottom: '5px',
+          }}
+        >
           <BookmarksIcon
             color={isVideoInAnyList(metadataReference) ? 'success' : 'info'}
           />

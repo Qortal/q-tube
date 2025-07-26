@@ -17,7 +17,7 @@ export function useMediaInfo() {
   useEffect(() => {
     mediaInfoFactory({
       format: 'text',
-      locateFile: () => '/MediaInfoModule.wasm',
+      locateFile: () => `${import.meta.env.BASE_URL}MediaInfoModule.wasm`,
     })
       .then((mi) => {
         mediaInfoRef.current = mi;

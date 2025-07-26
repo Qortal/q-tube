@@ -523,7 +523,7 @@ export const PublishVideo = ({
       }
 
       await publishFromLibrary.publishMultipleResources(listOfPublishes);
-      lists.addNewResources('AllVideos', tempResourcesForList);
+      lists.addNewResources('latestVideos', tempResourcesForList);
       const notificationObj: AltertObject = {
         msg: 'Video published',
         alertType: 'success',

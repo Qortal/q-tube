@@ -121,8 +121,8 @@ export const PlaylistContent = () => {
                     name={videoReference?.name}
                     service={videoReference?.service}
                     identifier={videoReference?.identifier}
-                    user={channelName}
-                    jsonId={id}
+                    user={videoData?.user}
+                    jsonId={videoData?.id}
                     poster={videoCover || ''}
                     nextVideo={nextVideo}
                     onEnd={onEndVideo}

@@ -39,6 +39,7 @@ export const VideoPlayer = ({ ...props }: VideoPlayerProps) => {
   const { lists } = useGlobal();
   const [watchedHistory, setWatchedHistory, isHydratedWatchedHistory] =
     usePersistedState<any[]>('watched-v1', []);
+
   const onPlay = useCallback(() => {
     if (!isHydratedWatchedHistory) return;
     const videoReference = {

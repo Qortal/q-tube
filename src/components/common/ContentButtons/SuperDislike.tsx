@@ -25,7 +25,6 @@ import {
 import BoundedNumericTextField from '../../../utils/BoundedNumericTextField.tsx';
 import { numberToInt, truncateNumber } from '../../../utils/numberFunctions.ts';
 import { objectToBase64 } from '../../../utils/PublishFormatter.ts';
-import { getUserBalance } from '../../../utils/qortalRequestFunctions.ts';
 import { MultiplePublish } from '../../Publish/MultiplePublish/MultiplePublishAll.tsx';
 import {
   CrowdfundActionButton,
@@ -35,7 +34,12 @@ import {
   Spacer,
 } from '../../Publish/PublishVideo/PublishVideo-styles.tsx';
 import { CommentInput } from '../Comments/Comments-styles.tsx';
-import { hashWordWithoutPublicSalt, useAuth } from 'qapp-core';
+import {
+  hashWordWithoutPublicSalt,
+  useAuth,
+  useQortBalance,
+  useQortBalance,
+} from 'qapp-core';
 import { useSetAtom } from 'jotai';
 import {
   AltertObject,
@@ -56,7 +60,8 @@ export const SuperDislike = ({
 
   const [superDislikeDonationAmount, setSuperdislikeDonationAmount] =
     useState<number>(minPriceSuperDislike);
-  const [currentBalance, setCurrentBalance] = useState<string>('');
+
+  const { value: currentBalance } = useQortBalance();
 
   const [comment, setComment] = useState<string>('');
   const { name: username } = useAuth();
@@ -176,11 +181,11 @@ export const SuperDislike = ({
     }
   }
 
-  useEffect(() => {
-    getUserBalance().then((foundBalance) => {
-      setCurrentBalance(truncateNumber(foundBalance, 2));
-    });
-  }, []);
+  // useEffect(() => {
+  //   getUserBalance().then((foundBalance) => {
+  //     setCurrentBalance(truncateNumber(foundBalance, 2));
+  //   });
+  // }, []);
 
   const isScreenSmall = !useMediaQuery(`(min-width:400px)`);
   const theme = useTheme();

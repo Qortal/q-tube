@@ -6,3 +6,6 @@ export interface Name {
 export type Names = Name[];
 
 export const namesAtom = atom<Names>([]);
+
+export const followListAtom = atom<string[]>([]);
+export const hasFetchFollowListAtom = atom<null | true | false>(null);

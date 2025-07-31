@@ -177,7 +177,7 @@ export const EditPlaylist = () => {
           'Cannot publish without access to your name. Please authenticate.';
       }
 
-      if (!isNew && editVideoProperties?.user !== username) {
+      if (!isNew && editVideoProperties?.name !== username) {
         errorMsg = "Cannot publish another user's resource";
       }
 
@@ -220,8 +220,7 @@ export const EditPlaylist = () => {
       });
       const id = uid.rnd();
 
-      let commentsId = editVideoProperties?.id;
-
+      let commentsId = editVideoProperties?.identifier;
       if (isNew) {
         commentsId = `${QTUBE_PLAYLIST_BASE}_cm_${id}`;
       }
@@ -249,7 +248,7 @@ export const EditPlaylist = () => {
 
       // Description is obtained from raw data
 
-      let identifier = editVideoProperties?.id;
+      let identifier = editVideoProperties?.identifier;
       const sanitizeTitle = title
         .replace(/[^a-zA-Z0-9\s-]/g, '')
         .replace(/\s+/g, '-')

@@ -4,6 +4,11 @@ import { MouseEvent, useEffect, useState } from 'react';
 import { darken, styled } from '@mui/material/styles';
 import { CustomTooltip, TooltipLine } from './CustomTooltip.tsx';
 import { useTranslation } from 'react-i18next';
+import {
+  followListAtom,
+  hasFetchFollowListAtom,
+} from '../../../state/global/names.ts';
+import { useAtom } from 'jotai';
 
 interface FollowButtonProps extends ButtonProps {
   followerName: string;
@@ -17,7 +22,9 @@ export type FollowData = {
 export const FollowButton = ({ followerName, ...props }: FollowButtonProps) => {
   const { t } = useTranslation(['core']);
 
-  const [followingList, setFollowingList] = useState<string[]>([]);
+  const [followingList, setFollowingList] = useAtom(followListAtom);
+  const [hasFetchedFollow, setHasFetchFollow] = useAtom(hasFetchFollowListAtom);
+
   const [followingSize, setFollowingSize] = useState<string>('');
   const [followingItemCount, setFollowingItemCount] = useState<string>('');
   const isFollowingName = () => {
@@ -25,14 +32,20 @@ export const FollowButton = ({ followerName, ...props }: FollowButtonProps) => {
   };
 
   useEffect(() => {
+    if (hasFetchedFollow !== null) return;
     qortalRequest({
       action: 'GET_LIST_ITEMS',
       list_name: 'followedNames',
-    }).then((followList) => {
-      setFollowingList(followList);
-    });
+    })
+      .then((followList) => {
+        setFollowingList(followList);
+        setHasFetchFollow(true);
+      })
+      .catch(() => {
+        setHasFetchFollow(false);
+      });
     getFollowSize();
-  }, []);
+  }, [hasFetchedFollow]);
 
   const followName = () => {
     if (followingList.includes(followerName) === false) {
@@ -147,6 +160,7 @@ export const FollowButton = ({ followerName, ...props }: FollowButtonProps) => {
     <>
       <CustomTooltip title={tooltipTitle} placement={'top'} arrow>
         <Button
+          disabled={hasFetchedFollow === false}
           {...props}
           variant={'outlined'}
           color="info"

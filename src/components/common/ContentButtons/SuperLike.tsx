@@ -35,7 +35,7 @@ import {
   Spacer,
 } from '../../Publish/PublishVideo/PublishVideo-styles.tsx';
 import { CommentInput } from '../Comments/Comments-styles.tsx';
-import { hashWordWithoutPublicSalt, useAuth } from 'qapp-core';
+import { hashWordWithoutPublicSalt, useAuth, useQortBalance } from 'qapp-core';
 import { CustomTooltip } from './CustomTooltip.tsx';
 import { useSetAtom } from 'jotai';
 import {
@@ -60,8 +60,7 @@ export const SuperLike = ({
 
   const [superlikeDonationAmount, setSuperlikeDonationAmount] =
     useState<number>(minPriceSuperLike);
-  const [currentBalance, setCurrentBalance] = useState<string>('');
-
+  const { value: currentBalance } = useQortBalance();
   const [comment, setComment] = useState<string>('');
   const { name: username } = useAuth();
   const [isOpenMultiplePublish, setIsOpenMultiplePublish] = useState(false);
@@ -174,11 +173,11 @@ export const SuperLike = ({
     }
   }
 
-  useEffect(() => {
-    getUserBalance().then((foundBalance) => {
-      setCurrentBalance(truncateNumber(foundBalance, 2));
-    });
-  }, []);
+  // useEffect(() => {
+  //   getUserBalance().then((foundBalance) => {
+  //     setCurrentBalance(truncateNumber(foundBalance, 2));
+  //   });
+  // }, []);
 
   const isScreenSmall = !useMediaQuery(`(min-width:400px)`);
   const theme = useTheme();

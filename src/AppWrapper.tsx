@@ -9,6 +9,9 @@ export const AppWrapper = () => {
       config={{
         auth: {
           authenticateOnMount: true,
+          balanceSetting: {
+            interval: 120000,
+          },
         },
         publicSalt: 'usVbeM9YpjGCbLrTcc78YJS0ap1AxDkHAOMZrp3+wDY=',
         appName: 'Q-Tube',

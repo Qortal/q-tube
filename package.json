@@ -24,7 +24,7 @@
     "localforage": "^1.10.0",
     "mediainfo.js": "^0.3.5",
     "moment": "^2.30.1",
-    "qapp-core": "^1.0.51",
+    "qapp-core": "^1.0.52",
     "quill": "^2.0.2",
     "quill-image-resize-module-react": "^3.0.0",
     "react": "^19.0.0",

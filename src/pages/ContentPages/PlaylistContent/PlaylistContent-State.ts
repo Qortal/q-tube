@@ -1,9 +1,7 @@
-import { useDispatch, useSelector } from "react-redux";
-import { setIsLoadingGlobal } from "../../../state/features/globalSlice.ts";
-import { RootState } from "../../../state/store.ts";
-import { useVideoContentState } from "../VideoContent/VideoContent-State.ts";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useVideoContentState } from '../VideoContent/VideoContent-State.ts';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from 'qapp-core';
 
 export const usePlaylistContentState = () => {
   const {
@@ -11,12 +9,8 @@ export const usePlaylistContentState = () => {
     id,
     videoData,
     superLikeList,
-    getVideoData,
-    setVideoData,
     videoReference,
-    focusVideo,
     videoCover,
-    containerRef,
     theme,
     descriptionHeight,
     setSuperLikeList,
@@ -25,12 +19,13 @@ export const usePlaylistContentState = () => {
     contentRef,
     descriptionThreshold,
     loadingSuperLikes,
+    setVideoMetadataResource,
   } = useVideoContentState();
 
-  const userName = useSelector((state: RootState) => state.auth.user?.name);
-
+  const { name } = useAuth();
+  const userName = name;
   const [doAutoPlay, setDoAutoPlay] = useState(false);
-
+  const [isLoadingPlaylist, setIsLoadingPlaylist] = useState(false);
   const calculateAmountSuperlike = useMemo(() => {
     const totalQort = superLikeList?.reduce((acc, curr) => {
       if (curr?.amount && !isNaN(parseFloat(curr.amount)))
@@ -46,94 +41,85 @@ export const usePlaylistContentState = () => {
   const navigate = useNavigate();
   const [playlistData, setPlaylistData] = useState<any>(null);
 
-  const hashMapVideos = useSelector(
-    (state: RootState) => state.video.hashMapVideos
-  );
+  const checkforPlaylist = useCallback(async (name, id) => {
+    try {
+      setIsLoadingPlaylist(true);
 
-  const dispatch = useDispatch();
+      if (!name || !id) return;
 
-  const checkforPlaylist = useCallback(
-    async (name, id) => {
-      try {
-        dispatch(setIsLoadingGlobal(true));
+      const url = `/arbitrary/resources/search?mode=ALL&service=PLAYLIST&identifier=${id}&limit=1&includemetadata=true&reverse=true&excludeblocked=true&name=${name}&exactmatchnames=true&offset=0`;
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      const responseDataSearch = await response.json();
 
-        if (!name || !id) return;
+      if (responseDataSearch?.length > 0) {
+        let resourceData = responseDataSearch[0];
+        resourceData = {
+          title: resourceData?.metadata?.title,
+          category: resourceData?.metadata?.category,
+          categoryName: resourceData?.metadata?.categoryName,
+          tags: resourceData?.metadata?.tags || [],
+          description: resourceData?.metadata?.description,
+          created: resourceData?.created,
+          updated: resourceData?.updated,
+          name: resourceData.name,
+          videoImage: '',
+          identifier: resourceData.identifier,
+          service: resourceData.service,
+        };
 
-        const url = `/arbitrary/resources/search?mode=ALL&service=PLAYLIST&identifier=${id}&limit=1&includemetadata=true&reverse=true&excludeblocked=true&name=${name}&exactmatchnames=true&offset=0`;
-        const response = await fetch(url, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
+        const responseData = await qortalRequest({
+          action: 'FETCH_QDN_RESOURCE',
+          name: resourceData.name,
+          service: resourceData.service,
+          identifier: resourceData.identifier,
         });
-        const responseDataSearch = await response.json();
 
-        if (responseDataSearch?.length > 0) {
-          let resourceData = responseDataSearch[0];
-          resourceData = {
-            title: resourceData?.metadata?.title,
-            category: resourceData?.metadata?.category,
-            categoryName: resourceData?.metadata?.categoryName,
-            tags: resourceData?.metadata?.tags || [],
-            description: resourceData?.metadata?.description,
-            created: resourceData?.created,
-            updated: resourceData?.updated,
-            name: resourceData.name,
-            videoImage: "",
-            identifier: resourceData.identifier,
-            service: resourceData.service,
+        if (responseData && !responseData.error) {
+          const combinedData = {
+            ...resourceData,
+            ...responseData,
           };
+          const videos = [];
+          if (combinedData?.videos) {
+            for (const vid of combinedData.videos) {
+              const url = `/arbitrary/resources/search?mode=ALL&service=DOCUMENT&identifier=${vid.identifier}&limit=1&includemetadata=true&reverse=true&name=${vid.name}&exactmatchnames=true&offset=0`;
+              const response = await fetch(url, {
+                method: 'GET',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+              });
+              const responseDataSearchVid = await response.json();
 
-          const responseData = await qortalRequest({
-            action: "FETCH_QDN_RESOURCE",
-            name: resourceData.name,
-            service: resourceData.service,
-            identifier: resourceData.identifier,
-          });
-
-          if (responseData && !responseData.error) {
-            const combinedData = {
-              ...resourceData,
-              ...responseData,
-            };
-            const videos = [];
-            if (combinedData?.videos) {
-              for (const vid of combinedData.videos) {
-                const url = `/arbitrary/resources/search?mode=ALL&service=DOCUMENT&identifier=${vid.identifier}&limit=1&includemetadata=true&reverse=true&name=${vid.name}&exactmatchnames=true&offset=0`;
-                const response = await fetch(url, {
-                  method: "GET",
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                });
-                const responseDataSearchVid = await response.json();
-
-                if (responseDataSearchVid?.length > 0) {
-                  const resourceData2 = responseDataSearchVid[0];
-                  videos.push(resourceData2);
-                }
+              if (responseDataSearchVid?.length > 0) {
+                const resourceData2 = responseDataSearchVid[0];
+                videos.push(resourceData2);
               }
             }
-            combinedData.videos = videos;
-            setPlaylistData(combinedData);
-            if (combinedData?.videos?.length > 0) {
-              const vid = combinedData?.videos[0];
-              const fullId = vid ? `${vid.identifier}-${vid.name}` : undefined;
-              const existingVideo = hashMapVideos[fullId];
-
-              if (existingVideo) setVideoData(existingVideo);
-              else getVideoData(vid?.name, vid?.identifier);
-            }
+          }
+          combinedData.videos = videos;
+          setPlaylistData(combinedData);
+          if (combinedData?.videos?.length > 0) {
+            const vid = combinedData?.videos[0];
+            setVideoMetadataResource({
+              name: vid?.name,
+              identifier: vid?.identifier,
+              service: 'DOCUMENT',
+            });
           }
         }
-      } catch (error) {
-        console.log(error);
-      } finally {
-        dispatch(setIsLoadingGlobal(false));
       }
-    },
-    [hashMapVideos]
-  );
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoadingPlaylist(false);
+    }
+  }, []);
 
   useEffect(() => {
     if (channelName && id) {
@@ -143,16 +129,16 @@ export const usePlaylistContentState = () => {
 
   const nextVideo = useMemo(() => {
     const currentVideoIndex = playlistData?.videos?.findIndex(
-      item => item?.identifier === videoData?.id
+      (item) => item?.identifier === videoData?.id
     );
     if (currentVideoIndex !== -1) {
       const nextVideoIndex = currentVideoIndex + 1;
       const findVideo = playlistData?.videos[nextVideoIndex] || null;
       if (findVideo) {
-        const id = findVideo?.identifier?.replace("_metadata", "");
+        const id = findVideo?.identifier?.replace('_metadata', '');
         return {
           ...findVideo,
-          service: "VIDEO",
+          service: 'VIDEO',
           identifier: id,
           jsonId: findVideo?.identifier,
         };
@@ -164,13 +150,17 @@ export const usePlaylistContentState = () => {
 
   const onEndVideo = useCallback(() => {
     const currentVideoIndex = playlistData?.videos?.findIndex(
-      item => item?.identifier === videoData?.id
+      (item) => item?.identifier === videoData?.id
     );
     if (currentVideoIndex !== -1) {
       const nextVideoIndex = currentVideoIndex + 1;
       const findVideo = playlistData?.videos[nextVideoIndex] || null;
       if (findVideo) {
-        getVideoData(findVideo?.name, findVideo?.identifier);
+        setVideoMetadataResource({
+          name: findVideo?.name,
+          identifier: findVideo?.identifier,
+          service: 'DOCUMENT',
+        });
         setDoAutoPlay(true);
       }
     }
@@ -181,12 +171,9 @@ export const usePlaylistContentState = () => {
     id,
     videoData,
     superLikeList,
-    getVideoData,
-    setVideoData,
+    setVideoMetadataResource,
     videoReference,
-    focusVideo,
     videoCover,
-    containerRef,
     theme,
     descriptionHeight,
     nextVideo,
@@ -203,5 +190,6 @@ export const usePlaylistContentState = () => {
     contentRef,
     descriptionThreshold,
     loadingSuperLikes,
+    isLoadingPlaylist,
   };
 };

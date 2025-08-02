@@ -1,0 +1,140 @@
+{
+  "action": {
+    "back": "back",
+    "next": "next",
+    "cancel": "cancel",
+    "delete": "delete",
+    "close": "close",
+    "save": "save",
+    "subscribe": "subscribe",
+    "unsubscribe": "unsubscribe",
+    "follow": "follow",
+    "unfollow": "unfollow",
+    "create": "create",
+    "edit": "edit",
+    "comment": "comment",
+    "reply": "reply",
+    "bookmark_video": "bookmark video",
+    "bookmark_playlist": "bookmark playlist"
+  },
+  "navbar": {
+    "search": "search"
+  },
+  "publish": {
+    "publish_action": "publish",
+    "video": "video",
+    "playlist": "playlist",
+    "downloads": "downloads",
+    "update_video": "update video",
+    "publish_videos": "publish videos",
+    "populate_titles": "Populate Titles by filename (when the files are picked)",
+    "same_cover_images": "All videos use the same Cover Image",
+    "populate_description": "Populate all descriptions by Title",
+    "drag_drop_videos": "Drag and drop a video files here or click to select files",
+    "supported_containers": "Supported File Containers",
+    "audio_codecs": "audio codecs",
+    "video_codecs": "video codecs",
+    "select_category": "Select a Category",
+    "select_subcategory": "Select a Sub-Category",
+    "add_cover_image": "add cover image",
+    "description_video": "description of video",
+    "add_vids_playlist": "would you like to add these videos to a playlist?",
+    "add_vids_playlist_optional": "add to a playlist is OPTIONAL",
+    "no_playlist": "no playlist",
+    "new_playlist": "new playlist",
+    "existing_playlist": "existing playlist",
+    "select_existing_playlist": "select existing playlist",
+    "playlist_search_by_title": "search by title",
+    "title_playlist": "title of playlist",
+    "description_playlist": "description of playlist",
+    "generationg_extracts": "generating image extracts",
+    "create_new_playlist": "create new playlist",
+    "update_playlist_properties": "update playlist properties",
+    "add_videos_playlist": "add videos to playlist",
+    "my_videos": "my videos",
+    "all_videos": "all videos",
+    "search_by_title": "search by title",
+    "edit_playlist": "edit playlist",
+    "block_user_content": "block user content",
+    "edit_video": "edit video properties",
+    "delete_video": "delete video",
+    "remove_video_list": "remove video from list",
+    "playlist_not_exist": "this playlist does not exist"
+  },
+  "notification": {
+    "no_new_notification": "no new notifications",
+    "from_user": "from {{user}}"
+  },
+  "likes": {
+    "super_like": "super like",
+    "recent_super_likes": "recent super likes",
+    "like_dislike": "Like or Dislike Video"
+  },
+  "blocked": {
+    "blocked_names": "blocked names"
+  },
+  "sidenav": {
+    "home": "home",
+    "subscriptions": "subscriptions",
+    "watched_videos": "watched videos",
+    "bookmarks": "bookmarks",
+    "your_playlists": "your playlists",
+    "your_videos": "your videos"
+  },
+  "filters": {
+    "most_recent": "most recent",
+    "all": "all",
+    "videos": "videos",
+    "playlists": "playlists",
+    "more_filters": "more filters",
+    "more": "more",
+    "user_name": "User's Name (Exact)",
+    "category": "category",
+    "sub_category": "Sub-Category",
+    "reset": "reset",
+    "filters": "filters"
+  },
+  "lists": {
+    "no_results": "no results"
+  },
+  "bookmarks": {
+    "select_list": "select a list",
+    "all_bookmarks": "all bookmarked videos",
+    "bookmark_list": "bookmark list",
+    "bookmark_lists": "bookmark lists",
+    "no_bookmarks_lists": "no bookmark lists",
+    "new_list": "new list",
+    "new_folder": "new folder",
+    "delete_folder": "delete folder"
+  },
+  "video": {
+    "show_more": "show more",
+    "show_less": "show less",
+    "copy_link_video": "copy link video",
+    "subscribe_description": "Subscribing to a name lets you see their content on the Subscriptions tab of the Home Page. This does NOT download any data to your node.",
+    "follow_description": "Following a name automatically downloads all of its content to your node. The more followers a name has, the faster its content will download for everyone.",
+    "currentSize": "{{followerName}}'s current download size: {{followingSize}}",
+    "itemCount": "number of files: {{followingItemCount}}"
+  },
+  "payments": {
+    "amount": "amount"
+  },
+  "comments": {
+    "comment_here": "comment here",
+    "load_more_comments": "load more comments",
+    "submit_reply": "submit reply",
+    "hide_replies": "hide all replies",
+    "view_replies": "view all replies",
+    "your_comment": "your comment"
+  },
+  "download": {
+    "ready": "ready to save: click here",
+    "start": "start download: click here"
+  },
+  "index": {
+    "index_video": "index video"
+  },
+  "search": {
+    "clear_search": "clear search history"
+  }
+}

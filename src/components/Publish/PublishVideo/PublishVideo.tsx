@@ -1,5 +1,5 @@
-import AddIcon from "@mui/icons-material/Add";
-import AddBoxIcon from "@mui/icons-material/AddBox";
+import AddIcon from '@mui/icons-material/Add';
+import AddBoxIcon from '@mui/icons-material/AddBox';
 import {
   Box,
   Button,
@@ -14,46 +14,45 @@ import {
   SelectChangeEvent,
   Typography,
   useTheme,
-} from "@mui/material";
-import { useSignal } from "@preact/signals-react";
-import { useSignals } from "@preact/signals-react/runtime";
-import Compressor from "compressorjs";
-import React, { useState } from "react";
-import { useDropzone } from "react-dropzone";
-import { useDispatch, useSelector } from "react-redux";
-import ShortUniqueId from "short-unique-id";
-import { categories, subCategories } from "../../../constants/Categories.ts";
+} from '@mui/material';
+
+import Compressor from 'compressorjs';
+import React, { useState } from 'react';
+import { useDropzone } from 'react-dropzone';
+import ShortUniqueId from 'short-unique-id';
+import { categories, subCategories } from '../../../constants/Categories.ts';
 import {
   QTUBE_PLAYLIST_BASE,
   QTUBE_VIDEO_BASE,
-} from "../../../constants/Identifiers.ts";
+} from '../../../constants/Identifiers.ts';
 import {
   maxSize,
   menuIconSize,
   titleFormatter,
   videoMaxSize,
-} from "../../../constants/Misc.ts";
+} from '../../../constants/Misc.ts';
 import {
   FiltersCheckbox,
   FiltersRow,
   FiltersSubContainer,
-} from "../../../pages/Home/Components/VideoList-styles.tsx";
+} from '../../../pages/Home/Components/VideoList-styles.tsx';
 
-import { setNotification } from "../../../state/features/notificationsSlice.ts";
-import { RootState } from "../../../state/store.ts";
-import { objectToBase64 } from "../../../utils/PublishFormatter.ts";
-import { getFileName } from "../../../utils/stringFunctions.ts";
-import { CardContentContainerComment } from "../../common/Comments/Comments-styles.tsx";
-import { FrameExtractor } from "../../common/FrameExtractor/FrameExtractor.tsx";
+import {
+  getFileExtension,
+  getFileExtensionIndex,
+  getFileName,
+} from '../../../utils/stringFunctions.ts';
+import { CardContentContainerComment } from '../../common/Comments/Comments-styles.tsx';
+import { FrameExtractor } from '../../common/FrameExtractor/FrameExtractor.tsx';
 
-import ImageUploader from "../../common/ImageUploader.tsx";
-import { TextEditor } from "../../common/TextEditor/TextEditor.tsx";
-import { extractTextFromHTML } from "../../common/TextEditor/utils.ts";
+import ImageUploader from '../../common/ImageUploader.tsx';
+import { TextEditor } from '../../common/TextEditor/TextEditor.tsx';
+import { extractTextFromHTML } from '../../common/TextEditor/utils.ts';
 import {
   CrowdfundSubTitle,
   CrowdfundSubTitleRow,
-} from "../EditPlaylist/Upload-styles.tsx";
-import { MultiplePublish } from "../MultiplePublish/MultiplePublishAll.tsx";
+} from '../EditPlaylist/Upload-styles.tsx';
+import { MultiplePublish } from '../MultiplePublish/MultiplePublishAll.tsx';
 import {
   AddCoverImageButton,
   AddLogoIcon,
@@ -67,15 +66,29 @@ import {
   NewCrowdfundTitle,
   StyledButton,
   TimesIcon,
-} from "./PublishVideo-styles.tsx";
-import VideoLibraryIcon from "@mui/icons-material/VideoLibrary";
+} from './PublishVideo-styles.tsx';
+import VideoLibraryIcon from '@mui/icons-material/VideoLibrary';
+import {
+  objectToBase64,
+  showError,
+  useAuth,
+  useGlobal,
+  usePublish,
+} from 'qapp-core';
+import { useSetAtom } from 'jotai';
+import {
+  AltertObject,
+  setNotificationAtom,
+} from '../../../state/global/notifications.ts';
+import { useTranslation } from 'react-i18next';
+import { useMediaInfo } from '../../../hooks/useMediaInfo.tsx';
 
 export const toBase64 = (file: File): Promise<string | ArrayBuffer | null> =>
   new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = () => resolve(reader.result);
-    reader.onerror = error => {
+    reader.onerror = (error) => {
       reject(error);
     };
   });
@@ -104,29 +117,30 @@ export const PublishVideo = ({
   editContent,
   afterClose,
 }: PublishVideoProps) => {
-  const theme = useTheme();
-  const dispatch = useDispatch();
-  const [isOpenMultiplePublish, setIsOpenMultiplePublish] = useState(false);
-  const username = useSelector((state: RootState) => state.auth?.user?.name);
-  const userAddress = useSelector(
-    (state: RootState) => state.auth?.user?.address
-  );
-  const [files, setFiles] = useState<VideoFile[]>([]);
-  const videoDurations = useSignal<number[]>([]);
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [coverImageForAll, setCoverImageForAll] = useState<null | string>("");
+  const { t } = useTranslation(['core', 'category']);
 
-  const [step, setStep] = useState<string>("videos");
+  const theme = useTheme();
+  const [isOpenMultiplePublish, setIsOpenMultiplePublish] = useState(false);
+  const setNotification = useSetAtom(setNotificationAtom);
+  const { lists } = useGlobal();
+  const { name: username, address: userAddress } = useAuth();
+
+  const [files, setFiles] = useState<VideoFile[]>([]);
+  const [videoDurations, setVideoDurations] = useState<number[]>([]);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [coverImageForAll, setCoverImageForAll] = useState<null | string>('');
+
+  const [step, setStep] = useState<string>('videos');
   const [playlistCoverImage, setPlaylistCoverImage] = useState<null | string>(
     null
   );
   const [selectExistingPlaylist, setSelectExistingPlaylist] =
     useState<any>(null);
   const [searchResults, setSearchResults] = useState([]);
-  const [filterSearch, setFilterSearch] = useState("");
-  const [titlesPrefix, setTitlesPrefix] = useState("");
-  const [playlistTitle, setPlaylistTitle] = useState<string>("");
-  const [playlistDescription, setPlaylistDescription] = useState<string>("");
+  const [filterSearch, setFilterSearch] = useState('');
+  const [titlesPrefix, setTitlesPrefix] = useState('');
+  const [playlistTitle, setPlaylistTitle] = useState<string>('');
+  const [playlistDescription, setPlaylistDescription] = useState<string>('');
   const [selectedCategory, setSelectedCategory] = useState<any>(null);
   const [selectedSubCategory, setSelectedSubCategory] = useState<any>(null);
 
@@ -142,59 +156,73 @@ export const PublishVideo = ({
   const [isCheckDescriptionIsTitle, setIsCheckDescriptionIsTitle] =
     useState(false);
   const [imageExtracts, setImageExtracts] = useState<any>({});
+  const publishFromLibrary = usePublish();
+  const { isHEVC } = useMediaInfo();
 
-  useSignals();
   const assembleVideoDurations = () => {
-    if (files.length === videoDurations.value.length) return;
+    if (files.length === videoDurations.length) return;
     const newArray: number[] = [];
 
     files.map((file, index) =>
-      newArray.push(
-        videoDurations.value[index] ? videoDurations.value[index] : 0
-      )
+      newArray.push(videoDurations[index] ? videoDurations[index] : 0)
     );
-    videoDurations.value = [...newArray];
+    setVideoDurations([...newArray]);
   };
 
   const { getRootProps, getInputProps } = useDropzone({
     accept: {
-      "video/*": [],
+      'video/*': [],
     },
     maxSize,
-    onDrop: (acceptedFiles, rejectedFiles) => {
-      const formatArray = acceptedFiles.map(item => {
-        let filteredTitle = "";
+    onDrop: async (acceptedFiles, rejectedFiles) => {
+      const formattedFiles: VideoFile[] = [];
+
+      for (const file of acceptedFiles) {
+        let filteredTitle = '';
 
         if (isCheckTitleByFile) {
-          const fileName = getFileName(item?.name || "");
-          filteredTitle = (titlesPrefix + fileName).replace(titleFormatter, "");
+          const fileName = getFileName(file?.name || '');
+          filteredTitle = (titlesPrefix + fileName).replace(titleFormatter, '');
         }
-        return {
-          file: item,
-          title: filteredTitle || "",
-          description: "",
-          coverImage: "",
-        };
-      });
 
-      setFiles(prev => [...prev, ...formatArray]);
+        const notSupportedCodec = await isHEVC(file);
 
-      let errorString = null;
-      rejectedFiles.forEach(({ file, errors }) => {
-        errors.forEach(error => {
-          if (error.code === "file-too-large") {
+        const isMKV = getFileExtension(file) === 'mkv';
+        const isUnsupportedFile = notSupportedCodec || isMKV;
+
+        if (isUnsupportedFile) {
+          if (notSupportedCodec)
+            showError(`${file.name} uses the unsupported encoding: HEVC`);
+          if (isMKV)
+            showError(`${file.name} uses the unsupported file container: MKV`);
+          continue;
+        }
+        formattedFiles.push({
+          file,
+          title: filteredTitle || '',
+          description: '',
+          coverImage: '',
+        });
+      }
+
+      setFiles((prev) => [...prev, ...formattedFiles]);
+
+      let errorString: string | null = null;
+      for (const { file, errors } of rejectedFiles) {
+        for (const error of errors) {
+          if (error.code === 'file-too-large') {
             errorString = `File must be under ${videoMaxSize}MB`;
           }
-          console.log(`Error with file ${file.name}: ${error.message}`);
-        });
-      });
-      if (errorString) {
-        const notificationObj = {
-          msg: errorString,
-          alertType: "error",
-        };
+          console.error(`Error with file ${file.name}: ${error.message}`);
+        }
+      }
 
-        dispatch(setNotification(notificationObj));
+      if (errorString) {
+        const notificationObj: AltertObject = {
+          msg: errorString,
+          alertType: 'error',
+        };
+        setNotification(notificationObj);
       }
     },
   });
@@ -207,9 +235,9 @@ export const PublishVideo = ({
   const search = async () => {
     const url = `/arbitrary/resources/search?mode=ALL&service=PLAYLIST&mode=ALL&identifier=${QTUBE_PLAYLIST_BASE}&title=${filterSearch}&limit=20&includemetadata=true&reverse=true&name=${username}&exactmatchnames=true&offset=0`;
     const response = await fetch(url, {
-      method: "GET",
+      method: 'GET',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
     });
     const responseDataSearchVid = await response.json();
@@ -218,25 +246,25 @@ export const PublishVideo = ({
 
   async function publishQDNResource() {
     try {
-      if (playlistSetting === "new") {
-        if (!playlistTitle) throw new Error("Please enter a title");
-        if (!playlistDescription) throw new Error("Please enter a description");
-        if (!playlistCoverImage) throw new Error("Please select cover image");
-        if (!selectedCategory) throw new Error("Please select a category");
+      if (playlistSetting === 'new') {
+        if (!playlistTitle) throw new Error('Please enter a title');
+        if (!playlistDescription) throw new Error('Please enter a description');
+        if (!playlistCoverImage) throw new Error('Please select cover image');
+        if (!selectedCategory) throw new Error('Please select a category');
       }
       if (files?.length === 0)
-        throw new Error("Please select at least one file");
+        throw new Error('Please select at least one file');
       if (isCheckSameCoverImage && !coverImageForAll)
-        throw new Error("Please select cover image");
-      if (!userAddress) throw new Error("Unable to locate user address");
-      let errorMsg = "";
-      let name = "";
+        throw new Error('Please select cover image');
+      if (!userAddress) throw new Error('Unable to locate user address');
+      let errorMsg = '';
+      let name = '';
       if (username) {
         name = username;
       }
       if (!name) {
         errorMsg =
-          "Cannot publish without access to your name. Please authenticate.";
+          'Cannot publish without access to your name. Please authenticate.';
       }
 
       if (editId && editContent?.user !== name) {
@@ -244,16 +272,17 @@ export const PublishVideo = ({
       }
 
       if (errorMsg) {
-        dispatch(
-          setNotification({
-            msg: errorMsg,
-            alertType: "error",
-          })
-        );
+        const notificationObj: AltertObject = {
+          msg: errorMsg,
+          alertType: 'error',
+        };
+        setNotification(notificationObj);
         return;
       }
 
-      const listOfPublishes = [];
+      const listOfPublishes: any[] = [];
+
+      const tempResourcesForList: any[] = [];
 
       for (let i = 0; i < files.length; i++) {
         const publish = files[i];
@@ -262,15 +291,15 @@ export const PublishVideo = ({
           ? publish.title
           : publish.description;
         const category = selectedCategoryVideos.id;
-        const subcategory = selectedSubCategoryVideos?.id || "";
+        const subcategory = selectedSubCategoryVideos?.id || '';
         const coverImage = isCheckSameCoverImage
           ? coverImageForAll
           : publish.coverImage;
         const file = publish.file;
         const sanitizeTitle = title
-          .replace(/[^a-zA-Z0-9\s-]/g, "")
-          .replace(/\s+/g, "-")
-          .replace(/-+/g, "-")
+          .replace(/[^a-zA-Z0-9\s-]/g, '')
+          .replace(/\s+/g, '-')
+          .replace(/-+/g, '-')
           .trim()
           .toLowerCase();
 
@@ -283,22 +312,22 @@ export const PublishVideo = ({
         const code = shortuid.rnd();
         const fullDescription = extractTextFromHTML(description);
 
-        let fileExtension = "mp4";
-        const fileExtensionSplit = file?.name?.split(".");
+        let fileExtension = 'mp4';
+        const fileExtensionSplit = file?.name?.split('.');
         if (fileExtensionSplit?.length > 1) {
-          fileExtension = fileExtensionSplit?.pop() || "mp4";
+          fileExtension = fileExtensionSplit?.pop() || 'mp4';
         }
 
         const filename = title.slice(0, 15);
         // Step 1: Replace all white spaces with underscores
 
         // Replace all forms of whitespace (including non-standard ones) with underscores
-        const stringWithUnderscores = filename.replace(/[\s\uFEFF\xA0]+/g, "_");
+        const stringWithUnderscores = filename.replace(/[\s\uFEFF\xA0]+/g, '_');
 
         // Remove all non-alphanumeric characters (except underscores)
         const alphanumericString = stringWithUnderscores.replace(
           /[^a-zA-Z0-9_]/g,
-          ""
+          ''
         );
         const videoObject: any = {
           title,
@@ -309,17 +338,17 @@ export const PublishVideo = ({
           videoReference: {
             name,
             identifier: identifier,
-            service: "VIDEO",
+            service: 'VIDEO',
           },
           extracts: imageExtracts[i],
           commentsId: `${QTUBE_VIDEO_BASE}_cm_${id}`,
           category,
           subcategory,
           code,
-          videoType: file?.type || "video/mp4",
+          videoType: file?.type || 'video/mp4',
           filename: `${alphanumericString.trim()}.${fileExtension}`,
           fileSize: file?.size || 0,
-          duration: videoDurations.value[i],
+          duration: videoDurations[i],
         };
 
         const metadescription =
@@ -328,45 +357,55 @@ export const PublishVideo = ({
 
         // Description is obtained from raw data
         const requestBodyJson: any = {
-          action: "PUBLISH_QDN_RESOURCE",
+          action: 'PUBLISH_QDN_RESOURCE',
           name: name,
-          service: "DOCUMENT",
+          service: 'DOCUMENT',
           data64: await objectToBase64(videoObject),
           title: title.slice(0, 50),
           description: metadescription,
-          identifier: identifier + "_metadata",
+          identifier: identifier + '_metadata',
           tag1: QTUBE_VIDEO_BASE,
           filename: `video_metadata.json`,
           code,
         };
         const requestBodyVideo: any = {
-          action: "PUBLISH_QDN_RESOURCE",
+          action: 'PUBLISH_QDN_RESOURCE',
           name: name,
-          service: "VIDEO",
+          service: 'VIDEO',
           file,
           title: title.slice(0, 50),
           description: metadescription,
           identifier,
-          filename: `${alphanumericString.trim()}.${fileExtension}`,
+          filename: file.name,
           tag1: QTUBE_VIDEO_BASE,
         };
         listOfPublishes.push(requestBodyJson);
         listOfPublishes.push(requestBodyVideo);
+        tempResourcesForList.push({
+          qortalMetadata: {
+            identifier,
+            name: name,
+            service: 'DOCUMENT',
+            size: 1000,
+            created: Date.now(),
+          },
+          data: videoObject,
+        });
       }
 
-      const isNewPlaylist = playlistSetting === "new";
+      const isNewPlaylist = playlistSetting === 'new';
 
       if (isNewPlaylist) {
         const title = playlistTitle;
         const description = playlistDescription;
         const stringDescription = extractTextFromHTML(description);
         const category = selectedCategory.id;
-        const subcategory = selectedSubCategory?.id || "";
+        const subcategory = selectedSubCategory?.id || '';
         const coverImage = playlistCoverImage;
         const sanitizeTitle = title
-          .replace(/[^a-zA-Z0-9\s-]/g, "")
-          .replace(/\s+/g, "-")
-          .replace(/-+/g, "-")
+          .replace(/[^a-zA-Z0-9\s-]/g, '')
+          .replace(/\s+/g, '-')
+          .replace(/-+/g, '-')
           .trim()
           .toLowerCase();
 
@@ -378,10 +417,10 @@ export const PublishVideo = ({
 
         const videos = listOfPublishes
           .filter(
-            item =>
-              item.service === "DOCUMENT" && item.tag1 === QTUBE_VIDEO_BASE
+            (item) =>
+              item.service === 'DOCUMENT' && item.tag1 === QTUBE_VIDEO_BASE
           )
-          .map(vid => {
+          .map((vid) => {
             return {
               identifier: vid.identifier,
               service: vid.service,
@@ -403,9 +442,9 @@ export const PublishVideo = ({
         };
 
         const codes = videos
-          .map(item => `c:${item.code};`)
+          .map((item) => `c:${item.code};`)
           .slice(0, 10)
-          .join("");
+          .join('');
 
         const metadescription =
           `**category:${category};subcategory:${subcategory};${codes}**` +
@@ -413,25 +452,25 @@ export const PublishVideo = ({
 
         // Description is obtained from raw data
         const requestBodyJson: any = {
-          action: "PUBLISH_QDN_RESOURCE",
+          action: 'PUBLISH_QDN_RESOURCE',
           name: name,
-          service: "PLAYLIST",
+          service: 'PLAYLIST',
           data64: await objectToBase64(playlistObject),
           title: title.slice(0, 50),
           description: metadescription,
-          identifier: identifier + "_metadata",
+          identifier: identifier + '_metadata',
           tag1: QTUBE_VIDEO_BASE,
         };
 
         listOfPublishes.push(requestBodyJson);
-      } else if (playlistSetting === "existing") {
+      } else if (playlistSetting === 'existing') {
         if (!selectExistingPlaylist) {
-          throw new Error("select a playlist");
+          throw new Error('select a playlist');
         }
 
         // get raw data for playlist
         const responseData = await qortalRequest({
-          action: "FETCH_QDN_RESOURCE",
+          action: 'FETCH_QDN_RESOURCE',
           name: selectExistingPlaylist.name,
           service: selectExistingPlaylist.service,
           identifier: selectExistingPlaylist.identifier,
@@ -439,10 +478,10 @@ export const PublishVideo = ({
         if (responseData && !responseData.error) {
           const videos = listOfPublishes
             .filter(
-              item =>
-                item.service === "DOCUMENT" && item.tag1 === QTUBE_VIDEO_BASE
+              (item) =>
+                item.service === 'DOCUMENT' && item.tag1 === QTUBE_VIDEO_BASE
             )
-            .map(vid => {
+            .map((vid) => {
               return {
                 identifier: vid.identifier,
                 service: vid.service,
@@ -457,9 +496,9 @@ export const PublishVideo = ({
             videos: videosInPlaylist,
           };
           const codes = videosInPlaylist
-            .map(item => `c:${item.code};`)
+            .map((item) => `c:${item.code};`)
             .slice(0, 10)
-            .join("");
+            .join('');
 
           const metadescription =
             `**category:${playlistObject.category};subcategory:${playlistObject.subcategory};${codes}**` +
@@ -467,9 +506,9 @@ export const PublishVideo = ({
 
           // Description is obtained from raw data
           const requestBodyJson: any = {
-            action: "PUBLISH_QDN_RESOURCE",
+            action: 'PUBLISH_QDN_RESOURCE',
             name: name,
-            service: "PLAYLIST",
+            service: 'PLAYLIST',
             data64: await objectToBase64(playlistObject),
             title: playlistObject.title.slice(0, 50),
             description: metadescription,
@@ -479,46 +518,36 @@ export const PublishVideo = ({
 
           listOfPublishes.push(requestBodyJson);
         } else {
-          throw new Error("cannot get playlist data");
+          throw new Error('cannot get playlist data');
         }
       }
 
-      const multiplePublish = {
-        action: "PUBLISH_MULTIPLE_QDN_RESOURCES",
-        resources: [...listOfPublishes],
+      await publishFromLibrary.publishMultipleResources(listOfPublishes);
+      lists.addNewResources('latestVideos', tempResourcesForList);
+      const notificationObj: AltertObject = {
+        msg: 'Video published',
+        alertType: 'success',
       };
-      setPublishes(multiplePublish);
-      setIsOpenMultiplePublish(true);
+      setNotification(notificationObj);
+      onClose();
     } catch (error: any) {
-      let notificationObj: any = null;
-      if (typeof error === "string") {
-        notificationObj = {
-          msg: error || "Failed to publish video",
-          alertType: "error",
-        };
-      } else if (typeof error?.error === "string") {
-        notificationObj = {
-          msg: error?.error || "Failed to publish video",
-          alertType: "error",
-        };
-      } else {
-        notificationObj = {
-          msg: error?.message || "Failed to publish video",
-          alertType: "error",
-        };
-      }
-      if (!notificationObj) return;
-      dispatch(setNotification(notificationObj));
+      const isError = error instanceof Error;
+      const message = isError ? error?.message : 'Failed to publish video';
+      const notificationObj: AltertObject = {
+        msg: message,
+        alertType: 'error',
+      };
+      setNotification(notificationObj);
 
-      throw new Error("Failed to publish video");
+      throw new Error('Failed to publish video');
     }
   }
 
   const handleOnchange = (index: number, type: string, value: string) => {
-    setFiles(prev => {
+    setFiles((prev) => {
       let formattedValue = value;
-      if (type === "title") {
-        formattedValue = value.replace(titleFormatter, "");
+      if (type === 'title') {
+        formattedValue = value.replace(titleFormatter, '');
       }
       const copyFiles = [...prev];
       copyFiles[index] = {
@@ -531,7 +560,7 @@ export const PublishVideo = ({
 
   const handleOptionCategoryChange = (event: SelectChangeEvent<string>) => {
     const optionId = event.target.value;
-    const selectedOption = categories.find(option => option.id === +optionId);
+    const selectedOption = categories.find((option) => option.id === +optionId);
     setSelectedCategory(selectedOption || null);
   };
   const handleOptionSubCategoryChange = (
@@ -540,7 +569,7 @@ export const PublishVideo = ({
   ) => {
     const optionId = event.target.value;
     const selectedOption = subcategories.find(
-      option => option.id === +optionId
+      (option) => option.id === +optionId
     );
     setSelectedSubCategory(selectedOption || null);
   };
@@ -549,7 +578,7 @@ export const PublishVideo = ({
     event: SelectChangeEvent<string>
   ) => {
     const optionId = event.target.value;
-    const selectedOption = categories.find(option => option.id === +optionId);
+    const selectedOption = categories.find((option) => option.id === +optionId);
     setSelectedCategoryVideos(selectedOption || null);
   };
   const handleOptionSubCategoryChangeVideos = (
@@ -558,7 +587,7 @@ export const PublishVideo = ({
   ) => {
     const optionId = event.target.value;
     const selectedOption = subcategories.find(
-      option => option.id === +optionId
+      (option) => option.id === +optionId
     );
     setSelectedSubCategoryVideos(selectedOption || null);
   };
@@ -566,70 +595,73 @@ export const PublishVideo = ({
   const next = () => {
     try {
       if (isCheckSameCoverImage && !coverImageForAll)
-        throw new Error("Please select cover image");
+        throw new Error('Please select cover image');
       if (files?.length === 0)
-        throw new Error("Please select at least one file");
-      if (!selectedCategoryVideos) throw new Error("Please select a category");
-      files.forEach(file => {
-        if (!file.title) throw new Error("Please enter a title");
+        throw new Error('Please select at least one file');
+      if (!selectedCategoryVideos) throw new Error('Please select a category');
+      files.forEach((file) => {
+        if (!file.title) throw new Error('Please enter a title');
         if (!isCheckTitleByFile && !file.description)
-          throw new Error("Please enter a description");
+          throw new Error('Please enter a description');
         if (!isCheckSameCoverImage && !file.coverImage)
-          throw new Error("Please select cover image");
+          throw new Error('Please select cover image');
       });
 
-      setStep("playlist");
+      setStep('playlist');
     } catch (error) {
-      dispatch(
-        setNotification({
-          msg: error?.message || "Please fill out all inputs",
-          alertType: "error",
-        })
-      );
+      const isError = error instanceof Error;
+      const message = isError ? error?.message : 'Please fill out all inputs';
+      const notificationObj: AltertObject = {
+        msg: message,
+        alertType: 'error',
+      };
+      setNotification(notificationObj);
     }
   };
 
   const onFramesExtracted = async (imgs, index) => {
     try {
-      const imagesExtracts = [];
+      const imagesExtracts: string[] = [];
 
       for (const img of imgs) {
         try {
           let compressedFile;
           const image = img;
-          await new Promise<void>(resolve => {
+          await new Promise<void>((resolve) => {
             new Compressor(image, {
               quality: 0.8,
               maxWidth: 750,
-              mimeType: "image/webp",
+              mimeType: 'image/webp',
               success(result) {
-                const file = new File([result], "name", {
-                  type: "image/webp",
+                const file = new File([result], 'name', {
+                  type: 'image/webp',
                 });
                 compressedFile = file;
                 resolve();
               },
               error(error) {
-                console.log(error);
+                console.error(error);
               },
             });
           });
           if (!compressedFile) continue;
           const base64Img = await toBase64(compressedFile);
-          imagesExtracts.push(base64Img);
+          if (base64Img && typeof base64Img === 'string') {
+            imagesExtracts.push(base64Img);
+          }
         } catch (error) {
           console.error(error);
         }
       }
 
-      setImageExtracts(prev => {
+      setImageExtracts((prev) => {
         return {
           ...prev,
           [index]: imagesExtracts,
         };
       });
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
@@ -639,11 +671,15 @@ export const PublishVideo = ({
         <>
           {editId ? null : (
             <StyledButton
+              sx={{
+                width: '100%',
+                justifyContent: 'flex-start',
+              }}
               color="primary"
               startIcon={
                 <VideoLibraryIcon
                   sx={{
-                    color: "#FF0033",
+                    color: '#FF0033',
                     width: menuIconSize,
                     height: menuIconSize,
                   }}
@@ -653,7 +689,9 @@ export const PublishVideo = ({
                 setIsOpen(true);
               }}
             >
-              Video
+              {t('core:publish.video', {
+                postProcess: 'capitalizeFirstChar',
+              })}
             </StyledButton>
           )}
         </>
@@ -664,52 +702,70 @@ export const PublishVideo = ({
         aria-labelledby="modal-title"
         aria-describedby="modal-description"
       >
-        <ModalBody>
+        <ModalBody
+          sx={{
+            width: '100%',
+          }}
+        >
           <Box
             sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
             }}
           >
             {editId ? (
-              <NewCrowdfundTitle>Update Videos</NewCrowdfundTitle>
+              <NewCrowdfundTitle>
+                {t('core:publish.update_video', {
+                  postProcess: 'capitalizeEachFirstChar',
+                })}
+              </NewCrowdfundTitle>
             ) : (
-              <NewCrowdfundTitle>Publish Videos</NewCrowdfundTitle>
+              <NewCrowdfundTitle>
+                {t('core:publish.publish_videos', {
+                  postProcess: 'capitalizeEachFirstChar',
+                })}
+              </NewCrowdfundTitle>
             )}
           </Box>
 
-          {step === "videos" && (
+          {step === 'videos' && (
             <>
               <FiltersSubContainer>
                 <FiltersRow>
-                  Populate Titles by filename (when the files are picked)
+                  {t('core:publish.populate_titles', {
+                    postProcess: 'capitalizeFirstChar',
+                  })}
                   <FiltersCheckbox
                     checked={isCheckTitleByFile}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                       setIsCheckTitleByFile(e.target.checked);
                     }}
-                    inputProps={{ "aria-label": "controlled" }}
+                    inputProps={{ 'aria-label': 'controlled' }}
                   />
                 </FiltersRow>
                 <FiltersRow>
-                  All videos use the same Cover Image
+                  {t('core:publish.same_cover_images', {
+                    postProcess: 'capitalizeFirstChar',
+                  })}
                   <FiltersCheckbox
                     checked={isCheckSameCoverImage}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                       setIsCheckSameCoverImage(e.target.checked);
                     }}
-                    inputProps={{ "aria-label": "controlled" }}
+                    inputProps={{ 'aria-label': 'controlled' }}
                   />
                 </FiltersRow>
                 <FiltersRow>
-                  Populate all descriptions by Title
+                  {t('core:publish.populate_description', {
+                    postProcess: 'capitalizeFirstChar',
+                  })}
                   <FiltersCheckbox
                     checked={isCheckDescriptionIsTitle}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                       setIsCheckDescriptionIsTitle(e.target.checked);
                     }}
-                    inputProps={{ "aria-label": "controlled" }}
+                    inputProps={{ 'aria-label': 'controlled' }}
                   />
                 </FiltersRow>
               </FiltersSubContainer>
@@ -718,66 +774,82 @@ export const PublishVideo = ({
                 label="Titles Prefix"
                 variant="filled"
                 value={titlesPrefix}
-                onChange={e =>
-                  setTitlesPrefix(e.target.value.replace(titleFormatter, ""))
+                onChange={(e) =>
+                  setTitlesPrefix(e.target.value.replace(titleFormatter, ''))
                 }
                 inputProps={{ maxLength: 180 }}
               />
               <Box
                 {...getRootProps()}
                 sx={{
-                  border: "1px dashed gray",
+                  border: '1px dashed gray',
                   padding: 2,
-                  textAlign: "center",
+                  textAlign: 'center',
                   marginBottom: 2,
-                  cursor: "pointer",
+                  cursor: 'pointer',
                 }}
               >
                 <input {...getInputProps()} />
                 <Typography>
-                  Drag and drop a video files here or click to select files
+                  {t('core:publish.drag_drop_videos', {
+                    postProcess: 'capitalizeFirstChar',
+                  })}
                 </Typography>
               </Box>
               <Box>
                 <CodecTypography>
-                  Supported File Containers:{" "}
-                  <span style={{ fontWeight: "bold" }}>MP4</span>, M4V, OGG,
+                  {t('core:publish.supported_containers', {
+                    postProcess: 'capitalizeFirstChar',
+                  })}
+                  : <span style={{ fontWeight: 'bold' }}>MP4</span>, M4V, OGG,
                   WEBM, WAV
                 </CodecTypography>
                 <CodecTypography>
-                  Audio Codecs: <span style={{ fontWeight: "bold" }}>Opus</span>
-                  , MP3, FLAC, PCM (8/16/32-bit, μ-law), Vorbis
+                  {t('core:publish.audio_codecs', {
+                    postProcess: 'capitalizeEachFirstChar',
+                  })}
+                  : <span style={{ fontWeight: 'bold' }}>Opus</span>, MP3, FLAC,
+                  PCM (8/16/32-bit, μ-law), Vorbis
                 </CodecTypography>
                 <CodecTypography>
-                  Video Codecs: <span style={{ fontWeight: "bold" }}>AV1</span>,
-                  VP8, VP9, H.264
-                </CodecTypography>
-                <CodecTypography sx={{ fontWeight: "800", color: "red" }}>
-                  Using unsupported Codecs may result in video or audio not
-                  working properly
+                  {t('core:publish.video_codecs', {
+                    postProcess: 'capitalizeEachFirstChar',
+                  })}
+                  : <span style={{ fontWeight: 'bold' }}>AV1</span>, VP8, VP9,
+                  H.264
                 </CodecTypography>
               </Box>
 
               <Box
                 sx={{
-                  display: "flex",
-                  gap: "20px",
-                  alignItems: "center",
+                  display: 'flex',
+                  gap: '20px',
+                  alignItems: 'center',
                 }}
               >
                 {files?.length > 0 && (
                   <>
                     <FormControl fullWidth sx={{ marginBottom: 2 }}>
-                      <InputLabel id="Category">Select a Category</InputLabel>
+                      <InputLabel id="Category">
+                        {t('core:publish.select_category', {
+                          postProcess: 'capitalizeEachFirstChar',
+                        })}
+                      </InputLabel>
                       <Select
                         labelId="Category"
-                        input={<OutlinedInput label="Select a Category" />}
-                        value={selectedCategoryVideos?.id || ""}
+                        input={
+                          <OutlinedInput
+                            label={t('core:publish.select_category', {
+                              postProcess: 'capitalizeEachFirstChar',
+                            })}
+                          />
+                        }
+                        value={selectedCategoryVideos?.id || ''}
                         onChange={handleOptionCategoryChangeVideos}
                       >
-                        {categories.map(option => (
+                        {categories.map((option) => (
                           <MenuItem key={option.id} value={option.id}>
-                            {option.name}
+                            {t(`category:categories.${option.id}`)}
                           </MenuItem>
                         ))}
                       </Select>
@@ -786,15 +858,21 @@ export const PublishVideo = ({
                       subCategories[selectedCategoryVideos?.id] && (
                         <FormControl fullWidth sx={{ marginBottom: 2 }}>
                           <InputLabel id="Category">
-                            Select a Sub-Category
+                            {t('core:publish.select_subcategory', {
+                              postProcess: 'capitalizeEachFirstChar',
+                            })}
                           </InputLabel>
                           <Select
                             labelId="Sub-Category"
                             input={
-                              <OutlinedInput label="Select a Sub-Category" />
+                              <OutlinedInput
+                                label={t('core:publish.select_subcategory', {
+                                  postProcess: 'capitalizeEachFirstChar',
+                                })}
+                              />
                             }
-                            value={selectedSubCategoryVideos?.id || ""}
-                            onChange={e =>
+                            value={selectedSubCategoryVideos?.id || ''}
+                            onChange={(e) =>
                               handleOptionSubCategoryChangeVideos(
                                 e,
                                 subCategories[selectedCategoryVideos?.id]
@@ -802,9 +880,9 @@ export const PublishVideo = ({
                             }
                           >
                             {subCategories[selectedCategoryVideos.id].map(
-                              option => (
+                              (option) => (
                                 <MenuItem key={option.id} value={option.id}>
-                                  {option.name}
+                                  {t(`category:subcategories.${option.id}`)}
                                 </MenuItem>
                               )
                             )}
@@ -821,11 +899,13 @@ export const PublishVideo = ({
                       onPick={(img: string) => setCoverImageForAll(img)}
                     >
                       <AddCoverImageButton variant="contained">
-                        Add Cover Image
+                        {t('core:publish.add_cover_image', {
+                          postProcess: 'capitalizeEachFirstChar',
+                        })}
                         <AddLogoIcon
                           sx={{
-                            height: "25px",
-                            width: "auto",
+                            height: '25px',
+                            width: 'auto',
                           }}
                         ></AddLogoIcon>
                       </AddCoverImageButton>
@@ -836,8 +916,8 @@ export const PublishVideo = ({
                       <TimesIcon
                         color={theme.palette.text.primary}
                         onClickFunc={() => setCoverImageForAll(null)}
-                        height={"32"}
-                        width={"32"}
+                        height={'32'}
+                        width={'32'}
                       ></TimesIcon>
                     </LogoPreviewRow>
                   )}
@@ -849,8 +929,11 @@ export const PublishVideo = ({
                   <React.Fragment key={index}>
                     <FrameExtractor
                       videoFile={file.file}
-                      onFramesExtracted={imgs => onFramesExtracted(imgs, index)}
+                      onFramesExtracted={(imgs) =>
+                        onFramesExtracted(imgs, index)
+                      }
                       videoDurations={videoDurations}
+                      setVideoDurations={setVideoDurations}
                       index={index}
                     />
                     <Typography>{file?.file?.name}</Typography>
@@ -859,15 +942,17 @@ export const PublishVideo = ({
                         {!file?.coverImage ? (
                           <ImageUploader
                             onPick={(img: string) =>
-                              handleOnchange(index, "coverImage", img)
+                              handleOnchange(index, 'coverImage', img)
                             }
                           >
                             <AddCoverImageButton variant="contained">
-                              Add Cover Image
+                              {t('core:publish.add_cover_image', {
+                                postProcess: 'capitalizeEachFirstChar',
+                              })}
                               <AddLogoIcon
                                 sx={{
-                                  height: "25px",
-                                  width: "auto",
+                                  height: '25px',
+                                  width: 'auto',
                                 }}
                               ></AddLogoIcon>
                             </AddCoverImageButton>
@@ -881,10 +966,10 @@ export const PublishVideo = ({
                             <TimesIcon
                               color={theme.palette.text.primary}
                               onClickFunc={() =>
-                                handleOnchange(index, "coverImage", "")
+                                handleOnchange(index, 'coverImage', '')
                               }
-                              height={"32"}
-                              width={"32"}
+                              height={'32'}
+                              width={'32'}
                             ></TimesIcon>
                           </LogoPreviewRow>
                         )}
@@ -896,8 +981,8 @@ export const PublishVideo = ({
                       label="Title of video"
                       variant="filled"
                       value={file.title}
-                      onChange={e =>
-                        handleOnchange(index, "title", e.target.value)
+                      onChange={(e) =>
+                        handleOnchange(index, 'title', e.target.value)
                       }
                       inputProps={{ maxLength: 180 }}
                       required
@@ -906,123 +991,127 @@ export const PublishVideo = ({
                       <>
                         <Typography
                           sx={{
-                            fontSize: "18px",
+                            fontSize: '18px',
                           }}
                         >
-                          Description of video
+                          {t('core:publish.description_video', {
+                            postProcess: 'capitalizeEachFirstChar',
+                          })}
                         </Typography>
                         <TextEditor
                           inlineContent={file?.description}
-                          setInlineContent={value => {
-                            handleOnchange(index, "description", value);
+                          setInlineContent={(value) => {
+                            handleOnchange(index, 'description', value);
                           }}
                         />
                       </>
                     )}
-
-                    {/* <CustomInputField
-                      name="description"
-                      label="Describe your video in a few words"
-                      variant="filled"
-                      value={file?.description}
-                      onChange={(e) =>
-                        handleOnchange(index, "description", e.target.value)
-                      }
-                      inputProps={{ maxLength: 10000 }}
-                      multiline
-                      maxRows={3}
-                      required
-                    /> */}
                   </React.Fragment>
                 );
               })}
             </>
           )}
-          {step === "playlist" && (
+          {step === 'playlist' && (
             <>
               <Box
                 sx={{
-                  width: "100%",
-                  justifyContent: "center",
-                  display: "flex",
+                  width: '100%',
+                  justifyContent: 'center',
+                  display: 'flex',
                 }}
               >
-                <Typography>Playlist</Typography>
-              </Box>
-              <Box
-                sx={{
-                  width: "100%",
-                  justifyContent: "center",
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  gap: "10px",
-                }}
-              >
-                <Typography
-                  sx={{
-                    fontSize: "18px",
-                    marginTop: "20px",
-                  }}
-                >
-                  Would you like to add these videos to a playlist?
-                </Typography>
-                <Typography
-                  sx={{
-                    fontSize: "16px",
-                  }}
-                >
-                  Add to a playlist is OPTIONAL
+                <Typography>
+                  {t('core:publish.playlist', {
+                    postProcess: 'capitalizeFirstChar',
+                  })}
                 </Typography>
               </Box>
               <Box
                 sx={{
-                  width: "100%",
-                  justifyContent: "center",
-                  display: "flex",
-                  gap: "20px",
+                  width: '100%',
+                  justifyContent: 'center',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: '10px',
+                }}
+              >
+                <Typography
+                  sx={{
+                    fontSize: '18px',
+                    marginTop: '20px',
+                  }}
+                >
+                  {t('core:publish.add_vids_playlist', {
+                    postProcess: 'capitalizeFirstChar',
+                  })}
+                </Typography>
+                <Typography
+                  sx={{
+                    fontSize: '16px',
+                  }}
+                >
+                  {t('core:publish.add_vids_playlist_optional', {
+                    postProcess: 'capitalizeFirstChar',
+                  })}
+                </Typography>
+              </Box>
+              <Box
+                sx={{
+                  width: '100%',
+                  justifyContent: 'center',
+                  display: 'flex',
+                  gap: '20px',
                 }}
               >
                 <CrowdfundActionButton
                   variant="contained"
-                  color={!playlistSetting ? "success" : "primary"}
+                  color={!playlistSetting ? 'success' : 'primary'}
                   onClick={() => {
                     setPlaylistSetting(null);
                   }}
                 >
-                  no playlist
+                  {t('core:publish.no_playlist', {
+                    postProcess: 'capitalizeFirstChar',
+                  })}
                 </CrowdfundActionButton>
                 <CrowdfundActionButton
-                  color={playlistSetting === "new" ? "success" : "primary"}
+                  color={playlistSetting === 'new' ? 'success' : 'primary'}
                   variant="contained"
                   onClick={() => {
-                    setPlaylistSetting("new");
+                    setPlaylistSetting('new');
                   }}
                 >
-                  New playlist
+                  {t('core:publish.new_playlist', {
+                    postProcess: 'capitalizeFirstChar',
+                  })}
                 </CrowdfundActionButton>
                 <CrowdfundActionButton
-                  color={playlistSetting === "existing" ? "success" : "primary"}
+                  color={playlistSetting === 'existing' ? 'success' : 'primary'}
                   variant="contained"
                   onClick={() => {
-                    setPlaylistSetting("existing");
+                    setPlaylistSetting('existing');
                   }}
                 >
-                  Existing playlist
+                  {t('core:publish.existing_playlist', {
+                    postProcess: 'capitalizeFirstChar',
+                  })}
                 </CrowdfundActionButton>
               </Box>
-              {playlistSetting === "existing" && (
+              {playlistSetting === 'existing' && (
                 <Box
                   sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    width: "100%",
-                    alignItems: "center",
+                    display: 'flex',
+                    flexDirection: 'column',
+                    width: '100%',
+                    alignItems: 'center',
                   }}
                 >
                   <CrowdfundSubTitleRow>
                     <CrowdfundSubTitle>
-                      Select existing playlist
+                      {t('core:publish.select_existing_playlist', {
+                        postProcess: 'capitalizeFirstChar',
+                      })}
                     </CrowdfundSubTitle>
                   </CrowdfundSubTitleRow>
                   <Typography>
@@ -1030,45 +1119,50 @@ export const PublishVideo = ({
                   </Typography>
                   <CardContentContainerComment
                     sx={{
-                      marginTop: "25px",
-                      height: "450px",
-                      overflow: "auto",
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
+                      marginTop: '25px',
+                      height: '450px',
+                      overflow: 'auto',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
                     }}
                   >
                     <Box
                       sx={{
-                        display: "flex",
-                        gap: "10px",
+                        display: 'flex',
+                        gap: '10px',
                       }}
                     >
                       <Input
                         id="standard-adornment-name"
-                        onChange={e => {
+                        onChange={(e) => {
                           setFilterSearch(e.target.value);
                         }}
                         value={filterSearch}
-                        placeholder="Search by title"
+                        placeholder={t(
+                          'core:publish.playlist_search_by_title',
+                          {
+                            postProcess: 'capitalizeFirstChar',
+                          }
+                        )}
                         sx={{
-                          borderBottom: "1px solid white",
-                          "&&:before": {
-                            borderBottom: "none",
+                          borderBottom: '1px solid white',
+                          '&&:before': {
+                            borderBottom: 'none',
                           },
-                          "&&:after": {
-                            borderBottom: "none",
+                          '&&:after': {
+                            borderBottom: 'none',
                           },
-                          "&&:hover:before": {
-                            borderBottom: "none",
+                          '&&:hover:before': {
+                            borderBottom: 'none',
                           },
-                          "&&.Mui-focused:before": {
-                            borderBottom: "none",
+                          '&&.Mui-focused:before': {
+                            borderBottom: 'none',
                           },
-                          "&&.Mui-focused": {
-                            outline: "none",
+                          '&&.Mui-focused': {
+                            outline: 'none',
                           },
-                          fontSize: "18px",
+                          fontSize: '18px',
                         }}
                       />
                       <Button
@@ -1077,35 +1171,37 @@ export const PublishVideo = ({
                         }}
                         variant="contained"
                       >
-                        Search
+                        {t('core:navbar.search', {
+                          postProcess: 'capitalizeFirstChar',
+                        })}
                       </Button>
                     </Box>
 
-                    {searchResults?.map((vid, index) => {
+                    {searchResults?.map((vid: any, index) => {
                       return (
                         <Box
                           key={vid?.identifier}
                           sx={{
-                            display: "flex",
-                            gap: "10px",
-                            width: "100%",
-                            alignItems: "center",
-                            padding: "10px",
-                            borderRadius: "5px",
-                            userSelect: "none",
+                            display: 'flex',
+                            gap: '10px',
+                            width: '100%',
+                            alignItems: 'center',
+                            padding: '10px',
+                            borderRadius: '5px',
+                            userSelect: 'none',
                           }}
                         >
                           <Typography
                             sx={{
-                              fontSize: "14px",
+                              fontSize: '14px',
                             }}
                           >
                             {index + 1}
                           </Typography>
                           <Typography
                             sx={{
-                              fontSize: "18px",
-                              wordBreak: "break-word",
+                              fontSize: '18px',
+                              wordBreak: 'break-word',
                             }}
                           >
                             {vid?.metadata?.title}
@@ -1115,7 +1211,7 @@ export const PublishVideo = ({
                               setSelectExistingPlaylist(vid);
                             }}
                             sx={{
-                              cursor: "pointer",
+                              cursor: 'pointer',
                             }}
                           />
                         </Box>
@@ -1124,18 +1220,20 @@ export const PublishVideo = ({
                   </CardContentContainerComment>
                 </Box>
               )}
-              {playlistSetting === "new" && (
+              {playlistSetting === 'new' && (
                 <>
                   {!playlistCoverImage ? (
                     <ImageUploader
                       onPick={(img: string) => setPlaylistCoverImage(img)}
                     >
                       <AddCoverImageButton variant="contained">
-                        Add Cover Image
+                        {t('core:publish.add_cover_image', {
+                          postProcess: 'capitalizeFirstChar',
+                        })}
                         <AddLogoIcon
                           sx={{
-                            height: "25px",
-                            width: "auto",
+                            height: '25px',
+                            width: 'auto',
                           }}
                         ></AddLogoIcon>
                       </AddCoverImageButton>
@@ -1146,45 +1244,38 @@ export const PublishVideo = ({
                       <TimesIcon
                         color={theme.palette.text.primary}
                         onClickFunc={() => setPlaylistCoverImage(null)}
-                        height={"32"}
-                        width={"32"}
+                        height={'32'}
+                        width={'32'}
                       ></TimesIcon>
                     </LogoPreviewRow>
                   )}
                   <CustomInputField
                     name="title"
-                    label="Title of playlist"
+                    label={t('core:publish.title_playlist', {
+                      postProcess: 'capitalizeFirstChar',
+                    })}
                     variant="filled"
                     value={playlistTitle}
-                    onChange={e => {
+                    onChange={(e) => {
                       const value = e.target.value;
                       let formattedValue: string = value;
 
-                      formattedValue = value.replace(titleFormatter, "");
+                      formattedValue = value.replace(titleFormatter, '');
 
                       setPlaylistTitle(formattedValue);
                     }}
                     inputProps={{ maxLength: 180 }}
                     required
                   />
-                  {/* <CustomInputField
-                    name="description"
-                    label="Describe your playlist in a few words"
-                    variant="filled"
-                    value={playlistDescription}
-                    onChange={(e) => setPlaylistDescription(e.target.value)}
-                    inputProps={{ maxLength: 10000 }}
-                    multiline
-                    maxRows={3}
-                    required
-                  /> */}
 
                   <Typography
                     sx={{
-                      fontSize: "18px",
+                      fontSize: '18px',
                     }}
                   >
-                    Description of playlist
+                    {t('core:publish.description_playlist', {
+                      postProcess: 'capitalizeFirstChar',
+                    })}
                   </Typography>
                   <TextEditor
                     inlineContent={playlistDescription}
@@ -1193,16 +1284,26 @@ export const PublishVideo = ({
                     }}
                   />
                   <FormControl fullWidth sx={{ marginBottom: 2, marginTop: 2 }}>
-                    <InputLabel id="Category">Select a Category</InputLabel>
+                    <InputLabel id="Category">
+                      {t('core:publish.select_category', {
+                        postProcess: 'capitalizeFirstChar',
+                      })}
+                    </InputLabel>
                     <Select
                       labelId="Category"
-                      input={<OutlinedInput label="Select a Category" />}
-                      value={selectedCategory?.id || ""}
+                      input={
+                        <OutlinedInput
+                          label={t('core:publish.select_category', {
+                            postProcess: 'capitalizeFirstChar',
+                          })}
+                        />
+                      }
+                      value={selectedCategory?.id || ''}
                       onChange={handleOptionCategoryChange}
                     >
-                      {categories.map(option => (
+                      {categories.map((option) => (
                         <MenuItem key={option.id} value={option.id}>
-                          {option.name}
+                          {t(`category:categories.${option.id}`)}
                         </MenuItem>
                       ))}
                     </Select>
@@ -1210,22 +1311,30 @@ export const PublishVideo = ({
                   {selectedCategory && subCategories[selectedCategory?.id] && (
                     <FormControl fullWidth sx={{ marginBottom: 2 }}>
                       <InputLabel id="Category">
-                        Select a Sub-Category
+                        {t('core:publish.select_subcategory', {
+                          postProcess: 'capitalizeFirstChar',
+                        })}
                       </InputLabel>
                       <Select
                         labelId="Sub-Category"
-                        input={<OutlinedInput label="Select a Sub-Category" />}
-                        value={selectedSubCategory?.id || ""}
-                        onChange={e =>
+                        input={
+                          <OutlinedInput
+                            label={t('core:publish.select_subcategory', {
+                              postProcess: 'capitalizeFirstChar',
+                            })}
+                          />
+                        }
+                        value={selectedSubCategory?.id || ''}
+                        onChange={(e) =>
                           handleOptionSubCategoryChange(
                             e,
                             subCategories[selectedCategory?.id]
                           )
                         }
                       >
-                        {subCategories[selectedCategory.id].map(option => (
+                        {subCategories[selectedCategory.id].map((option) => (
                           <MenuItem key={option.id} value={option.id}>
-                            {option.name}
+                            {t(`category:subcategories.${option.id}`)}
                           </MenuItem>
                         ))}
                       </Select>
@@ -1248,96 +1357,62 @@ export const PublishVideo = ({
             </CrowdfundActionButton>
             <Box
               sx={{
-                display: "flex",
-                gap: "20px",
-                alignItems: "center",
+                display: 'flex',
+                gap: '20px',
+                alignItems: 'center',
               }}
             >
-              {step === "playlist" && (
+              {step === 'playlist' && (
                 <CrowdfundActionButton
                   variant="contained"
                   onClick={() => {
-                    // publishQDNResource();
-                    // setIsOpenMultiplePublish(true)
-                    setStep("videos");
+                    setStep('videos');
                   }}
                 >
-                  Back
+                  {t('core:action.back', {
+                    postProcess: 'capitalizeFirstChar',
+                  })}
                 </CrowdfundActionButton>
               )}
-              {step === "playlist" ? (
+              {step === 'playlist' ? (
                 <CrowdfundActionButton
                   variant="contained"
                   onClick={() => {
                     publishQDNResource();
                   }}
                 >
-                  Publish
+                  {t('core:publish.publish_action', {
+                    postProcess: 'capitalizeFirstChar',
+                  })}
                 </CrowdfundActionButton>
               ) : (
                 <CrowdfundActionButton
                   variant="contained"
                   disabled={
-                    files?.length !== Object.keys(imageExtracts)?.length
+                    files?.length !== Object.keys(imageExtracts)?.length ||
+                    files?.length === 0
                   }
                   onClick={() => {
                     next();
                   }}
                 >
                   {files?.length !== Object.keys(imageExtracts)?.length
-                    ? "Generating image extracts"
-                    : ""}
+                    ? t('core:publish.generationg_extracts', {
+                        postProcess: 'capitalizeFirstChar',
+                      })
+                    : ''}
                   {files?.length !== Object.keys(imageExtracts)?.length && (
                     <CircularProgress color="secondary" size={14} />
                   )}
-                  Next
+                  {t('core:action.next', {
+                    postProcess: 'capitalizeFirstChar',
+                  })}
                 </CrowdfundActionButton>
               )}
             </Box>
           </CrowdfundActionButtonRow>
         </ModalBody>
       </Modal>
-
-      {isOpenMultiplePublish && (
-        <MultiplePublish
-          isOpen={isOpenMultiplePublish}
-          onError={messageNotification => {
-            setIsOpenMultiplePublish(false);
-            setPublishes(null);
-            if (messageNotification) {
-              dispatch(
-                setNotification({
-                  msg: messageNotification,
-                  alertType: "error",
-                })
-              );
-            }
-          }}
-          onSubmit={() => {
-            setIsOpenMultiplePublish(false);
-            setIsOpen(false);
-            setImageExtracts({});
-            setFiles([]);
-            setStep("videos");
-            setPlaylistCoverImage(null);
-            setPlaylistTitle("");
-            setPlaylistDescription("");
-            setSelectedCategory(null);
-            setCoverImageForAll(null);
-            setSelectedSubCategory(null);
-            setSelectedCategoryVideos(null);
-            setSelectedSubCategoryVideos(null);
-            setPlaylistSetting(null);
-            dispatch(
-              setNotification({
-                msg: "Videos published",
-                alertType: "success",
-              })
-            );
-          }}
-          publishes={publishes}
-        />
-      )}
     </>
   );
 };

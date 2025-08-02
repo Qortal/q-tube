@@ -1,36 +1,137 @@
-import { Box, Typography, useMediaQuery } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import { Box, Button, Divider, Typography, useMediaQuery } from '@mui/material';
+import { useEffect, useRef, useState } from 'react';
 
-import DeletedVideo from "../../../assets/img/DeletedVideo.jpg";
-import { CommentSection } from "../../../components/common/Comments/CommentSection.tsx";
-import { SuperLikesSection } from "../../../components/common/SuperLikesList/SuperLikesSection.tsx";
-import { DisplayHtml } from "../../../components/common/TextEditor/DisplayHtml.tsx";
-import { VideoPlayer } from "../../../components/common/VideoPlayer/VideoPlayer.tsx";
+import { CommentSection } from '../../../components/common/Comments/CommentSection.tsx';
+import { SuperLikesSection } from '../../../components/common/SuperLikesList/SuperLikesSection.tsx';
+import { VideoPlayer } from '../../../components/common/VideoPlayer/VideoPlayer.tsx';
+import { motion } from 'framer-motion';
+
 import {
   fontSizeSmall,
   minFileSize,
   smallVideoSize,
-} from "../../../constants/Misc.ts";
-import { formatBytes } from "../../../utils/numberFunctions.ts";
-import { formatDate } from "../../../utils/time.ts";
-import { VideoActionsBar } from "./VideoActionsBar.tsx";
-import { useVideoContentState } from "./VideoContent-State.ts";
+} from '../../../constants/Misc.ts';
+import { formatBytes } from '../../../utils/numberFunctions.ts';
+import { formatDate } from '../../../utils/time.ts';
+import { VideoActionsBar } from './VideoActionsBar.tsx';
+import { useVideoContentState } from './VideoContent-State.ts';
+import DOMPurify from 'dompurify';
+
 import {
   Spacer,
   VideoContentContainer,
-  VideoDescription,
   VideoPlayerContainer,
   VideoTitle,
-} from "./VideoContent-styles.tsx";
+} from './VideoContent-styles.tsx';
+import { useScrollToTop } from '../../../hooks/useScrollToTop.tsx';
+import { handleClickText, processText } from 'qapp-core';
+import { PageTransition } from '../../../components/common/PageTransition.tsx';
+import { useIsMobile } from '../../../hooks/useIsMobile.tsx';
+import { useIsSmall } from '../../../hooks/useIsSmall.tsx';
+import { useTranslation } from 'react-i18next';
+
+function flattenHtml(html: string): string {
+  const sanitize: string = DOMPurify.sanitize(html, {
+    USE_PROFILES: { html: true },
+  });
+  const res = processText(sanitize);
+  return res;
+}
+
+export const CollapsibleDescription = ({
+  text,
+  html,
+}: {
+  text?: string;
+  html?: any;
+}) => {
+  const { t } = useTranslation(['core']);
+
+  const [expanded, setExpanded] = useState(false);
+  const [showMore, setShowMore] = useState(false);
+  const textRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (textRef.current) {
+      const el = textRef.current;
+
+      // Clone the element to measure full height
+      const clone = el.cloneNode(true) as HTMLElement;
+      clone.style.visibility = 'hidden';
+      clone.style.position = 'absolute';
+      clone.style.pointerEvents = 'none';
+      clone.style.webkitLineClamp = 'none';
+      clone.style.display = 'block';
+
+      document.body.appendChild(clone);
+      const fullHeight = clone.offsetHeight;
+      document.body.removeChild(clone);
+
+      const clampedHeight = el.offsetHeight;
+
+      if (fullHeight > clampedHeight + 2) {
+        setShowMore(true);
+      }
+    }
+  }, [text, html]);
+
+  return (
+    <Box sx={{ maxWidth: '1200px' }}>
+      {text && (
+        <Typography
+          ref={textRef}
+          sx={{
+            display: '-webkit-box',
+            WebkitLineClamp: expanded ? 'none' : 2,
+            WebkitBoxOrient: 'vertical',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+          }}
+        >
+          {text}
+        </Typography>
+      )}
+      {html && (
+        <Box
+          onClick={handleClickText}
+          ref={textRef}
+          sx={{
+            display: expanded ? 'block' : '-webkit-box',
+            WebkitLineClamp: expanded ? 'none' : 2,
+            WebkitBoxOrient: 'vertical',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            lineHeight: 1.2,
+          }}
+          dangerouslySetInnerHTML={{ __html: flattenHtml(html) }}
+        />
+      )}
+      {showMore && (
+        <Button
+          onClick={() => setExpanded(!expanded)}
+          size="small"
+          sx={{ mt: 1, textTransform: 'none' }}
+        >
+          {expanded
+            ? t('core:video.show_less', {
+                postProcess: 'capitalizeFirstChar',
+              })
+            : t('core:video.show_more', {
+                postProcess: 'capitalizeFirstChar',
+              })}
+        </Button>
+      )}
+    </Box>
+  );
+};
 
 export const VideoContent = () => {
+  useScrollToTop();
   const {
-    focusVideo,
     videoReference,
     channelName,
     id,
     videoCover,
-    containerRef,
     isVideoLoaded,
     theme,
     videoData,
@@ -43,8 +144,11 @@ export const VideoContent = () => {
     superLikeList,
     setSuperLikeList,
   } = useVideoContentState();
+  const isSmall = useIsSmall();
+  const { i18n } = useTranslation(['core']);
 
   const isScreenSmall = !useMediaQuery(smallVideoSize);
+  const isMobile = useIsMobile();
   const [screenWidth, setScreenWidth] = useState<number>(
     window.innerWidth + 120
   );
@@ -61,186 +165,115 @@ export const VideoContent = () => {
   if (videoWidth < minWidthPercent) videoWidth = minWidthPercent;
 
   useEffect(() => {
-    window.addEventListener("resize", e => {
+    window.addEventListener('resize', (e) => {
       setScreenWidth(window.innerWidth + 120);
     });
   }, []);
 
   return (
-    <>
+    <PageTransition>
       <Box
         sx={{
-          display: "flex",
-          flexDirection: "column",
-          padding: `0px 0px 0px ${isScreenSmall ? "0px" : "2%"}`,
-          width: "100%",
+          display: 'flex',
+          flexDirection: 'column',
+          padding: isMobile ? '0px' : '10px',
+          width: '100%',
         }}
-        onClick={focusVideo}
       >
         {videoReference ? (
           <VideoPlayerContainer
             sx={{
-              width: `${videoWidth}%`,
-              marginLeft: "0%",
+              height: isSmall ? '240px' : '70vh',
+              maxHeight: '70vh',
+              backgroundColor: 'black',
             }}
           >
             <VideoPlayer
               name={videoReference?.name}
               service={videoReference?.service}
               identifier={videoReference?.identifier}
+              created={videoData?.created}
               user={channelName}
               jsonId={id}
-              poster={videoCover || ""}
-              ref={containerRef}
+              poster={videoCover || ''}
               videoStyles={{
-                videoContainer: { aspectRatio: "16 / 9" },
-                video: { aspectRatio: "16 / 9" },
+                videoContainer: { aspectRatio: '16 / 9' },
+                video: { aspectRatio: '16 / 9' },
               }}
               duration={videoData?.duration}
+              filename={videoData?.filename}
             />
           </VideoPlayerContainer>
-        ) : isVideoLoaded ? (
-          <img
-            src={DeletedVideo}
-            width={"70%"}
-            height={"37%"}
-            style={{ marginLeft: "5%" }}
-          />
         ) : (
-          <Box sx={{ width: "55vw", aspectRatio: "16/9" }}></Box>
+          <Box
+            sx={{
+              width: '100%',
+              height: isSmall ? '240px' : '70vh',
+              maxHeight: '70vh',
+              background: 'black',
+            }}
+          ></Box>
         )}
-        <VideoContentContainer
-          sx={{ paddingLeft: isScreenSmall ? "5px" : "0px" }}
-        >
+        {/* <Spacer height="20px" /> */}
+        <VideoContentContainer sx={{ padding: isSmall ? '5px' : '0px' }}>
           <VideoTitle
-            variant={isScreenSmall ? "h2" : "h1"}
+            variant={'h4'}
             color="textPrimary"
             sx={{
-              textAlign: "start",
-              marginTop: isScreenSmall ? "20px" : "10px",
+              textAlign: 'start',
+              marginTop: '20px',
+              ...(isSmall && {
+                fontSize: '18px',
+              }),
             }}
           >
             {videoData?.title}
           </VideoTitle>
-          <Box>
+          <Spacer height="10px" />
+          <Box
+            sx={{
+              display: 'flex',
+              gap: '14px',
+            }}
+          >
             {videoData?.created && (
               <Typography
-                variant="h2"
                 sx={{
-                  fontSize: fontSizeSmall,
-                  display: "inline",
+                  fontSize: '14px',
+                  display: 'inline',
                 }}
-                color={theme.palette.text.primary}
+                color={theme.palette.text.tertiary}
               >
-                {formatDate(videoData.created)}
+                {formatDate(videoData.created, i18n.language)}
               </Typography>
             )}
-
+            <Divider orientation="vertical" flexItem />
             {videoData?.fileSize > minFileSize && (
               <Typography
-                variant="h1"
                 sx={{
-                  fontSize: "90%",
-                  display: "inline",
-                  marginLeft: "20px",
+                  fontSize: '14px',
+                  display: 'inline',
                 }}
-                color={"green"}
+                color={theme.palette.text.tertiary}
               >
-                {formatBytes(videoData.fileSize, 2, "Decimal")}
+                {formatBytes(videoData.fileSize, 2, 'Decimal')}
               </Typography>
             )}
           </Box>
           <VideoActionsBar
-            channelName={channelName}
+            channelName={channelName || ''}
             videoData={videoData}
             setSuperLikeList={setSuperLikeList}
             superLikeList={superLikeList}
             videoReference={videoReference}
-            sx={{ width: "calc(100% - 5px)" }}
+            sx={{ width: 'calc(100% - 5px)' }}
           />
 
           <Spacer height="15px" />
-          {videoData?.fullDescription && (
-            <Box
-              sx={{
-                background: "#333333",
-                borderRadius: "5px",
-                padding: "5px",
-                width: "95%",
-                cursor: !descriptionHeight
-                  ? "default"
-                  : isExpandedDescription
-                    ? "default"
-                    : "pointer",
-                position: "relative",
-                marginBottom: "30px",
-              }}
-              className={
-                !descriptionHeight
-                  ? ""
-                  : isExpandedDescription
-                    ? ""
-                    : "hover-click"
-              }
-            >
-              {descriptionHeight && !isExpandedDescription && (
-                <Box
-                  sx={{
-                    position: "absolute",
-                    top: "0px",
-                    right: "0px",
-                    left: "0px",
-                    bottom: "0px",
-                    cursor: "pointer",
-                  }}
-                  onClick={() => {
-                    if (isExpandedDescription) return;
-                    setIsExpandedDescription(true);
-                  }}
-                />
-              )}
-              <Box
-                ref={contentRef}
-                sx={{
-                  height: !descriptionHeight
-                    ? "auto"
-                    : isExpandedDescription
-                      ? "auto"
-                      : "200px",
-                  overflow: "hidden",
-                }}
-              >
-                {videoData?.htmlDescription ? (
-                  <DisplayHtml html={videoData?.htmlDescription} />
-                ) : (
-                  <VideoDescription
-                    variant="body1"
-                    color="textPrimary"
-                    sx={{
-                      cursor: "default",
-                    }}
-                  >
-                    {videoData?.fullDescription}
-                  </VideoDescription>
-                )}
-              </Box>
-              {descriptionHeight >= descriptionThreshold && (
-                <Typography
-                  onClick={() => {
-                    setIsExpandedDescription(prev => !prev);
-                  }}
-                  sx={{
-                    fontWeight: "bold",
-                    fontSize: "16px",
-                    cursor: "pointer",
-                    paddingLeft: "15px",
-                    paddingTop: "15px",
-                  }}
-                >
-                  {isExpandedDescription ? "Show less" : "...more"}
-                </Typography>
-              )}
-            </Box>
+          {videoData?.htmlDescription ? (
+            <CollapsibleDescription html={videoData?.htmlDescription} />
+          ) : (
+            <CollapsibleDescription text={videoData?.fullDescription} />
           )}
 
           {id && channelName && (
@@ -250,14 +283,14 @@ export const VideoContent = () => {
                 getMore={() => {}}
                 loadingSuperLikes={loadingSuperLikes}
                 superlikes={superLikeList}
-                postId={id || ""}
-                postName={channelName || ""}
+                postId={id || ''}
+                postName={channelName || ''}
               />
-              <CommentSection postId={id || ""} postName={channelName || ""} />
+              <CommentSection postId={id || ''} postName={channelName || ''} />
             </>
           )}
         </VideoContentContainer>
       </Box>
-    </>
+    </PageTransition>
   );
 };

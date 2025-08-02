@@ -1,20 +1,18 @@
 import { useSetAtom } from 'jotai';
 import { namesAtom } from '../state/global/names';
 import { useCallback, useEffect } from 'react';
-//import { useGlobal } from 'qapp-core';
-import { useSelector } from 'react-redux';
-import { RootState } from '../state/store';
+
+import { useAuth } from 'qapp-core';
 
 export const useHandleNameData = () => {
   const setNames = useSetAtom(namesAtom);
-  const user = useSelector((state: RootState) => state.auth.user);
-
+  const { address } = useAuth();
   const getMyNames = useCallback(async () => {
-    if (!user?.address) return;
+    if (!address) return;
     try {
       const res = await qortalRequest({
         action: 'GET_ACCOUNT_NAMES',
-        address: user.address,
+        address: address,
         limit: 0,
         offset: 0,
         reverse: false,
@@ -23,7 +21,7 @@ export const useHandleNameData = () => {
     } catch (error) {
       console.error(error);
     }
-  }, [user?.address, setNames]);  
+  }, [address, setNames]);
 
   // Initial fetch + interval
   useEffect(() => {
@@ -31,6 +29,6 @@ export const useHandleNameData = () => {
     const interval = setInterval(getMyNames, 120_000); // every 2 minutes
     return () => clearInterval(interval);
   }, [getMyNames]);
-  
+
   return null;
 };

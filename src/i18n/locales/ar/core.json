@@ -1,0 +1,141 @@
+{
+  "action": {
+    "back": "رجوع",
+    "next": "التالي",
+    "cancel": "إلغاء",
+    "delete": "حذف",
+    "close": "إغلاق",
+    "save": "حفظ",
+    "subscribe": "اشتراك",
+    "unsubscribe": "إلغاء الاشتراك",
+    "follow": "متابعة",
+    "unfollow": "إلغاء المتابعة",
+    "create": "إنشاء",
+    "edit": "تعديل",
+    "comment": "تعليق",
+    "reply": "رد",
+    "bookmark_video": "حفظ الفيديو",
+    "bookmark_playlist": "إشارة مرجعية لقائمة التشغيل"
+  },
+  "navbar": {
+    "search": "بحث"
+  },
+  "publish": {
+    "publish_action": "نشر",
+    "video": "فيديو",
+    "playlist": "قائمة تشغيل",
+    "downloads": "التنزيلات",
+    "update_video": "تحديث الفيديو",
+    "publish_videos": "نشر الفيديوهات",
+    "populate_titles": "ملء العناوين بأسماء الملفات (عند اختيار الملفات)",
+    "same_cover_images": "جميع الفيديوهات تستخدم نفس صورة الغلاف",
+    "populate_description": "ملء جميع الأوصاف بناءً على العنوان",
+    "drag_drop_videos": "اسحب وأسقط ملفات الفيديو هنا أو انقر لتحديد الملفات",
+    "supported_containers": "تنسيقات الملفات المدعومة",
+    "audio_codecs": "ترميزات الصوت",
+    "video_codecs": "ترميزات الفيديو",
+    "unsupported_codecs_description": "استخدام ترميزات غير مدعومة قد يؤدي إلى عدم عمل الفيديو أو الصوت بشكل صحيح",
+    "select_category": "اختر فئة",
+    "select_subcategory": "اختر فئة فرعية",
+    "add_cover_image": "إضافة صورة غلاف",
+    "description_video": "وصف الفيديو",
+    "add_vids_playlist": "هل ترغب في إضافة هذه الفيديوهات إلى قائمة تشغيل؟",
+    "add_vids_playlist_optional": "الإضافة إلى قائمة تشغيل اختيارية",
+    "no_playlist": "لا توجد قائمة تشغيل",
+    "new_playlist": "قائمة تشغيل جديدة",
+    "existing_playlist": "قائمة تشغيل موجودة",
+    "select_existing_playlist": "اختر قائمة تشغيل موجودة",
+    "playlist_search_by_title": "البحث حسب العنوان",
+    "title_playlist": "عنوان قائمة التشغيل",
+    "description_playlist": "وصف قائمة التشغيل",
+    "generationg_extracts": "يتم إنشاء مقتطفات الصور",
+    "create_new_playlist": "إنشاء قائمة تشغيل جديدة",
+    "update_playlist_properties": "تحديث خصائص قائمة التشغيل",
+    "add_videos_playlist": "إضافة فيديوهات إلى القائمة",
+    "my_videos": "فيديوهاتي",
+    "all_videos": "جميع الفيديوهات",
+    "search_by_title": "البحث حسب العنوان",
+    "edit_playlist": "تعديل قائمة التشغيل",
+    "block_user_content": "حظر محتوى المستخدم",
+    "edit_video": "تعديل خصائص الفيديو",
+    "delete_video": "حذف الفيديو",
+    "remove_video_list": "إزالة الفيديو من القائمة",
+    "playlist_not_exist": "هذه القائمة غير موجودة"
+  },
+  "notification": {
+    "no_new_notification": "لا إشعارات جديدة",
+    "from_user": "من {{user}}"
+  },
+  "likes": {
+    "super_like": "super like",
+    "recent_super_likes": "super likes الأخيرة",
+    "like_dislike": "أعجبني أو لم يعجبني الفيديو"
+  },
+  "blocked": {
+    "blocked_names": "الأسماء المحظورة"
+  },
+  "sidenav": {
+    "home": "الرئيسية",
+    "subscriptions": "الاشتراكات",
+    "watched_videos": "الفيديوهات المشاهدة",
+    "bookmarks": "المحفوظات",
+    "your_playlists": "قوائم التشغيل الخاصة بك",
+    "your_videos": "فيديوهاتك"
+  },
+  "filters": {
+    "most_recent": "الأحدث",
+    "all": "الكل",
+    "videos": "فيديوهات",
+    "playlists": "قوائم تشغيل",
+    "more_filters": "مزيد من الفلاتر",
+    "more": "المزيد",
+    "user_name": "اسم المستخدم (بالضبط)",
+    "category": "الفئة",
+    "sub_category": "الفئة الفرعية",
+    "reset": "إعادة تعيين",
+    "filters": "فلاتر"
+  },
+  "lists": {
+    "no_results": "لا توجد نتائج"
+  },
+  "bookmarks": {
+    "select_list": "اختر قائمة",
+    "all_bookmarks": "جميع الفيديوهات المحفوظة",
+    "bookmark_list": "قائمة المحفوظات",
+    "bookmark_lists": "قوائم المحفوظات",
+    "no_bookmarks_lists": "لا توجد قوائم محفوظات",
+    "new_list": "قائمة جديدة",
+    "new_folder": "مجلد جديد",
+    "delete_folder": "حذف المجلد"
+  },
+  "video": {
+    "show_more": "عرض المزيد",
+    "show_less": "عرض أقل",
+    "copy_link_video": "نسخ رابط الفيديو",
+    "subscribe_description": "الاشتراك في اسم معين يتيح لك رؤية محتواه في تبويب الاشتراكات في الصفحة الرئيسية. هذا لا يقوم بتحميل أي بيانات إلى عقدتك.",
+    "follow_description": "متابعة اسم معين تقوم تلقائيًا بتحميل جميع محتوياته إلى عقدتك. كلما زاد عدد المتابعين، زادت سرعة تحميل المحتوى للجميع.",
+    "currentSize": "الحجم الحالي للتحميل من {{followerName}}: {{followingSize}}",
+    "itemCount": "عدد الملفات: {{followingItemCount}}"
+  },
+  "payments": {
+    "amount": "المبلغ"
+  },
+  "comments": {
+    "comment_here": "أضف تعليقًا هنا",
+    "load_more_comments": "تحميل المزيد من التعليقات",
+    "submit_reply": "إرسال الرد",
+    "hide_replies": "إخفاء كل الردود",
+    "view_replies": "عرض كل الردود",
+    "your_comment": "تعليقك"
+  },
+  "download": {
+    "ready": "جاهز للحفظ: انقر هنا",
+    "start": "بدء التنزيل: انقر هنا"
+  },
+  "index": {
+    "index_video": "فهرسة الفيديو"
+  },
+  "search": {
+    "clear_search": "مسح سجل البحث"
+  }
+}

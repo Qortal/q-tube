@@ -1,41 +1,97 @@
+/* Roboto Thin 100 */
 @font-face {
-  font-family: 'Cambon Light';
-  src: url("./styles/fonts/Cambon-Light.ttf") format("truetype");
+  font-family: 'Roboto';
+  src: url('./styles/fonts/Roboto-Thin.ttf') format('truetype');
+  font-weight: 100;
+  font-style: normal;
 }
 
+/* Roboto Thin Italic 100 */
 @font-face {
-  font-family: 'Merriweather Sans';
-  src: url("./styles/fonts/Merriweather Sans.ttf") format("truetype");
+  font-family: 'Roboto';
+  src: url('./styles/fonts/Roboto-ThinItalic.ttf') format('truetype');
+  font-weight: 100;
+  font-style: italic;
 }
 
+/* Roboto Light 300 */
 @font-face {
-  font-family: 'Karla';
-  src: url("./styles/fonts/Karla.ttf") format("truetype");
+  font-family: 'Roboto';
+  src: url('./styles/fonts/Roboto-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
 }
 
+/* Roboto Light Italic 300 */
 @font-face {
-  font-family: 'Proxima Nova';
-  src: url("./styles/fonts/ProximaNova.otf") format("opentype");
+  font-family: 'Roboto';
+  src: url('./styles/fonts/Roboto-LightItalic.ttf') format('truetype');
+  font-weight: 300;
+  font-style: italic;
 }
 
+/* Roboto Regular 400 */
 @font-face {
-  font-family: 'Raleway';
-  src: url("./styles/fonts/Raleway.ttf") format("truetype");
+  font-family: 'Roboto';
+  src: url('./styles/fonts/Roboto-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
 }
 
+/* Roboto Italic 400 */
 @font-face {
-  font-family: 'Catamaran';
-  src: url("./styles/fonts/Catamaran.ttf") format("truetype");
+  font-family: 'Roboto';
+  src: url('./styles/fonts/Roboto-Italic.ttf') format('truetype');
+  font-weight: 400;
+  font-style: italic;
 }
 
+/* Roboto Medium 500 */
 @font-face {
-  font-family: 'Oxygen';
-  src: url("./styles/fonts/Oxygen.ttf") format("truetype");
+  font-family: 'Roboto';
+  src: url('./styles/fonts/Roboto-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
 }
 
+/* Roboto Medium Italic 500 */
 @font-face {
-  font-family: 'Cairo';
-  src: url("./styles/fonts/Cairo.ttf") format("truetype");
+  font-family: 'Roboto';
+  src: url('./styles/fonts/Roboto-MediumItalic.ttf') format('truetype');
+  font-weight: 500;
+  font-style: italic;
+}
+
+/* Roboto Bold 700 */
+@font-face {
+  font-family: 'Roboto';
+  src: url('./styles/fonts/Roboto-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+/* Roboto Bold Italic 700 */
+@font-face {
+  font-family: 'Roboto';
+  src: url('./styles/fonts/Roboto-BoldItalic.ttf') format('truetype');
+  font-weight: 700;
+  font-style: italic;
+}
+
+/* Roboto Black 900 */
+@font-face {
+  font-family: 'Roboto';
+  src: url('./styles/fonts/Roboto-Black.ttf') format('truetype');
+  font-weight: 900;
+  font-style: normal;
+}
+
+/* Roboto Black Italic 900 */
+@font-face {
+  font-family: 'Roboto';
+  src: url('./styles/fonts/Roboto-BlackItalic.ttf') format('truetype');
+  font-weight: 900;
+  font-style: italic;
 }
 
 :root {
@@ -43,7 +99,6 @@
   margin: 0px;
   box-sizing: border-box;
 }
-
 
 .line-clamp {
   height: 100px;
@@ -55,9 +110,8 @@
 }
 
 .edit-btn:hover {
-  opacity: .75;
-  transition: .2s all;
-
+  opacity: 0.75;
+  transition: 0.2s all;
 }
 
 .post-image {
@@ -67,7 +121,9 @@
   height: 100%;
 }
 
-a:link { color: #8AB4F8}
+a:link {
+  color: #8ab4f8;
+}
 
 .test-grid {
   display: grid;
@@ -81,125 +137,125 @@ a:link { color: #8AB4F8}
 }
 
 .test-grid-item {
-  border:  1px solid powderblue;
+  border: 1px solid powderblue;
 }
 
-
 body::-webkit-scrollbar-track {
-    background-color: transparent;
+  background-color: transparent;
+}
+body::-webkit-scrollbar-track:hover {
+  background-color: transparent;
+}
 
-   
-  }
-  body::-webkit-scrollbar-track:hover {
-    background-color: transparent;
-  }
+body::-webkit-scrollbar {
+  width: 16px;
+  height: 10px;
+  background-color: white;
+}
 
-  body::-webkit-scrollbar {
-    width: 16px;
-    height: 10px;
-    background-color: white;
-  }
+body::-webkit-scrollbar-thumb {
+  background-color: #838eee;
+  border-radius: 8px;
+  background-clip: content-box;
+  border: 4px solid transparent;
+}
 
-  body::-webkit-scrollbar-thumb {
-    background-color: #838eee;
-    border-radius: 8px;
-    background-clip: content-box;
-    border: 4px solid transparent;
-    
-  }
+body::-webkit-scrollbar-thumb:hover {
+  background-color: #6270f0;
+}
 
-  body::-webkit-scrollbar-thumb:hover {
-    background-color: #6270f0;
-  }
+.MuiList-root::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+.MuiList-root::-webkit-scrollbar-track:hover {
+  background-color: transparent;
+}
 
-  
-  .MuiList-root::-webkit-scrollbar-track {
-    background-color: transparent;
+.MuiList-root::-webkit-scrollbar {
+  width: 14px;
+  height: 10px;
+  background-color: white;
+}
 
-   
-  }
-  .MuiList-root::-webkit-scrollbar-track:hover {
-    background-color: transparent;
-  }
+.MuiList-root::-webkit-scrollbar-thumb {
+  background-color: lightgray;
+  border-radius: 8px;
+  background-clip: content-box;
+  border: 4px solid transparent;
+}
 
-  .MuiList-root::-webkit-scrollbar {
-    width: 14px;
-    height: 10px;
-    background-color: white;
-  }
+.MuiList-root::-webkit-scrollbar-thumb:hover {
+  background-color: lightslategray;
+}
 
-  .MuiList-root::-webkit-scrollbar-thumb {
-    background-color: lightgray;
-    border-radius: 8px;
-    background-clip: content-box;
-    border: 4px solid transparent;
-    
-  }
+.my-masonry-grid {
+  display: -webkit-box; /* Not needed if autoprefixing */
+  display: -ms-flexbox; /* Not needed if autoprefixing */
+  display: flex;
+  margin-left: -20px; /* gutter size offset */
+  width: auto;
+  padding: 15px 20px;
+}
 
-  .MuiList-root::-webkit-scrollbar-thumb:hover {
-    background-color: lightslategray;
-  }
+.my-masonry-grid_column {
+  padding-left: 20px; /* gutter size */
+  background-clip: padding-box;
+}
 
-  .my-masonry-grid {
-    display: -webkit-box; /* Not needed if autoprefixing */
-    display: -ms-flexbox; /* Not needed if autoprefixing */
-    display: flex;
-    margin-left: -20px; /* gutter size offset */
-    width: auto;
-    padding: 15px 20px;
-  }
+/* Style your items */
+.my-masonry-grid_column > li {
+  /* change div to reference your elements you put in <Masonry> */
+  margin-bottom: 30px;
+}
 
-  .my-masonry-grid_column {
-    padding-left: 20px; /* gutter size */
-    background-clip: padding-box;
-  }
-  
-  /* Style your items */
-  .my-masonry-grid_column > li { /* change div to reference your elements you put in <Masonry> */
-    margin-bottom: 30px;
-  }
+.my-svg path {
+  fill: red;
+}
 
-  .my-svg path {
-    fill: red
-  }
+.qortal-link {
+  text-decoration: none; /* Removes the underline */
+  color: inherit; /* Inherits the color of the parent element */
+}
+.qortal-link:hover,
+a:focus {
+  text-decoration: underline; /* Adds underline on hover and focus for accessibility */
+}
 
- .qortal-link {
-    text-decoration: none; /* Removes the underline */
-    color: inherit; /* Inherits the color of the parent element */
-  }
-  .qortal-link:hover, a:focus {
-    text-decoration: underline; /* Adds underline on hover and focus for accessibility */
-  }
+.download-icon {
+  transition: all 0.5s ease-in-out;
+  animation: downloadIconAnimation 2s infinite;
+}
 
-  .download-icon {
-    transition: all 0.5s ease-in-out;
-    animation: downloadIconAnimation 2s infinite;
+@keyframes downloadIconAnimation {
+  0% {
+    transform: scale(1);
+    fill: #fff;
   }
-  
-  @keyframes downloadIconAnimation {
-    0% { transform: scale(1); fill: #fff; }
-    50% { transform: scale(1.2); fill: #3498db; }
-    100% { transform: scale(1); fill: #fff; }
+  50% {
+    transform: scale(1.1);
+    fill: #3498db;
   }
+  100% {
+    transform: scale(1);
+    fill: #fff;
+  }
+}
 
-  .closePlayer {
-    position: absolute;
-    top: 0px;
-    width: 100%;
-    transition: all 0.3s;
-    display: flex;
-    justify-content: flex-end;
-    z-index: 8000;
-  }
-
+.closePlayer {
+  position: absolute;
+  top: 0px;
+  width: 100%;
+  transition: all 0.3s;
+  display: flex;
+  justify-content: flex-end;
+  z-index: 8000;
+}
 
 /* When the screen is 600px or less, display .myClassUnder600 and hide .myClassOver600 */
 @media screen and (max-width: 600px) {
   .myClassUnder600 {
     display: none !important;
   }
-
- 
 }
 
 @media screen and (min-width: 601px) {
@@ -210,7 +266,7 @@ body::-webkit-scrollbar-track {
 
 .ql-editor {
   min-height: 100px;
-  width: 100%
+  width: 100%;
 }
 
 .ql-editor img {
@@ -218,7 +274,7 @@ body::-webkit-scrollbar-track {
 }
 
 .ql-container {
-  font-size: 16px
+  font-size: 16px;
 }
 
 .hover-click {

@@ -1,101 +1,112 @@
-import { TabContext, TabList, TabPanel } from "@mui/lab";
+import { Box } from '@mui/material';
+import { useMemo } from 'react';
 
-import { Box, Tab, useMediaQuery } from "@mui/material";
-import React from "react";
-import LazyLoad from "../../components/common/LazyLoad";
-import { ListSuperLikeContainer } from "../../components/common/ListSuperLikes/ListSuperLikeContainer.tsx";
-import { fontSizeLarge, fontSizeSmall } from "../../constants/Misc.ts";
-import { SearchSidebar } from "./Components/SearchSidebar.tsx";
-import VideoList from "./Components/VideoList.tsx";
-import { useHomeState } from "./Home-State.ts";
+import VideoList from './Components/VideoList.tsx';
+import { useHomeState } from './Home-State.ts';
+import {
+  QTUBE_PLAYLIST_BASE,
+  QTUBE_VIDEO_BASE,
+} from '../../constants/Identifiers.ts';
+import { QortalSearchParams, useAuth } from 'qapp-core';
+import { useSearchParams } from 'react-router-dom';
+import { FilterOptions } from './FilterOptions.tsx';
+import { ScrollToTopButton } from '../../components/common/ScrollToTopButton.tsx';
+import { useAtomValue, useSetAtom } from 'jotai';
+import { scrollRefAtom } from '../../state/global/navbar.ts';
+import { PageTransition } from '../../components/common/PageTransition.tsx';
+import { ListSuperLikeContainer } from '../../components/common/ListSuperLikes/ListSuperLikeContainer.tsx';
 
-interface HomeProps {
-  mode?: string;
-}
-export const Home = ({ mode }: HomeProps) => {
+export const Home = () => {
+  const scrollRef = useAtomValue(scrollRefAtom);
+
   const {
     tabValue,
-    changeTab,
-    videos,
-    isLoading,
-    filteredSubscriptionList,
-    getVideosHandler,
-  } = useHomeState(mode);
+    filterName,
+    filterCategory,
+    subscriptions,
+    filterType,
+    filterSearch,
+    filterSubCategory,
+    isHydrated,
+    filterMode,
+  } = useHomeState();
 
-  const tabPaneSX = {
-    width: "100%",
-    paddingLeft: "0px",
-    paddingRight: "0px",
-  };
-  const isScreenSmall = !useMediaQuery("(min-width:600px)");
-  const isScreenLarge = useMediaQuery("(min-width:1200px)");
+  const searchParameters: QortalSearchParams | null = useMemo(() => {
+    if (!isHydrated) return null;
+    const isSubscriptionTab = tabValue === 'subscriptions';
+    const searchOptions: {
+      description?: string;
+      query?: string;
+      names?: string[];
+      name?: string;
+    } = {};
+    if (isSubscriptionTab) {
+      searchOptions.names = subscriptions?.map((n) => n?.subscriberName);
+    }
+    if (filterCategory) {
+      searchOptions.description = `category:${filterCategory.id};`;
 
-  const tabSX = {
-    fontSize: isScreenSmall ? fontSizeSmall : fontSizeLarge,
-    paddingLeft: "0px",
-    paddingRight: "0px",
-  };
-
-  const homeBaseSX = { display: "grid", width: "100%" };
-  const bigGridSX = { gridTemplateColumns: "200px auto 250px" };
-  const mediumGridSX = { gridTemplateColumns: "200px auto" };
-  const smallGridSX = { gridTemplateColumns: "100%", gap: "20px" };
-
-  let homeColumns: object;
-  if (isScreenLarge) homeColumns = bigGridSX;
-  else if (!isScreenSmall) homeColumns = mediumGridSX;
-  else homeColumns = smallGridSX;
+      if (filterSubCategory)
+        searchOptions.description += `subcategory:${filterSubCategory.id}`;
+    }
+    if (filterSearch) {
+      searchOptions.query = filterSearch;
+    }
+    if (filterName) {
+      searchOptions.name = filterName;
+      delete searchOptions.names;
+    }
+    return {
+      identifier:
+        filterType === 'playlists' ? QTUBE_PLAYLIST_BASE : QTUBE_VIDEO_BASE,
+      service: filterType === 'playlists' ? 'PLAYLIST' : 'DOCUMENT',
+      offset: 0,
+      reverse: true,
+      limit: 20,
+      ...searchOptions,
+      mode: filterMode === 'recent' ? 'LATEST' : 'ALL',
+    };
+  }, [
+    filterType,
+    filterName,
+    filterCategory,
+    filterSubCategory,
+    filterSearch,
+    filterMode,
+    isHydrated,
+    tabValue,
+    subscriptions,
+  ]);
 
   return (
-    <>
-      <Box sx={{ ...homeBaseSX, ...homeColumns }}>
-        <SearchSidebar onSearch={getVideosHandler} />
+    <PageTransition>
+      <Box>
         <Box
           sx={{
-            width: "100%",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
           }}
         >
-          <TabContext value={tabValue}>
-            <TabList
-              onChange={changeTab}
-              textColor={"secondary"}
-              indicatorColor={"secondary"}
-              centered={false}
-            >
-              <Tab label="All" value={"all"} sx={tabSX} />
-              <Tab label="Subscriptions" value={"subscriptions"} sx={tabSX} />
-            </TabList>
-            <TabPanel value={"all"} sx={tabPaneSX}>
-              <VideoList videos={videos} />
-              <LazyLoad
-                onLoadMore={getVideosHandler}
-                isLoading={isLoading}
-              ></LazyLoad>
-            </TabPanel>
-            <TabPanel value={"subscriptions"} sx={tabPaneSX}>
-              {filteredSubscriptionList.length > 0 ? (
-                <>
-                  <VideoList videos={videos} />
-                  <LazyLoad
-                    onLoadMore={getVideosHandler}
-                    isLoading={isLoading}
-                  ></LazyLoad>
-                </>
-              ) : (
-                !isLoading && (
-                  <div style={{ textAlign: "center" }}>
-                    You have no subscriptions
-                  </div>
-                )
-              )}
-            </TabPanel>
-          </TabContext>
+          <FilterOptions />
+          <Box
+            sx={{
+              display: 'flex',
+              width: '100%',
+            }}
+          >
+            {searchParameters && (
+              <VideoList
+                listName="latestVideos"
+                searchParameters={searchParameters}
+              />
+            )}
+            {searchParameters && <ListSuperLikeContainer from="home" />}
+          </Box>
         </Box>
-        <ListSuperLikeContainer />
       </Box>
-    </>
+      <ScrollToTopButton scrollRef={scrollRef} />
+    </PageTransition>
   );
 };

@@ -1,55 +1,72 @@
-import { videoRefType } from "../../../components/common/VideoPlayer/VideoPlayer.tsx";
+import { SUPER_LIKE_BASE } from '../../../constants/Identifiers.ts';
+import { minPriceSuperLike } from '../../../constants/Misc.ts';
+import { useFetchSuperLikes } from '../../../hooks/useFetchSuperLikes.tsx';
+import { useEffect, useRef, useState, useMemo, useCallback } from 'react';
+import { useTheme } from '@mui/material';
+import { useNavigate, useParams } from 'react-router-dom';
 import {
-  QTUBE_VIDEO_BASE,
-  SUPER_LIKE_BASE,
-} from "../../../constants/Identifiers.ts";
-import {
-  minPriceSuperLike,
-  titleFormatterOnSave,
-} from "../../../constants/Misc.ts";
-import { useFetchSuperLikes } from "../../../hooks/useFetchSuperLikes.tsx";
-import { setIsLoadingGlobal } from "../../../state/features/globalSlice.ts";
-import { addToHashMap } from "../../../state/features/videoSlice.ts";
-import { RootState } from "../../../state/store.ts";
-import React, {
-  useEffect,
-  useRef,
-  useState,
-  useMemo,
-  useCallback,
-} from "react";
-import { Avatar, Box, Typography, useTheme } from "@mui/material";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router-dom";
-import { hashWordWithoutPublicSalt } from "qapp-core";
+  hashWordWithoutPublicSalt,
+  QortalGetMetadata,
+  usePublish,
+} from 'qapp-core';
 
 const superLikeVersion2Timestamp = 1744041600000;
+
 export const useVideoContentState = () => {
   const { name: channelName, id } = useParams();
+  const [videoMetadataResource, setVideoMetadataResource] =
+    useState<null | QortalGetMetadata>(null);
+  const metadata: QortalGetMetadata = videoMetadataResource
+    ? videoMetadataResource
+    : {
+        identifier: id || '',
+        name: channelName || '',
+        service: 'DOCUMENT',
+      };
+
+  const { resource } = usePublish(2, 'JSON', metadata);
   const [superLikeversion, setSuperLikeVersion] = useState<null | number>(null);
   const [isExpandedDescription, setIsExpandedDescription] =
     useState<boolean>(false);
-  const containerRef = useRef<videoRefType>(null);
 
-  const [nameAddress, setNameAddress] = useState<string>("");
+  const [nameAddress, setNameAddress] = useState<string>('');
   const [descriptionHeight, setDescriptionHeight] = useState<null | number>(
     null
   );
-  const [videoData, setVideoData] = useState<any>(null);
-  const [isVideoLoaded, setIsVideoLoaded] = useState<boolean>(false);
 
-  const userAvatarHash = useSelector(
-    (state: RootState) => state.global.userAvatarHash
-  );
   const [loadingSuperLikes, setLoadingSuperLikes] = useState<boolean>(false);
   const [superLikeList, setSuperLikeList] = useState<any[]>([]);
   const { addSuperlikeRawDataGetToList } = useFetchSuperLikes();
+  const videoData = useMemo(() => {
+    if (!resource?.data) return null;
 
+    const resourceData = {
+      title: resource?.qortalMetadata?.metadata?.title,
+      category: resource?.qortalMetadata?.metadata?.category,
+      categoryName: resource?.qortalMetadata?.metadata?.categoryName,
+      tags: resource?.qortalMetadata?.metadata?.tags || [],
+      description: resource?.qortalMetadata?.metadata?.description,
+      created: resource?.qortalMetadata?.created,
+      updated: resource?.qortalMetadata?.updated,
+      user: resource?.qortalMetadata.name,
+      videoImage: '',
+      id: resource?.qortalMetadata.identifier,
+    };
+    return {
+      ...resourceData,
+      ...resource.data,
+    };
+  }, [resource]);
+
+  const isVideoLoaded = useMemo(() => {
+    if (!resource?.data) return false;
+    return true;
+  }, [resource?.data]);
   const contentRef = useRef(null);
 
-  const getAddressName = async name => {
+  const getAddressName = async (name) => {
     const response = await qortalRequest({
-      action: "GET_NAME_DATA",
+      action: 'GET_NAME_DATA',
       name: name,
     });
 
@@ -63,20 +80,10 @@ export const useVideoContentState = () => {
       getAddressName(channelName);
     }
   }, [channelName]);
-  const avatarUrl = useMemo(() => {
-    let url = "";
-    if (channelName && userAvatarHash[channelName]) {
-      url = userAvatarHash[channelName];
-    }
 
-    return url;
-  }, [userAvatarHash, channelName]);
   const navigate = useNavigate();
   const theme = useTheme();
 
-  const hashMapVideos = useSelector(
-    (state: RootState) => state.video.hashMapVideos
-  );
   const videoReference = useMemo(() => {
     if (!videoData) return null;
     const { videoReference } = videoData;
@@ -85,7 +92,6 @@ export const useVideoContentState = () => {
       videoReference?.name &&
       videoReference?.service
     ) {
-      setIsVideoLoaded(true);
       return videoReference;
     } else {
       return null;
@@ -97,78 +103,13 @@ export const useVideoContentState = () => {
     const { videoImage } = videoData;
     return videoImage || null;
   }, [videoData]);
-  const dispatch = useDispatch();
-
-  const getVideoData = useCallback(async (name: string, id: string) => {
-    try {
-      if (!name || !id) return;
-      dispatch(setIsLoadingGlobal(true));
-
-      const url = `/arbitrary/resources/search?mode=ALL&service=DOCUMENT&query=${QTUBE_VIDEO_BASE}&limit=1&includemetadata=true&reverse=true&excludeblocked=true&name=${name}&exactmatchnames=true&offset=0&identifier=${id}`;
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      const responseDataSearch = await response.json();
-
-      if (responseDataSearch?.length > 0) {
-        let resourceData = responseDataSearch[0];
-        if (resourceData?.created > superLikeVersion2Timestamp) {
-          setSuperLikeVersion(2);
-        } else setSuperLikeVersion(1);
-        resourceData = {
-          title: resourceData?.metadata?.title,
-          category: resourceData?.metadata?.category,
-          categoryName: resourceData?.metadata?.categoryName,
-          tags: resourceData?.metadata?.tags || [],
-          description: resourceData?.metadata?.description,
-          created: resourceData?.created,
-          updated: resourceData?.updated,
-          user: resourceData.name,
-          videoImage: "",
-          id: resourceData.identifier,
-        };
-
-        const responseData = await qortalRequest({
-          action: "FETCH_QDN_RESOURCE",
-          name: name,
-          service: "DOCUMENT",
-          identifier: id,
-        });
-
-        if (responseData && !responseData.error) {
-          const combinedData = {
-            ...resourceData,
-            ...responseData,
-          };
-
-          setVideoData(combinedData);
-          dispatch(addToHashMap(combinedData));
-        }
-      }
-    } catch (error) {
-      console.log(error);
-    } finally {
-      dispatch(setIsLoadingGlobal(false));
-    }
-  }, []);
 
   useEffect(() => {
-    if (channelName && id) {
-      const existingVideo = hashMapVideos[id + "-" + channelName];
-
-      if (existingVideo) {
-        setVideoData(existingVideo);
-        if (+existingVideo?.created > superLikeVersion2Timestamp) {
-          setSuperLikeVersion(2);
-        } else setSuperLikeVersion(1);
-      } else {
-        getVideoData(channelName, id);
-      }
-    }
-  }, [id, channelName]);
+    if (!resource?.qortalMetadata?.created) return;
+    if (resource?.qortalMetadata?.created > superLikeVersion2Timestamp) {
+      setSuperLikeVersion(2);
+    } else setSuperLikeVersion(1);
+  }, [resource?.qortalMetadata?.created]);
 
   const descriptionThreshold = 200;
   useEffect(() => {
@@ -187,9 +128,9 @@ export const useVideoContentState = () => {
         const hashPostId = await hashWordWithoutPublicSalt(id, 20);
         const urlV2 = `/arbitrary/resources/search?mode=ALL&service=BLOG_COMMENT&query=${SUPER_LIKE_BASE}${hashPostId}&limit=100&includemetadata=true&reverse=true&excludeblocked=true`;
         const response = await fetch(urlV2, {
-          method: "GET",
+          method: 'GET',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
         });
         let responseData = [];
@@ -200,9 +141,9 @@ export const useVideoContentState = () => {
             39
           )}&limit=100&includemetadata=true&reverse=true&excludeblocked=true`;
           const responseV1 = await fetch(urlV1, {
-            method: "GET",
+            method: 'GET',
             headers: {
-              "Content-Type": "application/json",
+              'Content-Type': 'application/json',
             },
           });
 
@@ -236,13 +177,13 @@ export const useVideoContentState = () => {
                   ...comments,
                   {
                     ...comment,
-                    message: "",
+                    message: '',
                     amount: res.amount,
                   },
                 ];
               }
             } catch (error) {
-              console.log(error);
+              console.error(error);
             }
           }
         }
@@ -262,42 +203,11 @@ export const useVideoContentState = () => {
     getComments(id, nameAddress, superLikeversion);
   }, [getComments, id, nameAddress, superLikeversion]);
 
-  const focusVideo = () => {
-    const focusRef = containerRef.current?.getContainerRef()?.current;
-    focusRef?.focus({ preventScroll: true });
-  };
-
-  useEffect(() => {
-    focusVideo();
-  }, []);
-
-  const focusVideoOnClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    const target = e.target as Element;
-
-    const textTagNames = ["TEXTAREA", "P", "H[1-6]", "STRONG", "svg", "A"];
-    const noText =
-      textTagNames.findIndex(s => {
-        return target?.tagName.match(s);
-      }) < 0;
-
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    const clickOnEmptySpace = !target?.onclick && noText;
-
-    // clicking on link in superlikes bar shows deleted video when loading
-
-    if (target == e.currentTarget || clickOnEmptySpace) {
-      console.log("in correctTarget");
-      focusVideo();
-    }
-  };
   return {
-    focusVideo: focusVideoOnClick,
     videoReference,
     channelName,
     id,
     videoCover,
-    containerRef,
     isVideoLoaded,
     navigate,
     theme,
@@ -311,8 +221,7 @@ export const useVideoContentState = () => {
     superLikeList,
     setSuperLikeList,
     getComments,
-    getVideoData,
-    setVideoData,
+    setVideoMetadataResource,
   };
 };
 
@@ -353,23 +262,23 @@ export function extractSigValue(metadescription) {
 }
 
 export const getPaymentInfo = async (signature: string) => {
-  if (signature === "undefined" || !signature) return undefined;
+  if (signature === 'undefined' || !signature) return undefined;
 
   try {
     const url = `/transactions/signature/${signature}`;
     const response = await fetch(url, {
-      method: "GET",
+      method: 'GET',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
     });
     // Coin payment info must be added to responseData so we can display it to the user
     const responseData = await response.json();
     if (responseData && !responseData.error) return responseData;
     else {
-      throw new Error("unable to get payment");
+      throw new Error('unable to get payment');
     }
   } catch (error) {
-    throw new Error("unable to get payment");
+    throw new Error('unable to get payment');
   }
 };

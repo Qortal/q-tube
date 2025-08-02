@@ -1,26 +1,27 @@
-import { Box, Button, TextField } from "@mui/material";
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../../state/store";
-import ShortUniqueId from "short-unique-id";
-import { setNotification } from "../../../state/features/notificationsSlice";
-import {hashWordWithoutPublicSalt} from 'qapp-core'
-import {
-  publishFormatter,
-  stringToFile,
-} from "../../../utils/PublishFormatter.ts";
-import localforage from "localforage";
+import { useEffect, useState } from 'react';
+import ShortUniqueId from 'short-unique-id';
+import { hashWordWithoutPublicSalt, useAuth } from 'qapp-core';
+
+import localforage from 'localforage';
 import {
   CommentInput,
   CommentInputContainer,
   SubmitCommentButton,
-} from "./Comments-styles";
+} from './Comments-styles';
 
-import { COMMENT_BASE } from "../../../constants/Identifiers.ts";
+import { COMMENT_BASE } from '../../../constants/Identifiers.ts';
+import { useSetAtom } from 'jotai';
+import {
+  AltertObject,
+  setNotificationAtom,
+} from '../../../state/global/notifications.ts';
+import { Box, Button } from '@mui/material';
+import { useIsSmall } from '../../../hooks/useIsSmall.tsx';
+import { useTranslation } from 'react-i18next';
 const uid = new ShortUniqueId({ length: 7 });
 
 const notification = localforage.createInstance({
-  name: "notification",
+  name: 'notification',
 });
 
 const MAX_ITEMS = 10;
@@ -35,11 +36,11 @@ export interface Item {
 export async function addItem(item: Item): Promise<void> {
   // Get all items
   const notificationComments: Item[] =
-    (await notification.getItem("comments")) || [];
+    (await notification.getItem('comments')) || [];
 
   // Find the item with the same id, if it exists
   const existingItemIndex = notificationComments.findIndex(
-    i => i.id === item.id
+    (i) => i.id === item.id
   );
 
   if (existingItemIndex !== -1) {
@@ -57,15 +58,15 @@ export async function addItem(item: Item): Promise<void> {
   }
 
   // Store the items back into localForage
-  await notification.setItem("comments", notificationComments);
+  await notification.setItem('comments', notificationComments);
 }
 export async function updateItemDate(item: any): Promise<void> {
   // Get all items
   const notificationComments: Item[] =
-    (await notification.getItem("comments")) || [];
+    (await notification.getItem('comments')) || [];
 
   const notificationCreatorComment: any =
-    (await notification.getItem("post-comments")) || {};
+    (await notification.getItem('post-comments')) || {};
   const findPostId = notificationCreatorComment[item.postId];
   if (findPostId) {
     notificationCreatorComment[item.postId].lastSeen = item.lastSeen;
@@ -79,8 +80,8 @@ export async function updateItemDate(item: any): Promise<void> {
   });
 
   // Store the items back into localForage
-  await notification.setItem("comments", notificationComments);
-  await notification.setItem("post-comments", notificationCreatorComment);
+  await notification.setItem('comments', notificationComments);
+  await notification.setItem('post-comments', notificationCreatorComment);
 }
 interface CommentEditorProps {
   postId: string;
@@ -90,13 +91,14 @@ interface CommentEditorProps {
   commentId?: string;
   isEdit?: boolean;
   commentMessage?: string;
+  onCloseReply?: () => void;
 }
 
 function utf8ToBase64(inputString: string): string {
   // Encode the string as UTF-8
   const utf8String = encodeURIComponent(inputString).replace(
     /%([0-9A-F]{2})/g,
-    (match, p1) => String.fromCharCode(Number("0x" + p1))
+    (match, p1) => String.fromCharCode(Number('0x' + p1))
   );
 
   // Convert the UTF-8 encoded string to base64
@@ -112,11 +114,15 @@ export const CommentEditor = ({
   commentId,
   isEdit,
   commentMessage,
+  onCloseReply,
 }: CommentEditorProps) => {
-  const [value, setValue] = useState<string>("");
-  const dispatch = useDispatch();
-  const { user } = useSelector((state: RootState) => state.auth);
+  const { t } = useTranslation(['core']);
 
+  const isSmall = useIsSmall();
+  const [value, setValue] = useState<string>('');
+  const { name, address } = useAuth();
+  const setNotification = useSetAtom(setNotificationAtom);
+  const [isFocused, setIsFocused] = useState(false);
   useEffect(() => {
     if (isEdit && commentMessage) {
       setValue(commentMessage);
@@ -127,45 +133,43 @@ export const CommentEditor = ({
     identifier: string,
     idForNotification?: string
   ) => {
-    const address = user?.address;
-    const name = user?.name || "";
-    let errorMsg = "";
+    let errorMsg = '';
 
     if (!address) {
       errorMsg = "Cannot post: your address isn't available";
     }
     if (!name) {
-      errorMsg = "Cannot post without a name";
+      errorMsg = 'Cannot post without a name';
     }
 
     if (value.length > 200) {
-      errorMsg = "Comment needs to be under 200 characters";
+      errorMsg = 'Comment needs to be under 200 characters';
     }
 
     if (errorMsg) {
-      dispatch(
-        setNotification({
-          msg: errorMsg,
-          alertType: "error",
-        })
-      );
+      const notificationObj: AltertObject = {
+        msg: errorMsg,
+        alertType: 'error',
+      };
+      setNotification(notificationObj);
+
       throw new Error(errorMsg);
     }
 
     try {
       const resourceResponse = await qortalRequest({
-        action: "PUBLISH_QDN_RESOURCE",
-        name: name,
-        service: "BLOG_COMMENT",
+        action: 'PUBLISH_QDN_RESOURCE',
+        name: name!,
+        service: 'BLOG_COMMENT',
         data64: utf8ToBase64(value),
         identifier: identifier,
       });
-      dispatch(
-        setNotification({
-          msg: "Comment successfully published",
-          alertType: "success",
-        })
-      );
+      const notificationObj: AltertObject = {
+        msg: 'Comment successfully published',
+        alertType: 'success',
+      };
+      setNotification(notificationObj);
+
       if (idForNotification) {
         addItem({
           id: idForNotification,
@@ -176,40 +180,27 @@ export const CommentEditor = ({
       }
 
       return resourceResponse;
-    } catch (error: any) {
-      let notificationObj: any = null;
-      if (typeof error === "string") {
-        notificationObj = {
-          msg: error || "Failed to publish comment",
-          alertType: "error",
-        };
-      } else if (typeof error?.error === "string") {
-        notificationObj = {
-          msg: error?.error || "Failed to publish comment",
-          alertType: "error",
-        };
-      } else {
-        notificationObj = {
-          msg: error?.message || "Failed to publish comment",
-          alertType: "error",
-        };
-      }
-      if (!notificationObj) throw new Error("Failed to publish comment");
-
-      dispatch(setNotification(notificationObj));
-      throw new Error("Failed to publish comment");
+    } catch (error) {
+      const isError = error instanceof Error;
+      const message = isError ? error?.message : 'Failed to publish comment';
+      const notificationObj: AltertObject = {
+        msg: message,
+        alertType: 'error',
+      };
+      setNotification(notificationObj);
+      throw new Error('Failed to publish comment');
     }
   };
   const handleSubmit = async () => {
     try {
       const id = uid.rnd();
-      const hashPostId = await hashWordWithoutPublicSalt(postId, 20)
+      const hashPostId = await hashWordWithoutPublicSalt(postId, 20);
       let identifier = `${COMMENT_BASE}${hashPostId}_base_${id}`;
       let idForNotification = identifier;
 
       if (isReply && commentId) {
         const removeBaseCommentId = commentId;
-        removeBaseCommentId.replace("_base_", "");
+        removeBaseCommentId.replace('_base_', '');
         identifier = `${COMMENT_BASE}${hashPostId}_reply_${removeBaseCommentId.slice(-6)}_${id}`;
         idForNotification = commentId;
       }
@@ -222,20 +213,28 @@ export const CommentEditor = ({
         created: Date.now(),
         identifier,
         message: value,
-        service: "BLOG_COMMENT",
-        name: user?.name,
+        service: 'BLOG_COMMENT',
+        name: name,
       });
-      setValue("");
+      setValue('');
     } catch (error) {
       console.error(error);
     }
   };
 
   return (
-    <CommentInputContainer>
+    <CommentInputContainer
+      sx={{
+        width: isSmall ? '100%' : '90%',
+      }}
+    >
       <CommentInput
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setIsFocused(false)}
         id="standard-multiline-flexible"
-        label="Your comment"
+        label={t('core:comments.your_comment', {
+          postProcess: 'capitalizeFirstChar',
+        })}
         multiline
         maxRows={4}
         variant="filled"
@@ -243,13 +242,53 @@ export const CommentEditor = ({
         inputProps={{
           maxLength: 200,
         }}
-        InputLabelProps={{ style: { fontSize: "18px" } }}
-        onChange={e => setValue(e.target.value)}
+        InputLabelProps={{ style: { fontSize: '18px' } }}
+        onChange={(e) => setValue(e.target.value)}
       />
 
-      <SubmitCommentButton variant="contained" onClick={handleSubmit}>
-        {isReply ? "Submit reply" : isEdit ? "Edit" : "Submit comment"}
-      </SubmitCommentButton>
+      <Box
+        sx={{
+          width: '100%',
+          justifyContent: 'flex-end',
+          display: 'flex',
+          gap: '20px',
+          visibility: isReply
+            ? 'visible'
+            : value || isFocused
+              ? 'visible'
+              : 'hidden',
+        }}
+      >
+        <Button
+          onClick={(e) => {
+            setValue('');
+            if (!onCloseReply) return;
+            onCloseReply();
+          }}
+          variant="text"
+        >
+          {t('core:action.cancel', {
+            postProcess: 'capitalizeEachFirstChar',
+          })}
+        </Button>
+        <SubmitCommentButton
+          variant="contained"
+          color="info"
+          onClick={handleSubmit}
+        >
+          {isReply
+            ? t('core:comments.submit_reply', {
+                postProcess: 'capitalizeFirstChar',
+              })
+            : isEdit
+              ? t('core:action.edit', {
+                  postProcess: 'capitalizeFirstChar',
+                })
+              : t('core:action.comment', {
+                  postProcess: 'capitalizeFirstChar',
+                })}
+        </SubmitCommentButton>
+      </Box>
     </CommentInputContainer>
   );
 };

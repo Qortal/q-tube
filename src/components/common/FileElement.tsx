@@ -1,38 +1,45 @@
-import * as React from "react";
-import { styled, useTheme } from "@mui/material/styles";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import { useDispatch, useSelector } from "react-redux";
-import { CircularProgress } from "@mui/material";
-import AttachFileIcon from "@mui/icons-material/AttachFile";
-import { MyContext } from "../../wrappers/DownloadWrapper";
-import { RootState } from "../../state/store";
-import { setNotification } from "../../state/features/notificationsSlice";
+import * as React from 'react';
+import { styled } from '@mui/material/styles';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import { ButtonBase, CircularProgress, Popover } from '@mui/material';
+import AttachFileIcon from '@mui/icons-material/AttachFile';
+import { useResourceStatus } from 'qapp-core';
+import { useLocation } from 'react-router-dom';
+import { useSetAtom } from 'jotai';
+import SaveIcon from '@mui/icons-material/Save';
+import DownloadIcon from '@mui/icons-material/Download';
 
-const Widget = styled("div")(({ theme }) => ({
+import {
+  AltertObject,
+  setNotificationAtom,
+} from '../../state/global/notifications';
+import { useTranslation } from 'react-i18next';
+
+const Widget = styled('div')(({ theme }) => ({
   padding: 8,
   borderRadius: 10,
   maxWidth: 350,
-  position: "relative",
+  position: 'relative',
   zIndex: 1,
-  backdropFilter: "blur(40px)",
-  background: "skyblue",
-  transition: "0.2s all",
-  "&:hover": {
+  backdropFilter: 'blur(40px)',
+  background: 'skyblue',
+  transition: '0.2s all',
+  '&:hover': {
     opacity: 0.75,
   },
 }));
 
-const CoverImage = styled("div")({
+const CoverImage = styled('div')({
   width: 40,
   height: 40,
-  objectFit: "cover",
-  overflow: "hidden",
+  objectFit: 'cover',
+  overflow: 'hidden',
   flexShrink: 0,
   borderRadius: 8,
-  backgroundColor: "rgba(0,0,0,0.08)",
-  "& > img": {
-    width: "100%",
+  backgroundColor: 'rgba(0,0,0,0.08)',
+  '& > img': {
+    width: '100%',
   },
 });
 
@@ -51,377 +58,161 @@ interface IAudioElement {
   customStyles?: any;
 }
 
-interface CustomWindow extends Window {
-  showSaveFilePicker: any; // Replace 'any' with the appropriate type if you know it
-}
-
-const customWindow = window as unknown as CustomWindow;
-
 export default function FileElement({
   title,
   description,
   author,
   fileInfo,
-  children,
   mimeType,
   disable,
   customStyles,
 }: IAudioElement) {
-  const { downloadVideo } = React.useContext(MyContext);
+  const { t } = useTranslation(['core']);
+
   const [startedDownload, setStartedDownload] = React.useState<boolean>(false);
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
-  const [fileProperties, setFileProperties] = React.useState<any>(null);
   const [downloadLoader, setDownloadLoader] = React.useState<any>(false);
-  const downloads = useSelector((state: RootState) => state.global?.downloads);
-  const hasCommencedDownload = React.useRef(false);
-  const dispatch = useDispatch();
-  const reDownload = React.useRef<boolean>(false);
-  const isFetchingProperties = React.useRef<boolean>(false);
-  const download = React.useMemo(() => {
-    if (!downloads || !fileInfo?.identifier) return {};
-    const findDownload = downloads[fileInfo?.identifier];
+  const location = useLocation();
+  const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
+    null
+  );
 
-    if (!findDownload) return {};
-    return findDownload;
-  }, [downloads, fileInfo]);
-
-  const resourceStatus = React.useMemo(() => {
-    return download?.status || {};
-  }, [download]);
-
-  const retryDownload = React.useRef(0);
-
+  const setNotification = useSetAtom(setNotificationAtom);
+  const resourceStatus = useResourceStatus({
+    resource: startedDownload ? fileInfo : null,
+    path: location.pathname,
+    filename: fileInfo?.filename,
+  });
   const handlePlay = async () => {
     if (disable) return;
-    hasCommencedDownload.current = true;
     setStartedDownload(true);
-    if (resourceStatus?.status === "READY") {
+    if (resourceStatus?.isReady) {
       if (downloadLoader) return;
 
-      setDownloadLoader(true);
-      let filename = download?.properties?.filename;
-      let mimeType = download?.properties?.type;
-
       try {
-        const { name, service, identifier } = fileInfo;
-
-        const res = await qortalRequest({
-          action: "GET_QDN_RESOURCE_PROPERTIES",
-          name: name,
-          service: service,
-          identifier: identifier,
-        });
-        // TODO: previously this was "always" overriding the filename
-        // here, but i think caller filename should be honored if set.
-        // if there was a reason to always override, then maybe this
-        // should be changed back..?
-        if (!filename) {
-          filename = res?.filename || filename;
-        }
-        mimeType = res?.mimeType || mimeType;
-      } catch (error) {
-        console.log(error);
-      }
-      try {
-        const { name, service, identifier } = fileInfo;
-
         await qortalRequest({
-          action: "SAVE_FILE",
+          action: 'SAVE_FILE',
           location: fileInfo,
-          filename: filename,
+          filename: fileInfo?.filename,
         });
-      } catch (error: any) {
-        let notificationObj: any = null;
-        if (typeof error === "string") {
-          notificationObj = {
-            msg: error || "Failed to send message",
-            alertType: "error",
-          };
-        } else if (typeof error?.error === "string") {
-          notificationObj = {
-            msg: error?.error || "Failed to send message",
-            alertType: "error",
-          };
-        } else {
-          notificationObj = {
-            msg: error?.message || "Failed to send message",
-            alertType: "error",
-          };
-        }
-        if (!notificationObj) return;
-        dispatch(setNotification(notificationObj));
-      } finally {
-        setDownloadLoader(false);
+      } catch (error) {
+        const isError = error instanceof Error;
+        const message = isError ? error?.message : 'Failed to save file';
+        const notificationObj: AltertObject = {
+          msg: message,
+          alertType: 'error',
+        };
+        setNotification(notificationObj);
       }
       return;
     }
-
-    const { name, service, identifier } = fileInfo;
-
-    setIsLoading(true);
-    downloadVideo({
-      name,
-      service,
-      identifier,
-      properties: {
-        ...fileInfo,
-      },
-    });
   };
 
-  const refetch = React.useCallback(async () => {
-    if (!fileInfo) return;
-    try {
-      const { name, service, identifier } = fileInfo;
-      isFetchingProperties.current = true;
-      await qortalRequest({
-        action: "GET_QDN_RESOURCE_PROPERTIES",
-        name,
-        service,
-        identifier,
-      });
-    } catch (error) {
-      console.log(error);
-    } finally {
-      isFetchingProperties.current = false;
-    }
-  }, [fileInfo]);
-
-  const refetchInInterval = () => {
-    try {
-      const interval = setInterval(() => {
-        if (resourceStatus?.current === "DOWNLOADED") {
-          refetch();
-        }
-        if (resourceStatus?.current === "READY") {
-          clearInterval(interval);
-        }
-      }, 7500);
-    } catch (error) {
-      console.log(error);
-    }
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
   };
 
-  React.useEffect(() => {
-    if (
-      resourceStatus?.status === "READY" &&
-      download?.url &&
-      download?.properties?.filename &&
-      hasCommencedDownload.current
-    ) {
-      setIsLoading(false);
-      dispatch(
-        setNotification({
-          msg: "Download completed. Click to save file",
-          alertType: "info",
-        })
-      );
-    } else if (
-      resourceStatus?.status === "DOWNLOADED" &&
-      reDownload?.current === false
-    ) {
-      refetchInInterval();
-      reDownload.current = true;
-    }
-  }, [resourceStatus, download]);
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const open = Boolean(anchorEl);
+  const id = open ? 'simple-popover' : undefined;
 
   return (
     <Box
-      onClick={handlePlay}
       sx={{
-        width: "100%",
-        overflow: "hidden",
-        position: "relative",
-        cursor: "pointer",
+        overflow: 'hidden',
+        position: 'relative',
+        cursor: 'pointer',
         ...(customStyles || {}),
       }}
     >
-      {children && (
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            position: "relative",
-            gap: "7px",
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'flex-start',
+          position: 'relative',
+          flexDirection: 'column',
+        }}
+      >
+        <ButtonBase onClick={handleClick}>
+          {resourceStatus?.status === 'READY' ? <SaveIcon /> : <DownloadIcon />}
+        </ButtonBase>
+
+        <Popover
+          id={id}
+          open={open}
+          anchorEl={anchorEl}
+          onClose={handleClose}
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'left',
           }}
         >
-          {children}{" "}
-          {((resourceStatus.status && resourceStatus?.status !== "READY") ||
-            isLoading) &&
-          startedDownload ? (
-            <>
-              <CircularProgress color="secondary" size={14} />
-              <Typography variant="body2">{`${Math.round(
-                resourceStatus?.percentLoaded || 0
-              ).toFixed(0)}% loaded`}</Typography>
-            </>
-          ) : resourceStatus?.status === "READY" ? (
-            <>
-              <Typography
-                sx={{
-                  fontSize: "14px",
-                }}
-              >
-                Ready to save: click here
-              </Typography>
-              {downloadLoader && (
-                <CircularProgress color="secondary" size={14} />
+          <Box
+            sx={{
+              width: '240px',
+              height: '75px',
+              padding: '10px',
+            }}
+          >
+            <ButtonBase
+              onClick={handlePlay}
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                position: 'relative',
+
+                padding: '5px',
+              }}
+            >
+              {resourceStatus?.status === 'READY' ? (
+                <SaveIcon />
+              ) : (
+                <DownloadIcon />
               )}
-            </>
-          ) : null}
-        </Box>
-      )}
-      {!children && (
-        <Widget>
-          <Box sx={{ display: "flex", alignItems: "center" }}>
-            <CoverImage>
-              <AttachFileIcon
-                sx={{
-                  width: "90%",
-                  height: "auto",
-                }}
-              />
-            </CoverImage>
-            <Box sx={{ ml: 1.5, minWidth: 0 }}>
-              <Typography
-                variant="caption"
-                color="text.secondary"
-                fontWeight={500}
-              >
-                {author}
-              </Typography>
-              <Typography
-                noWrap
-                sx={{
-                  fontSize: "16px",
-                }}
-              >
-                <b>{title}</b>
-              </Typography>
-              <Typography
-                noWrap
-                letterSpacing={-0.25}
-                sx={{
-                  fontSize: "14px",
-                }}
-              >
-                {description}
-              </Typography>
-              {mimeType && (
-                <Typography
-                  noWrap
-                  letterSpacing={-0.25}
-                  sx={{
-                    fontSize: "12px",
-                  }}
-                >
-                  {mimeType}
-                </Typography>
-              )}
-            </Box>
-          </Box>
-          {((resourceStatus.status && resourceStatus?.status !== "READY") ||
-            isLoading) &&
-            startedDownload && (
-              <Box
-                position="absolute"
-                top={0}
-                left={0}
-                right={0}
-                bottom={0}
-                display="flex"
-                justifyContent="center"
-                alignItems="center"
-                zIndex={4999}
-                bgcolor="rgba(0, 0, 0, 0.6)"
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "10px",
-                  padding: "8px",
-                  borderRadius: "10px",
-                }}
-              >
-                <CircularProgress color="secondary" />
-                {resourceStatus && (
+
+              {resourceStatus.status &&
+              resourceStatus?.status !== 'READY' &&
+              startedDownload ? (
+                <>
+                  <CircularProgress color="secondary" size={14} />
+                  <Typography variant="body2">{`${Math.round(
+                    resourceStatus?.percentLoaded || 0
+                  ).toFixed(0)}% loaded`}</Typography>
+                </>
+              ) : resourceStatus?.status === 'READY' ? (
+                <>
                   <Typography
-                    variant="subtitle2"
-                    component="div"
                     sx={{
-                      color: "white",
-                      fontSize: "14px",
+                      fontSize: '14px',
                     }}
                   >
-                    {resourceStatus?.status === "REFETCHING" ? (
-                      <>
-                        <>
-                          {(
-                            (resourceStatus?.localChunkCount /
-                              resourceStatus?.totalChunkCount) *
-                            100
-                          )?.toFixed(0)}
-                          %
-                        </>
-
-                        <> Refetching in 2 minutes</>
-                      </>
-                    ) : resourceStatus?.status === "DOWNLOADED" ? (
-                      <>Download Completed: building file...</>
-                    ) : resourceStatus?.status !== "READY" ? (
-                      <>
-                        {(
-                          (resourceStatus?.localChunkCount /
-                            resourceStatus?.totalChunkCount) *
-                          100
-                        )?.toFixed(0)}
-                        %
-                      </>
-                    ) : (
-                      <>Download Completed: fetching file...</>
-                    )}
+                    {t('core:download.ready', {
+                      postProcess: 'capitalizeFirstChar',
+                    })}
                   </Typography>
-                )}
-              </Box>
-            )}
-          {resourceStatus?.status === "READY" &&
-            download?.url &&
-            download?.properties?.filename && (
-              <Box
-                position="absolute"
-                top={0}
-                left={0}
-                right={0}
-                bottom={0}
-                display="flex"
-                justifyContent="center"
-                alignItems="center"
-                zIndex={4999}
-                bgcolor="rgba(0, 0, 0, 0.6)"
-                sx={{
-                  display: "flex",
-                  flexDirection: "row",
-                  gap: "10px",
-                  padding: "8px",
-                  borderRadius: "10px",
-                }}
-              >
+                  {downloadLoader && (
+                    <CircularProgress color="secondary" size={14} />
+                  )}
+                </>
+              ) : null}
+              {!startedDownload && (
                 <Typography
-                  variant="subtitle2"
-                  component="div"
                   sx={{
-                    color: "white",
-                    fontSize: "14px",
+                    fontSize: '14px',
                   }}
                 >
-                  Ready to save: click here
+                  {t('core:download.start', {
+                    postProcess: 'capitalizeFirstChar',
+                  })}
                 </Typography>
-                {downloadLoader && (
-                  <CircularProgress color="secondary" size={14} />
-                )}
-              </Box>
-            )}
-        </Widget>
-      )}
+              )}
+            </ButtonBase>
+          </Box>
+        </Popover>
+      </Box>
     </Box>
   );
 }

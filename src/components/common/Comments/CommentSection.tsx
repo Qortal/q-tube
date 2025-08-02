@@ -1,11 +1,9 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { CommentEditor } from "./CommentEditor";
-import { Comment } from "./Comment";
-import { Box, Button, CircularProgress, useTheme } from "@mui/material";
-import { styled } from "@mui/system";
-import { useSelector } from "react-redux";
-import { RootState } from "../../../state/store";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { CommentEditor } from './CommentEditor';
+import { Comment } from './Comment';
+import { Box, Button, CircularProgress, useTheme } from '@mui/material';
+import { styled } from '@mui/system';
+import { useNavigate, useLocation } from 'react-router-dom';
 import {
   CommentContainer,
   CommentEditorContainer,
@@ -13,20 +11,21 @@ import {
   LoadMoreCommentsButton,
   LoadMoreCommentsButtonRow,
   NoCommentsRow,
-} from "./Comments-styles";
+} from './Comments-styles';
 import {
   CrowdfundSubTitle,
   CrowdfundSubTitleRow,
-} from "../../Publish/PublishVideo/PublishVideo-styles.tsx";
-import { COMMENT_BASE } from "../../../constants/Identifiers.ts";
-import { hashWordWithoutPublicSalt } from "qapp-core";
+} from '../../Publish/PublishVideo/PublishVideo-styles.tsx';
+import { COMMENT_BASE } from '../../../constants/Identifiers.ts';
+import { hashWordWithoutPublicSalt } from 'qapp-core';
+import { useTranslation } from 'react-i18next';
 
 interface CommentSectionProps {
   postId: string;
   postName: string;
 }
 
-const Panel = styled("div")`
+const Panel = styled('div')`
   display: flex;
   flex-direction: column;
   justify-content: start;
@@ -51,19 +50,19 @@ const Panel = styled("div")`
   }
 `;
 export const CommentSection = ({ postId, postName }: CommentSectionProps) => {
+  const { t } = useTranslation(['core']);
+
   const navigate = useNavigate();
   const location = useLocation();
   const [listComments, setListComments] = useState<any[]>([]);
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const { user } = useSelector((state: RootState) => state.auth);
   const [newMessages, setNewMessages] = useState(0);
   const [loadingComments, setLoadingComments] = useState<boolean>(false);
-  // console.log("postId is: ", postId, " postName is: ", postName);
   const onSubmit = (obj?: any, isEdit?: boolean) => {
     if (isEdit) {
       setListComments((prev: any[]) => {
         const findCommentIndex = prev.findIndex(
-          item => item?.identifier === obj?.identifier
+          (item) => item?.identifier === obj?.identifier
         );
         if (findCommentIndex === -1) return prev;
 
@@ -74,7 +73,7 @@ export const CommentSection = ({ postId, postName }: CommentSectionProps) => {
 
       return;
     }
-    setListComments(prev => [
+    setListComments((prev) => [
       ...prev,
       {
         ...obj,
@@ -84,9 +83,9 @@ export const CommentSection = ({ postId, postName }: CommentSectionProps) => {
 
   useEffect(() => {
     const query = new URLSearchParams(location.search);
-    let commentVar = query?.get("comment");
+    let commentVar = query?.get('comment');
     if (commentVar) {
-      if (commentVar && commentVar.endsWith("/")) {
+      if (commentVar && commentVar.endsWith('/')) {
         commentVar = commentVar.slice(0, -1);
       }
       setIsOpen(true);
@@ -94,9 +93,9 @@ export const CommentSection = ({ postId, postName }: CommentSectionProps) => {
         const el = document.getElementById(commentVar);
         if (el) {
           el.scrollIntoView();
-          el.classList.add("glow");
+          el.classList.add('glow');
           setTimeout(() => {
-            el.classList.remove("glow");
+            el.classList.remove('glow');
           }, 2000);
         }
         navigate(location.pathname, { replace: true });
@@ -107,16 +106,16 @@ export const CommentSection = ({ postId, postName }: CommentSectionProps) => {
   const getReplies = useCallback(
     async (commentId, postId) => {
       const offset = 0;
- const hashPostId = await hashWordWithoutPublicSalt(postId, 20)
-      const removeBaseCommentId = commentId.replace("_base_", "");
+      const hashPostId = await hashWordWithoutPublicSalt(postId, 20);
+      const removeBaseCommentId = commentId.replace('_base_', '');
       const url = `/arbitrary/resources/search?mode=ALL&service=BLOG_COMMENT&query=${COMMENT_BASE}${hashPostId}_reply_${removeBaseCommentId.slice(
         -6
       )}&limit=0&includemetadata=false&offset=${offset}&reverse=false&excludeblocked=true`;
 
       const response = await fetch(url, {
-        method: "GET",
+        method: 'GET',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
       });
       const responseData = await response.json();
@@ -126,9 +125,9 @@ export const CommentSection = ({ postId, postName }: CommentSectionProps) => {
         if (comment.identifier && comment.name) {
           const url = `/arbitrary/BLOG_COMMENT/${comment.name}/${comment.identifier}`;
           const response = await fetch(url, {
-            method: "GET",
+            method: 'GET',
             headers: {
-              "Content-Type": "application/json",
+              'Content-Type': 'application/json',
             },
           });
 
@@ -154,26 +153,24 @@ export const CommentSection = ({ postId, postName }: CommentSectionProps) => {
         if (isNewMessages && numberOfComments) {
           offset = numberOfComments;
         }
-        const hashPostId = await hashWordWithoutPublicSalt(postId, 20)
+        const hashPostId = await hashWordWithoutPublicSalt(postId, 20);
         const url = `/arbitrary/resources/search?mode=ALL&service=BLOG_COMMENT&query=${COMMENT_BASE}${hashPostId}_base_&limit=20&includemetadata=false&offset=${offset}&reverse=false&excludeblocked=true`;
         const response = await fetch(url, {
-          method: "GET",
+          method: 'GET',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
         });
         const responseData = await response.json();
-        // console.log("url is: ", url);
-        // console.log("response is: ", responseData);
 
         let comments: any[] = [];
         for (const comment of responseData) {
           if (comment.identifier && comment.name) {
             const url = `/arbitrary/BLOG_COMMENT/${comment.name}/${comment.identifier}`;
             const response = await fetch(url, {
-              method: "GET",
+              method: 'GET',
               headers: {
-                "Content-Type": "application/json",
+                'Content-Type': 'application/json',
               },
             });
 
@@ -189,7 +186,7 @@ export const CommentSection = ({ postId, postName }: CommentSectionProps) => {
           }
         }
         if (isNewMessages) {
-          setListComments(prev => [...prev, ...comments]);
+          setListComments((prev) => [...prev, ...comments]);
           setNewMessages(0);
         } else {
           setListComments(comments);
@@ -209,12 +206,12 @@ export const CommentSection = ({ postId, postName }: CommentSectionProps) => {
 
   const structuredCommentList = useMemo(() => {
     return listComments.reduce((acc, curr, index, array) => {
-      if (curr?.identifier?.includes("_reply_")) {
+      if (curr?.identifier?.includes('_reply_')) {
         return acc;
       }
       acc.push({
         ...curr,
-        replies: array.filter(comment =>
+        replies: array.filter((comment) =>
           comment.identifier.includes(`_reply_${curr.identifier.slice(-6)}`)
         ),
       });
@@ -225,6 +222,13 @@ export const CommentSection = ({ postId, postName }: CommentSectionProps) => {
   return (
     <>
       <Panel>
+        <CommentEditorContainer>
+          <CommentEditor
+            onSubmit={onSubmit}
+            postId={postId}
+            postName={postName}
+          />
+        </CommentEditorContainer>
         <CommentsContainer>
           {loadingComments ? (
             <NoCommentsRow>
@@ -254,25 +258,20 @@ export const CommentSection = ({ postId, postName }: CommentSectionProps) => {
                   getComments(
                     true,
                     listComments.filter(
-                      item => !item.identifier.includes("_reply_")
+                      (item) => !item.identifier.includes('_reply_')
                     ).length
                   );
                 }}
                 variant="contained"
                 size="small"
               >
-                Load More Comments
+                {t('core:comments.load_more_comments', {
+                  postProcess: 'capitalizeEachFirstChar',
+                })}
               </LoadMoreCommentsButton>
             </LoadMoreCommentsButtonRow>
           )}
         </CommentsContainer>
-        <CommentEditorContainer>
-          <CommentEditor
-            onSubmit={onSubmit}
-            postId={postId}
-            postName={postName}
-          />
-        </CommentEditorContainer>
       </Panel>
     </>
   );

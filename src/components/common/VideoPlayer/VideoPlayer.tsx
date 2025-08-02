@@ -1,11 +1,12 @@
-import CSS from "csstype";
-import { forwardRef } from "react";
-import useIdleTimeout from "../../../hooks/useIdleTimeout.ts";
-import { LoadingVideo } from "./Components/LoadingVideo.tsx";
-import { useContextData, VideoContext } from "./Components/VideoContext.ts";
-import { VideoControlsBar } from "./Components/VideoControlsBar.tsx";
-import { VideoContainer, VideoElement } from "./VideoPlayer-styles.ts";
+import CSS from 'csstype';
+import { useCallback, useRef } from 'react';
 
+import { VideoPlayer as QappVideoPlayer, Service, useGlobal } from 'qapp-core';
+import { Box } from '@mui/material';
+import { useLocation } from 'react-router-dom';
+import { usePersistedState } from '../../../state/persist/persist';
+import { JavascriptOutlined } from '@mui/icons-material';
+import { useIsSmall } from '../../../hooks/useIsSmall';
 export interface VideoStyles {
   videoContainer?: CSS.Properties;
   video?: CSS.Properties;
@@ -16,7 +17,7 @@ export interface VideoPlayerProps {
   poster?: string;
   name?: string;
   identifier?: string;
-  service?: string;
+  service?: Service;
   autoplay?: boolean;
   from?: string | null;
   videoStyles?: VideoStyles;
@@ -27,99 +28,76 @@ export interface VideoPlayerProps {
   autoPlay?: boolean;
   style?: CSS.Properties;
   duration?: number;
+  filename: string;
+  parentStyles?: CSS.Properties;
+  created: number;
 }
 
-export type videoRefType = {
-  getContainerRef: () => React.MutableRefObject<HTMLDivElement>;
-  getVideoRef: () => React.MutableRefObject<HTMLVideoElement>;
-};
-export const VideoPlayer = forwardRef<videoRefType, VideoPlayerProps>(
-  (props: VideoPlayerProps, ref) => {
-    const contextData = useContextData(props, ref);
+export const VideoPlayer = ({ ...props }: VideoPlayerProps) => {
+  const isSmall = useIsSmall();
+  const videoRef = useRef(null);
+  const location = useLocation();
+  const { lists } = useGlobal();
+  const [watchedHistory, setWatchedHistory, isHydratedWatchedHistory] =
+    usePersistedState<any[]>('watched-v1', []);
+  const onPlay = useCallback(() => {
+    if (!isHydratedWatchedHistory) return;
+    const videoReference = {
+      identifier: props?.jsonId,
+      name: props?.user,
+      service: 'DOCUMENT',
+      created: props?.created || Date.now(),
+      watchedAt: Date.now(),
+    };
 
-    const {
-      keyboardShortcuts,
-      from,
-      videoStyles,
-      containerRef,
-      resourceStatus,
-      src,
-      togglePlay,
-      identifier,
-      videoRef,
-      poster,
-      updateProgress,
-      autoplay,
-      handleEnded,
-      handleCanPlay,
-      startPlay,
-      videoObjectFit,
-      showControlsFullScreen,
-      isFullscreen,
-      alwaysShowControls,
-    } = contextData;
+    setWatchedHistory((prev) => {
+      const exists = prev.some(
+        (v) =>
+          v.identifier === videoReference.identifier &&
+          v.name === videoReference.name &&
+          v.service === videoReference.service
+      );
 
-    const showControls =
-      !isFullscreen.value ||
-      (isFullscreen.value && showControlsFullScreen.value) ||
-      alwaysShowControls.value;
-
-    const idleTime = 5000; // Time in milliseconds
-    useIdleTimeout({
-      onIdle: () => (showControlsFullScreen.value = false),
-      onActive: () => (showControlsFullScreen.value = true),
-      idleTime,
+      if (exists) return prev; // Already watched, don't add again
+      lists.deleteList(`watched-history`);
+      // Add to beginning, then keep only latest 200
+      return [videoReference, ...prev].slice(0, 200);
     });
-
-    return (
-      <VideoContext.Provider value={contextData}>
-        <VideoContainer
-          tabIndex={0}
-          onKeyDown={keyboardShortcuts}
-          style={{
-            padding: from === "create" ? "8px" : 0,
-            cursor:
-              !showControlsFullScreen.value && isFullscreen.value
-                ? "none"
-                : "auto",
-            ...videoStyles?.videoContainer,
-          }}
-          onMouseEnter={e => {
-            showControlsFullScreen.value = true;
-          }}
-          onMouseLeave={e => {
-            showControlsFullScreen.value = false;
-          }}
-          ref={containerRef}
-        >
-          <LoadingVideo />
-          <VideoElement
-            id={identifier}
-            ref={videoRef}
-            src={
-              resourceStatus?.status === "READY" && startPlay.value ? src : null
-            }
-            poster={startPlay.value ? "" : poster}
-            onTimeUpdate={updateProgress}
-            autoPlay={autoplay}
-            onClick={() => togglePlay()}
-            onEnded={handleEnded}
-            // onLoadedMetadata={handleLoadedMetadata}
-            onCanPlay={handleCanPlay}
-            preload="metadata"
-            style={{
-              ...videoStyles?.video,
-              objectFit: videoObjectFit.value,
-              backgroundColor: "#000000",
-              height:
-                isFullscreen.value && showControls
-                  ? "calc(100vh - 40px)"
-                  : "100%",
-            }}
-          />
-          {showControls && <VideoControlsBar />}
-        </VideoContainer>
-      </VideoContext.Provider>
-    );
-  }
-);
+  }, [props?.jsonId, props?.user, isHydratedWatchedHistory]);
+  return (
+    <Box
+      sx={{
+        // width: '100%',
+        height: isSmall ? '240px' : '70vh',
+        maxHeight: '70vh',
+        background: 'black',
+        width: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        ...(props?.parentStyles || {}),
+      }}
+    >
+      <QappVideoPlayer
+        poster={props.poster}
+        videoRef={videoRef}
+        qortalVideoResource={{
+          name: props.name!,
+          service: props.service as Service,
+          identifier: props.identifier!,
+        }}
+        autoPlay={props?.autoPlay}
+        onEnded={props?.onEnd}
+        onPlay={onPlay}
+        filename={props?.filename}
+        path={location.pathname}
+        styling={{
+          progressSlider: {
+            thumbColor: 'white',
+            railColor: '',
+            trackColor: '#4285f4',
+          },
+        }}
+      />
+    </Box>
+  );
+};

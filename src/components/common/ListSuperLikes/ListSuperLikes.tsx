@@ -1,40 +1,73 @@
-import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
-import ThumbUpIcon from "@mui/icons-material/ThumbUp";
-import { Box } from "@mui/material";
-import Avatar from "@mui/material/Avatar";
-import Divider from "@mui/material/Divider";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemAvatar from "@mui/material/ListItemAvatar";
-import ListItemText from "@mui/material/ListItemText";
-import Typography from "@mui/material/Typography";
-import * as React from "react";
-import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import { fontSizeSmall } from "../../../constants/Misc.ts";
-import { RootState } from "../../../state/store";
-import { formatDate } from "../../../utils/time.ts";
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+import { Box, useTheme } from '@mui/material';
+import Avatar from '@mui/material/Avatar';
+import Divider from '@mui/material/Divider';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemAvatar from '@mui/material/ListItemAvatar';
+import ListItemText from '@mui/material/ListItemText';
+import Typography from '@mui/material/Typography';
+import * as React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { fontSizeSmall } from '../../../constants/Misc.ts';
+import { formatDate } from '../../../utils/time.ts';
+import { useAtomValue } from 'jotai';
+import { hashMapSuperlikesAtom } from '../../../state/global/superlikes.ts';
+import { Spacer } from 'qapp-core';
+import { useTranslation } from 'react-i18next';
 
-const truncateMessage = message => {
-  return message.length > 40 ? message.slice(0, 40) + "..." : message;
+const truncateMessage = (message) => {
+  return message.length > 40 ? message.slice(0, 40) + '...' : message;
 };
 
 export default function ListSuperLikes({ superlikes }) {
-  const hashMapSuperlikes = useSelector(
-    (state: RootState) => state.video.hashMapSuperlikes
-  );
+  const { i18n } = useTranslation(['core']);
 
+  const hashMapSuperlikes = useAtomValue(hashMapSuperlikesAtom);
+  const theme = useTheme();
   const navigate = useNavigate();
+
   return (
-    <List sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}>
+    <List
+      sx={{
+        maxWidth: '100%',
+        width: 300,
+        flexGrow: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: 'auto',
+        overflowY: 'scroll',
+        '::-webkit-scrollbar-track': {
+          backgroundColor: 'transparent',
+        },
+
+        '::-webkit-scrollbar': {
+          width: '16px',
+          height: '10px',
+          background: 'none',
+        },
+
+        '::-webkit-scrollbar-thumb': {
+          backgroundColor: 'gold',
+          borderRadius: '8px',
+          backgroundClip: 'content-box',
+          border: '4px solid transparent',
+          transition: '0.3s background-color',
+        },
+        '::-webkit-scrollbar-thumb:hover': {
+          backgroundColor: 'rgba(255,215,0, 0.5)',
+        },
+      }}
+    >
       {superlikes?.map((superlike, index) => {
         //  let hasHash = false
-        let message = "";
-        let url = "";
-        let forName = "";
+        let message = '';
+        let url = '';
+        let forName = '';
         //  let hash = {}
         if (hashMapSuperlikes[superlike?.identifier]) {
-          message = hashMapSuperlikes[superlike?.identifier]?.comment || "";
+          message = hashMapSuperlikes[superlike?.identifier]?.comment || '';
           if (
             hashMapSuperlikes[superlike?.identifier]?.notificationInformation
           ) {
@@ -47,7 +80,7 @@ export default function ListSuperLikes({ superlikes }) {
           //  hasHash = true
           //  hash = hashMapSuperlikes[superlike?.identifier]
         }
-        let amount = null;
+        let amount: null | string = null;
         if (!isNaN(parseFloat(superlike?.amount))) {
           amount = parseFloat(superlike?.amount).toFixed(2);
         }
@@ -56,8 +89,15 @@ export default function ListSuperLikes({ superlikes }) {
             <ListItem
               alignItems="flex-start"
               sx={{
-                cursor: url ? "pointer" : "default",
-                minHeight: "130px",
+                display: 'flex',
+                flexDirection: 'column',
+                flexShrink: 0,
+                cursor: url ? 'pointer' : 'default',
+                minHeight: '130px',
+                transition: 'all 0.2s',
+                '&:hover': {
+                  backgroundColor: theme.palette.action.hover,
+                },
               }}
               onClick={async () => {
                 if (url) {
@@ -67,89 +107,94 @@ export default function ListSuperLikes({ superlikes }) {
             >
               <Box
                 sx={{
-                  width: "100%",
+                  width: '100%',
+                  height: '100%',
                 }}
               >
-                <List sx={{ padding: "0px" }}>
-                  <ListItem
-                    sx={{
-                      padding: "0px",
-                    }}
-                    alignItems="flex-start"
-                  >
-                    <ListItemAvatar>
-                      <Avatar
-                        alt="Remy Sharp"
-                        src={`/arbitrary/THUMBNAIL/${superlike?.name}/qortal_avatar`}
-                      />
-                    </ListItemAvatar>
-                    <ListItemText
-                      primary={
-                        <Box
+                <Box
+                  sx={{
+                    padding: '0px',
+                    display: 'flex',
+                  }}
+                  alignItems="flex-start"
+                  gap={1}
+                >
+                  <Avatar
+                    alt="Remy Sharp"
+                    src={`/arbitrary/THUMBNAIL/${superlike?.name}/qortal_avatar`}
+                  />
+
+                  <ListItemText
+                    primary={
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '5px',
+                          fontSize: '18px',
+                        }}
+                      >
+                        <ThumbUpIcon
+                          style={{
+                            color: 'gold',
+                          }}
+                        />
+                        <Typography
                           sx={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "5px",
-                            fontSize: "18px",
+                            fontSize: '18px',
                           }}
                         >
-                          <ThumbUpIcon
-                            style={{
-                              color: "gold",
-                            }}
-                          />
-                          <Typography
-                            sx={{
-                              fontSize: "18px",
-                            }}
-                          >
-                            {amount ? amount : ""} QORT
-                          </Typography>
-                        </Box>
-                      }
-                      secondary={
-                        <>
-                          <Typography
-                            sx={{
-                              display: "inline",
-                              wordBreak: "break-word",
-                              fontSize: "15px",
-                            }}
-                            component="span"
-                            variant="body2"
-                            color="text.primary"
-                          >
-                            {superlike?.name}
-                          </Typography>
+                          {amount ? amount : ''} QORT
+                        </Typography>
+                      </Box>
+                    }
+                  />
+                </Box>
+                <Spacer height="10px" />
+                {message && (
+                  <Typography
+                    sx={{
+                      wordBreak: 'break-word',
+                      fontSize: '15px',
+                      display: '-webkit-box',
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: 'vertical',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                    }}
+                    component="span"
+                    variant="body2"
+                    color="text.primary"
+                  >
+                    {message}
+                  </Typography>
+                )}
 
-                          {` - ${truncateMessage(message)}`}
-                        </>
-                      }
-                    />
-                  </ListItem>
-                </List>
+                <Spacer height="10px" />
                 {forName && (
                   <Box
                     sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      fontSize: "17px",
-                      gap: "10px",
-                      justifyContent: "flex-end",
+                      display: 'flex',
+                      alignItems: 'center',
+                      fontSize: '17px',
+                      gap: '10px',
+                      justifyContent: 'flex-start',
+                      marginTop: 'auto',
                     }}
                   >
                     <EmojiEventsIcon />
                     {forName}
                   </Box>
                 )}
+                <Spacer height="10px" />
                 <span style={{ fontSize: fontSizeSmall }}>
-                  {formatDate(superlike.created)}
+                  {formatDate(superlike.created, i18n.language)}
                 </span>
               </Box>
             </ListItem>
             <Box
               sx={{
-                width: "100%",
+                width: '100%',
               }}
             >
               {superlikes.length === index + 1 ? null : <Divider />}

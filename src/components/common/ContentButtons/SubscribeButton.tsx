@@ -1,15 +1,11 @@
-import { Button, ButtonProps, Tooltip } from "@mui/material";
-import { MouseEvent, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { subscriptionListFilter } from "../../../App-Functions.ts";
-import { RootState } from "../../../state/store.ts";
-import {
-  subscribe,
-  unSubscribe,
-} from "../../../state/features/persistSlice.ts";
-import { setFilteredSubscriptions } from "../../../state/features/videoSlice.ts";
-import { styled } from "@mui/material/styles";
-import { CustomTooltip, TooltipLine } from "./CustomTooltip.tsx";
+import { Button, ButtonProps, darken, lighten } from '@mui/material';
+import { MouseEvent, useMemo } from 'react';
+
+import { CustomTooltip, TooltipLine } from './CustomTooltip.tsx';
+import { useAuth, useGlobal } from 'qapp-core';
+import { usePersistedState } from '../../../state/persist/persist.ts';
+import { useTranslation } from 'react-i18next';
+import { Subscription } from '../../../types/subscription.ts';
 
 interface SubscribeButtonProps extends ButtonProps {
   subscriberName: string;
@@ -24,96 +20,93 @@ export const SubscribeButton = ({
   subscriberName,
   ...props
 }: SubscribeButtonProps) => {
-  const dispatch = useDispatch();
+  const { t } = useTranslation(['core']);
 
-  const filteredSubscriptionList = useSelector((state: RootState) => {
-    return state.video.filteredSubscriptionList;
-  });
+  const { lists } = useGlobal();
+  const [subscriptions, setSubscriptions, isHydratedSubscriptions] =
+    usePersistedState<Subscription[]>('subscriptions', []);
 
-  const userName = useSelector((state: RootState) => state.auth.user?.name);
-  const [isSubscribed, setIsSubscribed] = useState<boolean>(false);
-
-  const isSubscribedToName = (subscriptionList: SubscriptionData[]) => {
+  const { name } = useAuth();
+  const userName = name;
+  const isSubscribed = useMemo(() => {
     return (
-      subscriptionList.find(item => {
+      subscriptions.find((item) => {
         return item.subscriberName === subscriberName;
       }) !== undefined
     );
-  };
-
-  useEffect(() => {
-    if (!filteredSubscriptionList || filteredSubscriptionList.length === 0) {
-      subscriptionListFilter().then(filteredList => {
-        dispatch(setFilteredSubscriptions(filteredList));
-        setIsSubscribed(isSubscribedToName(filteredList));
-      });
-    } else {
-      setIsSubscribed(isSubscribedToName(filteredSubscriptionList));
-    }
-  }, []);
-
+  }, [subscriptions]);
   const subscriptionData: SubscriptionData = {
-    userName: userName,
+    userName: userName || '',
     subscriberName: subscriberName,
   };
-  const subscribeToRedux = () => {
-    dispatch(subscribe(subscriptionData));
-    dispatch(
-      setFilteredSubscriptions([...filteredSubscriptionList, subscriptionData])
-    );
-    setIsSubscribed(true);
+  const subscribeTo = () => {
+    setSubscriptions((prev) => [...prev, subscriptionData]);
+    lists.deleteList('subscriptions');
   };
-  const unSubscribeFromRedux = () => {
-    dispatch(unSubscribe(subscriptionData));
-    dispatch(
-      setFilteredSubscriptions(
-        filteredSubscriptionList.filter(
-          item => item.subscriberName !== subscriptionData.subscriberName
-        )
+  const unSubscribe = () => {
+    setSubscriptions((prev) =>
+      prev.filter(
+        (item) => item.subscriberName !== subscriptionData.subscriberName
       )
     );
-    setIsSubscribed(false);
+    lists.deleteList('subscriptions');
   };
 
   const manageSubscription = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    isSubscribed ? unSubscribeFromRedux() : subscribeToRedux();
+    isSubscribed ? unSubscribe() : subscribeTo();
   };
 
-  const verticalPadding = "3px";
-  const horizontalPadding = "8px";
+  const verticalPadding = '3px';
+  const horizontalPadding = '8px';
   const buttonStyle = {
-    fontSize: "15px",
-    fontWeight: "700",
+    fontSize: '15px',
+    fontWeight: '700',
     paddingTop: verticalPadding,
     paddingBottom: verticalPadding,
     paddingLeft: horizontalPadding,
     paddingRight: horizontalPadding,
     borderRadius: 28,
-    height: "45px",
+    height: '45px',
     ...props.sx,
   };
 
   const tooltipTitle = (
     <>
       <TooltipLine>
-        Subscribing to a name lets you see their content on the Subscriptions
-        tab of the Home Page. This does NOT download any data to your node.
+        {t('core:video.subscribe_description', {
+          postProcess: 'capitalizeFirstChar',
+        })}
       </TooltipLine>
     </>
   );
 
   return (
-    <CustomTooltip title={tooltipTitle} placement={"top"} arrow>
+    <CustomTooltip title={tooltipTitle} placement={'top'} arrow>
       <Button
         {...props}
-        variant={"contained"}
-        color="error"
-        sx={buttonStyle}
-        onClick={e => manageSubscription(e)}
+        variant={'contained'}
+        disabled={!isHydratedSubscriptions}
+        // color="error"
+        // sx={buttonStyle}
+        color="info"
+        onClick={(e) => manageSubscription(e)}
+        sx={(theme) => {
+          const baseColor = theme.palette.info.main;
+          return {
+            minWidth: '125px',
+            backgroundColor: isSubscribed ? darken(baseColor, 0.7) : baseColor,
+          };
+        }}
       >
-        {isSubscribed ? "Unsubscribe" : "Subscribe"}
+        {isSubscribed
+          ? t('core:action.unsubscribe', {
+              postProcess: 'capitalizeFirstChar',
+            })
+          : t('core:action.subscribe', {
+              postProcess: 'capitalizeFirstChar',
+            })}
       </Button>
     </CustomTooltip>
   );

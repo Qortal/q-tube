@@ -11,6 +11,8 @@ import React, { useCallback, useEffect, useState, useRef } from "react";
 import { CircleSVG } from "../../../assets/svgs/CircleSVG.tsx";
 import { EmptyCircleSVG } from "../../../assets/svgs/EmptyCircleSVG.tsx";
 import { styled } from "@mui/system";
+import { useAtomValue } from "jotai";
+import { usePublish } from "qapp-core";
 
 interface Publish {
   resources: any[];
@@ -30,6 +32,7 @@ export const MultiplePublish = ({
   onError,
 }: MultiplePublishProps) => {
   const theme = useTheme();
+  const publishFromLibrary = usePublish()
   const listOfSuccessfulPublishesRef = useRef([]);
   const [listOfSuccessfulPublishes, setListOfSuccessfulPublishes] = useState<
     any[]
@@ -41,7 +44,7 @@ export const MultiplePublish = ({
   const publish = useCallback(async (pub: any) => {
     const lengthOfResources = pub?.resources?.length;
     const lengthOfTimeout = lengthOfResources * 1200000;  // Time out in QR, Seconds = 20 Minutes
-    return await qortalRequestWithTimeout(pub, lengthOfTimeout);
+    return await publishFromLibrary.publishMultipleResources(pub.resources)
   }, []);
   const [isPublishing, setIsPublishing] = useState(true);
 
@@ -123,9 +126,12 @@ export const MultiplePublish = ({
           const unpublished = listOfUnsuccessfulPublishes.map(
             item => item?.identifier
           );
+          const key = `${publish?.service}-${publish?.name}-${publish?.identifier}`
+        
           return (
+            <Box key={key}>
             <Box
-              key={publish?.identifier}
+              
               sx={{
                 display: "flex",
                 gap: "20px",
@@ -153,6 +159,8 @@ export const MultiplePublish = ({
               ) : (
                 <CircularProgress size={16} color="secondary" />
               )}
+            </Box>
+            
             </Box>
           );
         })}

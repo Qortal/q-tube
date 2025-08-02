@@ -1,104 +1,124 @@
-import { SelectChangeEvent } from "@mui/material";
-import { useEffect } from "react";
-import ReactDOM from "react-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { categories } from "../../../constants/Categories.ts";
-import { changeFilterType } from "../../../state/features/persistSlice.ts";
-import {
-  changefilterName,
-  changefilterSearch,
-  changeSelectedCategoryVideos,
-  changeSelectedSubCategoryVideos,
-} from "../../../state/features/videoSlice.ts";
-import { RootState } from "../../../state/store.ts";
+import { SelectChangeEvent } from '@mui/material';
+import { useEffect, useState } from 'react';
+import { categories } from '../../../constants/Categories.ts';
+import { usePersistedState } from '../../../state/persist/persist.ts';
+import { useAuth } from 'qapp-core';
+import { useSearchParams } from 'react-router-dom';
+import { Category } from '../../../types/category.ts';
 
-export const useSidebarState = (
-  onSearch: (reset?: boolean, resetFilters?: boolean) => void
-) => {
-  const dispatch = useDispatch();
-
-  const {
-    filterSearch,
-    filterName,
-    selectedCategoryVideos,
-    selectedSubCategoryVideos,
-  } = useSelector((state: RootState) => state.video);
-
-  const filterType = useSelector(
-    (state: RootState) => state.persist.filterType
+export const useSidebarState = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const query = searchParams.get('query'); // "example"
+  const { isLoadingUser } = useAuth();
+  const [filterType, setFilterType, isHydratedFilterState] = usePersistedState(
+    'filterType',
+    'videos'
   );
+  const [filterSearch, setFilterSearch, isHydratedFilterSearch] =
+    usePersistedState('filterSearch', '');
 
-  const setFilterType = payload => {
-    dispatch(changeFilterType(payload));
-  };
+  const [filterName, setFilterName, isHydratedFilterName] = usePersistedState(
+    'filterName',
+    ''
+  );
+  const [filterCategory, setFilterCategory, isHydratedFilterCategory] =
+    usePersistedState<null | Category>('filterCategory', null);
+  const [filterSubCategory, setFilterSubCategory, isHydratedFilterSubCategory] =
+    usePersistedState<null | Category>('filterSubCategory', null);
+  const isHydrated =
+    isHydratedFilterState &&
+    isHydratedFilterSearch &&
+    isHydratedFilterName &&
+    isHydratedFilterCategory &&
+    isHydratedFilterSubCategory &&
+    !isLoadingUser;
 
-  const setFilterSearch = payload => {
-    dispatch(changefilterSearch(payload));
-  };
+  const [filterStateSearch, setFilterStateSearch] = useState('');
+  const [filterStateType, setFilterStateType] = useState('videos');
+  const [filterStateName, setFilterStateName] = useState('');
+  const [selectedCategoryVideosState, setSelectedCategoryVideosState] =
+    useState<null | Category>(null);
+  const [selectedSubCategoryVideosState, setSelectedSubCategoryVideosState] =
+    useState<null | Category>(null);
 
-  const setFilterName = payload => {
-    dispatch(changefilterName(payload));
-  };
-  const handleInputKeyDown = (event: any) => {
-    if (event.key === "Enter") {
-      onSearch(true);
-    }
-  };
-
-  const filtersToDefault = async () => {
-    setFilterSearch("");
-    setFilterName("");
-    setSelectedCategoryVideos(null);
-    setSelectedSubCategoryVideos(null);
-
-    ReactDOM.flushSync(() => {
-      onSearch(true, true);
-    });
-  };
-
-  const setSelectedCategoryVideos = payload => {
-    dispatch(changeSelectedCategoryVideos(payload));
-  };
-
-  const setSelectedSubCategoryVideos = payload => {
-    dispatch(changeSelectedSubCategoryVideos(payload));
-  };
-
-  const handleOptionCategoryChangeVideos = (
-    event: SelectChangeEvent<string>
-  ) => {
-    const optionId = event.target.value;
-    const selectedOption = categories.find(option => option.id === +optionId);
-    setSelectedCategoryVideos(selectedOption || null);
-  };
-  const handleOptionSubCategoryChangeVideos = (
-    event: SelectChangeEvent<string>,
-    subcategories: any[]
-  ) => {
-    const optionId = event.target.value;
-    const selectedOption = subcategories.find(
-      option => option.id === +optionId
-    );
-    setSelectedSubCategoryVideos(selectedOption || null);
+  const onSearch = (term?: string) => {
+    setFilterType(filterStateType);
+    setFilterSearch(term || filterStateSearch);
+    setFilterName(filterStateName);
+    setFilterCategory(selectedCategoryVideosState);
+    setFilterSubCategory(selectedSubCategoryVideosState);
   };
 
   useEffect(() => {
-    // Makes displayed videos reload when switching filter type. Removes need to click Search button after changing type
-    onSearch(true);
-  }, [filterType]);
+    if (!isHydrated) return;
+    setFilterStateSearch(filterSearch || '');
+    setFilterStateName(filterName);
+    setFilterStateType(filterType);
+    setSelectedCategoryVideosState(filterCategory);
+    setSelectedSubCategoryVideosState(filterSubCategory);
+  }, [
+    filterName,
+    filterSearch,
+    filterType,
+    filterCategory,
+    filterSubCategory,
+    isHydrated,
+  ]);
+
+  const onReset = () => {
+    setFilterSearch('');
+    setFilterName('');
+    setFilterCategory(null);
+    setFilterSubCategory(null);
+  };
+
+  const handleInputKeyDown = (event: any) => {
+    if (event.key === 'Enter') {
+      onSearch();
+    }
+  };
+
+  const handleOptionCategoryChangeVideos = (
+    event: SelectChangeEvent<number | null>
+  ) => {
+    const optionId = event.target.value;
+    if (optionId === null) {
+      setSelectedCategoryVideosState(null);
+      return;
+    }
+    const selectedOption = categories.find((option) => option.id === +optionId);
+    setSelectedCategoryVideosState(selectedOption || null);
+  };
+  const handleOptionSubCategoryChangeVideos = (
+    event: SelectChangeEvent<number | null>,
+    subcategories: any[]
+  ) => {
+    const optionId = event.target.value;
+    if (optionId === null) {
+      setSelectedSubCategoryVideosState(null);
+      return;
+    }
+    const selectedOption = subcategories.find(
+      (option) => option.id === +optionId
+    );
+    setSelectedSubCategoryVideosState(selectedOption || null);
+  };
 
   return {
-    filterSearch,
-    setFilterSearch,
+    filterSearch: filterStateSearch,
+    setFilterSearch: setFilterStateSearch,
+    setFilterSearchGlobal: setFilterSearch,
     handleInputKeyDown,
-    filterName,
-    setFilterName,
-    selectedCategoryVideos,
+    filterName: filterStateName,
+    setFilterName: setFilterStateName,
+    selectedCategoryVideos: selectedCategoryVideosState,
     handleOptionCategoryChangeVideos,
-    selectedSubCategoryVideos,
+    selectedSubCategoryVideos: selectedSubCategoryVideosState,
     handleOptionSubCategoryChangeVideos,
-    filterType,
-    setFilterType,
-    filtersToDefault,
+    filterType: filterStateType,
+    setFilterType: setFilterStateType,
+    onSearch,
+    onReset,
+    filterSearchGlobal: filterSearch,
   };
 };

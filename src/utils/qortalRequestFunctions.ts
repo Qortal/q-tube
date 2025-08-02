@@ -1,3 +1,4 @@
+import { Service } from 'qapp-core';
 import {
   AccountInfo,
   AccountName,
@@ -5,18 +6,18 @@ import {
   SearchResourcesResponse,
   SearchTransactionResponse,
   TransactionSearchParams,
-} from "./qortalRequestTypes.ts";
+} from './qortalRequestTypes.ts';
 
 export const getBalance = async (address: string) => {
   return (await qortalRequest({
-    action: "GET_BALANCE",
+    action: 'GET_BALANCE',
     address,
   })) as number;
 };
 
 export const getUserAccount = async () => {
   return (await qortalRequest({
-    action: "GET_USER_ACCOUNT",
+    action: 'GET_USER_ACCOUNT',
   })) as AccountInfo;
 };
 export const getUserBalance = async () => {
@@ -28,12 +29,12 @@ export const getAccountNames = async (
   params?: GetRequestData
 ) => {
   const names = (await qortalRequest({
-    action: "GET_ACCOUNT_NAMES",
+    action: 'GET_ACCOUNT_NAMES',
     address,
     ...params,
   })) as AccountName[];
 
-  const namelessAddress = { name: "", owner: address };
+  const namelessAddress = { name: '', owner: address };
   const emptyNamesFilled = names.map(({ name, owner }) => {
     return name ? { name, owner } : namelessAddress;
   });
@@ -43,25 +44,25 @@ export const getAccountNames = async (
 
 export const getPrimaryAccountName = async (address: string) => {
   const primaryName = (await qortalRequest({
-    action: "GET_PRIMARY_NAME",
+    action: 'GET_PRIMARY_NAME',
     address,
   })) as string | null;
-  return primaryName ?? "";
-}
+  return primaryName ?? '';
+};
 
 export const searchTransactions = async (params: TransactionSearchParams) => {
   return (await qortalRequest({
-    action: "SEARCH_TRANSACTIONS",
+    action: 'SEARCH_TRANSACTIONS',
     ...params,
   })) as SearchTransactionResponse[];
 };
 
 export const fetchResourcesByIdentifier = async <T>(
-  service: string,
+  service: Service,
   identifier: string
 ) => {
   const names: SearchResourcesResponse[] = await qortalRequest({
-    action: "SEARCH_QDN_RESOURCES",
+    action: 'SEARCH_QDN_RESOURCES',
     service,
     identifier,
     includeMetadata: false,
@@ -71,9 +72,9 @@ export const fetchResourcesByIdentifier = async <T>(
   );
 
   const promises: Promise<T>[] = [];
-  distinctNames.map(response => {
+  distinctNames.map((response) => {
     const resource: Promise<T> = qortalRequest({
-      action: "FETCH_QDN_RESOURCE",
+      action: 'FETCH_QDN_RESOURCE',
       name: response.name,
       service,
       identifier,

@@ -1,0 +1,141 @@
+{
+  "action": {
+    "back": "indietro",
+    "next": "avanti",
+    "cancel": "annulla",
+    "delete": "elimina",
+    "close": "chiudi",
+    "save": "salva",
+    "subscribe": "iscriviti",
+    "unsubscribe": "annulla iscrizione",
+    "follow": "segui",
+    "unfollow": "smetti di seguire",
+    "create": "crea",
+    "edit": "modifica",
+    "comment": "commenta",
+    "reply": "rispondi",
+    "bookmark_video": "salva video",
+    "bookmark_playlist": "salva playlist"
+  },
+  "navbar": {
+    "search": "cerca"
+  },
+  "publish": {
+    "publish_action": "pubblica",
+    "video": "video",
+    "playlist": "playlist",
+    "downloads": "download",
+    "update_video": "aggiorna video",
+    "publish_videos": "pubblica video",
+    "populate_titles": "Compila i titoli dal nome file (quando i file vengono selezionati)",
+    "same_cover_images": "Tutti i video usano la stessa immagine di copertina",
+    "populate_description": "Compila tutte le descrizioni in base al titolo",
+    "drag_drop_videos": "Trascina qui i file video o clicca per selezionare i file",
+    "supported_containers": "Contenitori di file supportati",
+    "audio_codecs": "codec audio",
+    "video_codecs": "codec video",
+    "unsupported_codecs_description": "L'uso di codec non supportati può causare malfunzionamenti di video o audio",
+    "select_category": "Seleziona una categoria",
+    "select_subcategory": "Seleziona una sottocategoria",
+    "add_cover_image": "aggiungi immagine di copertina",
+    "description_video": "descrizione del video",
+    "add_vids_playlist": "vuoi aggiungere questi video a una playlist?",
+    "add_vids_playlist_optional": "aggiungere a una playlist è FACOLTATIVO",
+    "no_playlist": "nessuna playlist",
+    "new_playlist": "nuova playlist",
+    "existing_playlist": "playlist esistente",
+    "select_existing_playlist": "seleziona playlist esistente",
+    "playlist_search_by_title": "cerca per titolo",
+    "title_playlist": "titolo della playlist",
+    "description_playlist": "descrizione della playlist",
+    "generationg_extracts": "generazione di immagini estratte",
+    "create_new_playlist": "crea nuova playlist",
+    "update_playlist_properties": "aggiorna le proprietà della playlist",
+    "add_videos_playlist": "aggiungi video alla playlist",
+    "my_videos": "i miei video",
+    "all_videos": "tutti i video",
+    "search_by_title": "cerca per titolo",
+    "edit_playlist": "modifica playlist",
+    "block_user_content": "blocca contenuto dell'utente",
+    "edit_video": "modifica proprietà video",
+    "delete_video": "elimina video",
+    "remove_video_list": "rimuovi video dalla lista",
+    "playlist_not_exist": "questa playlist non esiste"
+  },
+  "notification": {
+    "no_new_notification": "nessuna nuova notifica",
+    "from_user": "da {{user}}"
+  },
+  "likes": {
+    "super_like": "super like",
+    "recent_super_likes": "super like recenti",
+    "like_dislike": "Mi piace o Non mi piace il video"
+  },
+  "blocked": {
+    "blocked_names": "nomi bloccati"
+  },
+  "sidenav": {
+    "home": "home",
+    "subscriptions": "iscrizioni",
+    "watched_videos": "video visti",
+    "bookmarks": "segnalibri",
+    "your_playlists": "le tue playlist",
+    "your_videos": "i tuoi video"
+  },
+  "filters": {
+    "most_recent": "più recenti",
+    "all": "tutti",
+    "videos": "video",
+    "playlists": "playlist",
+    "more_filters": "altri filtri",
+    "more": "di più",
+    "user_name": "Nome dell'utente (esatto)",
+    "category": "categoria",
+    "sub_category": "sottocategoria",
+    "reset": "resetta",
+    "filters": "filtri"
+  },
+  "lists": {
+    "no_results": "nessun risultato"
+  },
+  "bookmarks": {
+    "select_list": "seleziona una lista",
+    "all_bookmarks": "tutti i video salvati",
+    "bookmark_list": "lista dei segnalibri",
+    "bookmark_lists": "liste dei segnalibri",
+    "no_bookmarks_lists": "nessuna lista di segnalibri",
+    "new_list": "nuova lista",
+    "new_folder": "nuova cartella",
+    "delete_folder": "elimina cartella"
+  },
+  "video": {
+    "show_more": "mostra di più",
+    "show_less": "mostra meno",
+    "copy_link_video": "copia link del video",
+    "subscribe_description": "Iscriversi a un nome ti permette di vedere i suoi contenuti nella scheda Iscrizioni della Home. NON scarica alcun dato sul tuo nodo.",
+    "follow_description": "Seguire un nome scarica automaticamente tutti i suoi contenuti sul tuo nodo. Più follower ha un nome, più velocemente i suoi contenuti saranno scaricati per tutti.",
+    "currentSize": "dimensione attuale del download di {{followerName}}: {{followingSize}}",
+    "itemCount": "numero di file: {{followingItemCount}}"
+  },
+  "payments": {
+    "amount": "importo"
+  },
+  "comments": {
+    "comment_here": "commenta qui",
+    "load_more_comments": "carica più commenti",
+    "submit_reply": "invia risposta",
+    "hide_replies": "nascondi tutte le risposte",
+    "view_replies": "visualizza tutte le risposte",
+    "your_comment": "il tuo commento"
+  },
+  "download": {
+    "ready": "pronto per il salvataggio: clicca qui",
+    "start": "inizia il download: clicca qui"
+  },
+  "index": {
+    "index_video": "indice video"
+  },
+  "search": {
+    "clear_search": "cancella cronologia delle ricerche"
+  }
+}

@@ -1,10 +1,9 @@
-import { Avatar, Box, SxProps, Theme, useTheme } from "@mui/material";
+import { Avatar, Box, SxProps, Theme, useTheme } from '@mui/material';
 import {
   AuthorTextComment,
   StyledCardHeaderComment,
-} from "./VideoContent-styles.tsx";
-import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+} from './VideoContent-styles.tsx';
+import { useNavigate } from 'react-router-dom';
 
 export interface ChannelParams {
   channelName: string;
@@ -18,17 +17,18 @@ export const ChannelName = ({ channelName }: ChannelParams) => {
   return (
     <StyledCardHeaderComment
       sx={{
-        "& .MuiCardHeader-content": {
-          overflow: "hidden",
+        '& .MuiCardHeader-content': {
+          overflow: 'hidden',
         },
       }}
     >
       <Box
         sx={{
-          display: "flex",
-          flexDirection: "row",
-          alignItems: "center",
-          cursor: "pointer",
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+          cursor: 'pointer',
+          minWidth: '125px',
         }}
         onClick={() => {
           navigate(`/channel/${channelName}`);
@@ -40,14 +40,14 @@ export const ChannelName = ({ channelName }: ChannelParams) => {
         />
         <AuthorTextComment
           color={
-            theme.palette.mode === "light"
+            theme.palette.mode === 'light'
               ? theme.palette.text.secondary
-              : "#d6e8ff"
+              : '#d6e8ff'
           }
           sx={{
-            cursor: "pointer",
-            display: "inline",
-            marginLeft: "10px",
+            cursor: 'pointer',
+            display: 'inline',
+            marginLeft: '10px',
           }}
         >
           {channelName}

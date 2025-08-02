@@ -1,0 +1,141 @@
+{
+  "action": {
+    "back": "zurück",
+    "next": "weiter",
+    "cancel": "abbrechen",
+    "delete": "löschen",
+    "close": "schließen",
+    "save": "speichern",
+    "subscribe": "abonnieren",
+    "unsubscribe": "Abo beenden",
+    "follow": "folgen",
+    "unfollow": "nicht mehr folgen",
+    "create": "erstellen",
+    "edit": "bearbeiten",
+    "comment": "kommentieren",
+    "reply": "antworten",
+    "bookmark_video": "Video mit Lesezeichen versehen",
+    "bookmark_playlist": "Playlist speichern"
+  },
+  "navbar": {
+    "search": "suchen"
+  },
+  "publish": {
+    "publish_action": "veröffentlichen",
+    "video": "Video",
+    "playlist": "Wiedergabeliste",
+    "downloads": "Downloads",
+    "update_video": "Video aktualisieren",
+    "publish_videos": "Videos veröffentlichen",
+    "populate_titles": "Titel anhand des Dateinamens ausfüllen (beim Auswählen der Dateien)",
+    "same_cover_images": "Alle Videos verwenden dasselbe Titelbild",
+    "populate_description": "Alle Beschreibungen anhand des Titels ausfüllen",
+    "drag_drop_videos": "Video-Dateien hierher ziehen oder klicken, um Dateien auszuwählen",
+    "supported_containers": "Unterstützte Containerformate",
+    "audio_codecs": "Audio-Codecs",
+    "video_codecs": "Video-Codecs",
+    "unsupported_codecs_description": "Nicht unterstützte Codecs können zu Problemen bei Video oder Audio führen",
+    "select_category": "Kategorie auswählen",
+    "select_subcategory": "Unterkategorie auswählen",
+    "add_cover_image": "Titelbild hinzufügen",
+    "description_video": "Videobeschreibung",
+    "add_vids_playlist": "Möchten Sie diese Videos einer Wiedergabeliste hinzufügen?",
+    "add_vids_playlist_optional": "Das Hinzufügen zur Wiedergabeliste ist OPTIONAL",
+    "no_playlist": "Keine Wiedergabeliste",
+    "new_playlist": "Neue Wiedergabeliste",
+    "existing_playlist": "Bestehende Wiedergabeliste",
+    "select_existing_playlist": "Bestehende Wiedergabeliste auswählen",
+    "playlist_search_by_title": "Nach Titel suchen",
+    "title_playlist": "Titel der Wiedergabeliste",
+    "description_playlist": "Beschreibung der Wiedergabeliste",
+    "generationg_extracts": "Bilder werden generiert",
+    "create_new_playlist": "Neue Wiedergabeliste erstellen",
+    "update_playlist_properties": "Eigenschaften der Wiedergabeliste aktualisieren",
+    "add_videos_playlist": "Videos zur Wiedergabeliste hinzufügen",
+    "my_videos": "Meine Videos",
+    "all_videos": "Alle Videos",
+    "search_by_title": "Nach Titel suchen",
+    "edit_playlist": "Wiedergabeliste bearbeiten",
+    "block_user_content": "Benutzerinhalt blockieren",
+    "edit_video": "Videoeigenschaften bearbeiten",
+    "delete_video": "Video löschen",
+    "remove_video_list": "Video aus Liste entfernen",
+    "playlist_not_exist": "Diese Wiedergabeliste existiert nicht"
+  },
+  "notification": {
+    "no_new_notification": "Keine neuen Benachrichtigungen",
+    "from_user": "von {{user}}"
+  },
+  "likes": {
+    "super_like": "super like",
+    "recent_super_likes": "Neueste Super Likes",
+    "like_dislike": "Video liken oder disliken"
+  },
+  "blocked": {
+    "blocked_names": "Blockierte Namen"
+  },
+  "sidenav": {
+    "home": "Startseite",
+    "subscriptions": "Abonnements",
+    "watched_videos": "Angesehene Videos",
+    "bookmarks": "Lesezeichen",
+    "your_playlists": "Deine Wiedergabelisten",
+    "your_videos": "Deine Videos"
+  },
+  "filters": {
+    "most_recent": "neueste",
+    "all": "alle",
+    "videos": "Videos",
+    "playlists": "Wiedergabelisten",
+    "more_filters": "Weitere Filter",
+    "more": "mehr",
+    "user_name": "Name des Benutzers (genau)",
+    "category": "Kategorie",
+    "sub_category": "Unterkategorie",
+    "reset": "zurücksetzen",
+    "filters": "Filter"
+  },
+  "lists": {
+    "no_results": "keine Ergebnisse"
+  },
+  "bookmarks": {
+    "select_list": "Liste auswählen",
+    "all_bookmarks": "Alle Videos mit Lesezeichen",
+    "bookmark_list": "Lesezeichenliste",
+    "bookmark_lists": "Lesezeichenlisten",
+    "no_bookmarks_lists": "Keine Lesezeichenlisten",
+    "new_list": "Neue Liste",
+    "new_folder": "neuer Ordner",
+    "delete_folder": "Ordner löschen"
+  },
+  "video": {
+    "show_more": "mehr anzeigen",
+    "show_less": "weniger anzeigen",
+    "copy_link_video": "Videolink kopieren",
+    "subscribe_description": "Wenn du einen Namen abonnierst, siehst du seine Inhalte auf dem Abonnement-Tab der Startseite. Es werden KEINE Daten auf deinen Node heruntergeladen.",
+    "follow_description": "Wenn du einem Namen folgst, werden alle seine Inhalte automatisch auf deinen Node heruntergeladen. Je mehr Follower ein Name hat, desto schneller werden seine Inhalte für alle heruntergeladen.",
+    "currentSize": "Aktuelle Downloadgröße von {{followerName}}: {{followingSize}}",
+    "itemCount": "Anzahl der Dateien: {{followingItemCount}}"
+  },
+  "payments": {
+    "amount": "Betrag"
+  },
+  "comments": {
+    "comment_here": "hier kommentieren",
+    "load_more_comments": "mehr Kommentare laden",
+    "submit_reply": "Antwort senden",
+    "hide_replies": "alle Antworten ausblenden",
+    "view_replies": "alle Antworten anzeigen",
+    "your_comment": "dein Kommentar"
+  },
+  "download": {
+    "ready": "Bereit zum Speichern: Hier klicken",
+    "start": "Download starten: Hier klicken"
+  },
+  "index": {
+    "index_video": "Video indexieren"
+  },
+  "search": {
+    "clear_search": "Suchverlauf löschen"
+  }
+}

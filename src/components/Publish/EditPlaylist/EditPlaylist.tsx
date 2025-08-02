@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   AddCoverImageButton,
   AddLogoIcon,
@@ -6,13 +6,11 @@ import {
   CrowdfundActionButton,
   CrowdfundActionButtonRow,
   CustomInputField,
-  CustomSelect,
-  LogoPreviewRow,
   ModalBody,
+  LogoPreviewRow,
   NewCrowdfundTitle,
-  StyledButton,
   TimesIcon,
-} from "./Upload-styles.tsx";
+} from './Upload-styles.tsx';
 import {
   Box,
   FormControl,
@@ -24,71 +22,46 @@ import {
   SelectChangeEvent,
   Typography,
   useTheme,
-} from "@mui/material";
-import ShortUniqueId from "short-unique-id";
-import { useDispatch, useSelector } from "react-redux";
-import AddBoxIcon from "@mui/icons-material/AddBox";
-import { useDropzone } from "react-dropzone";
+} from '@mui/material';
+import ShortUniqueId from 'short-unique-id';
 
-import { setNotification } from "../../../state/features/notificationsSlice.ts";
-import {
-  objectToBase64,
-  objectToFile,
-  uint8ArrayToBase64,
-} from "../../../utils/PublishFormatter.ts";
-import { RootState } from "../../../state/store.ts";
-import {
-  upsertVideosBeginning,
-  addToHashMap,
-  upsertVideos,
-  setEditVideo,
-  updateVideo,
-  updateInHashMap,
-  setEditPlaylist,
-} from "../../../state/features/videoSlice.ts";
-import ImageUploader from "../../common/ImageUploader.tsx";
-import { categories, subCategories } from "../../../constants/Categories.ts";
-import { Playlists } from "../../Playlists/Playlists.tsx";
-import { PlaylistListEdit } from "../PlaylistListEdit/PlaylistListEdit.tsx";
-import { TextEditor } from "../../common/TextEditor/TextEditor.tsx";
-import { extractTextFromHTML } from "../../common/TextEditor/utils.ts";
+import { objectToBase64 } from '../../../utils/PublishFormatter.ts';
+import ImageUploader from '../../common/ImageUploader.tsx';
+import { categories, subCategories } from '../../../constants/Categories.ts';
+import { Playlists } from '../../Playlists/Playlists.tsx';
+import { PlaylistListEdit } from '../PlaylistListEdit/PlaylistListEdit.tsx';
+import { TextEditor } from '../../common/TextEditor/TextEditor.tsx';
+import { extractTextFromHTML } from '../../common/TextEditor/utils.ts';
 import {
   QTUBE_PLAYLIST_BASE,
   QTUBE_VIDEO_BASE,
-} from "../../../constants/Identifiers.ts";
+} from '../../../constants/Identifiers.ts';
+import { useAuth, useGlobal } from 'qapp-core';
+import {
+  AltertObject,
+  setNotificationAtom,
+} from '../../../state/global/notifications.ts';
+import { useAtom, useSetAtom } from 'jotai';
+import { editPlaylistAtom } from '../../../state/publish/playlist.ts';
+import { useTranslation } from 'react-i18next';
 
 const uid = new ShortUniqueId();
 const shortuid = new ShortUniqueId({ length: 5 });
 
-interface NewCrowdfundProps {
-  editId?: string;
-  editContent?: null | {
-    title: string;
-    user: string;
-    coverImage: string | null;
-  };
-}
-
-interface VideoFile {
-  file: File;
-  title: string;
-  description: string;
-  coverImage?: string;
-}
 export const EditPlaylist = () => {
+  const { t } = useTranslation(['core', 'category']);
+
   const theme = useTheme();
-  const dispatch = useDispatch();
-  const username = useSelector((state: RootState) => state.auth?.user?.name);
-  const userAddress = useSelector(
-    (state: RootState) => state.auth?.user?.address
-  );
-  const editVideoProperties = useSelector(
-    (state: RootState) => state.video.editPlaylistProperties
-  );
+  const { name: username, address: userAddress } = useAuth();
+  const setNotification = useSetAtom(setNotificationAtom);
+  const { lists } = useGlobal();
+  const [editVideoProperties] = useAtom(editPlaylistAtom);
+  const setEditPlaylist = useSetAtom(editPlaylistAtom);
+
   const [playlistData, setPlaylistData] = useState<any>(null);
-  const [title, setTitle] = useState<string>("");
-  const [description, setDescription] = useState<string>("");
-  const [coverImage, setCoverImage] = useState<string>("");
+  const [title, setTitle] = useState<string>('');
+  const [description, setDescription] = useState<string>('');
+  const [coverImage, setCoverImage] = useState<string>('');
   const [videos, setVideos] = useState([]);
   const [selectedCategoryVideos, setSelectedCategoryVideos] =
     useState<any>(null);
@@ -96,7 +69,7 @@ export const EditPlaylist = () => {
     useState<any>(null);
 
   const isNew = useMemo(() => {
-    return editVideoProperties?.mode === "new";
+    return editVideoProperties?.mode === 'new';
   }, [editVideoProperties]);
 
   useEffect(() => {
@@ -107,83 +80,39 @@ export const EditPlaylist = () => {
     }
   }, [isNew]);
 
-  // useEffect(() => {
-  //   if (editVideoProperties) {
-  //     const descriptionString = editVideoProperties?.description || "";
-  //     // Splitting the string at the asterisks
-  //     const parts = descriptionString.split("**");
-
-  //     // The part within the asterisks
-  //     const extractedString = parts[1];
-
-  //     // The part after the last asterisks
-  //     const description = parts[2] || ""; // Using '|| '' to handle cases where there is no text after the last **
-  //     setTitle(editVideoProperties?.title || "");
-  //     setDescription(editVideoProperties?.fullDescription || "");
-  //     setCoverImage(editVideoProperties?.videoImage || "");
-
-  //     // Split the extracted string into key-value pairs
-  //     const keyValuePairs = extractedString.split(";");
-
-  //     // Initialize variables to hold the category and subcategory values
-  //     let category, subcategory;
-
-  //     // Loop through each key-value pair
-  //     keyValuePairs.forEach((pair) => {
-  //       const [key, value] = pair.split(":");
-
-  //       // Check the key and assign the value to the appropriate variable
-  //       if (key === "category") {
-  //         category = value;
-  //       } else if (key === "subcategory") {
-  //         subcategory = value;
-  //       }
-  //     });
-
-  //     if(category){
-  //       const selectedOption = categories.find((option) => option.id === +category);
-  //   setSelectedCategoryVideos(selectedOption || null);
-  //     }
-
-  //     if(subcategory){
-  //       const selectedOption = categories.find((option) => option.id === +subcategory);
-  //   setSelectedCategoryVideos(selectedOption || null);
-  //     }
-
-  //   }
-  // }, [editVideoProperties]);
-
-  const checkforPlaylist = React.useCallback(async videoList => {
+  const checkforPlaylist = React.useCallback(async (videoList) => {
     try {
       const combinedData: any = {};
-      const videos = [];
+      const videos: any[] = [];
       if (videoList) {
         for (const vid of videoList) {
           const url = `/arbitrary/resources/search?mode=ALL&service=DOCUMENT&identifier=${vid.identifier}&limit=1&includemetadata=true&reverse=true&name=${vid.name}&exactmatchnames=true&offset=0`;
           const response = await fetch(url, {
-            method: "GET",
+            method: 'GET',
             headers: {
-              "Content-Type": "application/json",
+              'Content-Type': 'application/json',
             },
           });
           const responseDataSearchVid = await response.json();
 
           if (responseDataSearchVid?.length > 0) {
             const resourceData2 = responseDataSearchVid[0];
-            videos.push(resourceData2);
+            if (resourceData2) {
+              videos.push(resourceData2);
+            }
           }
         }
       }
       combinedData.videos = videos;
       setPlaylistData(combinedData);
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   }, []);
 
   useEffect(() => {
     if (editVideoProperties) {
-      setTitle(editVideoProperties?.title || "");
+      setTitle(editVideoProperties?.title || '');
 
       if (editVideoProperties?.htmlDescription) {
         setDescription(editVideoProperties?.htmlDescription);
@@ -191,12 +120,12 @@ export const EditPlaylist = () => {
         const paragraph = `<p>${editVideoProperties?.description}</p>`;
         setDescription(paragraph);
       }
-      setCoverImage(editVideoProperties?.image || "");
+      setCoverImage(editVideoProperties?.image || '');
       setVideos(editVideoProperties?.videos || []);
 
       if (editVideoProperties?.category) {
         const selectedOption = categories.find(
-          option => option.id === +editVideoProperties.category
+          (option) => option.id === +editVideoProperties.category
         );
         setSelectedCategoryVideos(selectedOption || null);
       }
@@ -208,7 +137,7 @@ export const EditPlaylist = () => {
       ) {
         const selectedOption = subCategories[
           +editVideoProperties?.category
-        ]?.find(option => option.id === +editVideoProperties.subcategory);
+        ]?.find((option) => option.id === +editVideoProperties.subcategory);
         setSelectedSubCategoryVideos(selectedOption || null);
       }
 
@@ -219,69 +148,68 @@ export const EditPlaylist = () => {
   }, [editVideoProperties]);
 
   const onClose = () => {
-    setTitle("");
-    setDescription("");
+    setTitle('');
+    setDescription('');
     setVideos([]);
     setPlaylistData(null);
     setSelectedCategoryVideos(null);
     setSelectedSubCategoryVideos(null);
-    setCoverImage("");
-    dispatch(setEditPlaylist(null));
+    setCoverImage('');
+    setEditPlaylist(null);
   };
 
   async function publishQDNResource() {
     try {
-      if (!title) throw new Error("Please enter a title");
-      if (!description) throw new Error("Please enter a description");
-      if (!coverImage) throw new Error("Please select cover image");
-      if (!selectedCategoryVideos) throw new Error("Please select a category");
+      if (!title) throw new Error('Please enter a title');
+      if (!description) throw new Error('Please enter a description');
+      if (!coverImage) throw new Error('Please select cover image');
+      if (!selectedCategoryVideos) throw new Error('Please select a category');
 
       if (!editVideoProperties) return;
-      if (!userAddress) throw new Error("Unable to locate user address");
-      let errorMsg = "";
-      let name = "";
+      if (!userAddress) throw new Error('Unable to locate user address');
+      let errorMsg = '';
+      let name = '';
       if (username) {
         name = username;
       }
       if (!name) {
         errorMsg =
-          "Cannot publish without access to your name. Please authenticate.";
+          'Cannot publish without access to your name. Please authenticate.';
       }
 
-      if (!isNew && editVideoProperties?.user !== username) {
+      if (!isNew && editVideoProperties?.name !== username) {
         errorMsg = "Cannot publish another user's resource";
       }
 
       if (errorMsg) {
-        dispatch(
-          setNotification({
-            msg: errorMsg,
-            alertType: "error",
-          })
-        );
+        const notificationObj: AltertObject = {
+          msg: errorMsg,
+          alertType: 'error',
+        };
+        setNotification(notificationObj);
         return;
       }
       const category = selectedCategoryVideos.id;
-      const subcategory = selectedSubCategoryVideos?.id || "";
+      const subcategory = selectedSubCategoryVideos?.id || '';
 
-      const videoStructured = playlistData.videos.map(item => {
+      const videoStructured = playlistData.videos.map((item) => {
         const descriptionVid = item?.metadata?.description;
-        if (!descriptionVid) throw new Error("cannot find video code");
+        if (!descriptionVid) throw new Error('cannot find video code');
 
         // Split the string by ';'
-        const parts = descriptionVid.split(";");
+        const parts = descriptionVid.split(';');
 
         // Initialize a variable to hold the code value
-        let codeValue = "";
+        let codeValue = '';
 
         // Loop through the parts to find the one that starts with 'code:'
         for (const part of parts) {
-          if (part.startsWith("code:")) {
-            codeValue = part.split(":")[1];
+          if (part.startsWith('code:')) {
+            codeValue = part.split(':')[1];
             break;
           }
         }
-        if (!codeValue) throw new Error("cannot find video code");
+        if (!codeValue) throw new Error('cannot find video code');
 
         return {
           identifier: item.identifier,
@@ -292,8 +220,7 @@ export const EditPlaylist = () => {
       });
       const id = uid.rnd();
 
-      let commentsId = editVideoProperties?.id;
-
+      let commentsId = editVideoProperties?.identifier;
       if (isNew) {
         commentsId = `${QTUBE_PLAYLIST_BASE}_cm_${id}`;
       }
@@ -312,20 +239,20 @@ export const EditPlaylist = () => {
       };
 
       const codes = videoStructured
-        .map(item => `c:${item.code};`)
+        .map((item) => `c:${item.code};`)
         .slice(0, 10)
-        .join("");
+        .join('');
       const metadescription =
         `**category:${category};subcategory:${subcategory};${codes}**` +
         stringDescription.slice(0, 120);
 
       // Description is obtained from raw data
 
-      let identifier = editVideoProperties?.id;
+      let identifier = editVideoProperties?.identifier;
       const sanitizeTitle = title
-        .replace(/[^a-zA-Z0-9\s-]/g, "")
-        .replace(/\s+/g, "-")
-        .replace(/-+/g, "-")
+        .replace(/[^a-zA-Z0-9\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-')
         .trim()
         .toLowerCase();
       if (isNew) {
@@ -335,9 +262,9 @@ export const EditPlaylist = () => {
         )}_${id}`;
       }
       const requestBodyJson: any = {
-        action: "PUBLISH_QDN_RESOURCE",
+        action: 'PUBLISH_QDN_RESOURCE',
         name: username,
-        service: "PLAYLIST",
+        service: 'PLAYLIST',
         data64: await objectToBase64(playlistObject),
         title: title.slice(0, 50),
         description: metadescription,
@@ -351,57 +278,47 @@ export const EditPlaylist = () => {
           title: title.slice(0, 50),
           description: metadescription,
           id: identifier,
-          service: "PLAYLIST",
+          service: 'PLAYLIST',
           user: username,
           ...playlistObject,
         };
-        dispatch(updateVideo(objectToStore));
-        dispatch(updateInHashMap(objectToStore));
       } else {
-        dispatch(
-          updateVideo({
-            ...editVideoProperties,
-            ...playlistObject,
-          })
-        );
-        dispatch(
-          updateInHashMap({
-            ...editVideoProperties,
-            ...playlistObject,
-          })
-        );
+        lists.updateNewResources([
+          {
+            data: playlistObject,
+            qortalMetadata: {
+              identifier: identifier,
+              service: 'PLAYLIST',
+              name: username || '',
+              size: 100,
+              updated: Date.now(),
+              metadata: {
+                title: title.slice(0, 50),
+                description: metadescription,
+                tags: [QTUBE_VIDEO_BASE],
+              },
+              created: editVideoProperties?.created,
+            },
+          },
+        ]);
       }
-
-      dispatch(
-        setNotification({
-          msg: "Playlist published",
-          alertType: "success",
-        })
-      );
+      const notificationObj: AltertObject = {
+        msg: 'Playlist published',
+        alertType: 'success',
+      };
+      setNotification(notificationObj);
 
       onClose();
     } catch (error: any) {
-      let notificationObj: any = null;
-      if (typeof error === "string") {
-        notificationObj = {
-          msg: error || "Failed to publish update",
-          alertType: "error",
-        };
-      } else if (typeof error?.error === "string") {
-        notificationObj = {
-          msg: error?.error || "Failed to publish update",
-          alertType: "error",
-        };
-      } else {
-        notificationObj = {
-          msg: error?.message || "Failed to publish update",
-          alertType: "error",
-        };
-      }
-      if (!notificationObj) return;
-      dispatch(setNotification(notificationObj));
+      const isError = error instanceof Error;
+      const message = isError ? error?.message : 'Failed to publish update';
+      const notificationObj: AltertObject = {
+        msg: message,
+        alertType: 'error',
+      };
+      setNotification(notificationObj);
 
-      throw new Error("Failed to publish update");
+      throw new Error('Failed to publish update');
     }
   }
 
@@ -409,7 +326,7 @@ export const EditPlaylist = () => {
     event: SelectChangeEvent<string>
   ) => {
     const optionId = event.target.value;
-    const selectedOption = categories.find(option => option.id === +optionId);
+    const selectedOption = categories.find((option) => option.id === +optionId);
     setSelectedCategoryVideos(selectedOption || null);
   };
   const handleOptionSubCategoryChangeVideos = (
@@ -418,28 +335,28 @@ export const EditPlaylist = () => {
   ) => {
     const optionId = event.target.value;
     const selectedOption = subcategories.find(
-      option => option.id === +optionId
+      (option) => option.id === +optionId
     );
     setSelectedSubCategoryVideos(selectedOption || null);
   };
 
-  const removeVideo = index => {
+  const removeVideo = (index) => {
     const copyData = structuredClone(playlistData);
     copyData.videos.splice(index, 1);
     setPlaylistData(copyData);
   };
 
-  const addVideo = data => {
+  const addVideo = (data) => {
     const copyData = structuredClone(playlistData);
     copyData.videos = [...copyData.videos, { ...data }];
     setPlaylistData(copyData);
   };
 
-  const updateVideoList = list => {
+  const updateVideoList = (list) => {
     const copyData = structuredClone(playlistData);
     copyData.videos = [...list];
     setPlaylistData(copyData);
-  }
+  };
 
   return (
     <>
@@ -448,39 +365,61 @@ export const EditPlaylist = () => {
         aria-labelledby="modal-title"
         aria-describedby="modal-description"
       >
-        <ModalBody>
+        <ModalBody
+          sx={{
+            width: '100%',
+          }}
+        >
           <Box
             sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
             }}
           >
             {isNew ? (
-              <NewCrowdfundTitle>Create new playlist</NewCrowdfundTitle>
+              <NewCrowdfundTitle>
+                {t('core:publish.create_new_playlist', {
+                  postProcess: 'capitalizeFirstChar',
+                })}
+              </NewCrowdfundTitle>
             ) : (
-              <NewCrowdfundTitle>Update Playlist properties</NewCrowdfundTitle>
+              <NewCrowdfundTitle>
+                {t('core:publish.update_playlist_properties', {
+                  postProcess: 'capitalizeFirstChar',
+                })}
+              </NewCrowdfundTitle>
             )}
           </Box>
           <>
             <Box
               sx={{
-                display: "flex",
-                gap: "20px",
-                alignItems: "center",
+                display: 'flex',
+                gap: '20px',
+                alignItems: 'center',
               }}
             >
               <FormControl fullWidth sx={{ marginBottom: 2 }}>
-                <InputLabel id="Category">Select a Category</InputLabel>
+                <InputLabel id="Category">
+                  {t('core:publish.select_category', {
+                    postProcess: 'capitalizeFirstChar',
+                  })}
+                </InputLabel>
                 <Select
                   labelId="Category"
-                  input={<OutlinedInput label="Select a Category" />}
-                  value={selectedCategoryVideos?.id || ""}
+                  input={
+                    <OutlinedInput
+                      label={t('core:publish.select_category', {
+                        postProcess: 'capitalizeFirstChar',
+                      })}
+                    />
+                  }
+                  value={selectedCategoryVideos?.id || ''}
                   onChange={handleOptionCategoryChangeVideos}
                 >
-                  {categories.map(option => (
+                  {categories.map((option) => (
                     <MenuItem key={option.id} value={option.id}>
-                      {option.name}
+                      {t(`category:categories.${option.id}`)}
                     </MenuItem>
                   ))}
                 </Select>
@@ -488,23 +427,35 @@ export const EditPlaylist = () => {
               {selectedCategoryVideos &&
                 subCategories[selectedCategoryVideos?.id] && (
                   <FormControl fullWidth sx={{ marginBottom: 2 }}>
-                    <InputLabel id="Category">Select a Sub-Category</InputLabel>
+                    <InputLabel id="Category">
+                      {t('core:publish.select_subcategory', {
+                        postProcess: 'capitalizeFirstChar',
+                      })}
+                    </InputLabel>
                     <Select
                       labelId="Sub-Category"
-                      input={<OutlinedInput label="Select a Sub-Category" />}
-                      value={selectedSubCategoryVideos?.id || ""}
-                      onChange={e =>
+                      input={
+                        <OutlinedInput
+                          label={t('core:publish.select_subcategory', {
+                            postProcess: 'capitalizeFirstChar',
+                          })}
+                        />
+                      }
+                      value={selectedSubCategoryVideos?.id || ''}
+                      onChange={(e) =>
                         handleOptionSubCategoryChangeVideos(
                           e,
                           subCategories[selectedCategoryVideos?.id]
                         )
                       }
                     >
-                      {subCategories[selectedCategoryVideos.id].map(option => (
-                        <MenuItem key={option.id} value={option.id}>
-                          {option.name}
-                        </MenuItem>
-                      ))}
+                      {subCategories[selectedCategoryVideos.id].map(
+                        (option) => (
+                          <MenuItem key={option.id} value={option.id}>
+                            {t(`category:subcategories.${option.id}`)}
+                          </MenuItem>
+                        )
+                      )}
                     </Select>
                   </FormControl>
                 )}
@@ -513,11 +464,13 @@ export const EditPlaylist = () => {
               {!coverImage ? (
                 <ImageUploader onPick={(img: string) => setCoverImage(img)}>
                   <AddCoverImageButton variant="contained">
-                    Add Cover Image
+                    {t('core:publish.add_cover_image', {
+                      postProcess: 'capitalizeFirstChar',
+                    })}
                     <AddLogoIcon
                       sx={{
-                        height: "25px",
-                        width: "auto",
+                        height: '25px',
+                        width: 'auto',
                       }}
                     ></AddLogoIcon>
                   </AddCoverImageButton>
@@ -527,22 +480,24 @@ export const EditPlaylist = () => {
                   <CoverImagePreview src={coverImage} alt="logo" />
                   <TimesIcon
                     color={theme.palette.text.primary}
-                    onClickFunc={() => setCoverImage("")}
-                    height={"32"}
-                    width={"32"}
+                    onClickFunc={() => setCoverImage('')}
+                    height={'32'}
+                    width={'32'}
                   ></TimesIcon>
                 </LogoPreviewRow>
               )}
               <CustomInputField
                 name="title"
-                label="Title of playlist"
+                label={t('core:publish.title_playlist', {
+                  postProcess: 'capitalizeFirstChar',
+                })}
                 variant="filled"
                 value={title}
-                onChange={e => {
+                onChange={(e) => {
                   const value = e.target.value;
                   const formattedValue = value.replace(
                     /[^a-zA-Z0-9\s-_!?]/g,
-                    ""
+                    ''
                   );
                   setTitle(formattedValue);
                 }}
@@ -562,14 +517,16 @@ export const EditPlaylist = () => {
               /> */}
               <Typography
                 sx={{
-                  fontSize: "18px",
+                  fontSize: '18px',
                 }}
               >
-                Description of playlist
+                {t('core:publish.description_playlist', {
+                  postProcess: 'capitalizeFirstChar',
+                })}
               </Typography>
               <TextEditor
                 inlineContent={description}
-                setInlineContent={value => {
+                setInlineContent={(value) => {
                   setDescription(value);
                 }}
               />
@@ -591,13 +548,15 @@ export const EditPlaylist = () => {
               variant="contained"
               color="error"
             >
-              Cancel
+              {t('core:action.cancel', {
+                postProcess: 'capitalizeFirstChar',
+              })}
             </CrowdfundActionButton>
             <Box
               sx={{
-                display: "flex",
-                gap: "20px",
-                alignItems: "center",
+                display: 'flex',
+                gap: '20px',
+                alignItems: 'center',
               }}
             >
               <CrowdfundActionButton
@@ -606,7 +565,9 @@ export const EditPlaylist = () => {
                   publishQDNResource();
                 }}
               >
-                Publish
+                {t('core:publish.publish_action', {
+                  postProcess: 'capitalizeFirstChar',
+                })}
               </CrowdfundActionButton>
             </Box>
           </CrowdfundActionButtonRow>

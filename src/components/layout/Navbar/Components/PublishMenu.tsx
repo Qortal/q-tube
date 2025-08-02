@@ -1,45 +1,71 @@
-import { useDispatch } from "react-redux";
-import { headerIconSize, menuIconSize } from "../../../../constants/Misc.ts";
-import { setEditPlaylist } from "../../../../state/features/videoSlice.ts";
-import { StyledButton } from "../../../Publish/PublishVideo/PublishVideo-styles.tsx";
-import { PublishVideo } from "../../../Publish/PublishVideo/PublishVideo.tsx";
+import { headerIconSize, menuIconSize } from '../../../../constants/Misc.ts';
+import { StyledButton } from '../../../Publish/PublishVideo/PublishVideo-styles.tsx';
+import { PublishVideo } from '../../../Publish/PublishVideo/PublishVideo.tsx';
 import {
   AvatarContainer,
   DropdownContainer,
   DropdownText,
   NavbarName,
-} from "../Navbar-styles.tsx";
-import AddBoxIcon from "@mui/icons-material/AddBox";
-import { PopMenu, PopMenuRefType } from "../../../common/PopMenu.tsx";
-import { useRef } from "react";
-import { useMediaQuery } from "@mui/material";
-
+} from '../Navbar-styles.tsx';
+import AddBoxIcon from '@mui/icons-material/AddBox';
+import { PopMenu, PopMenuRefType } from '../../../common/PopMenu.tsx';
+import { useRef } from 'react';
+import { Button, ButtonBase, useMediaQuery, useTheme } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
 export interface PublishButtonsProps {
   isDisplayed: boolean;
 }
-import PlaylistAddIcon from "@mui/icons-material/PlaylistAdd";
+import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
+import { editPlaylistAtom } from '../../../../state/publish/playlist.ts';
+import { useSetAtom } from 'jotai';
+import { useIsSmall } from '../../../../hooks/useIsSmall.tsx';
+import { useTranslation } from 'react-i18next';
 
 export const PublishMenu = ({ isDisplayed }: PublishButtonsProps) => {
-  const dispatch = useDispatch();
-  const popMenuRef = useRef<PopMenuRefType>(null);
+  const { t } = useTranslation(['core']);
 
-  const isScreenSmall = !useMediaQuery(`(min-width:600px)`);
+  const popMenuRef = useRef<PopMenuRefType>(null);
+  const setEditPlaylist = useSetAtom(editPlaylistAtom);
+  const isSmall = useIsSmall();
+  const theme = useTheme();
   return (
     <>
       {isDisplayed && (
         <PopMenu
+          showExpandIcon={false}
           MenuHeader={
             <>
-              {!isScreenSmall && (
-                <NavbarName sx={{ marginRight: "5px" }}>Publish</NavbarName>
+              {!isSmall ? (
+                <Button
+                  startIcon={<AddIcon />}
+                  color="info"
+                  variant="contained"
+                >
+                  {t('core:publish.publish_action', {
+                    postProcess: 'capitalizeFirstChar',
+                  })}
+                </Button>
+              ) : (
+                <ButtonBase>
+                  <AddIcon
+                    sx={{
+                      fontSize: '35px',
+                      color: theme.palette.action.active,
+                    }}
+                  />
+                </ButtonBase>
+              )}
+
+              {/* {!isScreenSmall && (
+                <NavbarName sx={{ marginRight: '5px' }}>Publish</NavbarName>
               )}
               <AddBoxIcon
                 sx={{
-                  color: "DarkGreen",
+                  color: 'DarkGreen',
                   width: headerIconSize,
                   height: headerIconSize,
                 }}
-              />
+              /> */}
             </>
           }
           ref={popMenuRef}
@@ -50,20 +76,26 @@ export const PublishMenu = ({ isDisplayed }: PublishButtonsProps) => {
           <DropdownContainer onClick={popMenuRef?.current?.closePopover}>
             <StyledButton
               color="primary"
+              sx={{
+                justifyContent: 'flex-start',
+                width: '100%',
+              }}
               startIcon={
                 <PlaylistAddIcon
                   sx={{
-                    color: "#00BFFF",
+                    color: '#00BFFF',
                     width: menuIconSize,
                     height: menuIconSize,
                   }}
                 />
               }
               onClick={() => {
-                dispatch(setEditPlaylist({ mode: "new" }));
+                setEditPlaylist({ mode: 'new' });
               }}
             >
-              Playlist
+              {t('core:publish.playlist', {
+                postProcess: 'capitalizeFirstChar',
+              })}
             </StyledButton>
           </DropdownContainer>
         </PopMenu>

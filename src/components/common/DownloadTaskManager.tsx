@@ -26,12 +26,15 @@ export const DownloadTaskManager: React.FC = () => {
   const allResourceStatus = useAllResourceStatus();
   const [titles, setTitles] = useState<string[]>([]);
   const [titlesLength, setTitlesLength] = useState<number>(0);
+
   const getTitles = async () => {
     const searchPromises = allResourceStatus?.map((ars) =>
       qortalRequest({
         action: 'SEARCH_QDN_RESOURCES',
         ...ars.metadata,
+        prefix: true,
         includeMetadata: true,
+        mode: 'ALL',
       })
     );
     const searchResults = await Promise.all(searchPromises);
@@ -179,7 +182,7 @@ export const DownloadTaskManager: React.FC = () => {
                       overflow: 'hidden',
                     }}
                   >
-                    {titles[index]}
+                    {titles[index] || download?.filename}
                   </Typography>
                   <Divider flexItem />
                 </ListItem>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   Button,
@@ -24,6 +24,28 @@ export const DownloadTaskManager: React.FC = () => {
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const [openDownload, setOpenDownload] = useState<boolean>(false);
   const allResourceStatus = useAllResourceStatus();
+  const [titles, setTitles] = useState<string[]>([]);
+  const [titlesLength, setTitlesLength] = useState<number>(0);
+
+  const getTitles = async () => {
+    const searchPromises = allResourceStatus?.map((ars) =>
+      qortalRequest({
+        action: 'SEARCH_QDN_RESOURCES',
+        ...ars.metadata,
+        prefix: true,
+        includeMetadata: true,
+        mode: 'ALL',
+      })
+    );
+    const searchResults = await Promise.all(searchPromises);
+    const titles = searchResults.map((sr) => sr[0]?.metadata?.title);
+    setTitles(titles);
+    setTitlesLength(titles.length);
+  };
+
+  useEffect(() => {
+    if (allResourceStatus.length !== titlesLength) getTitles();
+  }, [allResourceStatus]);
 
   const handleClick = (event?: React.MouseEvent<HTMLDivElement>) => {
     const target = event?.currentTarget as unknown as HTMLButtonElement | null;
@@ -92,10 +114,9 @@ export const DownloadTaskManager: React.FC = () => {
         >
           {allResourceStatus
             ?.filter((dl) => dl?.filename && dl?.path)
-            ?.map((download: any) => {
+            ?.map((download: any, index) => {
               const progress = download?.status?.percentLoaded;
               const status = download?.status?.status;
-
               return (
                 <ListItem
                   key={download?.metadata?.identifier}
@@ -161,7 +182,7 @@ export const DownloadTaskManager: React.FC = () => {
                       overflow: 'hidden',
                     }}
                   >
-                    {download?.filename}
+                    {titles[index] || download?.filename}
                   </Typography>
                   <Divider flexItem />
                 </ListItem>

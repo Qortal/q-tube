@@ -1,13 +1,10 @@
-import { Box, Button, ButtonProps } from '@mui/material';
+import { Box, Button, ButtonProps, CircularProgress } from '@mui/material';
 import Tooltip, { TooltipProps, tooltipClasses } from '@mui/material/Tooltip';
 import { MouseEvent, useEffect, useState } from 'react';
 import { darken, styled } from '@mui/material/styles';
 import { CustomTooltip, TooltipLine } from './CustomTooltip.tsx';
 import { useTranslation } from 'react-i18next';
-import {
-  followListAtom,
-  hasFetchFollowListAtom,
-} from '../../../state/global/names.ts';
+import {} from '../../../state/global/names.ts';
 import { useAtom } from 'jotai';
 
 interface FollowButtonProps extends ButtonProps {
@@ -22,30 +19,50 @@ export type FollowData = {
 export const FollowButton = ({ followerName, ...props }: FollowButtonProps) => {
   const { t } = useTranslation(['core']);
 
-  const [followingList, setFollowingList] = useAtom(followListAtom);
-  const [hasFetchedFollow, setHasFetchFollow] = useAtom(hasFetchFollowListAtom);
+  const [followingList, setFollowingList] = useState<string[]>([]);
 
   const [followingSize, setFollowingSize] = useState<string>('');
   const [followingItemCount, setFollowingItemCount] = useState<string>('');
+
+  const [timer, setTimer] = useState<NodeJS.Timeout | undefined>(undefined);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const isFollowingName = () => {
     return followingList.includes(followerName);
   };
 
+  const handleMouseEnter = () => {
+    setTimer(
+      setTimeout(() => {
+        setIsLoading(true);
+        getFollowData();
+      }, 500)
+    );
+  };
+
+  const handleMouseLeave = () => {
+    setIsLoading(false);
+    clearTimeout(timer);
+  };
+
   useEffect(() => {
-    if (hasFetchedFollow !== null) return;
+    return () => clearTimeout(timer); // Cleanup timer on unmount
+  }, [timer]);
+
+  const getFollowData = () => {
+    if (followingList.length > 0) return;
     qortalRequest({
       action: 'GET_LIST_ITEMS',
       list_name: 'followedNames',
     })
       .then((followList) => {
         setFollowingList(followList);
-        setHasFetchFollow(true);
+        setIsLoading(false);
       })
-      .catch(() => {
-        setHasFetchFollow(false);
+      .catch((e) => {
+        console.log(e);
       });
     getFollowSize();
-  }, [hasFetchedFollow]);
+  };
 
   const followName = () => {
     if (followingList.includes(followerName) === false) {
@@ -61,6 +78,7 @@ export const FollowButton = ({ followerName, ...props }: FollowButtonProps) => {
       });
     }
   };
+
   const unfollowName = () => {
     if (followingList.includes(followerName)) {
       qortalRequest({
@@ -140,7 +158,6 @@ export const FollowButton = ({ followerName, ...props }: FollowButtonProps) => {
       </TooltipLine>
       <br />
       <TooltipLine>
-        {' '}
         {t('core:video.currentSize', {
           followerName,
           followingSize,
@@ -156,33 +173,44 @@ export const FollowButton = ({ followerName, ...props }: FollowButtonProps) => {
     </>
   );
 
+  const followButton = (
+    <Button
+      {...props}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      variant={'outlined'}
+      color="info"
+      // sx={buttonStyle}
+      onClick={(e) => manageFollow(e)}
+      sx={(theme) => {
+        const baseColor = theme.palette.info.main;
+        return {
+          minWidth: '125px',
+          color: isFollowingName() ? darken(baseColor, 0.7) : baseColor,
+        };
+      }}
+    >
+      {isFollowingName()
+        ? t('core:action.unfollow', {
+            postProcess: 'capitalizeFirstChar',
+          })
+        : t('core:action.follow', {
+            postProcess: 'capitalizeFirstChar',
+          })}
+    </Button>
+  );
+
   return (
     <>
-      <CustomTooltip title={tooltipTitle} placement={'top'} arrow>
-        <Button
-          disabled={hasFetchedFollow === false}
-          {...props}
-          variant={'outlined'}
-          color="info"
-          // sx={buttonStyle}
-          onClick={(e) => manageFollow(e)}
-          sx={(theme) => {
-            const baseColor = theme.palette.info.main;
-            return {
-              minWidth: '125px',
-              color: isFollowingName() ? darken(baseColor, 0.7) : baseColor,
-            };
-          }}
-        >
-          {isFollowingName()
-            ? t('core:action.unfollow', {
-                postProcess: 'capitalizeFirstChar',
-              })
-            : t('core:action.follow', {
-                postProcess: 'capitalizeFirstChar',
-              })}
-        </Button>
-      </CustomTooltip>
+      {tooltipTitle ? (
+        <CustomTooltip title={tooltipTitle} placement={'top'} arrow>
+          {followButton}
+        </CustomTooltip>
+      ) : (
+        <Tooltip title={<CircularProgress size={24} />} placement={'top'} arrow>
+          {followButton}
+        </Tooltip>
+      )}
     </>
   );
 };

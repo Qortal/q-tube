@@ -16,7 +16,6 @@ import PageLoader from '../components/common/PageLoader';
 import { RequestQueue } from '../utils/queue';
 import { EditVideo } from '../components/Publish/EditVideo/EditVideo';
 import { EditPlaylist } from '../components/Publish/EditPlaylist/EditPlaylist';
-import ConsentModal from '../components/common/ConsentModal';
 import { useFetchSuperLikes } from '../hooks/useFetchSuperLikes';
 import { SUPER_LIKE_BASE } from '../constants/Identifiers.ts';
 import { minPriceSuperLike } from '../constants/Misc.ts';
@@ -117,7 +116,6 @@ const GlobalWrapper: React.FC<Props> = ({ children }) => {
   return (
     <>
       {isLoadingUser && <PageLoader />}
-      <ConsentModal />
       <EditVideo />
       <EditPlaylist />
 

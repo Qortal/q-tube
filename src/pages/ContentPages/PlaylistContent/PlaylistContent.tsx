@@ -54,7 +54,7 @@ export const PlaylistContent = () => {
     loadingSuperLikes,
   } = usePlaylistContentState();
   const { t, i18n } = useTranslation(['core']);
-
+  console.log('playlistData: ', playlistData);
   const navigate = useNavigate();
   const isSmall = useIsSmall();
   const isScreenSmall = !useMediaQuery(`(min-width:950px)`);

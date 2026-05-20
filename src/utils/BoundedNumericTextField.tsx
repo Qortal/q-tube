@@ -4,7 +4,7 @@ import {
   TextField,
   TextFieldProps,
 } from '@mui/material';
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect, useCallback } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import {
@@ -39,6 +39,7 @@ export const BoundedNumericTextField = ({
     initialValue || ''
   );
   const ref = useRef<HTMLInputElement | null>(null);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const stringIsEmpty = (value: string) => {
     return value === '';
@@ -99,12 +100,50 @@ export const BoundedNumericTextField = ({
     if (afterChange) afterChange(newValue);
   };
 
-  const changeValueWithIncDecButton = (changeAmount: number) => {
-    const changedValue = (+textFieldValue + changeAmount).toString();
-    const inBoundsValue = setMinMaxValue(changedValue);
-    setTextFieldValue(inBoundsValue);
-    if (afterChange) afterChange(inBoundsValue);
-  };
+  const changeValueWithIncDecButton = useCallback(
+    (changeAmount: number) => {
+      setTextFieldValue((currentValue) => {
+        const changedValue = (+currentValue + changeAmount).toString();
+        const inBoundsValue = setMinMaxValue(changedValue);
+        if (afterChange) afterChange(inBoundsValue);
+        return inBoundsValue;
+      });
+    },
+    [afterChange]
+  );
+
+  const startContinuousChange = useCallback(
+    (changeAmount: number) => {
+      // Change immediately on first click
+      changeValueWithIncDecButton(changeAmount);
+
+      // Then start interval for continuous changes
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+
+      intervalRef.current = setInterval(() => {
+        changeValueWithIncDecButton(changeAmount);
+      }, 200); // 5 times per second
+    },
+    [changeValueWithIncDecButton]
+  );
+
+  const stopContinuousChange = useCallback(() => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+  }, []);
+
+  // Clean up interval on unmount
+  useEffect(() => {
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, []);
 
   const formatValueOnBlur = (e: eventType) => {
     let value = e.target.value;
@@ -128,10 +167,22 @@ export const BoundedNumericTextField = ({
         ...props?.InputProps,
         endAdornment: addIconButtons ? (
           <InputAdornment position="end">
-            <IconButton onClick={() => changeValueWithIncDecButton(1)}>
+            <IconButton
+              onMouseDown={() => startContinuousChange(1)}
+              onMouseUp={stopContinuousChange}
+              onMouseLeave={stopContinuousChange}
+              onTouchStart={() => startContinuousChange(1)}
+              onTouchEnd={stopContinuousChange}
+            >
               <AddIcon />{' '}
             </IconButton>
-            <IconButton onClick={() => changeValueWithIncDecButton(-1)}>
+            <IconButton
+              onMouseDown={() => startContinuousChange(-1)}
+              onMouseUp={stopContinuousChange}
+              onMouseLeave={stopContinuousChange}
+              onTouchStart={() => startContinuousChange(-1)}
+              onTouchEnd={stopContinuousChange}
+            >
               <RemoveIcon />{' '}
             </IconButton>
           </InputAdornment>

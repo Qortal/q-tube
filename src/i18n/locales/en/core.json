@@ -59,7 +59,10 @@
     "edit_video": "edit video properties",
     "delete_video": "delete video",
     "remove_video_list": "remove video from list",
-    "playlist_not_exist": "this playlist does not exist"
+    "playlist_not_exist": "this playlist does not exist",
+    "refresh_titles": "Fetch Full Titles",
+    "remove_from_start": "remove from start",
+    "remove_from_end": "remove from end"
   },
   "notification": {
     "no_new_notification": "no new notifications",

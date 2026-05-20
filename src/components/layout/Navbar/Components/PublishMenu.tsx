@@ -40,6 +40,7 @@ export const PublishMenu = ({ isDisplayed }: PublishButtonsProps) => {
                   startIcon={<AddIcon />}
                   color="info"
                   variant="contained"
+                  sx={{ color: 'white' }}
                 >
                   {t('core:publish.publish_action', {
                     postProcess: 'capitalizeFirstChar',

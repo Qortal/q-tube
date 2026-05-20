@@ -84,7 +84,7 @@ export const usePlaylistContentState = () => {
             ...resourceData,
             ...responseData,
           };
-          const videos = [];
+          const videos: any[] = [];
           if (combinedData?.videos) {
             for (const vid of combinedData.videos) {
               const url = `/arbitrary/resources/search?mode=ALL&service=DOCUMENT&identifier=${vid.identifier}&limit=1&includemetadata=true&reverse=true&name=${vid.name}&exactmatchnames=true&offset=0`;
@@ -98,6 +98,20 @@ export const usePlaylistContentState = () => {
 
               if (responseDataSearchVid?.length > 0) {
                 const resourceData2 = responseDataSearchVid[0];
+                
+                // Check if playlistTitle exists in the playlist data
+                const playlistVideo = combinedData.videos.find(
+                  v => v.identifier === vid.identifier
+                );
+                
+                // If playlistTitle exists, use it, otherwise use metadata title
+                if (playlistVideo?.playlistTitle) {
+                  resourceData2.metadata = {
+                    ...resourceData2.metadata,
+                    title: playlistVideo.playlistTitle
+                  };
+                }
+                
                 videos.push(resourceData2);
               }
             }

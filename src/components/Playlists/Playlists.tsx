@@ -96,7 +96,7 @@ export const Playlists = ({
                   wordBreak: 'break-word',
                 }}
               >
-                {vid?.metadata?.title}
+                {vid?.playlistTitle || vid?.metadata?.title}
               </Typography>
             </Box>
           );

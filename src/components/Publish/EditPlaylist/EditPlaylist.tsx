@@ -67,6 +67,8 @@ export const EditPlaylist = () => {
     useState<any>(null);
   const [selectedSubCategoryVideos, setSelectedSubCategoryVideos] =
     useState<any>(null);
+  const [hasCharacterRemovalError, setHasCharacterRemovalError] =
+    useState(false);
 
   const isNew = useMemo(() => {
     return editVideoProperties?.mode === 'new';
@@ -98,6 +100,10 @@ export const EditPlaylist = () => {
           if (responseDataSearchVid?.length > 0) {
             const resourceData2 = responseDataSearchVid[0];
             if (resourceData2) {
+              // Preserve playlistTitle if it exists in the original video data
+              if (vid.playlistTitle) {
+                resourceData2.playlistTitle = vid.playlistTitle;
+              }
               videos.push(resourceData2);
             }
           }
@@ -216,6 +222,7 @@ export const EditPlaylist = () => {
           name: item.name,
           service: item.service,
           code: codeValue,
+          playlistTitle: item?.metadata?.title || '', // Add playlistTitle field
         };
       });
       const id = uid.rnd();
@@ -261,6 +268,8 @@ export const EditPlaylist = () => {
           30
         )}_${id}`;
       }
+
+      console.log('Publishing Playlist Data: ', playlistObject);
       const requestBodyJson: any = {
         action: 'PUBLISH_QDN_RESOURCE',
         name: username,
@@ -346,16 +355,46 @@ export const EditPlaylist = () => {
     setPlaylistData(copyData);
   };
 
-  const addVideo = (data) => {
-    const copyData = structuredClone(playlistData);
-    copyData.videos = [...copyData.videos, { ...data }];
-    setPlaylistData(copyData);
+  const addVideo = async (data) => {
+    // Fetch the full title for the new video
+    try {
+      const response = await qortalRequest({
+        action: 'FETCH_QDN_RESOURCE',
+        name: data.name,
+        service: data.service,
+        identifier: data.identifier,
+      });
+      
+      if (response && !response.error && response.title) {
+        // Add the video with the fetched full title as playlistTitle
+        const copyData = structuredClone(playlistData);
+        copyData.videos = [...copyData.videos, {
+          ...data,
+          playlistTitle: response.title
+        }];
+        setPlaylistData(copyData);
+      } else {
+        // Fallback to original behavior if fetch fails
+        const copyData = structuredClone(playlistData);
+        copyData.videos = [...copyData.videos, { ...data }];
+        setPlaylistData(copyData);
+      }
+    } catch (error) {
+      // Fallback to original behavior if fetch fails
+      const copyData = structuredClone(playlistData);
+      copyData.videos = [...copyData.videos, { ...data }];
+      setPlaylistData(copyData);
+    }
   };
 
   const updateVideoList = (list) => {
     const copyData = structuredClone(playlistData);
     copyData.videos = [...list];
     setPlaylistData(copyData);
+  };
+
+  const handleCharacterRemovalError = (hasError) => {
+    setHasCharacterRemovalError(hasError);
   };
 
   return (
@@ -537,6 +576,7 @@ export const EditPlaylist = () => {
               updateVideoList={updateVideoList}
               removeVideo={removeVideo}
               addVideo={addVideo}
+              onCharacterRemovalError={handleCharacterRemovalError}
             />
           </>
 
@@ -564,6 +604,7 @@ export const EditPlaylist = () => {
                 onClick={() => {
                   publishQDNResource();
                 }}
+                disabled={hasCharacterRemovalError}
               >
                 {t('core:publish.publish_action', {
                   postProcess: 'capitalizeFirstChar',

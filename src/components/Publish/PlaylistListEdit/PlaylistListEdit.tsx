@@ -23,7 +23,7 @@ import { QTUBE_VIDEO_BASE } from '../../../constants/Identifiers.ts';
 import { QortalMetadata, Spacer, useAuth, showError } from 'qapp-core';
 import { useIsSmall } from '../../../hooks/useIsSmall.tsx';
 import { useTranslation } from 'react-i18next';
-import { BoundedNumericTextField } from '../../../utils/BoundedNumericTextField.tsx';
+import { BoundedNumericTextfield } from '../../common/Textfields/BoundedNumericTextfield.tsx';
 export const PlaylistListEdit = ({
   playlistData,
   updateVideoList,
@@ -236,7 +236,7 @@ export const PlaylistListEdit = ({
             marginTop: '10px',
           }}
         >
-          <BoundedNumericTextField
+          <BoundedNumericTextfield
             label={t('core:publish.remove_from_start', {
               postProcess: 'capitalizeFirstChar',
             })}
@@ -252,7 +252,7 @@ export const PlaylistListEdit = ({
             }}
           />
 
-          <BoundedNumericTextField
+          <BoundedNumericTextfield
             label={t('core:publish.remove_from_end', {
               postProcess: 'capitalizeFirstChar',
             })}

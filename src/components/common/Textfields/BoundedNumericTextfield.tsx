@@ -10,7 +10,7 @@ import RemoveIcon from '@mui/icons-material/Remove';
 import {
   removeTrailingZeros,
   setNumberWithinBounds,
-} from './numberFunctions.ts';
+} from '../../../utils/numberFunctions.ts';
 
 type eventType = React.ChangeEvent<HTMLInputElement>;
 type BoundedNumericTextFieldProps = {
@@ -24,7 +24,7 @@ type BoundedNumericTextFieldProps = {
   maxSigDigits?: number;
 } & TextFieldProps;
 
-export const BoundedNumericTextField = ({
+export const BoundedNumericTextfield = ({
   minValue,
   maxValue,
   addIconButtons = true,
@@ -201,4 +201,4 @@ export const BoundedNumericTextField = ({
   );
 };
 
-export default BoundedNumericTextField;
+export default BoundedNumericTextfield;

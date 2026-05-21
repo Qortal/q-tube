@@ -22,7 +22,7 @@ import {
   videoMaxSize,
 } from '../../../constants/Misc.ts';
 
-import BoundedNumericTextField from '../../../utils/BoundedNumericTextField.tsx';
+import BoundedNumericTextfield from '../../common/Textfields/BoundedNumericTextfield.tsx';
 import { objectToBase64 } from '../../../utils/PublishFormatter.ts';
 import {
   getFileExtension,
@@ -489,7 +489,7 @@ export const EditVideo = () => {
                   ></TimesIcon>
                 </LogoPreviewRow>
               )}
-              <BoundedNumericTextField
+              <BoundedNumericTextfield
                 minValue={1}
                 maxValue={Number.MAX_SAFE_INTEGER}
                 label="Video Duration in Seconds"

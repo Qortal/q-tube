@@ -22,7 +22,7 @@ import {
   fontSizeMedium,
   minPriceSuperDislike,
 } from '../../../constants/Misc.ts';
-import BoundedNumericTextField from '../../../utils/BoundedNumericTextField.tsx';
+import BoundedNumericTextfield from '../Textfields/BoundedNumericTextfield.tsx';
 import { numberToInt, truncateNumber } from '../../../utils/numberFunctions.ts';
 import { objectToBase64 } from '../../../utils/PublishFormatter.ts';
 import { MultiplePublish } from '../../Publish/MultiplePublish/MultiplePublishAll.tsx';
@@ -292,7 +292,7 @@ export const SuperDislike = ({
               >
                 Amount
               </InputLabel>
-              <BoundedNumericTextField
+              <BoundedNumericTextfield
                 addIconButtons={!isScreenSmall}
                 minValue={+minPriceSuperDislike}
                 initialValue={minPriceSuperDislike.toString()}

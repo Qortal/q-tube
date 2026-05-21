@@ -48,7 +48,7 @@ import { useTranslation } from 'react-i18next';
 const uid = new ShortUniqueId();
 const shortuid = new ShortUniqueId({ length: 5 });
 
-export const EditPlaylist = () => {
+export const PublishAndEditPlaylist = () => {
   const { t } = useTranslation(['core', 'category']);
 
   const theme = useTheme();
@@ -222,7 +222,7 @@ export const EditPlaylist = () => {
           name: item.name,
           service: item.service,
           code: codeValue,
-          playlistTitle: item?.metadata?.title || '', // Add playlistTitle field
+          playlistTitle: item.playlistTitle || item?.metadata?.title || '', // Use playlistTitle first, then fallback to metadata title
         };
       });
       const id = uid.rnd();
@@ -364,14 +364,17 @@ export const EditPlaylist = () => {
         service: data.service,
         identifier: data.identifier,
       });
-      
+
       if (response && !response.error && response.title) {
         // Add the video with the fetched full title as playlistTitle
         const copyData = structuredClone(playlistData);
-        copyData.videos = [...copyData.videos, {
-          ...data,
-          playlistTitle: response.title
-        }];
+        copyData.videos = [
+          ...copyData.videos,
+          {
+            ...data,
+            playlistTitle: response.title,
+          },
+        ];
         setPlaylistData(copyData);
       } else {
         // Fallback to original behavior if fetch fails

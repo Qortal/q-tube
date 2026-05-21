@@ -98,25 +98,26 @@ export const usePlaylistContentState = () => {
 
               if (responseDataSearchVid?.length > 0) {
                 const resourceData2 = responseDataSearchVid[0];
-                
+
                 // Check if playlistTitle exists in the playlist data
                 const playlistVideo = combinedData.videos.find(
-                  v => v.identifier === vid.identifier
+                  (v) => v.identifier === vid.identifier
                 );
-                
+
                 // If playlistTitle exists, use it, otherwise use metadata title
                 if (playlistVideo?.playlistTitle) {
                   resourceData2.metadata = {
                     ...resourceData2.metadata,
-                    title: playlistVideo.playlistTitle
+                    title: playlistVideo.playlistTitle,
                   };
                 }
-                
+
                 videos.push(resourceData2);
               }
             }
           }
           combinedData.videos = videos;
+          console.log('playlistData: ', combinedData);
           setPlaylistData(combinedData);
           if (combinedData?.videos?.length > 0) {
             const vid = combinedData?.videos[0];

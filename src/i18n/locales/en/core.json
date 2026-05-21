@@ -58,6 +58,7 @@
     "block_user_content": "block user content",
     "edit_video": "edit video properties",
     "delete_video": "delete video",
+    "delete_playlist": "delete playlist",
     "remove_video_list": "remove video from list",
     "playlist_not_exist": "this playlist does not exist",
     "refresh_titles": "Fetch Full Titles",

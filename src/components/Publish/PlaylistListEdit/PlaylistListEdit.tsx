@@ -85,7 +85,7 @@ export const PlaylistListEdit = ({
       updated[index],
     ];
     updateVideoList(updated);
-    
+
     // Also reorder tempTitlesList to maintain synchronization
     const updatedTitles = [...tempTitlesList];
     [updatedTitles[index], updatedTitles[targetIndex]] = [
@@ -365,7 +365,7 @@ export const PlaylistListEdit = ({
                       const updatedTitles = [...tempTitlesList];
                       updatedTitles.splice(index, 1);
                       setTempTitlesList(updatedTitles);
-                      
+
                       // Then remove the video
                       removeVideo(index);
                     }}

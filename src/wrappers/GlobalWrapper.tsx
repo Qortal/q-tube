@@ -15,7 +15,7 @@ import NavBar from '../components/layout/Navbar/Navbar';
 import PageLoader from '../components/common/PageLoader';
 import { RequestQueue } from '../utils/queue';
 import { EditVideo } from '../components/Publish/EditVideo/EditVideo';
-import { EditPlaylist } from '../components/Publish/EditPlaylist/EditPlaylist';
+import { PublishAndEditPlaylist } from '../components/Publish/PublishAndEditPlaylist/PublishAndEditPlaylist.tsx';
 import { useFetchSuperLikes } from '../hooks/useFetchSuperLikes';
 import { SUPER_LIKE_BASE } from '../constants/Identifiers.ts';
 import { minPriceSuperLike } from '../constants/Misc.ts';
@@ -117,7 +117,7 @@ const GlobalWrapper: React.FC<Props> = ({ children }) => {
     <>
       {isLoadingUser && <PageLoader />}
       <EditVideo />
-      <EditPlaylist />
+      <PublishAndEditPlaylist />
 
       {children}
     </>

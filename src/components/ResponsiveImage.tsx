@@ -4,7 +4,7 @@ import { Box } from '@mui/material';
 import DeletedVideo from '../assets/img/DeletedVideo.jpg';
 import { useIsMobile } from '../hooks/useIsMobile';
 interface ResponsiveImageProps {
-  src: string;
+  src: string | undefined;
   width: number;
   height: number;
   alt?: string;

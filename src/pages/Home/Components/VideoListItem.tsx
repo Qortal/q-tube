@@ -21,12 +21,30 @@ import { useNavigate } from 'react-router-dom';
 import DeleteIcon from '@mui/icons-material/Delete';
 import BlockIcon from '@mui/icons-material/Block';
 import EditIcon from '@mui/icons-material/Edit';
-import { useGlobal } from 'qapp-core';
+import { QortalMetadata, showError, useGlobal } from 'qapp-core';
 import { useState } from 'react';
 import { editPlaylistAtom } from '../../../state/publish/playlist';
 import { useSetAtom } from 'jotai';
 import { useIsMobile } from '../../../hooks/useIsMobile';
 import { useTranslation } from 'react-i18next';
+
+interface VideoListItemProps {
+  qortalMetadata: QortalMetadata;
+  video: {
+    title?: string;
+    image?: string;
+    videoImage?: string;
+    videoReference?: QortalMetadata;
+    duration?: number;
+    extracts?: any[];
+  };
+  username: string | null;
+  blockUserFunc: (user: string) => void;
+  setEditVideo: (data: any) => void;
+  isBookmarks?: boolean;
+  disableActions?: boolean;
+  handleRemoveVideoFromList?: (data: any[]) => void;
+}
 
 export const VideoListItem = ({
   qortalMetadata,
@@ -37,13 +55,13 @@ export const VideoListItem = ({
   isBookmarks,
   disableActions,
   handleRemoveVideoFromList,
-}: any) => {
+}: VideoListItemProps) => {
   const { t, i18n } = useTranslation(['core']);
 
   const isMobile = useIsMobile();
 
   const navigate = useNavigate();
-  const [showIcons, setShowIcons] = useState(null);
+  const [showIcons, setShowIcons] = useState<boolean>(false);
   const theme = useTheme();
   const { lists } = useGlobal();
 
@@ -56,8 +74,8 @@ export const VideoListItem = ({
     return (
       <VideoCardCol
         key={qortalMetadata?.identifier}
-        onMouseEnter={() => setShowIcons(qortalMetadata?.identifier)}
-        onMouseLeave={() => setShowIcons(null)}
+        onMouseEnter={() => setShowIcons(!!qortalMetadata?.identifier)}
+        onMouseLeave={() => setShowIcons(false)}
         sx={{
           ...(isMobile && {
             width: '100%',
@@ -68,7 +86,7 @@ export const VideoListItem = ({
       >
         <IconsBox
           sx={{
-            opacity: showIcons === qortalMetadata?.identifier ? 1 : 0,
+            opacity: showIcons === !!qortalMetadata?.identifier ? 1 : 0,
             zIndex: 2,
           }}
         >
@@ -98,6 +116,42 @@ export const VideoListItem = ({
                         service: qortalMetadata.service,
                       };
                       setEditPlaylist({ ...resourceData, ...video });
+                    }}
+                  />
+                </BlockIconContainer>
+              </Tooltip>
+            )}
+
+          {qortalMetadata?.name === username &&
+            !isBookmarks &&
+            !disableActions && (
+              <Tooltip
+                title={t('core:publish.delete_playlist', {
+                  postProcess: 'capitalizeFirstChar',
+                })}
+                placement="top"
+              >
+                <BlockIconContainer>
+                  <DeleteIcon
+                    onClick={async () => {
+                      try {
+                        const metadataReference = {
+                          ...qortalMetadata,
+                          identifier: qortalMetadata.identifier + '_metadata',
+                        };
+
+                        const playlistReference = {
+                          ...qortalMetadata,
+                          identifier: qortalMetadata.identifier,
+                        };
+
+                        await deleteResource([
+                          metadataReference,
+                          playlistReference,
+                        ]);
+                      } catch (error) {
+                        console.error('Error deleting playlist:', error);
+                      }
                     }}
                   />
                 </BlockIconContainer>
@@ -238,8 +292,8 @@ export const VideoListItem = ({
   return (
     <VideoCardCol
       key={qortalMetadata?.identifier}
-      onMouseEnter={() => setShowIcons(qortalMetadata?.identifier)}
-      onMouseLeave={() => setShowIcons(null)}
+      onMouseEnter={() => setShowIcons(!!qortalMetadata?.identifier)}
+      onMouseLeave={() => setShowIcons(false)}
       sx={{
         ...(isMobile && {
           width: '100%',
@@ -250,7 +304,7 @@ export const VideoListItem = ({
     >
       <IconsBox
         sx={{
-          opacity: showIcons === qortalMetadata.identifier ? 1 : 0,
+          opacity: showIcons === !!qortalMetadata.identifier ? 1 : 0,
           zIndex: 2,
         }}
       >
@@ -316,7 +370,13 @@ export const VideoListItem = ({
               <BlockIconContainer>
                 <DeleteIcon
                   onClick={() => {
-                    deleteResource([qortalMetadata, video.videoReference]);
+                    if (video?.videoReference)
+                      deleteResource([qortalMetadata, video.videoReference]);
+                    else {
+                      showError(
+                        "Can\'t delete video. VideoReference is undefined"
+                      );
+                    }
                   }}
                 />
               </BlockIconContainer>
@@ -360,7 +420,7 @@ export const VideoListItem = ({
             videoImage={video.videoImage}
             frameImages={video?.extracts || []}
           />
-          {video?.duration > minDuration && (
+          {video?.duration && video?.duration > minDuration && (
             <Box
               position="absolute"
               right={5}

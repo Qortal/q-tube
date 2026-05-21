@@ -51,7 +51,7 @@ import { extractTextFromHTML } from '../../common/TextEditor/utils.ts';
 import {
   CrowdfundSubTitle,
   CrowdfundSubTitleRow,
-} from '../EditPlaylist/Upload-styles.tsx';
+} from '../PublishAndEditPlaylist/Upload-styles.tsx';
 import { MultiplePublish } from '../MultiplePublish/MultiplePublishAll.tsx';
 import {
   AddCoverImageButton,
@@ -355,6 +355,8 @@ export const PublishVideo = ({
           `**category:${category};subcategory:${subcategory};code:${code}**` +
           fullDescription.slice(0, 150);
 
+        console.log('Video Metadata: ', videoObject);
+
         // Description is obtained from raw data
         const requestBodyJson: any = {
           action: 'PUBLISH_QDN_RESOURCE',
@@ -449,7 +451,7 @@ export const PublishVideo = ({
         const metadescription =
           `**category:${category};subcategory:${subcategory};${codes}**` +
           stringDescription.slice(0, 120);
-
+        console.log('New Playlist: ', playlistObject);
         // Description is obtained from raw data
         const requestBodyJson: any = {
           action: 'PUBLISH_QDN_RESOURCE',
@@ -505,6 +507,7 @@ export const PublishVideo = ({
             playlistObject.description.slice(0, 120);
 
           // Description is obtained from raw data
+          console.log('Playlist: ', playlistObject);
           const requestBodyJson: any = {
             action: 'PUBLISH_QDN_RESOURCE',
             name: name,
@@ -1169,6 +1172,7 @@ export const PublishVideo = ({
                         onClick={() => {
                           search();
                         }}
+                        sx={{ color: 'white' }}
                         variant="contained"
                       >
                         {t('core:navbar.search', {

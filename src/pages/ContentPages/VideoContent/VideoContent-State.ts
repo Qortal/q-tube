@@ -1,12 +1,13 @@
 import { SUPER_LIKE_BASE } from '../../../constants/Identifiers.ts';
 import { minPriceSuperLike } from '../../../constants/Misc.ts';
 import { useFetchSuperLikes } from '../../../hooks/useFetchSuperLikes.tsx';
-import { useEffect, useRef, useState, useMemo, useCallback } from 'react';
+import { useEffect, useRef, useState, useMemo, useCallback, RefObject } from 'react';
 import { useTheme } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   hashWordWithoutPublicSalt,
   QortalGetMetadata,
+  QortalMetadata,
   usePublish,
 } from 'qapp-core';
 
@@ -52,17 +53,20 @@ export const useVideoContentState = () => {
       videoImage: '',
       id: resource?.qortalMetadata.identifier,
     };
-    return {
+
+    const result = {
       ...resourceData,
       ...resource.data,
     };
+    console.log('Video Data: ', result);
+    return result;
   }, [resource]);
 
   const isVideoLoaded = useMemo(() => {
     if (!resource?.data) return false;
     return true;
   }, [resource?.data]);
-  const contentRef = useRef(null);
+  const contentRef = useRef<HTMLDivElement>(null);
 
   const getAddressName = async (name) => {
     const response = await qortalRequest({
@@ -133,7 +137,7 @@ export const useVideoContentState = () => {
             'Content-Type': 'application/json',
           },
         });
-        let responseData = [];
+        let responseData: QortalMetadata[] = [];
         responseData = await response.json();
         if (superLikeVersion === 1) {
           const urlV1 = `/arbitrary/resources/search?mode=ALL&service=BLOG_COMMENT&query=${SUPER_LIKE_BASE}${id.slice(

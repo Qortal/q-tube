@@ -6,7 +6,7 @@ import {
   useTheme,
 } from '@mui/material';
 import { useRef } from 'react';
-import { CrowdfundActionButton } from '../../Publish/PublishVideo/PublishVideo-styles.tsx';
+import { FormActionButton } from '../../Publish/PublishVideo/PublishVideo-styles.tsx';
 import { PopMenu, PopMenuRefType } from '../PopMenu.tsx';
 import ListSuperLikes from './ListSuperLikes';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
@@ -128,7 +128,7 @@ export const ListSuperLikeContainer = ({ from }) => {
                 postProcess: 'capitalizeEachFirstChar',
               })}
             </Typography>
-            <CrowdfundActionButton
+            <FormActionButton
               variant="contained"
               color="error"
               size="small"
@@ -139,7 +139,7 @@ export const ListSuperLikeContainer = ({ from }) => {
               {t('core:action.close', {
                 postProcess: 'capitalizeFirstWord',
               })}
-            </CrowdfundActionButton>
+            </FormActionButton>
           </Box>
           <ListSuperLikes superlikes={superlikelist} />
         </PopMenu>

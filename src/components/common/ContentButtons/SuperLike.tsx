@@ -32,8 +32,8 @@ import { numberToInt, truncateNumber } from '../../../utils/numberFunctions.ts';
 import { objectToBase64 } from '../../../utils/PublishFormatter.ts';
 import { MultiplePublish } from '../../Publish/MultiplePublish/MultiplePublishAll.tsx';
 import {
-  CrowdfundActionButton,
-  CrowdfundActionButtonRow,
+  FormActionButton,
+  FormActionButtonRow,
   ModalBody,
   NewCrowdfundTitle,
   Spacer,
@@ -354,7 +354,7 @@ export const SuperLike = ({
               />
             </Box>
           </DialogContent>
-          <CrowdfundActionButtonRow>
+          <FormActionButtonRow>
             <Box
               sx={{
                 display: 'flex',
@@ -364,7 +364,7 @@ export const SuperLike = ({
                 width: '100%',
               }}
             >
-              <CrowdfundActionButton
+              <FormActionButton
                 onClick={() => {
                   setIsOpen(false);
                   resetValues();
@@ -376,9 +376,9 @@ export const SuperLike = ({
                 {t('core:action.cancel', {
                   postProcess: 'capitalizeFirstChar',
                 })}
-              </CrowdfundActionButton>
+              </FormActionButton>
 
-              <CrowdfundActionButton
+              <FormActionButton
                 variant="contained"
                 onClick={() => {
                   publishSuperLike();
@@ -387,9 +387,9 @@ export const SuperLike = ({
                 {t('core:publish.publish_action', {
                   postProcess: 'capitalizeFirstChar',
                 })}
-              </CrowdfundActionButton>
+              </FormActionButton>
             </Box>
-          </CrowdfundActionButtonRow>
+          </FormActionButtonRow>
         </ModalBody>
       </Modal>
       {isOpenMultiplePublish && (

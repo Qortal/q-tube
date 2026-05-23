@@ -32,7 +32,7 @@ import { FrameExtractor } from '../../common/FrameExtractor/FrameExtractor.tsx';
 import ImageUploader from '../../common/ImageUploader.tsx';
 import { TextEditor } from '../../common/TextEditor/TextEditor.tsx';
 import { extractTextFromHTML } from '../../common/TextEditor/utils.ts';
-import { toBase64 } from '../PublishVideo/PublishVideo.tsx';
+import { toBase64 } from '../PublishVideo/videoFormHooks/useVideoUpload.tsx';
 
 import {
   AddCoverImageButton,

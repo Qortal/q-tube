@@ -215,6 +215,11 @@ export const PlaylistListEdit = ({
     applyCharacterRemoval(removeFromStart, removeFromEnd);
   }, [tempTitlesList]);
 
+  useEffect(() => {
+    // Apply character removal when removeFromStart or removeFromEnd changes
+    applyCharacterRemoval(removeFromStart, removeFromEnd);
+  }, [removeFromStart, removeFromEnd]);
+
   return (
     <>
       <Box sx={{ marginTop: '20px', marginBottom: '20px' }}>
@@ -248,7 +253,6 @@ export const PlaylistListEdit = ({
             afterChange={(value) => {
               const numValue = parseInt(value) || 0;
               setRemoveFromStart(numValue);
-              applyCharacterRemoval(numValue, removeFromEnd);
             }}
           />
 
@@ -264,7 +268,6 @@ export const PlaylistListEdit = ({
             afterChange={(value) => {
               const numValue = parseInt(value) || 0;
               setRemoveFromEnd(numValue);
-              applyCharacterRemoval(removeFromStart, numValue);
             }}
           />
         </Box>

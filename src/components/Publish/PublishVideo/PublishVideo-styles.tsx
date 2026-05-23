@@ -184,14 +184,14 @@ export const AddCoverImageButton = styled(Button)(({ theme }) => ({
   gap: '5px',
 }));
 
-export const CrowdfundActionButtonRow = styled(Box)({
+export const FormActionButtonRow = styled(Box)({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',
   width: '100%',
 });
 
-export const CrowdfundActionButton = styled(Button)(({ theme }) => ({
+export const FormActionButton = styled(Button)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   fontSize: '16px',

@@ -1,20 +1,19 @@
 import { Box } from '@mui/material';
+import { useAtomValue } from 'jotai';
+import { QortalSearchParams } from 'qapp-core';
 import { useMemo } from 'react';
-
-import VideoList from './Components/VideoList.tsx';
-import { useHomeState } from './Home-State.ts';
+import { ListSuperLikeContainer } from '../../components/common/ListSuperLikes/ListSuperLikeContainer.tsx';
+import { PageTransition } from '../../components/common/PageTransition.tsx';
+import { ScrollToTopButton } from '../../components/common/ScrollToTopButton.tsx';
 import {
   QTUBE_PLAYLIST_BASE,
   QTUBE_VIDEO_BASE,
 } from '../../constants/Identifiers.ts';
-import { QortalSearchParams, useAuth } from 'qapp-core';
-import { useSearchParams } from 'react-router-dom';
-import { FilterOptions } from './FilterOptions.tsx';
-import { ScrollToTopButton } from '../../components/common/ScrollToTopButton.tsx';
-import { useAtomValue, useSetAtom } from 'jotai';
 import { scrollRefAtom } from '../../state/global/navbar.ts';
-import { PageTransition } from '../../components/common/PageTransition.tsx';
-import { ListSuperLikeContainer } from '../../components/common/ListSuperLikes/ListSuperLikeContainer.tsx';
+
+import VideoList from './Components/VideoList.tsx';
+import { FilterOptions } from './FilterOptions.tsx';
+import { useHomeState } from './Home-State.ts';
 
 export const Home = () => {
   const scrollRef = useAtomValue(scrollRefAtom);

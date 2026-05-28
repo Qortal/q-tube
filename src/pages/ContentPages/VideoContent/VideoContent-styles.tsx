@@ -1,6 +1,6 @@
+import { Box, Typography } from '@mui/material';
 import { styled } from '@mui/system';
-import { Box, Grid, Typography, Checkbox } from '@mui/material';
-import { fontSizeMedium, fontSizeSmall } from '../../../constants/Misc.ts';
+import { fontSizeMedium } from '../../../constants/Misc.ts';
 
 export const VideoContentContainer = styled(Box)(({ theme }) => ({
   display: 'flex',

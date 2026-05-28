@@ -1,13 +1,13 @@
-import { Box, Tabs, Tab } from '@mui/material';
+import { Box, Tab, Tabs } from '@mui/material';
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
-import { VideoListComponentLevel } from '../../Home/Components/VideoListComponentLevel.tsx';
+import { PageTransition } from '../../../components/common/PageTransition.tsx';
 import { PlayListComponentLevel } from '../../Home/Components/PlayListComponentLevel.tsx';
+import { VideoListComponentLevel } from '../../Home/Components/VideoListComponentLevel.tsx';
 import { ChannelActions } from '../VideoContent/ChannelActions.tsx';
 import { StyledCardHeaderComment } from '../VideoContent/VideoContent-styles.tsx';
 import { HeaderContainer, ProfileContainer } from './Profile-styles.tsx';
-import { PageTransition } from '../../../components/common/PageTransition.tsx';
-import { useTranslation } from 'react-i18next';
 
 export const IndividualProfile = () => {
   const { t } = useTranslation(['core']);

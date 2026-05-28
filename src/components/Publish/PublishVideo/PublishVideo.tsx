@@ -1,5 +1,5 @@
 import VideoLibraryIcon from '@mui/icons-material/VideoLibrary';
-import { Box, Modal, Typography, useTheme } from '@mui/material';
+import { Box, Modal, useTheme } from '@mui/material';
 import { useSetAtom } from 'jotai';
 import { useAuth } from 'qapp-core';
 
@@ -7,6 +7,18 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { menuIconSize } from '../../../constants/Misc.ts';
 import { setNotificationAtom } from '../../../state/global/notifications.ts';
+import { AddVideoToPlaylistForm } from './components/AddVideoToPlaylistForm.tsx';
+
+// Import components
+import { PublishVideoInitializer } from './components/PublishVideoInitializer.tsx';
+import { VideoDataForm } from './components/VideoDataForm.tsx';
+import { VideoFormActionButtons } from './components/VideoFormActionButtons.tsx';
+
+import {
+  ModalBody,
+  NewCrowdfundTitle,
+  StyledButton,
+} from './PublishVideo-styles.tsx';
 
 import { usePlaylistManagement } from './videoFormHooks/usePlaylistManagement.tsx';
 import { usePublishWorkflow } from './videoFormHooks/usePublishWorkflow.tsx';
@@ -15,20 +27,6 @@ import { useVideoForm } from './videoFormHooks/useVideoForm.tsx';
 
 // Import custom videoFormHooks
 import { useVideoUpload } from './videoFormHooks/useVideoUpload.tsx';
-
-// Import components
-import { FileLoader } from './components/FileLoader.tsx';
-import { PublishVideoInitializer } from './components/PublishVideoInitializer.tsx';
-import { VideoDataForm } from './components/VideoDataForm.tsx';
-import { CategorySelect } from './components/CategorySelect.tsx';
-import { AddVideoToPlaylistForm } from './components/AddVideoToPlaylistForm.tsx';
-import { VideoFormActionButtons } from './components/VideoFormActionButtons.tsx';
-
-import {
-  ModalBody,
-  NewCrowdfundTitle,
-  StyledButton,
-} from './PublishVideo-styles.tsx';
 
 interface PublishVideoProps {
   editId?: string;
@@ -67,7 +65,10 @@ export const PublishVideo = ({
   const playlistManagement = usePlaylistManagement(username || '');
 
   // Initialize publishing with onClose
-  const qdnPublishing = useQDNPublishing(setNotification, publishWorkflow.onClose);
+  const qdnPublishing = useQDNPublishing(
+    setNotification,
+    publishWorkflow.onClose
+  );
 
   return (
     <>
@@ -137,16 +138,11 @@ export const PublishVideo = ({
                 videoForm={videoForm}
                 videoUpload={videoUpload}
               />
-              <VideoDataForm
-                videoForm={videoForm}
-                videoUpload={videoUpload}
-              />
+              <VideoDataForm videoForm={videoForm} videoUpload={videoUpload} />
             </>
           )}
           {publishWorkflow.step === 'playlist' && (
-            <AddVideoToPlaylistForm
-              playlistManagement={playlistManagement}
-            />
+            <AddVideoToPlaylistForm playlistManagement={playlistManagement} />
           )}
           <VideoFormActionButtons
             publishWorkflow={publishWorkflow}

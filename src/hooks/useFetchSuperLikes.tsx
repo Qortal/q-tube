@@ -1,11 +1,11 @@
+import { useAtomValue, useSetAtom } from 'jotai';
 import React, { useCallback } from 'react';
-
-import { queueSuperlikes } from '../wrappers/GlobalWrapper';
-import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import {
   addToHashMapSuperlikesAtom,
   hashMapSuperlikesAtom,
 } from '../state/global/superlikes';
+
+import { queueSuperlikes } from '../wrappers/GlobalWrapper';
 
 export const useFetchSuperLikes = () => {
   const addSuperlike = useSetAtom(addToHashMapSuperlikesAtom);

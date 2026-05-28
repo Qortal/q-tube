@@ -9,7 +9,9 @@ import {
   useMediaQuery,
   useTheme,
 } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import { useSetAtom } from 'jotai';
+import { hashWordWithoutPublicSalt, useAuth, useQortBalance } from 'qapp-core';
+import React, { useState } from 'react';
 import ShortUniqueId from 'short-unique-id';
 import qortImg from '../../../assets/img/qort.png';
 import {
@@ -22,7 +24,10 @@ import {
   fontSizeMedium,
   minPriceSuperDislike,
 } from '../../../constants/Misc.ts';
-import BoundedNumericTextfield from '../Textfields/BoundedNumericTextfield.tsx';
+import {
+  AltertObject,
+  setNotificationAtom,
+} from '../../../state/global/notifications.ts';
 import { numberToInt, truncateNumber } from '../../../utils/numberFunctions.ts';
 import { objectToBase64 } from '../../../utils/PublishFormatter.ts';
 import { MultiplePublish } from '../../Publish/MultiplePublish/MultiplePublishAll.tsx';
@@ -34,12 +39,7 @@ import {
   Spacer,
 } from '../../Publish/PublishVideo/PublishVideo-styles.tsx';
 import { CommentInput } from '../Comments/Comments-styles.tsx';
-import { hashWordWithoutPublicSalt, useAuth, useQortBalance } from 'qapp-core';
-import { useSetAtom } from 'jotai';
-import {
-  AltertObject,
-  setNotificationAtom,
-} from '../../../state/global/notifications.ts';
+import BoundedNumericTextfield from '../Textfields/BoundedNumericTextfield.tsx';
 
 const uid = new ShortUniqueId({ length: 4 });
 

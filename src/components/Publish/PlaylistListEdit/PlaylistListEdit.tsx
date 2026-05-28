@@ -1,29 +1,30 @@
-import { useState, useEffect } from 'react';
+import AddIcon from '@mui/icons-material/Add';
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import {
+  Box,
+  Button,
+  FormControlLabel,
+  IconButton,
+  Input,
+  Radio,
+  RadioGroup,
+  Typography,
+  useTheme,
+} from '@mui/material';
+import { QortalMetadata, showError, Spacer, useAuth } from 'qapp-core';
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { QTUBE_VIDEO_BASE } from '../../../constants/Identifiers.ts';
+import { useIsSmall } from '../../../hooks/useIsSmall.tsx';
 import { CardContentContainerComment } from '../../common/Comments/Comments-styles.tsx';
+import { BoundedNumericTextfield } from '../../common/Textfields/BoundedNumericTextfield.tsx';
 import {
   CrowdfundSubTitle,
   CrowdfundSubTitleRow,
 } from '../PublishVideo/PublishVideo-styles.tsx';
-import {
-  Box,
-  Button,
-  Input,
-  RadioGroup,
-  Radio,
-  IconButton,
-  Typography,
-  useTheme,
-  FormControlLabel,
-} from '@mui/material';
-import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
-import AddIcon from '@mui/icons-material/Add';
-import { QTUBE_VIDEO_BASE } from '../../../constants/Identifiers.ts';
-import { QortalMetadata, Spacer, useAuth, showError } from 'qapp-core';
-import { useIsSmall } from '../../../hooks/useIsSmall.tsx';
-import { useTranslation } from 'react-i18next';
-import { BoundedNumericTextfield } from '../../common/Textfields/BoundedNumericTextfield.tsx';
+
 export const PlaylistListEdit = ({
   playlistData,
   updateVideoList,

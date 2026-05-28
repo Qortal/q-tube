@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 export function useWindowSize() {
   const [windowSize, setWindowSize] = useState<any>({
@@ -11,14 +11,14 @@ export function useWindowSize() {
         width: window.innerWidth,
       });
     }
-    
-    window.addEventListener("resize", handleResize);
-    
+
+    window.addEventListener('resize', handleResize);
+
     // Call handler right away so state gets updated with initial window size
     handleResize();
-    
+
     // Remove event listener on cleanup
-    return () => window.removeEventListener("resize", handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []); // Empty array means that effect doesn't depend on any values from props or state, so it runs once when the component mounts, and never re-runs.
 
   return windowSize;

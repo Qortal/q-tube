@@ -1,27 +1,19 @@
-import {
-  alpha,
-  Box,
-  IconButton,
-  InputBase,
-  styled,
-  useMediaQuery,
-} from '@mui/material';
-import React, { useState } from 'react';
+import MenuIcon from '@mui/icons-material/Menu';
+import { Box, IconButton } from '@mui/material';
+import { useAtom } from 'jotai';
+import { useAuth } from 'qapp-core';
+import React from 'react';
+import { useIsSmall } from '../../../hooks/useIsSmall.tsx';
+import { isSideBarExpandedAtom } from '../../../state/global/navbar.ts';
 import { DownloadTaskManager } from '../../common/DownloadTaskManager';
 import { Notifications } from '../../common/Notifications/Notifications';
+import { COLLAPSED_WIDTH } from '../Sidenav/Sidenav.tsx';
+import { Names } from './../../../state/global/names.ts';
 import { PublishMenu } from './Components/PublishMenu.tsx';
 import { QtubeLogo } from './Components/QtubeLogo.tsx';
 import { UserMenu } from './Components/UserMenu.tsx';
 import { CustomAppBar } from './Navbar-styles';
-import { Names } from './../../../state/global/names.ts';
-import { useAuth } from 'qapp-core';
-import { useAtom, useSetAtom } from 'jotai';
-import { isSideBarExpandedAtom } from '../../../state/global/navbar.ts';
-import MenuIcon from '@mui/icons-material/Menu';
-import { COLLAPSED_WIDTH } from '../Sidenav/Sidenav.tsx';
-import SearchIcon from '@mui/icons-material/Search';
 import { Search } from './Search.tsx';
-import { useIsSmall } from '../../../hooks/useIsSmall.tsx';
 
 interface Props {
   allNames: Names;

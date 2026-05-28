@@ -1,7 +1,7 @@
-import { toast, ToastContainer, Zoom, Slide } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import { useAtom, useSetAtom } from 'jotai';
 import { useEffect } from 'react';
+import { Slide, toast, ToastContainer, Zoom } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import {
   alertAtom,
   removeNotificationAtom,

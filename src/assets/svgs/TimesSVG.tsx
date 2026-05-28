@@ -1,11 +1,11 @@
-import { IconTypes } from "./IconTypes";
+import { IconTypes } from './IconTypes';
 
 export const TimesSVG: React.FC<IconTypes> = ({
   color,
   height,
   width,
   className,
-  onClickFunc
+  onClickFunc,
 }) => {
   return (
     <svg

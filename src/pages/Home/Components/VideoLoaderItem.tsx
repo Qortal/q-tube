@@ -1,11 +1,11 @@
 import { Skeleton } from '@mui/material';
+import { useIsMobile } from '../../../hooks/useIsMobile';
 import {
   BottomParent,
   NameContainer,
   VideoCard,
   VideoCardCol,
 } from './VideoList-styles';
-import { useIsMobile } from '../../../hooks/useIsMobile';
 
 export const VideoLoaderItem = ({ status }) => {
   const isMobile = useIsMobile();

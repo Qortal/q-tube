@@ -1,17 +1,16 @@
-import { Outlet } from 'react-router-dom';
-import { useIframe } from './hooks/useIframe';
 import { Box, useTheme } from '@mui/material';
+import { AnimatePresence, motion } from 'framer-motion';
 import { useAtom, useSetAtom } from 'jotai';
-import { isSideBarExpandedAtom, scrollRefAtom } from './state/global/navbar';
+import { useEffect, useRef, useState } from 'react';
+import { Outlet } from 'react-router-dom';
 
 import NavBar from './components/layout/Navbar/Navbar';
 import { Sidenav } from './components/layout/Sidenav/Sidenav';
-import { namesAtom } from './state/global/names';
-import { useEffect, useRef, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { PageTransition } from './components/common/PageTransition';
-import { useIsSmall } from './hooks/useIsSmall';
+import { useIframe } from './hooks/useIframe';
 import { useIsMobile } from './hooks/useIsMobile';
+import { useIsSmall } from './hooks/useIsSmall';
+import { namesAtom } from './state/global/names';
+import { scrollRefAtom } from './state/global/navbar';
 
 const Layout = () => {
   const isSmall = useIsSmall();

@@ -1,39 +1,11 @@
-import {
-  Box,
-  Button,
-  ButtonBase,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Divider,
-  FormControl,
-  IconButton,
-  InputLabel,
-  MenuItem,
-  Select,
-  TextField,
-} from '@mui/material';
-import { useEffect, useMemo, useState } from 'react';
 import ClearAllIcon from '@mui/icons-material/ClearAll';
-
-import {
-  QTUBE_PLAYLIST_BASE,
-  QTUBE_VIDEO_BASE,
-} from '../../constants/Identifiers.ts';
-import { QortalSearchParams, Spacer, useAuth, useGlobal } from 'qapp-core';
-import { useSearchParams } from 'react-router-dom';
-import { ScrollToTopButton } from '../../components/common/ScrollToTopButton.tsx';
-import { useAtomValue, useSetAtom } from 'jotai';
-import { scrollRefAtom } from '../../state/global/navbar.ts';
-import { useHomeState } from '../Home/Home-State.ts';
-import VideoList from '../Home/Components/VideoList.tsx';
-import { VideoListPreloaded } from '../Home/Components/VideoListPreloaded.tsx';
-import { usePersistedState } from '../../state/persist/persist.ts';
+import { Box, Button, Divider } from '@mui/material';
+import { Spacer, useGlobal } from 'qapp-core';
 import { PageSubTitle } from '../../components/common/General/GeneralStyles.tsx';
-import EditIcon from '@mui/icons-material/Edit';
 import { PageTransition } from '../../components/common/PageTransition.tsx';
 import { useIsSmall } from '../../hooks/useIsSmall.tsx';
+import { usePersistedState } from '../../state/persist/persist.ts';
+import { VideoListPreloaded } from '../Home/Components/VideoListPreloaded.tsx';
 
 export const History = () => {
   const { lists } = useGlobal();

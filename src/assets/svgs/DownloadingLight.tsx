@@ -1,4 +1,4 @@
-import { IconTypes } from "./IconTypes";
+import { IconTypes } from './IconTypes';
 
 export const DownloadingLight: React.FC<IconTypes> = ({
   color,

@@ -1,5 +1,5 @@
+import { Box, Typography } from '@mui/material';
 import { styled } from '@mui/system';
-import { Box, Grid, Typography, Checkbox } from '@mui/material';
 
 export const VideoPlayerContainer = styled(Box)(({ theme }) => ({
   display: 'flex',

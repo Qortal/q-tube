@@ -1,3 +1,4 @@
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import {
   Avatar,
   Box,
@@ -10,33 +11,31 @@ import {
   useMediaQuery,
   useTheme,
 } from '@mui/material';
-import React, { useCallback, useState, useEffect } from 'react';
-import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+import { createAvatarLink, useAuth } from 'qapp-core';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   fontSizeSmall,
   smallScreenSizeString,
 } from '../../../constants/Misc.ts';
+import { formatDate } from '../../../utils/time';
+
+import Portal from '../Portal';
 
 import { CommentEditor } from './CommentEditor';
 import {
+  AuthorTextComment,
   CardContentContainerComment,
   CommentActionButtonRow,
   CommentDateText,
   EditReplyButton,
-  StyledCardComment,
-} from './Comments-styles';
-import { StyledCardHeaderComment } from './Comments-styles';
-import { StyledCardColComment } from './Comments-styles';
-import { AuthorTextComment } from './Comments-styles';
-import {
-  StyledCardContentComment,
   LoadMoreCommentsButton as CommentActionButton,
+  StyledCardColComment,
+  StyledCardComment,
+  StyledCardContentComment,
+  StyledCardHeaderComment,
 } from './Comments-styles';
 
-import Portal from '../Portal';
-import { formatDate } from '../../../utils/time';
-import { createAvatarLink, useAuth } from 'qapp-core';
-import { useTranslation } from 'react-i18next';
 interface CommentProps {
   comment: any;
   postId: string;

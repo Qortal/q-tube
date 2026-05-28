@@ -1,5 +1,7 @@
-import { Box, ButtonBase, SxProps, Theme } from '@mui/material';
+import { Box, SxProps, Theme } from '@mui/material';
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
+import { AddToBookmarks } from '../../../components/common/ContentButtons/AddToBookmarks.tsx';
 import { CopyLinkButton } from '../../../components/common/ContentButtons/CopyLinkButton.tsx';
 import { IndexButton } from '../../../components/common/ContentButtons/IndexButton.tsx';
 import { LikeAndDislike } from '../../../components/common/ContentButtons/LikeAndDislike.tsx';
@@ -7,8 +9,6 @@ import { SuperLike } from '../../../components/common/ContentButtons/SuperLike.t
 import FileElement from '../../../components/common/FileElement.tsx';
 import { titleFormatterOnSave } from '../../../constants/Misc.ts';
 import { ChannelActions } from './ChannelActions.tsx';
-import { AddToBookmarks } from '../../../components/common/ContentButtons/AddToBookmarks.tsx';
-import { useTranslation } from 'react-i18next';
 
 export interface VideoActionsBarProps {
   channelName: string;

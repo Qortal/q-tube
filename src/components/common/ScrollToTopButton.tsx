@@ -1,6 +1,6 @@
-import React, { useEffect, useState, RefObject } from 'react';
-import { Fab, Zoom } from '@mui/material';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import { Fab, Zoom } from '@mui/material';
+import React, { RefObject, useEffect, useState } from 'react';
 import { useIsSmall } from '../../hooks/useIsSmall';
 
 interface Props {

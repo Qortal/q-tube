@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { QTUBE_PLAYLIST_BASE } from '../../../../constants/Identifiers.ts';
 import { titleFormatter } from '../../../../constants/Misc.ts';
+import { SearchResourcesResponse } from '../../../../utils/qortalRequestTypes.ts';
 
 export interface UsePlaylistManagementReturn {
   playlistSetting: string | null;
@@ -38,19 +39,31 @@ export const usePlaylistManagement = (
   const [selectedSubCategory, setSelectedSubCategory] = useState<any>(null);
   const [selectExistingPlaylist, setSelectExistingPlaylist] =
     useState<any>(null);
-  const [searchResults, setSearchResults] = useState([]);
-  const [filterSearch, setFilterSearch] = useState('');
+  const [searchResults, setSearchResults] = useState<SearchResourcesResponse[]>(
+    []
+  );
+  const [filterSearch, setFilterSearch] = useState<string>('');
 
   const search = async () => {
-    const url = `/arbitrary/resources/search?mode=ALL&service=PLAYLIST&mode=ALL&identifier=${QTUBE_PLAYLIST_BASE}&title=${filterSearch}&limit=20&includemetadata=true&reverse=true&name=${username}&exactmatchnames=true&offset=0`;
-    const response = await fetch(url, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    const responseDataSearchVid = await response.json();
-    setSearchResults(responseDataSearchVid);
+    try {
+      const responseDataSearchVid = await qortalRequest({
+        action: 'SEARCH_QDN_RESOURCES',
+        mode: 'ALL',
+        service: 'PLAYLIST',
+        identifier: QTUBE_PLAYLIST_BASE,
+        title: filterSearch,
+        limit: 20,
+        includeMetadata: true,
+        reverse: true,
+        name: username,
+        exactMatchNames: true,
+        offset: 0,
+      });
+
+      setSearchResults(responseDataSearchVid);
+    } catch (error) {
+      console.error('DEBUG: Error during playlist search:', error);
+    }
   };
 
   const handlePlaylistTitleChange = (value: string) => {

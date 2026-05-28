@@ -1,11 +1,5 @@
 import { Avatar, useTheme } from '@mui/material';
-import { AccountCircleSVG } from '../assets/svgs/AccountCircleSVG';
-import { menuIconSize } from '../constants/Misc';
-import {
-  DropdownContainer,
-  DropdownText,
-  AvatarContainer,
-} from './layout/Navbar/Navbar-styles';
+import { DropdownContainer, DropdownText } from './layout/Navbar/Navbar-styles';
 
 interface UserDropDownProps {
   userName: string;

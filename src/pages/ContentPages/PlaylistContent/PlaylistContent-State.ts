@@ -1,7 +1,7 @@
-import { useVideoContentState } from '../VideoContent/VideoContent-State.ts';
+import { useAuth } from 'qapp-core';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from 'qapp-core';
+import { useVideoContentState } from '../VideoContent/VideoContent-State.ts';
 
 export const usePlaylistContentState = () => {
   const {

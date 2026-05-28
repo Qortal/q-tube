@@ -1,14 +1,13 @@
-import * as React from 'react';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import Typography from '@mui/material/Typography';
 //import { CopyToClipboard } from 'react-copy-to-clipboard'
 import { Box, ButtonBase } from '@mui/material';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import { useSetAtom } from 'jotai';
+import * as React from 'react';
 import {
   AltertObject,
   setNotificationAtom,
 } from '../../../state/global/notifications';
-import { useSetAtom } from 'jotai';
 
 export default function ContextMenuResource({
   children,

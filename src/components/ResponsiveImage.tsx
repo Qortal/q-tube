@@ -1,8 +1,9 @@
-import React, { useState, useEffect, CSSProperties } from 'react';
-import Skeleton from '@mui/material/Skeleton';
 import { Box } from '@mui/material';
+import Skeleton from '@mui/material/Skeleton';
+import React, { CSSProperties, useEffect, useState } from 'react';
 import DeletedVideo from '../assets/img/DeletedVideo.jpg';
 import { useIsMobile } from '../hooks/useIsMobile';
+
 interface ResponsiveImageProps {
   src: string | undefined;
   width: number;

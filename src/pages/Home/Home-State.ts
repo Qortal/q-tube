@@ -1,8 +1,7 @@
 import { useAuth } from 'qapp-core';
 import { usePersistedState } from '../../state/persist/persist.ts';
-import { VideoListType } from '../../types/video.ts';
-import { useSearchParams } from 'react-router-dom';
 import { Subscription } from '../../types/subscription.ts';
+import { VideoListType } from '../../types/video.ts';
 
 export const useHomeState = () => {
   const { isLoadingUser } = useAuth();

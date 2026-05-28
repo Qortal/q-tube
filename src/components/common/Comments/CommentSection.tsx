@@ -1,9 +1,12 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { CommentEditor } from './CommentEditor';
-import { Comment } from './Comment';
-import { Box, Button, CircularProgress, useTheme } from '@mui/material';
+import { CircularProgress } from '@mui/material';
 import { styled } from '@mui/system';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { hashWordWithoutPublicSalt } from 'qapp-core';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { COMMENT_BASE } from '../../../constants/Identifiers.ts';
+import { Comment } from './Comment';
+import { CommentEditor } from './CommentEditor';
 import {
   CommentContainer,
   CommentEditorContainer,
@@ -12,13 +15,6 @@ import {
   LoadMoreCommentsButtonRow,
   NoCommentsRow,
 } from './Comments-styles';
-import {
-  CrowdfundSubTitle,
-  CrowdfundSubTitleRow,
-} from '../../Publish/PublishVideo/PublishVideo-styles.tsx';
-import { COMMENT_BASE } from '../../../constants/Identifiers.ts';
-import { hashWordWithoutPublicSalt } from 'qapp-core';
-import { useTranslation } from 'react-i18next';
 
 interface CommentSectionProps {
   postId: string;

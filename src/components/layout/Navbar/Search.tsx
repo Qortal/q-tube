@@ -1,25 +1,24 @@
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ClearAllIcon from '@mui/icons-material/ClearAll';
+import CloseIcon from '@mui/icons-material/Close';
+import HistoryIcon from '@mui/icons-material/History';
+import SearchIcon from '@mui/icons-material/Search';
 import {
   Box,
   ButtonBase,
   ClickAwayListener,
-  IconButton,
   InputBase,
   Portal,
   styled,
   useTheme,
 } from '@mui/material';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import React, { useEffect, useRef, useState } from 'react';
-import { useSidebarState } from '../../../pages/Home/Components/SearchSidebar-State';
-import { useNavigate } from 'react-router-dom';
-import SearchIcon from '@mui/icons-material/Search';
-import CloseIcon from '@mui/icons-material/Close';
-import HistoryIcon from '@mui/icons-material/History';
-import ClearAllIcon from '@mui/icons-material/ClearAll';
-import { usePersistedState } from '../../../state/persist/persist';
-import { useIsSmall } from '../../../hooks/useIsSmall';
 import { AnimatePresence, motion } from 'framer-motion';
+import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
+import { useIsSmall } from '../../../hooks/useIsSmall';
+import { useSidebarState } from '../../../pages/Home/Components/SearchSidebar-State';
+import { usePersistedState } from '../../../state/persist/persist';
 
 const SearchParent = styled('div')(({ theme }) => ({
   position: 'relative',

@@ -1,17 +1,6 @@
-import { styled } from '@mui/system';
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  Box,
-  Button,
-  Grid,
-  Rating,
-  TextField,
-  Typography,
-  Select,
-} from '@mui/material';
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
+import { Box, Button, Grid, TextField, Typography } from '@mui/material';
+import { styled } from '@mui/system';
 import { TimesSVG } from '../../../assets/svgs/TimesSVG.tsx';
 
 export const DoubleLine = styled(Typography)`

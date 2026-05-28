@@ -1,7 +1,7 @@
-import { AppBar, Button, Typography, Box } from '@mui/material';
+import { AppBar, Box, Button, Typography } from '@mui/material';
 import { styled } from '@mui/system';
-import { LightModeSVG } from '../../../assets/svgs/LightModeSVG';
 import { DarkModeSVG } from '../../../assets/svgs/DarkModeSVG';
+import { LightModeSVG } from '../../../assets/svgs/LightModeSVG';
 import { fontSizeSmall } from '../../../constants/Misc.ts';
 
 export const CustomAppBar = styled(AppBar)(({ theme }) => ({

@@ -1,15 +1,13 @@
-import { styled } from '@mui/system';
 import {
   Box,
-  Grid,
-  Typography,
   Checkbox,
-  TextField,
+  Grid,
   InputLabel,
-  Autocomplete,
   Radio,
+  Typography,
 } from '@mui/material';
-import { fontSizeMedium, fontSizeSmall } from '../../../constants/Misc.ts';
+import { styled } from '@mui/system';
+import { fontSizeSmall } from '../../../constants/Misc.ts';
 
 export const VideoContainer = styled(Grid)(({ theme }) => ({
   position: 'relative',

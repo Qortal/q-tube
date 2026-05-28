@@ -1,5 +1,5 @@
+import { Box, Button, Card, TextField, Typography } from '@mui/material';
 import { styled } from '@mui/system';
-import { Card, Box, Typography, Button, TextField } from '@mui/material';
 
 export const StyledCard = styled(Card)(({ theme }) => ({
   backgroundColor:

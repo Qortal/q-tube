@@ -1,7 +1,7 @@
+import { useSetAtom } from 'jotai';
 import React from 'react';
 
 import { QTUBE_VIDEO_BASE } from '../constants/Identifiers.ts';
-import { useSetAtom } from 'jotai';
 import {
   totalNamesPublishedAtom,
   totalVideosPublishedAtom,

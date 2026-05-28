@@ -1,16 +1,3 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import {
-  AddCoverImageButton,
-  AddLogoIcon,
-  CoverImagePreview,
-  CrowdfundActionButton,
-  CrowdfundActionButtonRow,
-  CustomInputField,
-  ModalBody,
-  LogoPreviewRow,
-  NewCrowdfundTitle,
-  TimesIcon,
-} from './Upload-styles.tsx';
 import {
   Box,
   FormControl,
@@ -23,27 +10,39 @@ import {
   Typography,
   useTheme,
 } from '@mui/material';
+import { useAtom, useSetAtom } from 'jotai';
+import { useAuth, useGlobal } from 'qapp-core';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import ShortUniqueId from 'short-unique-id';
-
-import { objectToBase64 } from '../../../utils/PublishFormatter.ts';
-import ImageUploader from '../../common/ImageUploader.tsx';
 import { categories, subCategories } from '../../../constants/Categories.ts';
-import { Playlists } from '../../Playlists/Playlists.tsx';
-import { PlaylistListEdit } from '../PlaylistListEdit/PlaylistListEdit.tsx';
-import { TextEditor } from '../../common/TextEditor/TextEditor.tsx';
-import { extractTextFromHTML } from '../../common/TextEditor/utils.ts';
 import {
   QTUBE_PLAYLIST_BASE,
   QTUBE_VIDEO_BASE,
 } from '../../../constants/Identifiers.ts';
-import { useAuth, useGlobal } from 'qapp-core';
 import {
   AltertObject,
   setNotificationAtom,
 } from '../../../state/global/notifications.ts';
-import { useAtom, useSetAtom } from 'jotai';
 import { editPlaylistAtom } from '../../../state/publish/playlist.ts';
-import { useTranslation } from 'react-i18next';
+
+import { objectToBase64 } from '../../../utils/PublishFormatter.ts';
+import ImageUploader from '../../common/ImageUploader.tsx';
+import { TextEditor } from '../../common/TextEditor/TextEditor.tsx';
+import { extractTextFromHTML } from '../../common/TextEditor/utils.ts';
+import { PlaylistListEdit } from '../PlaylistListEdit/PlaylistListEdit.tsx';
+import {
+  AddCoverImageButton,
+  AddLogoIcon,
+  CoverImagePreview,
+  CrowdfundActionButton,
+  CrowdfundActionButtonRow,
+  CustomInputField,
+  LogoPreviewRow,
+  ModalBody,
+  NewCrowdfundTitle,
+  TimesIcon,
+} from './Upload-styles.tsx';
 
 const uid = new ShortUniqueId();
 const shortuid = new ShortUniqueId({ length: 5 });

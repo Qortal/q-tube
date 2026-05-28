@@ -1,4 +1,20 @@
+import BlockIcon from '@mui/icons-material/Block';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 import { Avatar, Box, Tooltip, Typography, useTheme } from '@mui/material';
+import { useSetAtom } from 'jotai';
+import { QortalMetadata, showError, useGlobal } from 'qapp-core';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
+import { PlaylistSVG } from '../../../assets/svgs/PlaylistSVG';
+import ResponsiveImage from '../../../components/ResponsiveImage';
+import { fontSizeSmall, minDuration } from '../../../constants/Misc';
+import { useIsMobile } from '../../../hooks/useIsMobile';
+import { editPlaylistAtom } from '../../../state/publish/playlist';
+import { formatTime } from '../../../utils/numberFunctions';
+import { formatDate } from '../../../utils/time';
+import { VideoCardImageContainer } from './VideoCardImageContainer';
 import {
   BlockIconContainer,
   BottomParent,
@@ -11,22 +27,6 @@ import {
   VideoCardTitle,
   VideoUploadDate,
 } from './VideoList-styles';
-import ResponsiveImage from '../../../components/ResponsiveImage';
-import { PlaylistSVG } from '../../../assets/svgs/PlaylistSVG';
-import { formatTime } from '../../../utils/numberFunctions';
-import { VideoCardImageContainer } from './VideoCardImageContainer';
-import { fontSizeSmall, minDuration } from '../../../constants/Misc';
-import { formatDate } from '../../../utils/time';
-import { useNavigate } from 'react-router-dom';
-import DeleteIcon from '@mui/icons-material/Delete';
-import BlockIcon from '@mui/icons-material/Block';
-import EditIcon from '@mui/icons-material/Edit';
-import { QortalMetadata, showError, useGlobal } from 'qapp-core';
-import { useState } from 'react';
-import { editPlaylistAtom } from '../../../state/publish/playlist';
-import { useSetAtom } from 'jotai';
-import { useIsMobile } from '../../../hooks/useIsMobile';
-import { useTranslation } from 'react-i18next';
 
 interface VideoListItemProps {
   qortalMetadata: QortalMetadata;

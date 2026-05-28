@@ -1,21 +1,21 @@
+import { useSetAtom } from 'jotai';
 import localforage from 'localforage';
+import { hashWordWithoutPublicSalt, useAuth } from 'qapp-core';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import ShortUniqueId from 'short-unique-id';
 import { COMMENT_BASE } from '../../../constants/Identifiers.ts';
+import {
+  AltertObject,
+  setNotificationAtom,
+} from '../../../state/global/notifications.ts';
+import { addToHashMapSuperlikesAtom } from '../../../state/global/superlikes.ts';
 import { objectToBase64 } from '../../../utils/PublishFormatter.ts';
 import {
   CommentInput,
   CommentInputContainer,
   SubmitCommentButton,
 } from './Comments-styles';
-import { hashWordWithoutPublicSalt, useAuth } from 'qapp-core';
-import { useSetAtom } from 'jotai';
-import {
-  AltertObject,
-  setNotificationAtom,
-} from '../../../state/global/notifications.ts';
-import { addToHashMapSuperlikesAtom } from '../../../state/global/superlikes.ts';
-import { useTranslation } from 'react-i18next';
 
 const uid = new ShortUniqueId({ length: 7 });
 

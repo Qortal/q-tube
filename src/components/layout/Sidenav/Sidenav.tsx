@@ -1,4 +1,12 @@
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import BookmarksIcon from '@mui/icons-material/Bookmarks';
+import HomeIcon from '@mui/icons-material/Home';
+import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
+import PlaylistPlayIcon from '@mui/icons-material/PlaylistPlay';
+import StarIcon from '@mui/icons-material/Star';
 import {
+  Box,
+  ClickAwayListener,
   Divider,
   Drawer,
   List,
@@ -6,27 +14,18 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  Box,
-  ClickAwayListener,
   Typography,
 } from '@mui/material';
 import { useAtom } from 'jotai';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
-import { isSideBarExpandedAtom } from '../../../state/global/navbar';
-import HomeIcon from '@mui/icons-material/Home';
-import StarIcon from '@mui/icons-material/Star';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import PlaylistPlayIcon from '@mui/icons-material/PlaylistPlay';
-import BookmarksIcon from '@mui/icons-material/Bookmarks';
-import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { useMemo } from 'react';
 import { Spacer, useAuth } from 'qapp-core';
-import { useIsSmall } from '../../../hooks/useIsSmall';
-import { UserMenu } from '../Navbar/Components/UserMenu';
-import { DownloadTaskManager } from '../../common/DownloadTaskManager';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useIsSmall } from '../../../hooks/useIsSmall';
+import { isSideBarExpandedAtom } from '../../../state/global/navbar';
+import { DownloadTaskManager } from '../../common/DownloadTaskManager';
+import { UserMenu } from '../Navbar/Components/UserMenu';
+
 const DRAWER_WIDTH = 240;
 export const COLLAPSED_WIDTH = 68;
 

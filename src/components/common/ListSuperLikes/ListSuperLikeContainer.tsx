@@ -1,22 +1,17 @@
-import {
-  Box,
-  Tooltip,
-  Typography,
-  useMediaQuery,
-  useTheme,
-} from '@mui/material';
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+import { Box, Typography, useTheme } from '@mui/material';
+import { AnimatePresence, motion } from 'framer-motion';
+import { useAtom } from 'jotai';
+import { Spacer } from 'qapp-core';
 import { useRef } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useIsSmall } from '../../../hooks/useIsSmall.tsx';
+import { CustomChip } from '../../../pages/Home/FilterOptions.tsx';
+import { superlikesAtom } from '../../../state/global/superlikes.ts';
 import { FormActionButton } from '../../Publish/PublishVideo/PublishVideo-styles.tsx';
 import { PopMenu, PopMenuRefType } from '../PopMenu.tsx';
 import ListSuperLikes from './ListSuperLikes';
-import ThumbUpIcon from '@mui/icons-material/ThumbUp';
-import { useAtom } from 'jotai';
-import { superlikesAtom } from '../../../state/global/superlikes.ts';
-import { Spacer } from 'qapp-core';
-import { AnimatePresence, motion } from 'framer-motion';
-import { CustomChip } from '../../../pages/Home/FilterOptions.tsx';
-import { useIsSmall } from '../../../hooks/useIsSmall.tsx';
-import { useTranslation } from 'react-i18next';
+
 export const ListSuperLikeContainer = ({ from }) => {
   const { t } = useTranslation(['core']);
 

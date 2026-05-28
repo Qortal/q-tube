@@ -1,11 +1,11 @@
-import { styled } from "@mui/system";
-import { Box, Grid, Typography, Checkbox } from "@mui/material";
+import { Box } from '@mui/material';
+import { styled } from '@mui/system';
 
 export const SubtitleContainer = styled(Box)(({ theme }) => ({
-  display: "flex",
-  flexDirection: "row",
-  justifyContent: "center",
-  alignItems: "center",
-  margin: "10px 0px",
-  width: "100%",
+  display: 'flex',
+  flexDirection: 'row',
+  justifyContent: 'center',
+  alignItems: 'center',
+  margin: '10px 0px',
+  width: '100%',
 }));

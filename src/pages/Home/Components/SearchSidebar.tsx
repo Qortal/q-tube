@@ -9,12 +9,9 @@ import {
   Select,
   useMediaQuery,
 } from '@mui/material';
-import { StatsData } from '../../../components/StatsData.tsx';
 import { categories, subCategories } from '../../../constants/Categories.ts';
-import { smallScreenSizeString } from '../../../constants/Misc.ts';
 import { useSidebarState } from './SearchSidebar-State.ts';
 import {
-  FiltersCol,
   FiltersContainer,
   FiltersRadioButton,
   FiltersRow,

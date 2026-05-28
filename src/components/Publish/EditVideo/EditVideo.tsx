@@ -12,6 +12,8 @@ import {
   useTheme,
 } from '@mui/material';
 import Compressor from 'compressorjs';
+import { useAtom, useSetAtom } from 'jotai';
+import { showError, useAuth, useGlobal, usePublish } from 'qapp-core';
 import React, { useEffect, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { categories, subCategories } from '../../../constants/Categories.ts';
@@ -21,17 +23,20 @@ import {
   titleFormatter,
   videoMaxSize,
 } from '../../../constants/Misc.ts';
-
-import BoundedNumericTextfield from '../../common/Textfields/BoundedNumericTextfield.tsx';
-import { objectToBase64 } from '../../../utils/PublishFormatter.ts';
+import { useMediaInfo } from '../../../hooks/useMediaInfo.tsx';
 import {
-  getFileExtension,
-  getFileExtensionIndex,
-} from '../../../utils/stringFunctions.ts';
+  AltertObject,
+  setNotificationAtom,
+} from '../../../state/global/notifications.ts';
+import { editVideoAtom } from '../../../state/publish/video.ts';
+import { objectToBase64 } from '../../../utils/PublishFormatter.ts';
+import { getFileExtension } from '../../../utils/stringFunctions.ts';
 import { FrameExtractor } from '../../common/FrameExtractor/FrameExtractor.tsx';
 import ImageUploader from '../../common/ImageUploader.tsx';
 import { TextEditor } from '../../common/TextEditor/TextEditor.tsx';
 import { extractTextFromHTML } from '../../common/TextEditor/utils.ts';
+
+import BoundedNumericTextfield from '../../common/Textfields/BoundedNumericTextfield.tsx';
 import { toBase64 } from '../PublishVideo/videoFormHooks/useVideoUpload.tsx';
 
 import {
@@ -46,14 +51,7 @@ import {
   NewCrowdfundTitle,
   TimesIcon,
 } from './EditVideo-styles.tsx';
-import { showError, useAuth, useGlobal, usePublish } from 'qapp-core';
-import { useAtom, useSetAtom } from 'jotai';
-import {
-  AltertObject,
-  setNotificationAtom,
-} from '../../../state/global/notifications.ts';
-import { editVideoAtom } from '../../../state/publish/video.ts';
-import { useMediaInfo } from '../../../hooks/useMediaInfo.tsx';
+
 export const EditVideo = () => {
   const theme = useTheme();
   const setNotification = useSetAtom(setNotificationAtom);

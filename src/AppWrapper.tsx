@@ -1,7 +1,7 @@
 import { GlobalProvider } from 'qapp-core';
 import Layout from './Layout';
-import { ScrollWrapper } from './wrappers/ScrollWrapper';
 import GlobalWrapper from './wrappers/GlobalWrapper';
+import { ScrollWrapper } from './wrappers/ScrollWrapper';
 
 export const AppWrapper = () => {
   return (

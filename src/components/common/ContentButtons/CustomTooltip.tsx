@@ -1,8 +1,7 @@
-import { styled, Tooltip, tooltipClasses, TooltipProps } from "@mui/material";
-import { JSX } from "react";
+import { styled, Tooltip, tooltipClasses, TooltipProps } from '@mui/material';
 
-export const TooltipLine = styled("div")(({ theme }) => ({
-  fontSize: "18px",
+export const TooltipLine = styled('div')(({ theme }) => ({
+  fontSize: '18px',
 }));
 
 const CustomWidthTooltipStyles = styled(
@@ -16,7 +15,7 @@ const CustomWidthTooltipStyles = styled(
 });
 
 export const CustomTooltip = ({ title, ...props }: TooltipProps) => {
-  if (typeof title === "string") title = <TooltipLine>{title}</TooltipLine>;
+  if (typeof title === 'string') title = <TooltipLine>{title}</TooltipLine>;
 
   return <CustomWidthTooltipStyles title={title} {...props} />;
 };

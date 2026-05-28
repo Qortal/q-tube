@@ -1,9 +1,9 @@
 import { SelectChangeEvent } from '@mui/material';
+import { useAuth } from 'qapp-core';
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { categories } from '../../../constants/Categories.ts';
 import { usePersistedState } from '../../../state/persist/persist.ts';
-import { useAuth } from 'qapp-core';
-import { useSearchParams } from 'react-router-dom';
 import { Category } from '../../../types/category.ts';
 
 export const useSidebarState = () => {

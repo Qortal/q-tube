@@ -1,4 +1,5 @@
 import { atom } from 'jotai';
+
 export interface Name {
   name: string;
 }

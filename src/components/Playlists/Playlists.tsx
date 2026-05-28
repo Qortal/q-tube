@@ -1,14 +1,7 @@
-import {
-  Box,
-  SxProps,
-  Theme,
-  Typography,
-  useMediaQuery,
-  useTheme,
-} from '@mui/material';
+import { Box, SxProps, Theme, Typography, useTheme } from '@mui/material';
 import React from 'react';
-import { CardContentContainerComment } from '../common/Comments/Comments-styles';
 import { useIsSmall } from '../../hooks/useIsSmall';
+import { CardContentContainerComment } from '../common/Comments/Comments-styles';
 import { AddToBookmarks } from '../common/ContentButtons/AddToBookmarks';
 
 interface PlaylistsProps {

@@ -1,8 +1,6 @@
-import { Box, SxProps, Theme, useMediaQuery } from '@mui/material';
-import { smallScreenSizeString } from '../../../constants/Misc.ts';
+import { Box, SxProps, Theme } from '@mui/material';
 import { ChannelButtons } from './ChannelButtons.tsx';
 import { ChannelName, ChannelParams } from './ChannelName.tsx';
-import { Spacer } from './VideoContent-styles.tsx';
 
 export const ChannelActions = ({ channelName, sx }: ChannelParams) => {
   const boxSX: SxProps<Theme> = {

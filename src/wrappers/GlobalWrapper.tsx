@@ -1,29 +1,21 @@
-import React, {
-  useEffect,
-  useState,
-  useCallback,
-  useRef,
-  useMemo,
-} from 'react';
+import { useAtom, useSetAtom } from 'jotai';
+import { useAuth } from 'qapp-core';
+import React, { useCallback, useEffect, useRef } from 'react';
+import PageLoader from '../components/common/PageLoader';
+import { EditVideo } from '../components/Publish/EditVideo/EditVideo';
+import { PublishAndEditPlaylist } from '../components/Publish/PublishAndEditPlaylist/PublishAndEditPlaylist.tsx';
+import { SUPER_LIKE_BASE } from '../constants/Identifiers.ts';
+import { minPriceSuperLike } from '../constants/Misc.ts';
+import { useFetchSuperLikes } from '../hooks/useFetchSuperLikes';
 import {
   extractSigValue,
   getPaymentInfo,
   isTimestampWithinRange,
 } from '../pages/ContentPages/VideoContent/VideoContent-State.ts';
-
-import NavBar from '../components/layout/Navbar/Navbar';
-import PageLoader from '../components/common/PageLoader';
+import { superlikesAtom } from '../state/global/superlikes.ts';
 import { RequestQueue } from '../utils/queue';
-import { EditVideo } from '../components/Publish/EditVideo/EditVideo';
-import { PublishAndEditPlaylist } from '../components/Publish/PublishAndEditPlaylist/PublishAndEditPlaylist.tsx';
-import { useFetchSuperLikes } from '../hooks/useFetchSuperLikes';
-import { SUPER_LIKE_BASE } from '../constants/Identifiers.ts';
-import { minPriceSuperLike } from '../constants/Misc.ts';
 import { useHandleNameData } from './../hooks/useHandleNameData.tsx';
 import { namesAtom } from './../state/global/names';
-import { useAtom, useSetAtom } from 'jotai';
-import { useAuth } from 'qapp-core';
-import { superlikesAtom } from '../state/global/superlikes.ts';
 
 interface Props {
   children: React.ReactNode;

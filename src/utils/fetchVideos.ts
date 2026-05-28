@@ -1,5 +1,3 @@
-import { checkStructure } from "./checkStructure";
-
 export const fetchAndEvaluateVideos = async (data: any) => {
   const getVideo = async () => {
     const { user, videoId, content } = data;
@@ -11,9 +9,9 @@ export const fetchAndEvaluateVideos = async (data: any) => {
 
     try {
       const responseData = await qortalRequest({
-        action: "FETCH_QDN_RESOURCE",
+        action: 'FETCH_QDN_RESOURCE',
         name: user,
-        service: content?.service || "DOCUMENT",
+        service: content?.service || 'DOCUMENT',
         identifier: videoId,
       });
       if (responseData) {
@@ -26,7 +24,7 @@ export const fetchAndEvaluateVideos = async (data: any) => {
       }
       return obj;
     } catch (error: any) {
-      throw new Error(error?.message || "error");
+      throw new Error(error?.message || 'error');
     }
   };
 

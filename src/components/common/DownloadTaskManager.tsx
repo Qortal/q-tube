@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import { Movie } from '@mui/icons-material';
+import CheckIcon from '@mui/icons-material/Check';
 import {
   Box,
   Button,
@@ -11,12 +12,11 @@ import {
   Typography,
   useTheme,
 } from '@mui/material';
-import { Movie } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
-import { DownloadingLight } from '../../assets/svgs/DownloadingLight';
-import { DownloadedLight } from '../../assets/svgs/DownloadedLight';
 import { useAllResourceStatus } from 'qapp-core';
-import CheckIcon from '@mui/icons-material/Check';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { DownloadedLight } from '../../assets/svgs/DownloadedLight';
+import { DownloadingLight } from '../../assets/svgs/DownloadingLight';
 
 export const DownloadTaskManager: React.FC = () => {
   const theme = useTheme();

@@ -1,12 +1,12 @@
-import CSS from 'csstype';
-import { useCallback, useRef } from 'react';
-
-import { VideoPlayer as QappVideoPlayer, Service, useGlobal } from 'qapp-core';
 import { Box } from '@mui/material';
+import CSS from 'csstype';
+
+import { Service, useGlobal, VideoPlayer as QappVideoPlayer } from 'qapp-core';
+import { useCallback, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
-import { usePersistedState } from '../../../state/persist/persist';
-import { JavascriptOutlined } from '@mui/icons-material';
 import { useIsSmall } from '../../../hooks/useIsSmall';
+import { usePersistedState } from '../../../state/persist/persist';
+
 export interface VideoStyles {
   videoContainer?: CSS.Properties;
   video?: CSS.Properties;

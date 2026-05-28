@@ -1,15 +1,15 @@
-import { SUPER_LIKE_BASE } from '../../../constants/Identifiers.ts';
-import { minPriceSuperLike } from '../../../constants/Misc.ts';
-import { useFetchSuperLikes } from '../../../hooks/useFetchSuperLikes.tsx';
-import { useEffect, useRef, useState, useMemo, useCallback, RefObject } from 'react';
 import { useTheme } from '@mui/material';
-import { useNavigate, useParams } from 'react-router-dom';
 import {
   hashWordWithoutPublicSalt,
   QortalGetMetadata,
   QortalMetadata,
   usePublish,
 } from 'qapp-core';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { SUPER_LIKE_BASE } from '../../../constants/Identifiers.ts';
+import { minPriceSuperLike } from '../../../constants/Misc.ts';
+import { useFetchSuperLikes } from '../../../hooks/useFetchSuperLikes.tsx';
 
 const superLikeVersion2Timestamp = 1744041600000;
 

@@ -1,10 +1,11 @@
-import { IconTypes } from "./IconTypes";
+import { IconTypes } from './IconTypes';
+
 export const ExpandMoreSVG: React.FC<IconTypes> = ({
   color,
   height,
   width,
   className,
-  onClickFunc
+  onClickFunc,
 }) => {
   return (
     <svg

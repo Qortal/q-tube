@@ -1,11 +1,9 @@
-import { Box, Button, ButtonProps, CircularProgress } from '@mui/material';
-import Tooltip, { TooltipProps, tooltipClasses } from '@mui/material/Tooltip';
+import { Button, ButtonProps, CircularProgress } from '@mui/material';
+import { darken } from '@mui/material/styles';
+import Tooltip from '@mui/material/Tooltip';
 import { MouseEvent, useEffect, useState } from 'react';
-import { darken, styled } from '@mui/material/styles';
-import { CustomTooltip, TooltipLine } from './CustomTooltip.tsx';
 import { useTranslation } from 'react-i18next';
-import {} from '../../../state/global/names.ts';
-import { useAtom } from 'jotai';
+import { CustomTooltip, TooltipLine } from './CustomTooltip.tsx';
 
 interface FollowButtonProps extends ButtonProps {
   followerName: string;

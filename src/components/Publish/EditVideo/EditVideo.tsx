@@ -37,7 +37,7 @@ import { TextEditor } from '../../common/TextEditor/TextEditor.tsx';
 import { extractTextFromHTML } from '../../common/TextEditor/utils.ts';
 
 import BoundedNumericTextfield from '../../common/Textfields/BoundedNumericTextfield.tsx';
-import { toBase64 } from '../PublishVideo/videoFormHooks/useVideoUpload.tsx';
+import { toBase64 } from '../PublishVideo/videoFormHooks/useVideoPublishingWorkflow.tsx';
 
 import {
   AddCoverImageButton,

@@ -12,13 +12,12 @@ import {
   LogoPreviewRow,
   TimesIcon,
 } from '../PublishVideo-styles.tsx';
-import { UseVideoFormReturn } from '../videoFormHooks/useVideoForm';
-import { UseVideoUploadReturn } from '../videoFormHooks/useVideoUpload';
+import { UseVideoPublishingWorkflowReturn } from '../videoFormHooks/useVideoPublishingWorkflow';
 import { CategorySelect } from './CategorySelect.tsx';
 
 interface VideoDataProps {
-  videoForm: UseVideoFormReturn;
-  videoUpload: UseVideoUploadReturn;
+  videoForm: UseVideoPublishingWorkflowReturn;
+  videoUpload: UseVideoPublishingWorkflowReturn;
 }
 
 export const VideoDataForm: React.FC<VideoDataProps> = ({

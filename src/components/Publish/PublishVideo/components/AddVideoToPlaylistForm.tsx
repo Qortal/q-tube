@@ -18,11 +18,11 @@ import {
   LogoPreviewRow,
   TimesIcon,
 } from '../PublishVideo-styles.tsx';
-import { UsePlaylistManagementReturn } from '../videoFormHooks/usePlaylistManagement';
+import { UseVideoPublishingWorkflowReturn } from '../videoFormHooks/useVideoPublishingWorkflow';
 import { CategorySelect } from './CategorySelect.tsx';
 
 interface AddVideoToPlaylistFormProps {
-  playlistManagement: UsePlaylistManagementReturn;
+  playlistManagement: UseVideoPublishingWorkflowReturn;
 }
 
 export const AddVideoToPlaylistForm: React.FC<AddVideoToPlaylistFormProps> = ({

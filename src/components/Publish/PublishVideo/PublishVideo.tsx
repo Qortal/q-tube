@@ -20,13 +20,7 @@ import {
   StyledButton,
 } from './PublishVideo-styles.tsx';
 
-import { usePlaylistManagement } from './videoFormHooks/usePlaylistManagement.tsx';
-import { usePublishWorkflow } from './videoFormHooks/usePublishWorkflow.tsx';
-import { useQDNPublishing } from './videoFormHooks/useQDNPublishing.tsx';
-import { useVideoForm } from './videoFormHooks/useVideoForm.tsx';
-
-// Import custom videoFormHooks
-import { useVideoUpload } from './videoFormHooks/useVideoUpload.tsx';
+import { useVideoPublishingWorkflow } from './videoFormHooks/useVideoPublishingWorkflow.tsx';
 
 interface PublishVideoProps {
   editId?: string;
@@ -48,27 +42,8 @@ export const PublishVideo = ({
   const setNotification = useSetAtom(setNotificationAtom);
   const { name: username } = useAuth();
 
-  // Initialize workflow first
-  const publishWorkflow = usePublishWorkflow(afterClose);
-
-  // Initialize form state
-  const videoForm = useVideoForm();
-
-  // Initialize video upload with form state
-  const videoUpload = useVideoUpload(
-    videoForm.isCheckTitleByFile,
-    videoForm.titlesPrefix,
-    setNotification
-  );
-
-  // Initialize playlist management
-  const playlistManagement = usePlaylistManagement(username || '');
-
-  // Initialize publishing with onClose
-  const qdnPublishing = useQDNPublishing(
-    setNotification,
-    publishWorkflow.onClose
-  );
+  // Initialize the consolidated video publishing workflow
+  const workflow = useVideoPublishingWorkflow(setNotification, afterClose);
 
   return (
     <>
@@ -90,7 +65,7 @@ export const PublishVideo = ({
                   }}
                 />
               }
-              onClick={publishWorkflow.openModal}
+              onClick={workflow.openModal}
             >
               {t('core:publish.video', {
                 postProcess: 'capitalizeFirstChar',
@@ -101,7 +76,7 @@ export const PublishVideo = ({
       )}
 
       <Modal
-        open={publishWorkflow.isOpen}
+        open={workflow.isOpen}
         aria-labelledby="modal-title"
         aria-describedby="modal-description"
       >
@@ -132,24 +107,24 @@ export const PublishVideo = ({
             )}
           </Box>
 
-          {publishWorkflow.step === 'videos' && (
+          {workflow.step === 'videos' && (
             <>
               <PublishVideoInitializer
-                videoForm={videoForm}
-                videoUpload={videoUpload}
+                videoForm={workflow}
+                videoUpload={workflow}
               />
-              <VideoDataForm videoForm={videoForm} videoUpload={videoUpload} />
+              <VideoDataForm videoForm={workflow} videoUpload={workflow} />
             </>
           )}
-          {publishWorkflow.step === 'playlist' && (
-            <AddVideoToPlaylistForm playlistManagement={playlistManagement} />
+          {workflow.step === 'playlist' && (
+            <AddVideoToPlaylistForm playlistManagement={workflow} />
           )}
           <VideoFormActionButtons
-            publishWorkflow={publishWorkflow}
-            videoUpload={videoUpload}
-            playlistManagement={playlistManagement}
-            videoForm={videoForm}
-            qdnPublishing={qdnPublishing}
+            publishWorkflow={workflow}
+            videoUpload={workflow}
+            playlistManagement={workflow}
+            videoForm={workflow}
+            qdnPublishing={workflow}
             editId={editId}
             editContent={editContent}
           />

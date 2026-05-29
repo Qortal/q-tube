@@ -5,18 +5,14 @@ import {
   FormActionButton,
   FormActionButtonRow,
 } from '../PublishVideo-styles.tsx';
-import { UsePlaylistManagementReturn } from '../videoFormHooks/usePlaylistManagement';
-import { UsePublishWorkflowReturn } from '../videoFormHooks/usePublishWorkflow';
-import { UseQDNPublishingReturn } from '../videoFormHooks/useQDNPublishing';
-import { UseVideoFormReturn } from '../videoFormHooks/useVideoForm';
-import { UseVideoUploadReturn } from '../videoFormHooks/useVideoUpload';
+import { UseVideoPublishingWorkflowReturn } from '../videoFormHooks/useVideoPublishingWorkflow';
 
 interface VideoFormActionButtonsProps {
-  publishWorkflow: UsePublishWorkflowReturn;
-  videoUpload: UseVideoUploadReturn;
-  playlistManagement: UsePlaylistManagementReturn;
-  videoForm: UseVideoFormReturn;
-  qdnPublishing: UseQDNPublishingReturn;
+  publishWorkflow: UseVideoPublishingWorkflowReturn;
+  videoUpload: UseVideoPublishingWorkflowReturn;
+  playlistManagement: UseVideoPublishingWorkflowReturn;
+  videoForm: UseVideoPublishingWorkflowReturn;
+  qdnPublishing: UseVideoPublishingWorkflowReturn;
   editId?: string;
   editContent?: null | {
     title: string;

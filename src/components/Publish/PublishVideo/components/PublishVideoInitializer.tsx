@@ -7,13 +7,12 @@ import {
   FiltersSubContainer,
 } from '../../../../pages/Home/Components/VideoList-styles.tsx';
 import { CodecTypography, CustomInputField } from '../PublishVideo-styles.tsx';
-import { UseVideoFormReturn } from '../videoFormHooks/useVideoForm';
-import { UseVideoUploadReturn } from '../videoFormHooks/useVideoUpload';
+import { UseVideoPublishingWorkflowReturn } from '../videoFormHooks/useVideoPublishingWorkflow';
 import { FileLoader } from './FileLoader.tsx';
 
 interface PublishVideoInitializerProps {
-  videoForm: UseVideoFormReturn;
-  videoUpload: UseVideoUploadReturn;
+  videoForm: UseVideoPublishingWorkflowReturn;
+  videoUpload: UseVideoPublishingWorkflowReturn;
 }
 
 export const PublishVideoInitializer: React.FC<

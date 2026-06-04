@@ -39,6 +39,9 @@ export const VideoFormActionButtons: React.FC<VideoFormActionButtonsProps> = ({
     coverImageForAll,
     isCheckSameCoverImage,
     isCheckTitleByFile,
+    isValidQortalLink,
+    publishMethod,
+    isQortalLinkEmpty,
   },
   qdnPublishing: {
     next: handleNext,
@@ -111,8 +114,8 @@ export const VideoFormActionButtons: React.FC<VideoFormActionButtonsProps> = ({
           <FormActionButton
             variant="contained"
             disabled={
-              files?.length !== Object.keys(imageExtracts)?.length ||
-              files?.length === 0
+              (publishMethod === 'files' && (files?.length !== Object.keys(imageExtracts)?.length || files?.length === 0)) ||
+              (publishMethod === 'qortal' && isQortalLinkEmpty)
             }
             onClick={() => {
               handleNext(
@@ -121,16 +124,18 @@ export const VideoFormActionButtons: React.FC<VideoFormActionButtonsProps> = ({
                 coverImageForAll,
                 selectedCategoryVideos,
                 isCheckTitleByFile,
-                setStep
+                setStep,
+                isValidQortalLink,
+                publishMethod
               );
             }}
           >
-            {files?.length !== Object.keys(imageExtracts)?.length
+            {publishMethod === 'files' && files?.length !== Object.keys(imageExtracts)?.length
               ? t('core:publish.generationg_extracts', {
                   postProcess: 'capitalizeFirstChar',
                 })
               : ''}
-            {files?.length !== Object.keys(imageExtracts)?.length && (
+            {publishMethod === 'files' && files?.length !== Object.keys(imageExtracts)?.length && (
               <CircularProgress color="secondary" size={14} />
             )}
             {t('core:action.next', {

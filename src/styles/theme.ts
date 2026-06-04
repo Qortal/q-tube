@@ -109,6 +109,13 @@ const lightTheme = createTheme({
     },
   },
   components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          color: '#ffffff', // White text color for buttons
+        },
+      },
+    },
     MuiCssBaseline: {
       styleOverrides: (theme) => ({
         body: {
@@ -154,6 +161,13 @@ const darkTheme = createTheme({
     },
   },
   components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          color: '#ffffff', // White text color for buttons
+        },
+      },
+    },
     MuiCssBaseline: {
       styleOverrides: (theme) => ({
         body: {

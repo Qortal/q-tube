@@ -30,6 +30,10 @@ export const VideoDataForm: React.FC<VideoDataProps> = ({
     coverImageForAll,
     setCoverImageForAll,
     handleOnchange,
+    publishMethod,
+    videoReference,
+    videoTitle,
+    setVideoTitle,
   },
   videoUpload: {
     files,
@@ -57,7 +61,7 @@ export const VideoDataForm: React.FC<VideoDataProps> = ({
           alignItems: 'center',
         }}
       >
-        {files?.length > 0 && (
+        {(files?.length > 0 || (publishMethod === 'qortal' && videoReference)) && (
           <CategorySelect
             selectedCategory={selectedCategoryVideos}
             selectedSubCategory={selectedSubCategoryVideos}
@@ -66,7 +70,7 @@ export const VideoDataForm: React.FC<VideoDataProps> = ({
           />
         )}
       </Box>
-      {files?.length > 0 && isCheckSameCoverImage && (
+      {(files?.length > 0 || (publishMethod === 'qortal' && videoReference)) && isCheckSameCoverImage && (
         <>
           {!coverImageForAll ? (
             <ImageUploader onPick={(img: string) => setCoverImageForAll(img)}>
@@ -95,17 +99,26 @@ export const VideoDataForm: React.FC<VideoDataProps> = ({
           )}
         </>
       )}
-      {files.map((file, index) => {
+      {(files.length > 0 ? files : (publishMethod === 'qortal' && videoReference ? [{ file: null as any, title: videoTitle || '', description: '', coverImage: '' }] : [])).map((file, index) => {
         return (
           <React.Fragment key={index}>
             <FrameExtractor
               videoFile={file.file}
+              fileReference={publishMethod === 'qortal' && videoReference ? {
+                name: videoReference.name,
+                service: videoReference.service,
+                identifier: videoReference.identifier
+              } : undefined}
               onFramesExtracted={async (imgs) => onFramesExtracted(imgs, index)}
               videoDurations={videoDurations}
               setVideoDurations={setVideoDurations}
               index={index}
             />
-            <Typography>{file?.file?.name}</Typography>
+            <Typography>
+              {publishMethod === 'qortal' && videoReference
+                ? videoTitle || 'Video'
+                : file?.file?.name}
+            </Typography>
             {!isCheckSameCoverImage && (
               <>
                 {!file?.coverImage ? (
@@ -128,7 +141,7 @@ export const VideoDataForm: React.FC<VideoDataProps> = ({
                   </ImageUploader>
                 ) : (
                   <LogoPreviewRow>
-                    <CoverImagePreview src={file?.coverImage} alt="logo" />
+                    <CoverImagePreview src={file?.coverImage || ''} alt="logo" />
                     <TimesIcon
                       color={theme.palette.text.primary}
                       onClickFunc={() =>
@@ -146,10 +159,14 @@ export const VideoDataForm: React.FC<VideoDataProps> = ({
               name="title"
               label="Title of video"
               variant="filled"
-              value={file.title}
-              onChange={(e) =>
-                handleOnchange(index, 'title', e.target.value, setFiles)
-              }
+              value={publishMethod === 'qortal' && videoReference ? (videoTitle || '') : (file.title || '')}
+              onChange={(e) => {
+                handleOnchange(index, 'title', e.target.value, setFiles);
+                // Also update videoTitle when using video reference
+                if (publishMethod === 'qortal' && videoReference && setVideoTitle) {
+                  setVideoTitle(e.target.value);
+                }
+              }}
               inputProps={{ maxLength: 180 }}
               required
             />
@@ -163,7 +180,7 @@ export const VideoDataForm: React.FC<VideoDataProps> = ({
               })}
             </Typography>
             <TextEditor
-              inlineContent={file?.description}
+              inlineContent={file?.description || ''}
               setInlineContent={(value) => {
                 handleOnchange(index, 'description', value, setFiles);
               }}

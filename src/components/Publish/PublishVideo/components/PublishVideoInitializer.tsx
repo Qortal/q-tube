@@ -1,75 +1,68 @@
 import { Box } from '@mui/material';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  FiltersCheckbox,
-  FiltersRow,
-  FiltersSubContainer,
-} from '../../../../pages/Home/Components/VideoList-styles.tsx';
-import { CodecTypography, CustomInputField } from '../PublishVideo-styles.tsx';
+import { CodecTypography } from '../PublishVideo-styles.tsx';
 import { UseVideoPublishingWorkflowReturn } from '../videoFormHooks/useVideoPublishingWorkflow';
 import { FileLoader } from './FileLoader.tsx';
 
 interface PublishVideoInitializerProps {
   videoForm: UseVideoPublishingWorkflowReturn;
   videoUpload: UseVideoPublishingWorkflowReturn;
+  isCheckTitleByFile: boolean;
+  setIsCheckTitleByFile: (value: boolean) => void;
+  isCheckSameCoverImage: boolean;
+  setIsCheckSameCoverImage: (value: boolean) => void;
+  titlesPrefix: string;
+  setTitlesPrefix: (value: string) => void;
+  publishMethod: string;
 }
 
 export const PublishVideoInitializer: React.FC<
   PublishVideoInitializerProps
 > = ({
   videoForm: {
-    isCheckTitleByFile,
-    setIsCheckTitleByFile,
-    isCheckSameCoverImage,
-    setIsCheckSameCoverImage,
-    titlesPrefix,
-    setTitlesPrefix,
+    setIsValidQortalLink,
+    setPublishMethod,
+    setIsQortalLinkEmpty,
+    setFetchedVideoData,
+    setVideoTitle,
+    videoReference,
+    setVideoReference,
+    setIsVideoDownloading,
+    publishMethod,
   },
   videoUpload: { getRootProps, getInputProps },
+  isCheckTitleByFile,
+  setIsCheckTitleByFile,
+  isCheckSameCoverImage,
+  setIsCheckSameCoverImage,
+  titlesPrefix,
+  setTitlesPrefix,
 }) => {
   const { t } = useTranslation(['core']);
 
   return (
     <>
-      <FiltersSubContainer>
-        <FiltersRow>
-          {t('core:publish.populate_titles', {
-            postProcess: 'capitalizeFirstChar',
-          })}
-          <FiltersCheckbox
-            checked={isCheckTitleByFile}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-              setIsCheckTitleByFile(e.target.checked);
-            }}
-            inputProps={{ 'aria-label': 'controlled' }}
-          />
-        </FiltersRow>
-        <FiltersRow>
-          {t('core:publish.same_cover_images', {
-            postProcess: 'capitalizeFirstChar',
-          })}
-          <FiltersCheckbox
-            checked={isCheckSameCoverImage}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-              setIsCheckSameCoverImage(e.target.checked);
-            }}
-            inputProps={{ 'aria-label': 'controlled' }}
-          />
-        </FiltersRow>
-      </FiltersSubContainer>
-      <CustomInputField
-        name="prefix"
-        label="Titles Prefix"
-        variant="filled"
-        value={titlesPrefix}
-        onChange={(e) =>
-          setTitlesPrefix(e.target.value.replace(/[^a-zA-Z0-9\s-]/g, ''))
-        }
-        inputProps={{ maxLength: 180 }}
+      <FileLoader
+        getRootProps={getRootProps}
+        getInputProps={getInputProps}
+        onValidationChange={setIsValidQortalLink}
+        onPublishMethodChange={setPublishMethod}
+        onLinkEmptyChange={setIsQortalLinkEmpty}
+        onVideoFetch={setFetchedVideoData}
+        onSetTitle={setVideoTitle}
+        videoReference={videoReference}
+        setVideoReference={setVideoReference}
+        setIsVideoDownloading={setIsVideoDownloading}
+        isCheckTitleByFile={isCheckTitleByFile}
+        setIsCheckTitleByFile={setIsCheckTitleByFile}
+        isCheckSameCoverImage={isCheckSameCoverImage}
+        setIsCheckSameCoverImage={setIsCheckSameCoverImage}
+        titlesPrefix={titlesPrefix}
+        setTitlesPrefix={setTitlesPrefix}
+        publishMethod={publishMethod}
       />
-      <FileLoader getRootProps={getRootProps} getInputProps={getInputProps} />
-      <Box>
+      <Box sx={{ marginTop: 2 }}>
         <CodecTypography>
           {t('core:publish.supported_containers', {
             postProcess: 'capitalizeFirstChar',

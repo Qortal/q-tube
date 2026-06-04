@@ -18,6 +18,7 @@ import React, { useEffect, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { categories, subCategories } from '../../../constants/Categories.ts';
 import { QTUBE_VIDEO_BASE } from '../../../constants/Identifiers.ts';
+import { processFilename } from '../../../utils/stringFunctions.ts';
 import {
   maxSize,
   titleFormatter,
@@ -207,17 +208,8 @@ export const EditVideo = () => {
         fileExtension = fileExtensionSplit?.pop() || 'mp4';
       }
 
-      const filename = title.slice(0, 15);
-      // Step 1: Replace all white spaces with underscores
-
-      // Replace all forms of whitespace (including non-standard ones) with underscores
-      const stringWithUnderscores = filename.replace(/[\s\uFEFF\xA0]+/g, '_');
-
-      // Remove all non-alphanumeric characters (except underscores)
-      const alphanumericString = stringWithUnderscores.replace(
-        /[^a-zA-Z0-9_]/g,
-        ''
-      );
+      const filename = title;
+      const alphanumericString = processFilename(filename);
 
       const videoObject: any = {
         title,

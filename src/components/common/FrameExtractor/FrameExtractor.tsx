@@ -1,7 +1,10 @@
+import { QortalGetMetadata, useResourceStatus } from 'qapp-core';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { qortalGetMetadataToString } from '../../../utils/stringFunctions.ts';
 
 export interface FrameExtractorProps {
-  videoFile: File;
+  videoFile?: File;
+  fileReference?: QortalGetMetadata;
   onFramesExtracted: (imgs, index?: number) => Promise<void>;
   videoDurations: number[];
   index: number;
@@ -10,14 +13,20 @@ export interface FrameExtractorProps {
 
 export const FrameExtractor = ({
   videoFile,
+  fileReference,
   onFramesExtracted,
   videoDurations,
   index,
   setVideoDurations,
 }: FrameExtractorProps) => {
-  const videoRef = useRef(null);
-  const [durations, setDurations] = useState([]);
-  const canvasRef = useRef(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [durations, setDurations] = useState<number[]>([]);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  const { isReady, percentLoaded, status } = useResourceStatus({
+    resource: fileReference || null,
+    retryAttempts: 200,
+  });
 
   useEffect(() => {
     const video = videoRef.current;
@@ -31,7 +40,7 @@ export const FrameExtractor = ({
         setVideoDurations(newVideoDurations);
 
         const section = duration / 4;
-        const timestamps = [];
+        const timestamps: number[] = [];
 
         for (let i = 0; i < 4; i++) {
           const randomTime = Math.random() * section + i * section;
@@ -48,22 +57,29 @@ export const FrameExtractor = ({
     return () => {
       video.removeEventListener('loadedmetadata', handleLoadedMetadata);
     };
-  }, [videoFile]);
+  }, [videoFile, fileReference]);
   useEffect(() => {
     if (durations.length === 4) {
       extractFrames();
     }
   }, [durations]);
 
-  const fileUrl = useMemo(() => {
-    return URL.createObjectURL(videoFile);
-  }, [videoFile]);
+  const videoSrc = useMemo(() => {
+    if (videoFile) {
+      return URL.createObjectURL(videoFile);
+    } else if (fileReference && status === 'READY') {
+      return qortalGetMetadataToString(fileReference);
+    }
+    return undefined;
+  }, [videoFile, fileReference, status]);
 
   useEffect(() => {
     return () => {
-      URL.revokeObjectURL(fileUrl);
+      if (videoFile && videoSrc) {
+        URL.revokeObjectURL(videoSrc);
+      }
     };
-  }, [fileUrl]);
+  }, [videoSrc, videoFile]);
 
   const extractFrames = async () => {
     const video = videoRef.current;
@@ -78,7 +94,7 @@ export const FrameExtractor = ({
     const context = canvas.getContext('2d');
     if (!context) return;
 
-    const frameData = [];
+    const frameData: Blob[] = [];
 
     for (const time of durations) {
       await new Promise<void>((resolve) => {
@@ -101,7 +117,7 @@ export const FrameExtractor = ({
   };
   return (
     <div>
-      <video ref={videoRef} style={{ display: 'none' }} src={fileUrl}></video>
+      <video ref={videoRef} style={{ display: 'none' }} src={videoSrc}></video>
       <canvas ref={canvasRef} style={{ display: 'none' }}></canvas>
     </div>
   );

@@ -1,28 +1,34 @@
-import { objectToBase64, useAuth, useGlobal, usePublish } from 'qapp-core';
+import { SelectChangeEvent } from '@mui/material';
+import Compressor from 'compressorjs';
+import {
+  objectToBase64,
+  showError,
+  useAuth,
+  useGlobal,
+  usePublish,
+} from 'qapp-core';
 import { useState } from 'react';
 import { useDropzone } from 'react-dropzone';
-import Compressor from 'compressorjs';
-import { showError } from 'qapp-core';
 import ShortUniqueId from 'short-unique-id';
-import { SelectChangeEvent } from '@mui/material';
+import { categories } from '../../../../constants/Categories.ts';
 import {
   QTUBE_PLAYLIST_BASE,
   QTUBE_VIDEO_BASE,
 } from '../../../../constants/Identifiers.ts';
-import { extractTextFromHTML } from '../../../common/TextEditor/utils.ts';
-import { categories } from '../../../../constants/Categories.ts';
-import { titleFormatter, maxSize } from '../../../../constants/Misc.ts';
+import { maxSize, titleFormatter } from '../../../../constants/Misc.ts';
 import { useMediaInfo } from '../../../../hooks/useMediaInfo.tsx';
 import {
   getFileExtension,
   getFileName,
+  processFilename,
 } from '../../../../utils/stringFunctions.ts';
+import { extractTextFromHTML } from '../../../common/TextEditor/utils.ts';
 
 const uid = new ShortUniqueId();
 const shortuid = new ShortUniqueId({ length: 5 });
 
 export interface VideoFile {
-  file: File;
+  file: File | null;
   title: string;
   description: string;
   coverImage?: string;
@@ -55,6 +61,13 @@ export interface UseVideoPublishingWorkflowReturn {
   coverImageForAll: string | null;
   selectedCategoryVideos: any;
   selectedSubCategoryVideos: any;
+  isValidQortalLink: boolean;
+  publishMethod: string;
+  isQortalLinkEmpty: boolean;
+  fetchedVideoData: any;
+  videoTitle: string;
+  videoReference: any;
+  isVideoDownloading: boolean;
 
   // Playlist state
   playlistSetting: string | null;
@@ -94,6 +107,13 @@ export interface UseVideoPublishingWorkflowReturn {
   setCoverImageForAll: React.Dispatch<React.SetStateAction<string | null>>;
   setSelectedCategoryVideos: React.Dispatch<React.SetStateAction<any>>;
   setSelectedSubCategoryVideos: React.Dispatch<React.SetStateAction<any>>;
+  setIsValidQortalLink: React.Dispatch<React.SetStateAction<boolean>>;
+  setPublishMethod: React.Dispatch<React.SetStateAction<string>>;
+  setIsQortalLinkEmpty: React.Dispatch<React.SetStateAction<boolean>>;
+  setFetchedVideoData: React.Dispatch<React.SetStateAction<any>>;
+  setVideoTitle: React.Dispatch<React.SetStateAction<string>>;
+  setVideoReference: React.Dispatch<React.SetStateAction<any>>;
+  setIsVideoDownloading: React.Dispatch<React.SetStateAction<boolean>>;
   handleOnchange: (
     index: number,
     type: string,
@@ -150,7 +170,9 @@ export interface UseVideoPublishingWorkflowReturn {
     coverImageForAll?: string | null,
     selectedCategoryVideos?: any,
     isCheckTitleByFile?: boolean,
-    setStep?: (step: string) => void
+    setStep?: (step: string) => void,
+    isValidQortalLink?: boolean,
+    publishMethod?: string
   ) => void;
 }
 
@@ -176,6 +198,13 @@ export const useVideoPublishingWorkflow = (
     useState<any>(null);
   const [selectedSubCategoryVideos, setSelectedSubCategoryVideos] =
     useState<any>(null);
+  const [isValidQortalLink, setIsValidQortalLink] = useState(false);
+  const [publishMethod, setPublishMethod] = useState('files');
+  const [isQortalLinkEmpty, setIsQortalLinkEmpty] = useState(true);
+  const [fetchedVideoData, setFetchedVideoData] = useState(null);
+  const [videoTitle, setVideoTitle] = useState('');
+  const [videoReference, setVideoReference] = useState<any>(null);
+  const [isVideoDownloading, setIsVideoDownloading] = useState<boolean>(false);
 
   // Playlist state
   const [playlistSetting, setPlaylistSetting] = useState<null | string>(null);
@@ -390,7 +419,7 @@ export const useVideoPublishingWorkflow = (
     setPlaylistTitle(formattedValue);
   };
 
-  const publishQDNResource = async (
+  const publishVideoToQDN = async (
     filesParam?: VideoFile[],
     videoDurationsParam?: number[],
     imageExtractsParam?: any,
@@ -449,8 +478,10 @@ export const useVideoPublishingWorkflow = (
       }
 
       // General validation
-      if (filesToUse?.length === 0)
+      if (publishMethod === 'files' && filesToUse?.length === 0)
         throw new Error('Please select at least one file');
+      if (publishMethod === 'qortal' && !videoReference)
+        throw new Error('Please select a video reference');
       if (isCheckSameCoverImageToUse && !coverImageForAllToUse)
         throw new Error('Please select cover image');
       if (!userAddress) throw new Error('Unable to locate user address');
@@ -481,9 +512,26 @@ export const useVideoPublishingWorkflow = (
       const listOfPublishes: any[] = [];
       const tempResourcesForList: any[] = [];
 
+      // Create a mock file array for video reference publishing
+      let filesToProcess = filesToUse;
+      if (
+        publishMethod === 'qortal' &&
+        videoReference &&
+        filesToUse.length === 0
+      ) {
+        filesToProcess = [
+          {
+            file: null,
+            title: videoTitle || videoReference?.title || videoReference?.name || '',
+            description: '',
+            coverImage: '',
+          },
+        ];
+      }
+
       // Process each video file
-      for (let i = 0; i < filesToUse.length; i++) {
-        const publish = filesToUse[i];
+      for (let i = 0; i < filesToProcess.length; i++) {
+        const publish = filesToProcess[i];
         const title = publish.title;
         const description = publish.description;
         const category = selectedCategoryVideosToUse.id;
@@ -492,7 +540,7 @@ export const useVideoPublishingWorkflow = (
           ? coverImageForAllToUse
           : publish.coverImage;
         const file = publish.file;
-        const sanitizeTitle = title
+        const sanitizeTitle = (title || '')
           .replace(/[^a-zA-Z0-9\s-]/g, '')
           .replace(/\s+/g, '-')
           .replace(/-+/g, '-')
@@ -509,20 +557,21 @@ export const useVideoPublishingWorkflow = (
         const fullDescription = extractTextFromHTML(description);
 
         let fileExtension = 'mp4';
-        const fileExtensionSplit = file?.name?.split('.');
-        if (fileExtensionSplit?.length > 1) {
-          fileExtension = fileExtensionSplit?.pop() || 'mp4';
+        if (file) {
+          const fileExtensionSplit = file.name.split('.');
+          if (fileExtensionSplit && fileExtensionSplit.length > 1) {
+            fileExtension = fileExtensionSplit.pop() || 'mp4';
+          }
+        } else if (videoReference) {
+          // Use the file extension from the video reference if available
+          const videoRefName = videoReference.name || '';
+          const fileExtensionSplit = videoRefName.split('.');
+          if (fileExtensionSplit && fileExtensionSplit.length > 1) {
+            fileExtension = fileExtensionSplit.pop() || 'mp4';
+          }
         }
 
-        const filename = title.slice(0, 15);
-        // Replace all forms of whitespace (including non-standard ones) with underscores
-        const stringWithUnderscores = filename.replace(/[\s\uFEFF\xA0]+/g, '_');
-
-        // Remove all non-alphanumeric characters (except underscores)
-        const alphanumericString = stringWithUnderscores.replace(
-          /[^a-zA-Z0-9_]/g,
-          ''
-        );
+        const alphanumericString = processFilename(title || videoReference?.title || videoReference?.name || '');
 
         const videoObject: any = {
           title,
@@ -530,11 +579,17 @@ export const useVideoPublishingWorkflow = (
           fullDescription,
           htmlDescription: description,
           videoImage: coverImage,
-          videoReference: {
-            name,
-            identifier: identifier,
-            service: 'VIDEO',
-          },
+          videoReference: videoReference
+            ? {
+                name: videoReference.name,
+                identifier: videoReference.identifier,
+                service: videoReference.service,
+              }
+            : {
+                name,
+                identifier: identifier,
+                service: 'VIDEO',
+              },
           extracts: imageExtractsToUse[i],
           commentsId: `${QTUBE_VIDEO_BASE}_cm_${id}`,
           category,
@@ -542,7 +597,7 @@ export const useVideoPublishingWorkflow = (
           code,
           videoType: file?.type || 'video/mp4',
           filename: `${alphanumericString.trim()}.${fileExtension}`,
-          fileSize: file?.size || 0,
+          fileSize: videoReference?.size || file?.size || 0,
           duration: videoDurationsToUse[i],
         };
 
@@ -559,7 +614,7 @@ export const useVideoPublishingWorkflow = (
           name: name,
           service: 'DOCUMENT',
           data64: await objectToBase64(videoObject),
-          title: title.slice(0, 50),
+          title: (title || '').slice(0, 50),
           description: metadescription,
           identifier: identifier + '_metadata',
           tag1: QTUBE_VIDEO_BASE,
@@ -567,20 +622,24 @@ export const useVideoPublishingWorkflow = (
           code,
         };
 
-        const requestBodyVideo: any = {
-          action: 'PUBLISH_QDN_RESOURCE',
-          name: name,
-          service: 'VIDEO',
-          file,
-          title: title.slice(0, 50),
-          description: metadescription,
-          identifier,
-          filename: file.name,
-          tag1: QTUBE_VIDEO_BASE,
-        };
-
         listOfPublishes.push(requestBodyJson);
-        listOfPublishes.push(requestBodyVideo);
+
+        // Only add VIDEO service publish if not using video reference
+        if (!videoReference && file) {
+          const requestBodyVideo: any = {
+            action: 'PUBLISH_QDN_RESOURCE',
+            name: name,
+            service: 'VIDEO',
+            file,
+            title: (title || '').slice(0, 50),
+            description: metadescription,
+            identifier,
+            filename: file.name,
+            tag1: QTUBE_VIDEO_BASE,
+          };
+
+          listOfPublishes.push(requestBodyVideo);
+        }
         tempResourcesForList.push({
           qortalMetadata: {
             identifier: identifier + '_metadata',
@@ -603,7 +662,7 @@ export const useVideoPublishingWorkflow = (
         const category = selectedCategoryToUse.id;
         const subcategory = selectedSubCategoryToUse?.id || '';
         const coverImage = playlistCoverImageToUse;
-        const sanitizeTitle = title
+        const sanitizeTitle = (title || '')
           .replace(/[^a-zA-Z0-9\s-]/g, '')
           .replace(/\s+/g, '-')
           .replace(/-+/g, '-')
@@ -660,7 +719,7 @@ export const useVideoPublishingWorkflow = (
           name: name,
           service: 'PLAYLIST',
           data64: await objectToBase64(playlistObject),
-          title: title.slice(0, 50),
+          title: (title || '').slice(0, 50),
           description: metadescription,
           identifier: identifier + '_metadata',
           tag1: QTUBE_VIDEO_BASE,
@@ -717,7 +776,7 @@ export const useVideoPublishingWorkflow = (
             name: name,
             service: 'PLAYLIST',
             data64: await objectToBase64(playlistObject),
-            title: playlistObject.title.slice(0, 50),
+            title: (playlistObject.title || '').slice(0, 50),
             description: metadescription,
             identifier: selectExistingPlaylistToUse.identifier,
             tag1: QTUBE_VIDEO_BASE,
@@ -744,9 +803,8 @@ export const useVideoPublishingWorkflow = (
         msg: message,
         alertType: 'error',
       };
+      console.log(error);
       setNotification(notificationObj);
-
-      throw new Error('Failed to publish video');
     }
   };
 
@@ -756,7 +814,9 @@ export const useVideoPublishingWorkflow = (
     coverImageForAllParam?: string | null,
     selectedCategoryVideosParam?: any,
     isCheckTitleByFileParam?: boolean,
-    setStepParam?: (step: string) => void
+    setStepParam?: (step: string) => void,
+    isValidQortalLinkParam?: boolean,
+    publishMethodParam?: string
   ) => {
     try {
       // Use parameters if provided, otherwise use internal state
@@ -773,19 +833,47 @@ export const useVideoPublishingWorkflow = (
           ? isCheckTitleByFileParam
           : isCheckTitleByFile;
       const setStepToUse = setStepParam || setStep;
+      const isValidQortalLinkToUse =
+        isValidQortalLinkParam !== undefined
+          ? isValidQortalLinkParam
+          : isValidQortalLink;
+      const publishMethodToUse =
+        publishMethodParam !== undefined ? publishMethodParam : publishMethod;
+
+      // Check validation based on publish method
+      if (publishMethodToUse === 'files') {
+        if (filesToUse?.length === 0) {
+          throw new Error('Please select at least one file');
+        }
+      } else if (publishMethodToUse === 'qortal') {
+        if (!videoReference) {
+          throw new Error('Please select a video reference');
+        }
+        if (isVideoDownloading) {
+          throw new Error('Video is still downloading');
+        }
+      }
 
       if (isCheckSameCoverImageToUse && !coverImageForAllToUse)
         throw new Error('Please select cover image');
-      if (filesToUse?.length === 0)
-        throw new Error('Please select at least one file');
       if (!selectedCategoryVideosToUse)
         throw new Error('Please select a category');
-      filesToUse.forEach((file) => {
-        if (!file.title) throw new Error('Please enter a title');
-        if (!isCheckTitleByFileToUse && !file.description)
-          throw new Error('Please enter a description');
-        if (!isCheckSameCoverImageToUse && !file.coverImage)
-          throw new Error('Please select cover image');
+      filesToUse?.forEach((file) => {
+        // For video reference publishing, check videoTitle instead of file.title
+        if (publishMethodToUse === 'qortal' && videoReference) {
+          if (!videoTitle) throw new Error('Please enter a title');
+          if (!isCheckTitleByFileToUse && !file.description)
+            throw new Error('Please enter a description');
+          if (!isCheckSameCoverImageToUse && !file.coverImage)
+            throw new Error('Please select cover image');
+        } else {
+          // For file publishing, use the original validation
+          if (!file.title) throw new Error('Please enter a title');
+          if (!isCheckTitleByFileToUse && !file.description)
+            throw new Error('Please enter a description');
+          if (!isCheckSameCoverImageToUse && !file.coverImage)
+            throw new Error('Please select cover image');
+        }
       });
 
       setStepToUse('playlist');
@@ -817,6 +905,13 @@ export const useVideoPublishingWorkflow = (
     coverImageForAll,
     selectedCategoryVideos,
     selectedSubCategoryVideos,
+    isValidQortalLink,
+    publishMethod,
+    isQortalLinkEmpty,
+    fetchedVideoData,
+    videoTitle,
+    videoReference,
+    isVideoDownloading,
 
     // Playlist state
     playlistSetting,
@@ -856,6 +951,13 @@ export const useVideoPublishingWorkflow = (
     setCoverImageForAll,
     setSelectedCategoryVideos,
     setSelectedSubCategoryVideos,
+    setIsValidQortalLink,
+    setPublishMethod,
+    setIsQortalLinkEmpty,
+    setFetchedVideoData,
+    setVideoTitle,
+    setVideoReference,
+    setIsVideoDownloading,
     handleOnchange,
     handleOptionCategoryChangeVideos,
     handleOptionSubCategoryChangeVideos,
@@ -876,7 +978,7 @@ export const useVideoPublishingWorkflow = (
     // Publishing actions
     setPublishes,
     setIsOpenMultiplePublish,
-    publishQDNResource,
+    publishQDNResource: publishVideoToQDN,
     next,
   };
 };

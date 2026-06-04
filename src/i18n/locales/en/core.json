@@ -31,6 +31,7 @@
     "same_cover_images": "All videos use the same Cover Image",
     "populate_description": "Populate all descriptions by Title",
     "drag_drop_videos": "Drag and drop a video files here or click to select files",
+    "qortal_link_label": "Qortal Link",
     "supported_containers": "Supported File Containers",
     "audio_codecs": "audio codecs",
     "video_codecs": "video codecs",

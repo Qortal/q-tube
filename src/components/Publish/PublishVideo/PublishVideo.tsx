@@ -112,8 +112,17 @@ export const PublishVideo = ({
               <PublishVideoInitializer
                 videoForm={workflow}
                 videoUpload={workflow}
+                isCheckTitleByFile={workflow.isCheckTitleByFile}
+                setIsCheckTitleByFile={workflow.setIsCheckTitleByFile}
+                isCheckSameCoverImage={workflow.isCheckSameCoverImage}
+                setIsCheckSameCoverImage={workflow.setIsCheckSameCoverImage}
+                titlesPrefix={workflow.titlesPrefix}
+                setTitlesPrefix={workflow.setTitlesPrefix}
+                publishMethod={workflow.publishMethod}
               />
-              <VideoDataForm videoForm={workflow} videoUpload={workflow} />
+              {(workflow.files.length > 0 || (workflow.publishMethod === 'qortal' && workflow.videoReference)) && (
+                <VideoDataForm videoForm={workflow} videoUpload={workflow} />
+              )}
             </>
           )}
           {workflow.step === 'playlist' && (

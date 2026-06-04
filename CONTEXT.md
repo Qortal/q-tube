@@ -42,3 +42,7 @@ Q-Tube is a decentralized video platform built on the Qortal blockchain. It allo
 - Each major component has its own styles file (e.g., `Component-styles.tsx`)
 - State files co-located with components (e.g., `VideoContent-State.ts`)
 - qapp-core has type data for qortalRequests and other Qortal features as described in the QORTAL.md file
+- Many qortal functions in qapp-core are globally available in src/global.d.ts
+
+## Project Prompt Terminology
+The following terms

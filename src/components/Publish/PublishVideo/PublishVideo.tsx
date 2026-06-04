@@ -120,7 +120,9 @@ export const PublishVideo = ({
                 setTitlesPrefix={workflow.setTitlesPrefix}
                 publishMethod={workflow.publishMethod}
               />
-              {(workflow.files.length > 0 || (workflow.publishMethod === 'qortal' && workflow.videoReference)) && (
+              {(workflow.files.length > 0 ||
+                (workflow.publishMethod === 'qortal' &&
+                  workflow.videoReference)) && (
                 <VideoDataForm videoForm={workflow} videoUpload={workflow} />
               )}
             </>

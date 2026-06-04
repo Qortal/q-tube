@@ -1,6 +1,6 @@
 import { QortalGetMetadata } from 'qapp-core';
 
-export const getFileExtensionIndex = (s: string) => {
+const getFileExtensionIndex = (s: string) => {
   const lastIndex = s.lastIndexOf('.');
   return lastIndex > 0 ? lastIndex : s.length - 1;
 };

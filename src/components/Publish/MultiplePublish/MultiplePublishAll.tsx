@@ -188,7 +188,7 @@ export const MultiplePublish = ({
   );
 };
 
-export const ModalBody = styled(Box)(({ theme }) => ({
+const ModalBody = styled(Box)(({ theme }) => ({
   position: 'absolute',
   backgroundColor: theme.palette.background.default,
   borderRadius: '4px',

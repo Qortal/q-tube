@@ -61,7 +61,8 @@ export const VideoDataForm: React.FC<VideoDataProps> = ({
           alignItems: 'center',
         }}
       >
-        {(files?.length > 0 || (publishMethod === 'qortal' && videoReference)) && (
+        {(files?.length > 0 ||
+          (publishMethod === 'qortal' && videoReference)) && (
           <CategorySelect
             selectedCategory={selectedCategoryVideos}
             selectedSubCategory={selectedSubCategoryVideos}
@@ -70,45 +71,62 @@ export const VideoDataForm: React.FC<VideoDataProps> = ({
           />
         )}
       </Box>
-      {(files?.length > 0 || (publishMethod === 'qortal' && videoReference)) && isCheckSameCoverImage && (
-        <>
-          {!coverImageForAll ? (
-            <ImageUploader onPick={(img: string) => setCoverImageForAll(img)}>
-              <AddCoverImageButton variant="contained">
-                {t('core:publish.add_cover_image', {
-                  postProcess: 'capitalizeEachFirstChar',
-                })}
-                <AddLogoIcon
-                  sx={{
-                    height: '25px',
-                    width: 'auto',
-                  }}
-                ></AddLogoIcon>
-              </AddCoverImageButton>
-            </ImageUploader>
-          ) : (
-            <LogoPreviewRow>
-              <CoverImagePreview src={coverImageForAll} alt="logo" />
-              <TimesIcon
-                color={theme.palette.text.primary}
-                onClickFunc={() => setCoverImageForAll(null)}
-                height={'32'}
-                width={'32'}
-              ></TimesIcon>
-            </LogoPreviewRow>
-          )}
-        </>
-      )}
-      {(files.length > 0 ? files : (publishMethod === 'qortal' && videoReference ? [{ file: null as any, title: videoTitle || '', description: '', coverImage: '' }] : [])).map((file, index) => {
+      {(files?.length > 0 || (publishMethod === 'qortal' && videoReference)) &&
+        isCheckSameCoverImage && (
+          <>
+            {!coverImageForAll ? (
+              <ImageUploader onPick={(img: string) => setCoverImageForAll(img)}>
+                <AddCoverImageButton variant="contained">
+                  {t('core:publish.add_cover_image', {
+                    postProcess: 'capitalizeEachFirstChar',
+                  })}
+                  <AddLogoIcon
+                    sx={{
+                      height: '25px',
+                      width: 'auto',
+                    }}
+                  ></AddLogoIcon>
+                </AddCoverImageButton>
+              </ImageUploader>
+            ) : (
+              <LogoPreviewRow>
+                <CoverImagePreview src={coverImageForAll} alt="logo" />
+                <TimesIcon
+                  color={theme.palette.text.primary}
+                  onClickFunc={() => setCoverImageForAll(null)}
+                  height={'32'}
+                  width={'32'}
+                ></TimesIcon>
+              </LogoPreviewRow>
+            )}
+          </>
+        )}
+      {(files.length > 0
+        ? files
+        : publishMethod === 'qortal' && videoReference
+          ? [
+              {
+                file: null as any,
+                title: videoTitle || '',
+                description: '',
+                coverImage: '',
+              },
+            ]
+          : []
+      ).map((file, index) => {
         return (
           <React.Fragment key={index}>
             <FrameExtractor
               videoFile={file.file}
-              fileReference={publishMethod === 'qortal' && videoReference ? {
-                name: videoReference.name,
-                service: videoReference.service,
-                identifier: videoReference.identifier
-              } : undefined}
+              fileReference={
+                publishMethod === 'qortal' && videoReference
+                  ? {
+                      name: videoReference.name,
+                      service: videoReference.service,
+                      identifier: videoReference.identifier,
+                    }
+                  : undefined
+              }
               onFramesExtracted={async (imgs) => onFramesExtracted(imgs, index)}
               videoDurations={videoDurations}
               setVideoDurations={setVideoDurations}
@@ -141,7 +159,10 @@ export const VideoDataForm: React.FC<VideoDataProps> = ({
                   </ImageUploader>
                 ) : (
                   <LogoPreviewRow>
-                    <CoverImagePreview src={file?.coverImage || ''} alt="logo" />
+                    <CoverImagePreview
+                      src={file?.coverImage || ''}
+                      alt="logo"
+                    />
                     <TimesIcon
                       color={theme.palette.text.primary}
                       onClickFunc={() =>
@@ -159,11 +180,19 @@ export const VideoDataForm: React.FC<VideoDataProps> = ({
               name="title"
               label="Title of video"
               variant="filled"
-              value={publishMethod === 'qortal' && videoReference ? (videoTitle || '') : (file.title || '')}
+              value={
+                publishMethod === 'qortal' && videoReference
+                  ? videoTitle || ''
+                  : file.title || ''
+              }
               onChange={(e) => {
                 handleOnchange(index, 'title', e.target.value, setFiles);
                 // Also update videoTitle when using video reference
-                if (publishMethod === 'qortal' && videoReference && setVideoTitle) {
+                if (
+                  publishMethod === 'qortal' &&
+                  videoReference &&
+                  setVideoTitle
+                ) {
                   setVideoTitle(e.target.value);
                 }
               }}

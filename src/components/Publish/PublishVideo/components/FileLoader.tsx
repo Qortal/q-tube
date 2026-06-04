@@ -1,18 +1,17 @@
 import {
   Box,
-  Typography,
+  Checkbox,
+  CircularProgress,
+  FormControlLabel,
   Radio,
   RadioGroup,
-  FormControlLabel,
-  Button,
-  CircularProgress,
-  Checkbox,
+  Typography,
 } from '@mui/material';
-import React, { useState, useRef } from 'react';
-import { useTranslation } from 'react-i18next';
-import { fontSizeLarge, fontSizeMedium } from '../../../../constants/Misc.ts';
-import { PublishSearch } from '../../../common/PublishSearch/PublishSearch.tsx';
 import { QortalGetMetadata, useResourceStatus } from 'qapp-core';
+import React, { useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { fontSizeLarge } from '../../../../constants/Misc.ts';
+import { PublishSearch } from '../../../common/PublishSearch/PublishSearch.tsx';
 import { CustomInputField } from '../PublishVideo-styles.tsx';
 
 interface FileLoaderProps {
@@ -73,7 +72,6 @@ export const FileLoader: React.FC<FileLoaderProps> = ({
     }
   }, [videoReference, onValidationChange]);
 
-
   // Update parent component when link empty state changes
   React.useEffect(() => {
     if (onLinkEmptyChange) {
@@ -100,7 +98,7 @@ export const FileLoader: React.FC<FileLoaderProps> = ({
       setVideoResource(null);
       setCurrentPercent(undefined);
       setShowDownloadComplete(false);
-      
+
       // Notify parent component that download has stopped
       if (setIsVideoDownloading) {
         setIsVideoDownloading(false);
@@ -128,7 +126,7 @@ export const FileLoader: React.FC<FileLoaderProps> = ({
       setIsDownloading(true);
       setCurrentPercent(undefined); // Reset percent for new download
       setShowDownloadComplete(false); // Reset download complete message
-      
+
       // Notify parent component that download is starting
       if (setIsVideoDownloading) {
         setIsVideoDownloading(true);
@@ -162,7 +160,7 @@ export const FileLoader: React.FC<FileLoaderProps> = ({
       setCurrentPercent(undefined);
       setShowDownloadComplete(false);
       processedVideoRef.current = null; // Reset on error to allow retry
-      
+
       // Notify parent component that download has stopped
       if (setIsVideoDownloading) {
         setIsVideoDownloading(false);
@@ -175,12 +173,12 @@ export const FileLoader: React.FC<FileLoaderProps> = ({
   React.useEffect(() => {
     if (isDownloadComplete && isDownloading) {
       // Title is already set when video is selected, no need to set it again here
-      
+
       setIsDownloading(false);
       setShowDownloadComplete(true);
       setCurrentPercent(undefined);
       processedVideoRef.current = null; // Reset to allow re-selection if needed
-      
+
       // Notify parent component that download has completed
       if (setIsVideoDownloading) {
         setIsVideoDownloading(false);

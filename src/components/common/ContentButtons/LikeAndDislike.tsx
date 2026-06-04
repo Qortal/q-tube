@@ -23,20 +23,18 @@ import {
   getCurrentLikeType,
   LikesAndDislikes,
 } from './LikeAndDislike-functions.ts';
+import {
+  DISLIKE,
+  LIKE,
+  type LikeType,
+  NEUTRAL,
+} from './LikeAndDislike-types.ts';
 
 interface LikeAndDislikeProps {
   name: string;
   identifier: string;
   created: number;
 }
-export enum LikeType {
-  Like = 1,
-  Neutral = 0,
-  Dislike = -1,
-}
-export const LIKE = LikeType.Like;
-export const DISLIKE = LikeType.Dislike;
-export const NEUTRAL = LikeType.Neutral;
 export const LikeAndDislike = ({
   name,
   identifier,

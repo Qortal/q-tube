@@ -13,7 +13,7 @@ export const VideoTitle = styled(Typography)(({ theme }) => ({
   wordBreak: 'break-word',
 }));
 
-export const VideoDescription = styled(Typography)(({ theme }) => ({
+const VideoDescription = styled(Typography)(({ theme }) => ({
   fontSize: '16px',
   color: theme.palette.text.primary,
   wordBreak: 'break-word',
@@ -29,14 +29,14 @@ export const Spacer = ({ height }: any) => {
   );
 };
 
-export const StyledCardHeaderComment = styled(Box)({
+const StyledCardHeaderComment = styled(Box)({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'flex-start',
   gap: '5px',
   padding: '7px 0px',
 });
-export const StyledCardCol = styled(Box)({
+const StyledCardCol = styled(Box)({
   display: 'flex',
   overflow: 'hidden',
   flexDirection: 'column',
@@ -45,7 +45,7 @@ export const StyledCardCol = styled(Box)({
   width: '100%',
 });
 
-export const StyledCardColComment = styled(Box)({
+const StyledCardColComment = styled(Box)({
   display: 'flex',
   overflow: 'hidden',
   flexDirection: 'column',
@@ -54,12 +54,12 @@ export const StyledCardColComment = styled(Box)({
   width: '100%',
 });
 
-export const AuthorTextComment = styled(Typography)({
+const AuthorTextComment = styled(Typography)({
   fontSize: '20px',
   lineHeight: '1.2',
 });
 
-export const FileAttachmentContainer = styled(Box)(({ theme }) => ({
+const FileAttachmentContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   gap: '20px',

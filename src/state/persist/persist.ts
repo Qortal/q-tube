@@ -16,7 +16,7 @@ const hydrationStatusCache = new Map<
   WritableAtom<boolean, [boolean], void>
 >();
 
-export function usePersistAtom<T>(key: string, initialValue: T) {
+function usePersistAtom<T>(key: string, initialValue: T) {
   const { address: authAddress } = useAuth();
   const address = authAddress || 'anonymous';
   const scopedKey = `${address}/${key}`;
@@ -60,7 +60,7 @@ export function usePersistAtom<T>(key: string, initialValue: T) {
   }, [scopedKey]);
 }
 
-export function useHydrationAtom(key: string) {
+function useHydrationAtom(key: string) {
   const { address: authAddress } = useAuth();
   const address = authAddress || 'anonymous';
   const scopedKey = `${address}/${key}`;

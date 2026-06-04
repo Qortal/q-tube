@@ -3,14 +3,14 @@ import { Box, Button, Grid, TextField, Typography } from '@mui/material';
 import { styled } from '@mui/system';
 import { TimesSVG } from '../../../assets/svgs/TimesSVG.tsx';
 
-export const DoubleLine = styled(Typography)`
+const DoubleLine = styled(Typography)`
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
   overflow: hidden;
 `;
 
-export const MainContainer = styled(Grid)({
+const MainContainer = styled(Grid)({
   width: '100%',
   display: 'flex',
   alignItems: 'flex-start',
@@ -18,7 +18,7 @@ export const MainContainer = styled(Grid)({
   margin: 0,
 });
 
-export const MainCol = styled(Grid)(({ theme }) => ({
+const MainCol = styled(Grid)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
@@ -26,7 +26,7 @@ export const MainCol = styled(Grid)(({ theme }) => ({
   padding: '20px',
 }));
 
-export const CreateContainer = styled(Box)(({ theme }) => ({
+const CreateContainer = styled(Box)(({ theme }) => ({
   position: 'fixed',
   bottom: '20px',
   right: '20px',

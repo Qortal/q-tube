@@ -18,7 +18,6 @@ import React, { useEffect, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { categories, subCategories } from '../../../constants/Categories.ts';
 import { QTUBE_VIDEO_BASE } from '../../../constants/Identifiers.ts';
-import { processFilename } from '../../../utils/stringFunctions.ts';
 import {
   maxSize,
   titleFormatter,
@@ -31,7 +30,10 @@ import {
 } from '../../../state/global/notifications.ts';
 import { editVideoAtom } from '../../../state/publish/video.ts';
 import { objectToBase64 } from '../../../utils/PublishFormatter.ts';
-import { getFileExtension } from '../../../utils/stringFunctions.ts';
+import {
+  getFileExtension,
+  processFilename,
+} from '../../../utils/stringFunctions.ts';
 import { FrameExtractor } from '../../common/FrameExtractor/FrameExtractor.tsx';
 import ImageUploader from '../../common/ImageUploader.tsx';
 import { TextEditor } from '../../common/TextEditor/TextEditor.tsx';

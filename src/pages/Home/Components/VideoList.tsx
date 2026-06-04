@@ -21,7 +21,7 @@ interface VideoListProps {
   searchParameters: QortalSearchParams;
   listName: string;
 }
-export const VideoList = ({ searchParameters, listName }: VideoListProps) => {
+const VideoList = ({ searchParameters, listName }: VideoListProps) => {
   const { t } = useTranslation(['core']);
 
   const { name: username } = useAuth();

@@ -23,7 +23,7 @@ export interface ModalButtonProps extends ButtonProps {
   isDisableClose?: boolean;
 }
 
-export const ModalBody = styled(Box)(({ theme }) => ({
+const ModalBody = styled(Box)(({ theme }) => ({
   position: 'absolute',
   backgroundColor: theme.palette.background.default,
   borderRadius: '4px',

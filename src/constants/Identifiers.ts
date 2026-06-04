@@ -1,4 +1,4 @@
-export const useTestIdentifiers = true;
+const useTestIdentifiers = true;
 const baseIdentifier = useTestIdentifiers ? 'MYTEST_' : 'qtube_';
 
 export const QTUBE_VIDEO_BASE = baseIdentifier + 'vid_';

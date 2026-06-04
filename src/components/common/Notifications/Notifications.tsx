@@ -38,7 +38,7 @@ import { formatDate } from '../../../utils/time';
 const generalLocal = localForage.createInstance({
   name: 'q-tube-general',
 });
-export function extractIdValue(metadescription) {
+function extractIdValue(metadescription) {
   // Function to extract the substring within double asterisks
   function extractSubstring(str) {
     const match = str.match(/\*\*(.*?)\*\*/);

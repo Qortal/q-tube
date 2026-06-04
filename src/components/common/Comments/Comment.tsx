@@ -217,7 +217,7 @@ export const Comment = ({
   );
 };
 
-export const CommentCard = ({
+const CommentCard = ({
   message,
   created,
   name,

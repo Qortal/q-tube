@@ -114,7 +114,9 @@ export const VideoFormActionButtons: React.FC<VideoFormActionButtonsProps> = ({
           <FormActionButton
             variant="contained"
             disabled={
-              (publishMethod === 'files' && (files?.length !== Object.keys(imageExtracts)?.length || files?.length === 0)) ||
+              (publishMethod === 'files' &&
+                (files?.length !== Object.keys(imageExtracts)?.length ||
+                  files?.length === 0)) ||
               (publishMethod === 'qortal' && isQortalLinkEmpty)
             }
             onClick={() => {
@@ -130,14 +132,16 @@ export const VideoFormActionButtons: React.FC<VideoFormActionButtonsProps> = ({
               );
             }}
           >
-            {publishMethod === 'files' && files?.length !== Object.keys(imageExtracts)?.length
+            {publishMethod === 'files' &&
+            files?.length !== Object.keys(imageExtracts)?.length
               ? t('core:publish.generationg_extracts', {
                   postProcess: 'capitalizeFirstChar',
                 })
               : ''}
-            {publishMethod === 'files' && files?.length !== Object.keys(imageExtracts)?.length && (
-              <CircularProgress color="secondary" size={14} />
-            )}
+            {publishMethod === 'files' &&
+              files?.length !== Object.keys(imageExtracts)?.length && (
+                <CircularProgress color="secondary" size={14} />
+              )}
             {t('core:action.next', {
               postProcess: 'capitalizeFirstChar',
             })}

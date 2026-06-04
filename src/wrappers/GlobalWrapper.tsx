@@ -21,8 +21,7 @@ interface Props {
   children: React.ReactNode;
 }
 
-export const queue = new RequestQueue();
-export const queueSuperlikes = new RequestQueue();
+const queue = new RequestQueue();
 
 const GlobalWrapper: React.FC<Props> = ({ children }) => {
   const setSuperlikesAll = useSetAtom(superlikesAtom);

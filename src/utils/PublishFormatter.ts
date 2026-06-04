@@ -1,4 +1,4 @@
-export const publishFormatter = (
+const publishFormatter = (
   file: File
 ): Promise<string | ArrayBuffer | null> =>
   new Promise((resolve, reject) => {
@@ -48,12 +48,12 @@ export function objectToBase64(obj: any) {
   });
 }
 
-export const stringToFile = (text: string) => {
+const stringToFile = (text: string) => {
   return new File([text], "", {
     type: "text/plain",
   });
 };
-export const objectToFile = (obj: object) => {
+const objectToFile = (obj: object) => {
   // Step 1: Convert the object to a JSON string
   const jsonString = JSON.stringify(obj);
 
@@ -63,7 +63,7 @@ export const objectToFile = (obj: object) => {
   return new File([blob], ``, fileType);
 };
 
-export function objectToUint8Array(obj: any) {
+function objectToUint8Array(obj: any) {
   // Convert the object to a JSON string
   const jsonString = JSON.stringify(obj);
 
@@ -77,7 +77,7 @@ export function objectToUint8Array(obj: any) {
   return uint8Array;
 }
 
-export function uint8ArrayToBase64(uint8Array: Uint8Array): string {
+function uint8ArrayToBase64(uint8Array: Uint8Array): string {
   const length = uint8Array.length;
   let binaryString = "";
   const chunkSize = 1024 * 1024; // Process 1MB at a time
@@ -93,7 +93,7 @@ export function uint8ArrayToBase64(uint8Array: Uint8Array): string {
   return btoa(binaryString);
 }
 
-export function objectToUint8ArrayFromResponse(obj: any) {
+function objectToUint8ArrayFromResponse(obj: any) {
   const len = Object.keys(obj).length;
   const result = new Uint8Array(len);
 
@@ -115,7 +115,7 @@ export function objectToUint8ArrayFromResponse(obj: any) {
 //   return btoa(binary)
 // }
 
-export function base64ToUint8Array(base64: string) {
+function base64ToUint8Array(base64: string) {
   const binaryString = atob(base64);
   const len = binaryString.length;
   const bytes = new Uint8Array(len);
@@ -127,7 +127,7 @@ export function base64ToUint8Array(base64: string) {
   return bytes;
 }
 
-export function uint8ArrayToObject(uint8Array: Uint8Array) {
+function uint8ArrayToObject(uint8Array: Uint8Array) {
   // Decode the byte array using TextDecoder
   const decoder = new TextDecoder();
   const jsonString = decoder.decode(uint8Array);
@@ -138,7 +138,7 @@ export function uint8ArrayToObject(uint8Array: Uint8Array) {
   return obj;
 }
 
-export function processFileInChunks(file: File): Promise<Uint8Array> {
+function processFileInChunks(file: File): Promise<Uint8Array> {
   return new Promise(
     (resolve: (value: Uint8Array) => void, reject: (reason?: any) => void) => {
       const reader = new FileReader();

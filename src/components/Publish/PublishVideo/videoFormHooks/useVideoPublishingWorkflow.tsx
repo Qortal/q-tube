@@ -522,7 +522,8 @@ export const useVideoPublishingWorkflow = (
         filesToProcess = [
           {
             file: null,
-            title: videoTitle || videoReference?.title || videoReference?.name || '',
+            title:
+              videoTitle || videoReference?.title || videoReference?.name || '',
             description: '',
             coverImage: '',
           },
@@ -571,7 +572,9 @@ export const useVideoPublishingWorkflow = (
           }
         }
 
-        const alphanumericString = processFilename(title || videoReference?.title || videoReference?.name || '');
+        const alphanumericString = processFilename(
+          title || videoReference?.title || videoReference?.name || ''
+        );
 
         const videoObject: any = {
           title,

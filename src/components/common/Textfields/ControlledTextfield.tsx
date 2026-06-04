@@ -2,7 +2,7 @@ import { styled, SxProps, TextField, TextFieldProps } from '@mui/material';
 import { Dispatch, SetStateAction } from 'react';
 import { fontSizeMedium } from '../../../constants/Misc.ts';
 
-export const CustomInputField = styled(TextField)(({ theme }) => ({
+const CustomInputField = styled(TextField)(({ theme }) => ({
   fontFamily: 'Mulish',
   fontSize: fontSizeMedium,
   letterSpacing: '0px',

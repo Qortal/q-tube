@@ -1,5 +1,5 @@
 import { fetchResourcesByIdentifier } from '../../../utils/qortalRequestFunctions.ts';
-import { DISLIKE, LIKE, LikeType, NEUTRAL } from './LikeAndDislike.tsx';
+import { DISLIKE, LIKE, LikeType, NEUTRAL } from './LikeAndDislike-types.ts';
 
 export const getCurrentLikeType = async (
   username: string,
@@ -13,7 +13,7 @@ export const getCurrentLikeType = async (
       identifier: likeIdentifier,
     });
     return response?.likeType;
-  } catch (e) {
+  } catch {
     return NEUTRAL;
   }
 };

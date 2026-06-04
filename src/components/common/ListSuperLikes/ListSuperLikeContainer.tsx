@@ -6,9 +6,9 @@ import { Spacer } from 'qapp-core';
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useIsSmall } from '../../../hooks/useIsSmall.tsx';
-import { CustomChip } from '../../../pages/Home/FilterOptions.tsx';
 import { superlikesAtom } from '../../../state/global/superlikes.ts';
 import { FormActionButton } from '../../Publish/PublishVideo/PublishVideo-styles.tsx';
+import { CustomChip } from '../CustomChip.tsx';
 import { PopMenu, PopMenuRefType } from '../PopMenu.tsx';
 import ListSuperLikes from './ListSuperLikes';
 

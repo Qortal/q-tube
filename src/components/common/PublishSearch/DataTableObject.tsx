@@ -6,8 +6,8 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material';
-import React from 'react';
 import { SxProps } from '@mui/material/styles';
+import React from 'react';
 
 export interface DataTableProps {
   columnNames: string[];

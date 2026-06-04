@@ -5,7 +5,7 @@ import {
   hashMapSuperlikesAtom,
 } from '../state/global/superlikes';
 
-import { queueSuperlikes } from '../wrappers/GlobalWrapper';
+import { queueSuperlikes } from '../utils/queueSuperlikes';
 
 export const useFetchSuperLikes = () => {
   const addSuperlike = useSetAtom(addToHashMapSuperlikesAtom);

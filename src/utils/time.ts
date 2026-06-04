@@ -8,7 +8,7 @@ const normalizeLocale = (lng: string) => {
   return lower;
 };
 
-export function formatTimestamp(timestamp: number): string {
+function formatTimestamp(timestamp: number): string {
   const now = moment();
   const timestampMoment = moment(timestamp);
   const elapsedTime = now.diff(timestampMoment, 'minutes');
@@ -24,7 +24,7 @@ export function formatTimestamp(timestamp: number): string {
   }
 }
 
-export function formatTimestampSeconds(timestamp: number): string {
+function formatTimestampSeconds(timestamp: number): string {
   const now = moment();
   const timestampMoment = moment.unix(timestamp);
   const elapsedTime = now.diff(timestampMoment, 'minutes');
@@ -47,7 +47,7 @@ export const formatDate = (
   moment.locale(normalizeLocale(locale));
   return moment(unixTimestamp, 'x').fromNow();
 };
-export const formatDateSeconds = (unixTimestamp: number): string => {
+const formatDateSeconds = (unixTimestamp: number): string => {
   const date = moment.unix(unixTimestamp).fromNow();
 
   return date;

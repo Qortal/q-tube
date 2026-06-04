@@ -34,7 +34,7 @@ export interface Item {
   postName: string;
 }
 
-export async function addItem(item: Item): Promise<void> {
+async function addItem(item: Item): Promise<void> {
   // Get all items
   const notificationComments: Item[] =
     (await notification.getItem('comments')) || [];
@@ -61,7 +61,7 @@ export async function addItem(item: Item): Promise<void> {
   // Store the items back into localForage
   await notification.setItem('comments', notificationComments);
 }
-export async function updateItemDate(item: any): Promise<void> {
+async function updateItemDate(item: any): Promise<void> {
   // Get all items
   const notificationComments: Item[] =
     (await notification.getItem('comments')) || [];

@@ -1,7 +1,7 @@
 import { Box, Button, Card, TextField, Typography } from '@mui/material';
 import { styled } from '@mui/system';
 
-export const StyledCard = styled(Card)(({ theme }) => ({
+const StyledCard = styled(Card)(({ theme }) => ({
   backgroundColor:
     theme.palette.mode === 'light'
       ? theme.palette.primary.main
@@ -15,7 +15,7 @@ export const StyledCard = styled(Card)(({ theme }) => ({
   },
 }));
 
-export const CardContentContainer = styled(Box)(({ theme }) => ({
+const CardContentContainer = styled(Box)(({ theme }) => ({
   backgroundColor:
     theme.palette.mode === 'light'
       ? theme.palette.primary.dark
@@ -35,7 +35,7 @@ export const CardContentContainerComment = styled(Box)(({ theme }) => ({
   flexDirection: 'column',
 }));
 
-export const StyledCardHeader = styled(Box)({
+const StyledCardHeader = styled(Box)({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'flex-start',
@@ -51,7 +51,7 @@ export const StyledCardHeaderComment = styled(Box)({
   padding: '9px 7px',
 });
 
-export const StyledCardCol = styled(Box)({
+const StyledCardCol = styled(Box)({
   display: 'flex',
   overflow: 'hidden',
   flexDirection: 'column',
@@ -69,7 +69,7 @@ export const StyledCardColComment = styled(Box)({
   width: '100%',
 });
 
-export const StyledCardContent = styled(Box)({
+const StyledCardContent = styled(Box)({
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
@@ -95,7 +95,7 @@ export const StyledCardComment = styled(Typography)(({ theme }) => ({
   wordBreak: 'break-word',
 }));
 
-export const TitleText = styled(Typography)({
+const TitleText = styled(Typography)({
   whiteSpace: 'nowrap',
   overflow: 'hidden',
   textOverflow: 'ellipsis',
@@ -104,7 +104,7 @@ export const TitleText = styled(Typography)({
   lineHeight: '1.2',
 });
 
-export const AuthorText = styled(Typography)({
+const AuthorText = styled(Typography)({
   fontSize: '16px',
   lineHeight: '1.2',
 });
@@ -117,7 +117,7 @@ export const AuthorTextComment = styled(Typography)(({ theme }) => ({
   userSelect: 'none',
 }));
 
-export const IconsBox = styled(Box)({
+const IconsBox = styled(Box)({
   display: 'flex',
   gap: '3px',
   position: 'absolute',
@@ -126,7 +126,7 @@ export const IconsBox = styled(Box)({
   transition: 'all 0.3s ease-in-out',
 });
 
-export const BookmarkIconContainer = styled(Box)({
+const BookmarkIconContainer = styled(Box)({
   display: 'flex',
   boxShadow: 'rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;',
   backgroundColor: '#fbfbfb',
@@ -140,7 +140,7 @@ export const BookmarkIconContainer = styled(Box)({
   },
 });
 
-export const BlockIconContainer = styled(Box)({
+const BlockIconContainer = styled(Box)({
   display: 'flex',
   boxShadow: 'rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;',
   backgroundColor: '#fbfbfb',
@@ -205,7 +205,7 @@ export const CommentActionButtonRow = styled(Box)({
   gap: '5px',
 });
 
-export const CommentEditorContainer = styled(Box)({
+const CommentEditorContainer = styled(Box)({
   width: '100%',
   display: 'flex',
   justifyContent: 'center',

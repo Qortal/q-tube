@@ -10,19 +10,19 @@ import {
 import { useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import ShortUniqueId from 'short-unique-id';
-import { categories } from '../../../../constants/Categories.ts';
+import { categories } from '../../../constants/Categories.ts';
 import {
   QTUBE_PLAYLIST_BASE,
   QTUBE_VIDEO_BASE,
-} from '../../../../constants/Identifiers.ts';
-import { maxSize, titleFormatter } from '../../../../constants/Misc.ts';
-import { useMediaInfo } from '../../../../hooks/useMediaInfo.tsx';
+} from '../../../constants/Identifiers.ts';
+import { maxSize, titleFormatter } from '../../../constants/Misc.ts';
+import { useMediaInfo } from '../../../hooks/useMediaInfo.tsx';
 import {
   getFileExtension,
   getFileName,
   processFilename,
-} from '../../../../utils/stringFunctions.ts';
-import { extractTextFromHTML } from '../../../common/TextEditor/utils.ts';
+} from '../../../utils/stringFunctions.ts';
+import { extractTextFromHTML } from '../../common/TextEditor/utils.ts';
 
 const uid = new ShortUniqueId();
 const shortuid = new ShortUniqueId({ length: 5 });
@@ -68,6 +68,9 @@ export interface UseVideoPublishingWorkflowReturn {
   videoTitle: string;
   videoReference: any;
   isVideoDownloading: boolean;
+  videoFileExtension: string;
+  videoReferenceDescription: string;
+  videoReferenceCoverImage: string;
 
   // Playlist state
   playlistSetting: string | null;
@@ -114,6 +117,9 @@ export interface UseVideoPublishingWorkflowReturn {
   setVideoTitle: React.Dispatch<React.SetStateAction<string>>;
   setVideoReference: React.Dispatch<React.SetStateAction<any>>;
   setIsVideoDownloading: React.Dispatch<React.SetStateAction<boolean>>;
+  setVideoFileExtension: React.Dispatch<React.SetStateAction<string>>;
+  setVideoReferenceDescription: React.Dispatch<React.SetStateAction<string>>;
+  setVideoReferenceCoverImage: React.Dispatch<React.SetStateAction<string>>;
   handleOnchange: (
     index: number,
     type: string,
@@ -205,6 +211,9 @@ export const useVideoPublishingWorkflow = (
   const [videoTitle, setVideoTitle] = useState('');
   const [videoReference, setVideoReference] = useState<any>(null);
   const [isVideoDownloading, setIsVideoDownloading] = useState<boolean>(false);
+  const [videoFileExtension, setVideoFileExtension] = useState<string>('');
+  const [videoReferenceDescription, setVideoReferenceDescription] = useState<string>('');
+  const [videoReferenceCoverImage, setVideoReferenceCoverImage] = useState<string>('');
 
   // Playlist state
   const [playlistSetting, setPlaylistSetting] = useState<null | string>(null);
@@ -524,8 +533,8 @@ export const useVideoPublishingWorkflow = (
             file: null,
             title:
               videoTitle || videoReference?.title || videoReference?.name || '',
-            description: '',
-            coverImage: '',
+            description: videoReferenceDescription,
+            coverImage: videoReferenceCoverImage,
           },
         ];
       }
@@ -915,6 +924,9 @@ export const useVideoPublishingWorkflow = (
     videoTitle,
     videoReference,
     isVideoDownloading,
+    videoFileExtension,
+    videoReferenceDescription,
+    videoReferenceCoverImage,
 
     // Playlist state
     playlistSetting,
@@ -961,6 +973,9 @@ export const useVideoPublishingWorkflow = (
     setVideoTitle,
     setVideoReference,
     setIsVideoDownloading,
+    setVideoFileExtension,
+    setVideoReferenceDescription,
+    setVideoReferenceCoverImage,
     handleOnchange,
     handleOptionCategoryChangeVideos,
     handleOptionSubCategoryChangeVideos,

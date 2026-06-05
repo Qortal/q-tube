@@ -1,4 +1,4 @@
-import { useAtom, useSetAtom } from 'jotai';
+import { useSetAtom } from 'jotai';
 import { useAuth } from 'qapp-core';
 import React, { useCallback, useEffect, useRef } from 'react';
 import PageLoader from '../components/common/PageLoader';
@@ -13,23 +13,18 @@ import {
   isTimestampWithinRange,
 } from '../pages/ContentPages/VideoContent/VideoContent-State.ts';
 import { superlikesAtom } from '../state/global/superlikes.ts';
-import { RequestQueue } from '../utils/queue';
 import { useHandleNameData } from './../hooks/useHandleNameData.tsx';
-import { namesAtom } from './../state/global/names';
 
 interface Props {
   children: React.ReactNode;
 }
-
-const queue = new RequestQueue();
 
 const GlobalWrapper: React.FC<Props> = ({ children }) => {
   const setSuperlikesAll = useSetAtom(superlikesAtom);
   const { addSuperlikeRawDataGetToList } = useFetchSuperLikes();
   const interval = useRef<any>(null);
   useHandleNameData();
-  const { isLoadingUser, address } = useAuth();
-  const [names] = useAtom(namesAtom);
+  const { isLoadingUser } = useAuth();
 
   const getSuperlikes = useCallback(async () => {
     try {
@@ -94,7 +89,7 @@ const GlobalWrapper: React.FC<Props> = ({ children }) => {
     interval.current = setInterval(async () => {
       if (isCalling) return;
       isCalling = true;
-      const res = await getSuperlikes();
+      await getSuperlikes();
       isCalling = false;
     }, 300000);
     getSuperlikes();

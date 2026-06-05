@@ -59,7 +59,7 @@ export const SuperLikesSection = ({
   const location = useLocation();
   const [listComments, setListComments] = useState<any[]>([]);
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [loadingComments, setLoadingComments] = useState<boolean>(null);
+  const [loadingComments, setLoadingComments] = useState<boolean>(false);
 
   const hashMapSuperlikes = useAtomValue(hashMapSuperlikesAtom);
 

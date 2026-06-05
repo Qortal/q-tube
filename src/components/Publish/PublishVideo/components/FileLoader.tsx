@@ -10,50 +10,41 @@ import {
 import { QortalGetMetadata, useResourceStatus } from 'qapp-core';
 import React, { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import * as mime from 'mime-types';
 import { fontSizeLarge } from '../../../../constants/Misc.ts';
 import { PublishSearch } from '../../../common/PublishSearch/PublishSearch.tsx';
 import { CustomInputField } from '../PublishVideo-styles.tsx';
+import { usePublishVideo } from '../PublishVideoContext.tsx';
 
-interface FileLoaderProps {
-  getRootProps: any;
-  getInputProps: any;
-  onValidationChange?: (isValid: boolean) => void;
-  onPublishMethodChange?: (method: string) => void;
-  onLinkEmptyChange?: (isEmpty: boolean) => void;
-  onVideoFetch?: (videoData: any) => void;
-  onSetTitle?: (title: string) => void;
-  videoReference: any;
-  setVideoReference: (videoReference: any) => void;
-  setIsVideoDownloading: (downloading: boolean) => void;
-  isCheckTitleByFile: boolean;
-  setIsCheckTitleByFile: (checked: boolean) => void;
-  isCheckSameCoverImage: boolean;
-  setIsCheckSameCoverImage: (checked: boolean) => void;
-  titlesPrefix: string;
-  setTitlesPrefix: (prefix: string) => void;
-  publishMethod: string;
-}
-
-export const FileLoader: React.FC<FileLoaderProps> = ({
-  getRootProps,
-  getInputProps,
-  onValidationChange,
-  onPublishMethodChange,
-  onLinkEmptyChange,
-  onVideoFetch,
-  onSetTitle,
-  videoReference,
-  setVideoReference,
-  setIsVideoDownloading,
-  isCheckTitleByFile,
-  setIsCheckTitleByFile,
-  isCheckSameCoverImage,
-  setIsCheckSameCoverImage,
-  titlesPrefix,
-  setTitlesPrefix,
-  publishMethod,
-}) => {
+export const FileLoader: React.FC = () => {
   const { t } = useTranslation(['core']);
+  const workflow = usePublishVideo();
+
+  const {
+    getRootProps,
+    getInputProps,
+    setIsValidQortalLink,
+    setPublishMethod,
+    setIsQortalLinkEmpty,
+    setFetchedVideoData,
+    setVideoTitle,
+    videoReference,
+    setVideoReference,
+    setIsVideoDownloading,
+    setVideoFileExtension,
+    isCheckTitleByFile,
+    setIsCheckTitleByFile,
+    isCheckSameCoverImage,
+    setIsCheckSameCoverImage,
+    titlesPrefix,
+    setTitlesPrefix,
+    publishMethod,
+    setFiles,
+    setVideoDurations,
+    setImageExtracts,
+    setVideoReferenceDescription,
+    setVideoReferenceCoverImage,
+  } = workflow;
 
   const [isDownloading, setIsDownloading] = useState(false);
   const [videoResource, setVideoResource] = useState<QortalGetMetadata | null>(
@@ -64,20 +55,17 @@ export const FileLoader: React.FC<FileLoaderProps> = ({
   );
   const [showDownloadComplete, setShowDownloadComplete] = useState(false);
   const processedVideoRef = useRef<string | null>(null);
+  const previousPublishMethod = useRef<string>(publishMethod);
 
   // Update parent component when validation state changes
   React.useEffect(() => {
-    if (onValidationChange) {
-      onValidationChange(!!videoReference);
-    }
-  }, [videoReference, onValidationChange]);
+    setIsValidQortalLink(!!videoReference);
+  }, [videoReference, setIsValidQortalLink]);
 
   // Update parent component when link empty state changes
   React.useEffect(() => {
-    if (onLinkEmptyChange) {
-      onLinkEmptyChange(!videoReference);
-    }
-  }, [videoReference, onLinkEmptyChange]);
+    setIsQortalLinkEmpty(!videoReference);
+  }, [videoReference, setIsQortalLinkEmpty]);
 
   // Handle video reference changes
   React.useEffect(() => {
@@ -90,21 +78,35 @@ export const FileLoader: React.FC<FileLoaderProps> = ({
     }
   }, [videoReference]);
 
-  // Reset processed video when switching methods
+  // Reset form state when switching between publish methods
   React.useEffect(() => {
-    if (publishMethod === 'files') {
+    // Only reset if the publish method has actually changed
+    if (previousPublishMethod.current !== publishMethod) {
+      // Reset all form state to prevent data mixing between publish types
+      setFiles([]);
+      setVideoDurations([]);
+      setImageExtracts({});
+      setVideoReference(null);
+      setFetchedVideoData(null);
+      setVideoTitle('');
+      setVideoReferenceDescription('');
+      setVideoReferenceCoverImage('');
+      setVideoFileExtension('');
+      setIsValidQortalLink(false);
+      setIsQortalLinkEmpty(true);
+      
+      // Reset download-related states
       processedVideoRef.current = null;
       setIsDownloading(false);
       setVideoResource(null);
       setCurrentPercent(undefined);
       setShowDownloadComplete(false);
-
-      // Notify parent component that download has stopped
-      if (setIsVideoDownloading) {
-        setIsVideoDownloading(false);
-      }
+      setIsVideoDownloading(false);
+      
+      // Update the previous publish method
+      previousPublishMethod.current = publishMethod;
     }
-  }, [publishMethod, setIsVideoDownloading]);
+  }, [publishMethod, setFiles, setVideoDurations, setImageExtracts, setVideoReference, setFetchedVideoData, setVideoTitle, setVideoReferenceDescription, setVideoReferenceCoverImage, setVideoFileExtension, setIsValidQortalLink, setIsQortalLinkEmpty, setIsVideoDownloading]);
 
   // Track download progress
   const { isReady, percentLoaded } = useResourceStatus({
@@ -121,16 +123,14 @@ export const FileLoader: React.FC<FileLoaderProps> = ({
     }
   }, [percentLoaded]);
   // Handle video selection from PublishSearch
-  const handleVideoSelect = async (selectedVideo: any) => {
+  const handleVideoSelect = async (selectedVideo) => {
     try {
       setIsDownloading(true);
       setCurrentPercent(undefined); // Reset percent for new download
       setShowDownloadComplete(false); // Reset download complete message
 
       // Notify parent component that download is starting
-      if (setIsVideoDownloading) {
-        setIsVideoDownloading(true);
-      }
+      setIsVideoDownloading(true);
 
       // Set video resource for download tracking
       setVideoResource({
@@ -139,21 +139,39 @@ export const FileLoader: React.FC<FileLoaderProps> = ({
         service: selectedVideo.service,
       });
 
+      // Fetch video metadata to get the mimetype
+      try {
+        const metadata = await qortalRequest({
+          action: 'GET_QDN_RESOURCE_METADATA',
+          name: selectedVideo.name,
+          service: selectedVideo.service,
+          identifier: selectedVideo.identifier,
+        });
+
+        if (metadata?.mimeType) {
+          const extension = mime.extension(metadata.mimeType);
+          if (extension) {
+            setVideoFileExtension(`.${extension}`);
+          }
+        }
+      } catch (metadataError) {
+        console.error('Error fetching video metadata:', metadataError);
+        // Continue without extension if metadata fetch fails
+      }
+
       // Set the title and filename immediately when video is selected
-      if (selectedVideo.metadata?.title && onSetTitle) {
-        onSetTitle(selectedVideo.metadata.title);
-      } else if (selectedVideo.title && onSetTitle) {
+      if (selectedVideo.metadata?.title) {
+        setVideoTitle(selectedVideo.metadata.title);
+      } else if (selectedVideo.title) {
         // Fallback to title if metadata.title is not available
-        onSetTitle(selectedVideo.title);
-      } else if (selectedVideo.name && onSetTitle) {
+        setVideoTitle(selectedVideo.title);
+      } else if (selectedVideo.name) {
         // Final fallback to name if neither metadata.title nor title is available
-        onSetTitle(selectedVideo.name);
+        setVideoTitle(selectedVideo.name);
       }
 
       // Notify parent component
-      if (onVideoFetch) {
-        onVideoFetch(selectedVideo);
-      }
+      setFetchedVideoData(selectedVideo);
     } catch (error) {
       console.error('Error selecting video:', error);
       setIsDownloading(false);
@@ -162,9 +180,7 @@ export const FileLoader: React.FC<FileLoaderProps> = ({
       processedVideoRef.current = null; // Reset on error to allow retry
 
       // Notify parent component that download has stopped
-      if (setIsVideoDownloading) {
-        setIsVideoDownloading(false);
-      }
+      setIsVideoDownloading(false);
       // You might want to show an error notification here
     }
   };
@@ -180,9 +196,7 @@ export const FileLoader: React.FC<FileLoaderProps> = ({
       processedVideoRef.current = null; // Reset to allow re-selection if needed
 
       // Notify parent component that download has completed
-      if (setIsVideoDownloading) {
-        setIsVideoDownloading(false);
-      }
+      setIsVideoDownloading(false);
     }
   }, [isDownloadComplete, isDownloading, setIsVideoDownloading]);
 
@@ -193,9 +207,7 @@ export const FileLoader: React.FC<FileLoaderProps> = ({
           value={publishMethod}
           onChange={(e) => {
             const newMethod = e.target.value;
-            if (onPublishMethodChange) {
-              onPublishMethodChange(newMethod);
-            }
+            setPublishMethod(newMethod);
           }}
           row
         >

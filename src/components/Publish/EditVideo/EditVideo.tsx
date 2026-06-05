@@ -40,7 +40,7 @@ import { TextEditor } from '../../common/TextEditor/TextEditor.tsx';
 import { extractTextFromHTML } from '../../common/TextEditor/utils.ts';
 
 import BoundedNumericTextfield from '../../common/Textfields/BoundedNumericTextfield.tsx';
-import { toBase64 } from '../PublishVideo/videoFormHooks/useVideoPublishingWorkflow.tsx';
+import { toBase64 } from '../PublishVideo/useVideoPublishingWorkflow.tsx';
 
 import {
   AddCoverImageButton,
@@ -230,6 +230,7 @@ export const EditVideo = () => {
         fileSize: file?.size || editVideoProperties?.fileSize || 0,
         duration: videoDurations[0] || editVideoProperties?.duration || 0,
       };
+      console.log('Edited Video Metadata: ', videoObject);
       const metadescription =
         `**category:${category};subcategory:${subcategory};code:${editVideoProperties.code}**` +
         description.slice(0, 150);

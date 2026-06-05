@@ -5,14 +5,9 @@ import {
   FormActionButton,
   FormActionButtonRow,
 } from '../PublishVideo-styles.tsx';
-import { UseVideoPublishingWorkflowReturn } from '../videoFormHooks/useVideoPublishingWorkflow';
+import { usePublishVideo } from '../PublishVideoContext.tsx';
 
 interface VideoFormActionButtonsProps {
-  publishWorkflow: UseVideoPublishingWorkflowReturn;
-  videoUpload: UseVideoPublishingWorkflowReturn;
-  playlistManagement: UseVideoPublishingWorkflowReturn;
-  videoForm: UseVideoPublishingWorkflowReturn;
-  qdnPublishing: UseVideoPublishingWorkflowReturn;
   editId?: string;
   editContent?: null | {
     title: string;
@@ -22,9 +17,19 @@ interface VideoFormActionButtonsProps {
 }
 
 export const VideoFormActionButtons: React.FC<VideoFormActionButtonsProps> = ({
-  publishWorkflow: { step, onClose, setStep },
-  videoUpload: { files, videoDurations, imageExtracts },
-  playlistManagement: {
+  editId,
+  editContent,
+}) => {
+  const { t } = useTranslation(['core']);
+  const workflow = usePublishVideo();
+
+  const {
+    step,
+    onClose,
+    setStep,
+    files,
+    videoDurations,
+    imageExtracts,
     playlistSetting,
     playlistTitle,
     playlistDescription,
@@ -32,8 +37,6 @@ export const VideoFormActionButtons: React.FC<VideoFormActionButtonsProps> = ({
     selectedCategory,
     selectedSubCategory,
     selectExistingPlaylist,
-  },
-  videoForm: {
     selectedCategoryVideos,
     selectedSubCategoryVideos,
     coverImageForAll,
@@ -42,15 +45,9 @@ export const VideoFormActionButtons: React.FC<VideoFormActionButtonsProps> = ({
     isValidQortalLink,
     publishMethod,
     isQortalLinkEmpty,
-  },
-  qdnPublishing: {
     next: handleNext,
     publishQDNResource: handlePublishQDNResource,
-  },
-  editId,
-  editContent,
-}) => {
-  const { t } = useTranslation(['core']);
+  } = workflow;
 
   return (
     <FormActionButtonRow>

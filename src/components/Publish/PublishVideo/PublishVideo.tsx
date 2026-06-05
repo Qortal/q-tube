@@ -7,12 +7,13 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { menuIconSize } from '../../../constants/Misc.ts';
 import { setNotificationAtom } from '../../../state/global/notifications.ts';
-import { AddVideoToPlaylistForm } from './components/AddVideoToPlaylistForm.tsx';
+import { AddVideoToPlaylistForm } from './components/3-AddVideoToPlaylistForm.tsx';
 
 // Import components
-import { PublishVideoInitializer } from './components/PublishVideoInitializer.tsx';
-import { VideoDataForm } from './components/VideoDataForm.tsx';
-import { VideoFormActionButtons } from './components/VideoFormActionButtons.tsx';
+import { PublishVideoInitializer } from './components/1-PublishVideoInitializer.tsx';
+import { VideoFileDataForm } from './components/2-VideoFileDataForm.tsx';
+import { VideoFormActionButtons } from './components/4-VideoFormActionButtons.tsx';
+import { VideoReferenceDataForm } from './components/2-VideoReferenceDataForm.tsx';
 
 import {
   ModalBody,
@@ -20,7 +21,8 @@ import {
   StyledButton,
 } from './PublishVideo-styles.tsx';
 
-import { useVideoPublishingWorkflow } from './videoFormHooks/useVideoPublishingWorkflow.tsx';
+import { PublishVideoProvider } from './PublishVideoContext.tsx';
+import { useVideoPublishingWorkflow } from './useVideoPublishingWorkflow.tsx';
 
 interface PublishVideoProps {
   editId?: string;
@@ -107,38 +109,27 @@ export const PublishVideo = ({
             )}
           </Box>
 
-          {workflow.step === 'videos' && (
-            <>
-              <PublishVideoInitializer
-                videoForm={workflow}
-                videoUpload={workflow}
-                isCheckTitleByFile={workflow.isCheckTitleByFile}
-                setIsCheckTitleByFile={workflow.setIsCheckTitleByFile}
-                isCheckSameCoverImage={workflow.isCheckSameCoverImage}
-                setIsCheckSameCoverImage={workflow.setIsCheckSameCoverImage}
-                titlesPrefix={workflow.titlesPrefix}
-                setTitlesPrefix={workflow.setTitlesPrefix}
-                publishMethod={workflow.publishMethod}
-              />
-              {(workflow.files.length > 0 ||
-                (workflow.publishMethod === 'qortal' &&
-                  workflow.videoReference)) && (
-                <VideoDataForm videoForm={workflow} videoUpload={workflow} />
-              )}
-            </>
-          )}
-          {workflow.step === 'playlist' && (
-            <AddVideoToPlaylistForm playlistManagement={workflow} />
-          )}
-          <VideoFormActionButtons
-            publishWorkflow={workflow}
-            videoUpload={workflow}
-            playlistManagement={workflow}
-            videoForm={workflow}
-            qdnPublishing={workflow}
-            editId={editId}
-            editContent={editContent}
-          />
+          <PublishVideoProvider value={workflow}>
+            {workflow.step === 'videos' && (
+              <>
+                <PublishVideoInitializer />
+                {(workflow.files.length > 0 ||
+                  (workflow.publishMethod === 'qortal' &&
+                    workflow.videoReference)) && (
+                  <>
+                    {workflow.publishMethod === 'files' && (
+                      <VideoFileDataForm />
+                    )}
+                    {workflow.publishMethod === 'qortal' && (
+                      <VideoReferenceDataForm />
+                    )}
+                  </>
+                )}
+              </>
+            )}
+            {workflow.step === 'playlist' && <AddVideoToPlaylistForm />}
+            <VideoFormActionButtons editId={editId} editContent={editContent} />
+          </PublishVideoProvider>
         </ModalBody>
       </Modal>
     </>

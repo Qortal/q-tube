@@ -18,15 +18,15 @@ import {
   LogoPreviewRow,
   TimesIcon,
 } from '../PublishVideo-styles.tsx';
-import { UseVideoPublishingWorkflowReturn } from '../videoFormHooks/useVideoPublishingWorkflow';
+import { usePublishVideo } from '../PublishVideoContext.tsx';
 import { CategorySelect } from './CategorySelect.tsx';
 
-interface AddVideoToPlaylistFormProps {
-  playlistManagement: UseVideoPublishingWorkflowReturn;
-}
+export const AddVideoToPlaylistForm: React.FC = () => {
+  const { t } = useTranslation(['core']);
+  const theme = useTheme();
+  const workflow = usePublishVideo();
 
-export const AddVideoToPlaylistForm: React.FC<AddVideoToPlaylistFormProps> = ({
-  playlistManagement: {
+  const {
     playlistSetting,
     setPlaylistSetting,
     playlistTitle,
@@ -45,10 +45,7 @@ export const AddVideoToPlaylistForm: React.FC<AddVideoToPlaylistFormProps> = ({
     filterSearch,
     setFilterSearch,
     search,
-  },
-}) => {
-  const { t } = useTranslation(['core']);
-  const theme = useTheme();
+  } = workflow;
 
   return (
     <>
@@ -261,7 +258,7 @@ export const AddVideoToPlaylistForm: React.FC<AddVideoToPlaylistFormProps> = ({
             <ImageUploader onPick={(img: string) => setPlaylistCoverImage(img)}>
               <AddCoverImageButton variant="contained">
                 {t('core:publish.add_cover_image', {
-                  postProcess: 'capitalizeFirstChar',
+                  postProcess: 'capitalizeEachFirstChar',
                 })}
                 <AddLogoIcon
                   sx={{

@@ -7,19 +7,7 @@ import {
 } from '../PublishVideo-styles.tsx';
 import { usePublishVideo } from '../PublishVideoContext.tsx';
 
-interface VideoFormActionButtonsProps {
-  editId?: string;
-  editContent?: null | {
-    title: string;
-    user: string;
-    coverImage: string | null;
-  };
-}
-
-export const VideoFormActionButtons: React.FC<VideoFormActionButtonsProps> = ({
-  editId,
-  editContent,
-}) => {
+export const VideoFormActionButtons: React.FC = ({}) => {
   const { t } = useTranslation(['core']);
   const workflow = usePublishVideo();
 
@@ -97,9 +85,7 @@ export const VideoFormActionButtons: React.FC<VideoFormActionButtonsProps> = ({
                 selectedSubCategoryVideos,
                 coverImageForAll,
                 isCheckSameCoverImage,
-                selectExistingPlaylist,
-                editId,
-                editContent
+                selectExistingPlaylist
               );
             }}
           >

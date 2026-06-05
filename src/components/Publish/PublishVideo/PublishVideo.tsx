@@ -25,20 +25,10 @@ import { PublishVideoProvider } from './PublishVideoContext.tsx';
 import { useVideoPublishingWorkflow } from './useVideoPublishingWorkflow.tsx';
 
 interface PublishVideoProps {
-  editId?: string;
-  editContent?: null | {
-    title: string;
-    user: string;
-    coverImage: string | null;
-  };
   afterClose?: () => void;
 }
 
-export const PublishVideo = ({
-  editId,
-  editContent,
-  afterClose,
-}: PublishVideoProps) => {
+export const PublishVideo = ({ afterClose }: PublishVideoProps) => {
   const { t } = useTranslation(['core', 'category']);
   const theme = useTheme();
   const setNotification = useSetAtom(setNotificationAtom);
@@ -46,12 +36,12 @@ export const PublishVideo = ({
 
   // Initialize the consolidated video publishing workflow
   const workflow = useVideoPublishingWorkflow(setNotification, afterClose);
-
+  const isEditing = false;
   return (
     <>
       {username && (
         <>
-          {editId ? null : (
+          {isEditing ? null : (
             <StyledButton
               sx={{
                 width: '100%',
@@ -94,7 +84,7 @@ export const PublishVideo = ({
               justifyContent: 'space-between',
             }}
           >
-            {editId ? (
+            {isEditing ? (
               <NewCrowdfundTitle>
                 {t('core:publish.update_video', {
                   postProcess: 'capitalizeEachFirstChar',
@@ -128,7 +118,7 @@ export const PublishVideo = ({
               </>
             )}
             {workflow.step === 'playlist' && <AddVideoToPlaylistForm />}
-            <VideoFormActionButtons editId={editId} editContent={editContent} />
+            <VideoFormActionButtons />
           </PublishVideoProvider>
         </ModalBody>
       </Modal>

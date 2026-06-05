@@ -162,13 +162,7 @@ export interface UseVideoPublishingWorkflowReturn {
     selectedSubCategoryVideos?: any,
     coverImageForAll?: string | null,
     isCheckSameCoverImage?: boolean,
-    selectExistingPlaylist?: any,
-    editId?: string,
-    editContent?: null | {
-      title: string;
-      user: string;
-      coverImage: string | null;
-    }
+    selectExistingPlaylist?: any
   ) => Promise<void>;
   next: (
     files?: VideoFile[],
@@ -212,8 +206,10 @@ export const useVideoPublishingWorkflow = (
   const [videoReference, setVideoReference] = useState<any>(null);
   const [isVideoDownloading, setIsVideoDownloading] = useState<boolean>(false);
   const [videoFileExtension, setVideoFileExtension] = useState<string>('');
-  const [videoReferenceDescription, setVideoReferenceDescription] = useState<string>('');
-  const [videoReferenceCoverImage, setVideoReferenceCoverImage] = useState<string>('');
+  const [videoReferenceDescription, setVideoReferenceDescription] =
+    useState<string>('');
+  const [videoReferenceCoverImage, setVideoReferenceCoverImage] =
+    useState<string>('');
 
   // Playlist state
   const [playlistSetting, setPlaylistSetting] = useState<null | string>(null);

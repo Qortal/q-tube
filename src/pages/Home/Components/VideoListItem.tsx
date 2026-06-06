@@ -31,7 +31,7 @@ import {
 
 interface VideoListItemProps {
   qortalMetadata: QortalMetadata;
-  video: VideoMetadata;
+  video: VideoMetadata & { image: string };
   username: string | null;
   blockUserFunc: (user: string) => void;
   setEditVideo: (data: any) => void;
@@ -209,7 +209,7 @@ export const VideoListItem = ({
             }}
           >
             <ResponsiveImage
-              src={video?.videoImage}
+              src={video?.image}
               width={320}
               height={180}
               style={{

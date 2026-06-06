@@ -2,6 +2,7 @@ import { SelectChangeEvent } from '@mui/material';
 import Compressor from 'compressorjs';
 import {
   objectToBase64,
+  QortalGetMetadata,
   showError,
   useAuth,
   useGlobal,
@@ -23,6 +24,24 @@ import {
   processFilename,
 } from '../../../utils/stringFunctions.ts';
 import { extractTextFromHTML } from '../../common/TextEditor/utils.ts';
+
+export interface VideoMetadata {
+  title: string;
+  version: number;
+  fullDescription: string;
+  htmlDescription: string;
+  videoImage: string | undefined | null;
+  videoReference: QortalGetMetadata;
+  extracts: string[];
+  commentsId: string;
+  category: string;
+  subcategory: string;
+  code: string;
+  videoType: string;
+  filename: string;
+  fileSize: number;
+  duration: number;
+}
 
 const uid = new ShortUniqueId();
 const shortuid = new ShortUniqueId({ length: 5 });
@@ -581,7 +600,7 @@ export const useVideoPublishingWorkflow = (
           title || videoReference?.title || videoReference?.name || ''
         );
 
-        const videoObject: any = {
+        const videoObject: VideoMetadata = {
           title,
           version: 1,
           fullDescription,

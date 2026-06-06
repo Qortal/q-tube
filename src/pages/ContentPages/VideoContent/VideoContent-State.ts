@@ -7,6 +7,7 @@ import {
 } from 'qapp-core';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { VideoMetadata } from '../../../components/Publish/PublishVideo/useVideoPublishingWorkflow.tsx';
 import { SUPER_LIKE_BASE } from '../../../constants/Identifiers.ts';
 import { minPriceSuperLike } from '../../../constants/Misc.ts';
 import { useFetchSuperLikes } from '../../../hooks/useFetchSuperLikes.tsx';
@@ -59,7 +60,7 @@ export const useVideoContentState = () => {
       ...resource.data,
     };
     console.log('Video Data: ', result);
-    return result;
+    return result as VideoMetadata;
   }, [resource]);
 
   const isVideoLoaded = useMemo(() => {

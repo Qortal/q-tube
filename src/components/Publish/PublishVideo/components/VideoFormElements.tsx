@@ -1,4 +1,4 @@
-import { Box, Button, Typography, useTheme } from '@mui/material';
+import { Box, CircularProgress, Typography, useTheme } from '@mui/material';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import ImageUploader from '../../../common/ImageUploader.tsx';
@@ -161,8 +161,7 @@ export const VideoFilenameDisplay: React.FC<{
 // Shared Video Duration Display Component
 export const VideoDurationDisplay: React.FC<{
   duration: number;
-  onRefresh: () => void;
-}> = ({ duration, onRefresh }) => {
+}> = ({ duration }) => {
   return (
     <Box
       sx={{
@@ -173,20 +172,8 @@ export const VideoDurationDisplay: React.FC<{
       }}
     >
       <Typography variant="body2" color="textSecondary">
-        Duration: {duration > 0 ? formatTime(duration) : 'Loading...'}
+        Duration: {duration > 0 ? formatTime(duration) : <CircularProgress size={14} />}
       </Typography>
-      <Button
-        variant="contained"
-        size="small"
-        onClick={onRefresh}
-        sx={{
-          minWidth: 'auto',
-          py: 0.5,
-          px: 1,
-        }}
-      >
-        Refresh Duration
-      </Button>
     </Box>
   );
 };

@@ -39,8 +39,11 @@ import ImageUploader from '../../common/ImageUploader.tsx';
 import { TextEditor } from '../../common/TextEditor/TextEditor.tsx';
 import { extractTextFromHTML } from '../../common/TextEditor/utils.ts';
 
-import BoundedNumericTextfield from '../../common/Textfields/BoundedNumericTextfield.tsx';
 import { toBase64 } from '../PublishVideo/useVideoPublishingWorkflow.tsx';
+import {
+  VideoFilenameDisplay,
+  VideoDurationDisplay,
+} from '../PublishVideo/components/VideoFormElements.tsx';
 
 import {
   AddCoverImageButton,
@@ -80,10 +83,14 @@ export const EditVideo = () => {
   const { isHEVC } = useMediaInfo();
 
   useEffect(() => {
-    if (editVideoProperties?.duration) {
-      setVideoDurations([Math.floor(editVideoProperties?.duration || 0)]);
-    }
+    // Handle undefined duration by displaying as 0
+    const duration =
+      editVideoProperties?.duration !== undefined
+        ? editVideoProperties.duration
+        : 0;
+    setVideoDurations([Math.floor(duration)]);
   }, [editVideoProperties?.duration]);
+
 
   const { getRootProps, getInputProps } = useDropzone({
     accept: {
@@ -106,7 +113,17 @@ export const EditVideo = () => {
           showError(
             `${firstFile.name} uses the unsupported file container: MKV`
           );
-      } else setFile(firstFile);
+      } else {
+        setFile(firstFile);
+        // Auto-refresh duration when a new file is selected
+        const video = document.createElement('video');
+        video.preload = 'metadata';
+        video.onloadedmetadata = () => {
+          setVideoDurations([Math.floor(video.duration)]);
+          URL.revokeObjectURL(video.src);
+        };
+        video.src = URL.createObjectURL(firstFile);
+      }
 
       let errorString: null | string = null;
 
@@ -177,6 +194,12 @@ export const EditVideo = () => {
       if (!selectedCategoryVideos) throw new Error('Please select a category');
       if (!editVideoProperties) return;
       if (!userAddress) throw new Error('Unable to locate user address');
+      
+      // Check if video duration is still loading
+      if (videoDurations[0] === 0) {
+        showError('Video duration is still loading');
+        return;
+      }
       let errorMsg = '';
       let name = '';
       if (username) {
@@ -362,7 +385,6 @@ export const EditVideo = () => {
       console.error(error);
     }
   };
-
   return (
     <>
       <Modal
@@ -394,13 +416,21 @@ export const EditVideo = () => {
               <input {...getInputProps()} />
               <Typography>Click to update video file - optional</Typography>
             </Box>
-            <Typography
-              sx={{
-                marginBottom: '10px',
-              }}
-            >
-              {file?.name}
-            </Typography>
+            {/* Show original filename when EditVideo opens, or new filename when file is updated */}
+            <VideoFilenameDisplay
+              filename={
+                file
+                  ? file.name
+                  : editVideoProperties?.filename || 'No file selected'
+              }
+              fileExtension={
+                file
+                  ? file.name.includes('.')
+                    ? ''
+                    : `.${file.type.split('/')[1]}`
+                  : ''
+              }
+            />
             <Box
               sx={{
                 display: 'flex',
@@ -449,9 +479,19 @@ export const EditVideo = () => {
                   </FormControl>
                 )}
             </Box>
-            {file && (
+            {(file || editVideoProperties?.videoReference) && (
               <FrameExtractor
-                videoFile={file}
+                videoFile={file || undefined}
+                fileReference={
+                  file
+                    ? undefined
+                    : {
+                        name: editVideoProperties?.videoReference?.name,
+                        service: editVideoProperties?.videoReference?.service,
+                        identifier:
+                          editVideoProperties?.videoReference?.identifier,
+                      }
+                }
                 onFramesExtracted={(imgs) => onFramesExtracted(imgs)}
                 videoDurations={videoDurations}
                 setVideoDurations={setVideoDurations}
@@ -482,18 +522,6 @@ export const EditVideo = () => {
                   ></TimesIcon>
                 </LogoPreviewRow>
               )}
-              <BoundedNumericTextfield
-                minValue={1}
-                maxValue={Number.MAX_SAFE_INTEGER}
-                label="Video Duration in Seconds"
-                addIconButtons={false}
-                allowDecimals={false}
-                initialValue={videoDurations[0].toString()}
-                afterChange={(s) => {
-                  const newS = +s;
-                  setVideoDurations([newS]);
-                }}
-              />
               <CustomInputField
                 name="title"
                 label="Title of video"
@@ -506,6 +534,10 @@ export const EditVideo = () => {
                 }}
                 inputProps={{ maxLength: 180 }}
                 required
+              />
+              {/* Show duration display when EditVideo opens or when file is updated */}
+              <VideoDurationDisplay
+                duration={videoDurations[0]}
               />
               <Typography
                 sx={{

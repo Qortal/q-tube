@@ -8,11 +8,12 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { PlaylistSVG } from '../../../assets/svgs/PlaylistSVG';
+import { VideoMetadata } from '../../../components/Publish/PublishVideo/useVideoPublishingWorkflow.tsx';
 import ResponsiveImage from '../../../components/ResponsiveImage';
 import { fontSizeSmall, minDuration } from '../../../constants/Misc';
 import { useIsMobile } from '../../../hooks/useIsMobile';
 import { editPlaylistAtom } from '../../../state/publish/playlist';
-import { formatTime } from '../../../utils/numberFunctions';
+import { formatTime, formatBytes } from '../../../utils/numberFunctions';
 import { formatDate } from '../../../utils/time';
 import { VideoCardImageContainer } from './VideoCardImageContainer';
 import {
@@ -30,14 +31,7 @@ import {
 
 interface VideoListItemProps {
   qortalMetadata: QortalMetadata;
-  video: {
-    title?: string;
-    image?: string;
-    videoImage?: string;
-    videoReference?: QortalMetadata;
-    duration?: number;
-    extracts?: any[];
-  };
+  video: VideoMetadata;
   username: string | null;
   blockUserFunc: (user: string) => void;
   setEditVideo: (data: any) => void;
@@ -215,7 +209,7 @@ export const VideoListItem = ({
             }}
           >
             <ResponsiveImage
-              src={video?.image}
+              src={video?.videoImage}
               width={320}
               height={180}
               style={{
@@ -477,14 +471,10 @@ export const VideoListItem = ({
                 flexDirection: 'row',
                 width: '100%',
                 display: 'flex',
+                justifyContent: 'space-between',
                 gap: '15px',
               }}
             >
-              <Box
-                sx={{
-                  width: '40px',
-                }}
-              />
               <VideoUploadDate sx={{ display: 'inline', fontWeight: 500 }}>
                 <InlineName
                   sx={{}}
@@ -499,6 +489,17 @@ export const VideoListItem = ({
                 </InlineName>{' '}
                 | {formatDate(qortalMetadata.created, i18n.language)}
               </VideoUploadDate>
+              {video?.fileSize && (
+                <VideoUploadDate
+                  sx={{
+                    display: 'inline',
+                    fontWeight: 500,
+                    marginRight: '10px',
+                  }}
+                >
+                  {formatBytes(video?.fileSize)}
+                </VideoUploadDate>
+              )}
             </Box>
           )}
         </BottomParent>

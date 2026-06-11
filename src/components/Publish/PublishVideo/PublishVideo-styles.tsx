@@ -17,9 +17,9 @@ export const ModalBody = styled(Box)(({ theme }) => ({
   position: 'absolute',
   backgroundColor: theme.palette.background.default,
   borderRadius: '4px',
-  top: '50%',
+  top: '10%',
   left: '50%',
-  transform: 'translate(-50%, -50%)',
+  transform: 'translate(-50%, 0)',
   width: '75%',
   maxWidth: '900px',
   padding: '15px 35px',
@@ -27,7 +27,7 @@ export const ModalBody = styled(Box)(({ theme }) => ({
   flexDirection: 'column',
   gap: '17px',
   overflowY: 'auto',
-  maxHeight: '95vh',
+  maxHeight: '90vh',
   boxShadow:
     theme.palette.mode === 'dark'
       ? '0px 4px 5px 0px hsla(0,0%,0%,0.14),  0px 1px 10px 0px hsla(0,0%,0%,0.12),  0px 2px 4px -1px hsla(0,0%,0%,0.2)'

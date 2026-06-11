@@ -75,6 +75,7 @@ export const PublishVideo = ({ afterClose }: PublishVideoProps) => {
         <ModalBody
           sx={{
             width: '100%',
+            backgroundColor: 'background.paper',
           }}
         >
           <Box

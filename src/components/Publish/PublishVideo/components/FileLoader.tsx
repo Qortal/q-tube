@@ -5,6 +5,7 @@ import {
   FormControlLabel,
   Radio,
   RadioGroup,
+  Tooltip,
   Typography,
 } from '@mui/material';
 import { QortalGetMetadata, useResourceStatus } from 'qapp-core';
@@ -43,6 +44,9 @@ export const FileLoader: React.FC = () => {
     setImageExtracts,
     setVideoReferenceDescription,
     setVideoReferenceCoverImage,
+    files,
+    videoDurations,
+    videoFramesExtracted,
   } = workflow;
 
   const [isDownloading, setIsDownloading] = useState(false);
@@ -52,9 +56,27 @@ export const FileLoader: React.FC = () => {
   const [currentPercent, setCurrentPercent] = useState<number | undefined>(
     undefined
   );
-  const [showDownloadComplete, setShowDownloadComplete] = useState(false);
+  const [showDownloadComplete, setShowDownloadComplete] =
+    useState<boolean>(false);
   const processedVideoRef = useRef<string | null>(null);
   const previousPublishMethod = useRef<string>(publishMethod);
+
+  // Determine if videos are being processed (frame extraction and duration calculation)
+  const isProcessingVideos =
+    files.length > 0 &&
+    files.some((_, index) => {
+      const hasDuration =
+        videoDurations[index] !== undefined && videoDurations[index] > 0;
+      const hasFrames = videoFramesExtracted[index];
+      return !hasDuration || !hasFrames;
+    });
+
+  // Determine if video reference is being processed (frame extraction and duration calculation)
+  const isProcessingVideoReference =
+    videoReference &&
+    (videoDurations[0] === undefined ||
+      videoDurations[0] === 0 ||
+      videoFramesExtracted[0] === false);
 
   // Update parent component when validation state changes
   React.useEffect(() => {
@@ -215,28 +237,42 @@ export const FileLoader: React.FC = () => {
     }
   }, [isDownloadComplete, isDownloading, setIsVideoDownloading]);
 
+  const isInProcessing =
+    isProcessingVideos || isProcessingVideoReference || isDownloading;
   return (
     <>
       <Box sx={{ display: 'flex' }}>
-        <RadioGroup
-          value={publishMethod}
-          onChange={(e) => {
-            const newMethod = e.target.value;
-            setPublishMethod(newMethod);
-          }}
-          row
+        <Tooltip
+          title={
+            isInProcessing
+              ? 'Cannot change publish method while videos are processing'
+              : ''
+          }
+          disableHoverListener={!isInProcessing}
+          arrow
         >
-          <FormControlLabel
-            value="files"
-            control={<Radio />}
-            label="Publish Video Files"
-          />
-          <FormControlLabel
-            value="qortal"
-            control={<Radio />}
-            label="Publish Video Reference"
-          />
-        </RadioGroup>
+          <RadioGroup
+            value={publishMethod}
+            onChange={(e) => {
+              const newMethod = e.target.value;
+              setPublishMethod(newMethod);
+            }}
+            row
+          >
+            <FormControlLabel
+              value="files"
+              control={<Radio />}
+              label="Publish Video Files"
+              disabled={isInProcessing}
+            />
+            <FormControlLabel
+              value="qortal"
+              control={<Radio />}
+              label="Publish Video Reference"
+              disabled={isInProcessing}
+            />
+          </RadioGroup>
+        </Tooltip>
       </Box>
 
       {publishMethod === 'files' && (
@@ -297,6 +333,7 @@ export const FileLoader: React.FC = () => {
               value={videoReference}
               setValue={setVideoReference}
               service="VIDEO"
+              disabled={isInProcessing}
             />
             {(isDownloading || showDownloadComplete) && (
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -305,7 +342,9 @@ export const FileLoader: React.FC = () => {
                   {showDownloadComplete
                     ? 'Download Complete'
                     : currentPercent !== undefined
-                      ? `${currentPercent}%`
+                      ? currentPercent === 100
+                        ? 'Building'
+                        : `${currentPercent}%`
                       : 'Downloading...'}
                 </Typography>
               </Box>

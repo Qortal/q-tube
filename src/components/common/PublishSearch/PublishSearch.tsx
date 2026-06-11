@@ -13,12 +13,14 @@ export interface PublishSearchProps {
   value: QortalMetadata;
   setValue: Dispatch<SetStateAction<QortalMetadata>>;
   service: Service;
+  disabled?: boolean;
 }
 export const PublishSearch = ({
   label,
   value,
   setValue,
   service,
+  disabled = false,
 }: PublishSearchProps) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [searchTitle, setSearchTitle] = useState<string>('');
@@ -80,6 +82,7 @@ export const PublishSearch = ({
         setIsOpen={setIsOpen}
         bodySX={{ padding: 3 }}
         onClick={(e) => e.stopPropagation()}
+        disabled={disabled}
       >
         <Box sx={{ display: 'flex', gap: '10px' }}>
           <ControlledTextField

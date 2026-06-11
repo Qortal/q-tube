@@ -71,11 +71,14 @@ export interface UseVideoPublishingWorkflowReturn {
   // Video upload state
   files: VideoFile[];
   videoDurations: number[];
+  videoFramesExtracted: boolean[];
+  durationCalculationStartTime: number | null;
+  currentProcessingIndex: number;
+  autoRefreshDuration: boolean;
   imageExtracts: any;
 
   // Form state
   titlesPrefix: string;
-  isCheckTitleByFile: boolean;
   isCheckSameCoverImage: boolean;
   coverImageForAll: string | null;
   selectedCategoryVideos: any;
@@ -118,13 +121,18 @@ export interface UseVideoPublishingWorkflowReturn {
   getInputProps: any;
   setFiles: React.Dispatch<React.SetStateAction<VideoFile[]>>;
   setVideoDurations: React.Dispatch<React.SetStateAction<number[]>>;
+  setVideoFramesExtracted: React.Dispatch<React.SetStateAction<boolean[]>>;
+  setDurationCalculationStartTime: React.Dispatch<
+    React.SetStateAction<number | null>
+  >;
+  setCurrentProcessingIndex: React.Dispatch<React.SetStateAction<number>>;
+  setAutoRefreshDuration: React.Dispatch<React.SetStateAction<boolean>>;
   setImageExtracts: React.Dispatch<React.SetStateAction<any>>;
   assembleVideoDurations: () => void;
   onFramesExtracted: (imgs: any[], index: number) => Promise<void>;
 
   // Form actions
   setTitlesPrefix: React.Dispatch<React.SetStateAction<string>>;
-  setIsCheckTitleByFile: React.Dispatch<React.SetStateAction<boolean>>;
   setIsCheckSameCoverImage: React.Dispatch<React.SetStateAction<boolean>>;
   setCoverImageForAll: React.Dispatch<React.SetStateAction<string | null>>;
   setSelectedCategoryVideos: React.Dispatch<React.SetStateAction<any>>;
@@ -188,7 +196,6 @@ export interface UseVideoPublishingWorkflowReturn {
     isCheckSameCoverImage?: boolean,
     coverImageForAll?: string | null,
     selectedCategoryVideos?: any,
-    isCheckTitleByFile?: boolean,
     setStep?: (step: string) => void,
     isValidQortalLink?: boolean,
     publishMethod?: string
@@ -206,11 +213,19 @@ export const useVideoPublishingWorkflow = (
   // Video upload state
   const [files, setFiles] = useState<VideoFile[]>([]);
   const [videoDurations, setVideoDurations] = useState<number[]>([]);
+  const [videoFramesExtracted, setVideoFramesExtracted] = useState<boolean[]>(
+    []
+  );
+  const [durationCalculationStartTime, setDurationCalculationStartTime] =
+    useState<number | null>(null);
+  const [currentProcessingIndex, setCurrentProcessingIndex] =
+    useState<number>(-1);
+  const [autoRefreshDuration, setAutoRefreshDuration] =
+    useState<boolean>(false);
   const [imageExtracts, setImageExtracts] = useState<any>({});
 
   // Form state
   const [titlesPrefix, setTitlesPrefix] = useState('');
-  const [isCheckTitleByFile, setIsCheckTitleByFile] = useState(true);
   const [isCheckSameCoverImage, setIsCheckSameCoverImage] = useState(true);
   const [coverImageForAll, setCoverImageForAll] = useState<null | string>('');
   const [selectedCategoryVideos, setSelectedCategoryVideos] =
@@ -274,10 +289,26 @@ export const useVideoPublishingWorkflow = (
     if (files.length === videoDurations.length) return;
     const newArray: number[] = [];
 
-    files.map((file, index) =>
-      newArray.push(videoDurations[index] ? videoDurations[index] : 0)
-    );
+    files.map((file, index) => {
+      newArray.push(videoDurations[index] ? videoDurations[index] : 0);
+    });
+
     setVideoDurations([...newArray]);
+
+    // Set the start time when we first start calculating durations
+    if (files.length > 0 && !durationCalculationStartTime) {
+      setDurationCalculationStartTime(Date.now());
+    }
+
+    // Start auto-refresh when files are loaded and not already running
+    if (files.length > 0 && !autoRefreshDuration) {
+      console.log(
+        'Extracting frames and durations for',
+        files.length,
+        'videos'
+      );
+      setAutoRefreshDuration(true);
+    }
   };
 
   const { getRootProps, getInputProps } = useDropzone({
@@ -291,10 +322,8 @@ export const useVideoPublishingWorkflow = (
       for (const file of acceptedFiles) {
         let filteredTitle = '';
 
-        if (isCheckTitleByFile) {
-          const fileName = getFileName(file?.name || '');
-          filteredTitle = (titlesPrefix + fileName).replace(titleFormatter, '');
-        }
+        const fileName = getFileName(file?.name || '');
+        filteredTitle = (titlesPrefix + fileName).replace(titleFormatter, '');
 
         const notSupportedCodec = await isHEVC(file);
 
@@ -378,6 +407,14 @@ export const useVideoPublishingWorkflow = (
           ...prev,
           [index]: imagesExtracts,
         };
+      });
+
+      // Mark this video as having frames extracted
+      setVideoFramesExtracted((prev) => {
+        const newExtracted = [...prev];
+        newExtracted[index] = true;
+        console.log(`Video ${index + 1} frame extraction complete`);
+        return newExtracted;
       });
     } catch (error) {
       console.error(error);
@@ -840,7 +877,6 @@ export const useVideoPublishingWorkflow = (
     isCheckSameCoverImageParam?: boolean,
     coverImageForAllParam?: string | null,
     selectedCategoryVideosParam?: any,
-    isCheckTitleByFileParam?: boolean,
     setStepParam?: (step: string) => void,
     isValidQortalLinkParam?: boolean,
     publishMethodParam?: string
@@ -855,10 +891,6 @@ export const useVideoPublishingWorkflow = (
       const coverImageForAllToUse = coverImageForAllParam || coverImageForAll;
       const selectedCategoryVideosToUse =
         selectedCategoryVideosParam || selectedCategoryVideos;
-      const isCheckTitleByFileToUse =
-        isCheckTitleByFileParam !== undefined
-          ? isCheckTitleByFileParam
-          : isCheckTitleByFile;
       const setStepToUse = setStepParam || setStep;
       const isValidQortalLinkToUse =
         isValidQortalLinkParam !== undefined
@@ -871,6 +903,17 @@ export const useVideoPublishingWorkflow = (
       if (publishMethodToUse === 'files') {
         if (filesToUse?.length === 0) {
           throw new Error('Please select at least one file');
+        }
+
+        // Check if all videos have both duration and frames extracted
+        const allVideosComplete = filesToUse.every((_, index) => {
+          const hasDuration = videoDurations[index] > 0;
+          const hasFrames = videoFramesExtracted[index];
+          return hasDuration && hasFrames;
+        });
+
+        if (!allVideosComplete) {
+          throw new Error("Some video durations haven't loaded yet");
         }
       } else if (publishMethodToUse === 'qortal') {
         if (!videoReference) {
@@ -889,15 +932,12 @@ export const useVideoPublishingWorkflow = (
         // For video reference publishing, check videoTitle instead of file.title
         if (publishMethodToUse === 'qortal' && videoReference) {
           if (!videoTitle) throw new Error('Please enter a title');
-          if (!isCheckTitleByFileToUse && !file.description)
-            throw new Error('Please enter a description');
+
           if (!isCheckSameCoverImageToUse && !file.coverImage)
             throw new Error('Please select cover image');
         } else {
           // For file publishing, use the original validation
           if (!file.title) throw new Error('Please enter a title');
-          if (!isCheckTitleByFileToUse && !file.description)
-            throw new Error('Please enter a description');
           if (!isCheckSameCoverImageToUse && !file.coverImage)
             throw new Error('Please select cover image');
         }
@@ -923,11 +963,14 @@ export const useVideoPublishingWorkflow = (
     // Video upload state
     files,
     videoDurations,
+    videoFramesExtracted,
+    durationCalculationStartTime,
+    currentProcessingIndex,
+    autoRefreshDuration,
     imageExtracts,
 
     // Form state
     titlesPrefix,
-    isCheckTitleByFile,
     isCheckSameCoverImage,
     coverImageForAll,
     selectedCategoryVideos,
@@ -970,13 +1013,16 @@ export const useVideoPublishingWorkflow = (
     getInputProps,
     setFiles,
     setVideoDurations,
+    setVideoFramesExtracted,
+    setDurationCalculationStartTime,
+    setCurrentProcessingIndex,
+    setAutoRefreshDuration,
     setImageExtracts,
     assembleVideoDurations,
     onFramesExtracted,
 
     // Form actions
     setTitlesPrefix,
-    setIsCheckTitleByFile,
     setIsCheckSameCoverImage,
     setCoverImageForAll,
     setSelectedCategoryVideos,

@@ -4,8 +4,8 @@ export const minPriceSuperDislike = 1;
 export const titleFormatter = /[\r\n]+/g;
 export const titleFormatterOnSave = /[\r\n/<>:"'\\*|?]+/g;
 
-export const videoMaxSize = 2050; // Size in Megabytes (decimal)
-export const maxSize = videoMaxSize * 1024 * 1024;
+export const videoMaxSize = 2; // Size in GigaBytes
+export const maxSize = videoMaxSize * 1024 ** 3 - 1;
 
 export const fontSizeExSmall = '60%';
 export const fontSizeSmall = '80%';

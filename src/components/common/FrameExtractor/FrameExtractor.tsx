@@ -9,6 +9,7 @@ export interface FrameExtractorProps {
   videoDurations: number[];
   index: number;
   setVideoDurations: (durations: number[]) => void;
+  shouldProcess: boolean;
 }
 
 export const FrameExtractor = ({
@@ -18,10 +19,13 @@ export const FrameExtractor = ({
   videoDurations,
   index,
   setVideoDurations,
+  shouldProcess,
 }: FrameExtractorProps) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [durations, setDurations] = useState<number[]>([]);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const hasProcessedRef = useRef<boolean>(false);
+  const videoSrcRef = useRef<string | undefined>(undefined);
 
   const { isReady, percentLoaded, status } = useResourceStatus({
     resource: fileReference || null,
@@ -30,7 +34,7 @@ export const FrameExtractor = ({
 
   useEffect(() => {
     const video = videoRef.current;
-    if (!video) return;
+    if (!video || !shouldProcess) return;
 
     const handleLoadedMetadata = () => {
       const duration = video.duration;
@@ -54,71 +58,143 @@ export const FrameExtractor = ({
     };
 
     video.addEventListener('loadedmetadata', handleLoadedMetadata);
+    
+    // Force the video to load if it has a source
+    if (video.src && video.readyState === 0) {
+      video.load();
+    }
+    
     return () => {
       video.removeEventListener('loadedmetadata', handleLoadedMetadata);
     };
-  }, [videoFile, fileReference]);
+  }, [videoFile, fileReference, videoDurations, index, shouldProcess, setVideoDurations]);
   useEffect(() => {
-    if (durations.length === 4) {
-      extractFrames();
+    if (durations.length === 4 && shouldProcess) {
+      // Delay to ensure video is ready for frame extraction
+      // Give the video element time to render and provide dimensions
+      setTimeout(() => {
+        extractFrames();
+      }, 500);
     }
-  }, [durations]);
+  }, [durations, shouldProcess]);
 
   const videoSrc = useMemo(() => {
-    if (videoFile) {
-      return URL.createObjectURL(videoFile);
-    } else if (fileReference && status === 'READY') {
-      return qortalGetMetadataToString(fileReference);
+    // Revoke previous blob URL if it exists
+    if (videoSrcRef.current && videoSrcRef.current.startsWith('blob:')) {
+      URL.revokeObjectURL(videoSrcRef.current);
     }
-    return undefined;
+    
+    if (videoFile) {
+      const src = URL.createObjectURL(videoFile);
+      videoSrcRef.current = src;
+      return src;
+    } else if (fileReference && status === 'READY') {
+      const src = qortalGetMetadataToString(fileReference);
+      videoSrcRef.current = src;
+      return src;
+    } else {
+      videoSrcRef.current = undefined;
+      return undefined;
+    }
   }, [videoFile, fileReference, status]);
 
   useEffect(() => {
     return () => {
-      if (videoFile && videoSrc) {
-        URL.revokeObjectURL(videoSrc);
+      // Revoke blob URL when component unmounts
+      if (videoSrcRef.current && videoSrcRef.current.startsWith('blob:')) {
+        URL.revokeObjectURL(videoSrcRef.current);
+        videoSrcRef.current = undefined;
       }
     };
-  }, [videoSrc, videoFile]);
+  }, []); // Empty dependency array - only run on unmount
 
   const extractFrames = async () => {
     const video = videoRef.current;
     const canvas = canvasRef.current;
-    if (!video || !canvas) return;
+    if (!video || !canvas) {
+      return;
+    }
 
+    // Ensure video has a source
+    if (!video.src) {
+      return;
+    }
+
+    // Check if video is in the DOM
+    if (!document.body.contains(video)) {
+      return;
+    }
+
+    // Set video to muted to prevent autoplay policies from blocking
+    video.muted = true;
+
+    // Make video visible temporarily to ensure it renders
+    const originalDisplay = video.style.display;
+    const originalVisibility = video.style.visibility;
+    const originalOpacity = video.style.opacity;
+    
+    video.style.display = 'block';
+    video.style.visibility = 'visible';
+    video.style.opacity = '0.01'; // Nearly invisible but still renders
+
+    // Set canvas size first (this might help force rendering)
     const MAX_WIDTH = 800;
-    const scale = Math.min(1, MAX_WIDTH / video.videoWidth);
-
-    canvas.width = video.videoWidth * scale;
-    canvas.height = video.videoHeight * scale;
+    const scale = Math.min(1, MAX_WIDTH / (video.videoWidth || 1920)); // Use default if not available yet
+    canvas.width = (video.videoWidth || 1920) * scale;
+    canvas.height = (video.videoHeight || 1080) * scale;
     const context = canvas.getContext('2d');
-    if (!context) return;
+    if (!context) {
+      return;
+    }
 
     const frameData: Blob[] = [];
 
-    for (const time of durations) {
+    for (let i = 0; i < durations.length; i++) {
+      const time = durations[i];
+      
       await new Promise<void>((resolve) => {
         video.currentTime = time;
         const onSeeked = () => {
-          context.drawImage(video, 0, 0, canvas.width, canvas.height);
-          canvas.toBlob((blob) => {
-            if (blob) {
-              frameData.push(blob);
+          try {
+            // Update canvas size if video dimensions are now available
+            if (video.videoWidth > 0 && video.videoHeight > 0) {
+              const newScale = Math.min(1, MAX_WIDTH / video.videoWidth);
+              canvas.width = video.videoWidth * newScale;
+              canvas.height = video.videoHeight * newScale;
             }
+            
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            canvas.toBlob((blob) => {
+              if (blob) {
+                frameData.push(blob);
+              }
+              resolve();
+            }, 'image/png');
+          } catch (error) {
             resolve();
-          }, 'image/png');
+          }
           video.removeEventListener('seeked', onSeeked);
         };
         video.addEventListener('seeked', onSeeked, { once: true });
       });
     }
 
+    // Restore original styles
+    video.style.display = originalDisplay;
+    video.style.visibility = originalVisibility;
+    video.style.opacity = originalOpacity;
+
     await onFramesExtracted(frameData);
   };
   return (
-    <div>
-      <video ref={videoRef} style={{ display: 'none' }} src={videoSrc}></video>
-      <canvas ref={canvasRef} style={{ display: 'none' }}></canvas>
+    <div style={{ position: 'absolute', width: 0, height: 0, overflow: 'hidden', visibility: 'hidden' }}>
+      <video
+        ref={videoRef}
+        style={{ width: 0, height: 0, visibility: 'hidden' }}
+        src={videoSrc}
+        data-video-index={index}
+      ></video>
+      <canvas ref={canvasRef} style={{ width: 0, height: 0, visibility: 'hidden' }}></canvas>
     </div>
   );
 };

@@ -32,8 +32,6 @@ export const FileLoader: React.FC = () => {
     setVideoReference,
     setIsVideoDownloading,
     setVideoFileExtension,
-    isCheckTitleByFile,
-    setIsCheckTitleByFile,
     isCheckSameCoverImage,
     setIsCheckSameCoverImage,
     titlesPrefix,
@@ -41,6 +39,7 @@ export const FileLoader: React.FC = () => {
     publishMethod,
     setFiles,
     setVideoDurations,
+    setVideoFramesExtracted,
     setImageExtracts,
     setVideoReferenceDescription,
     setVideoReferenceCoverImage,
@@ -85,6 +84,7 @@ export const FileLoader: React.FC = () => {
       // Reset all form state to prevent data mixing between publish types
       setFiles([]);
       setVideoDurations([]);
+      setVideoFramesExtracted([]);
       setImageExtracts({});
       setVideoReference(null);
       setFetchedVideoData(null);
@@ -94,7 +94,7 @@ export const FileLoader: React.FC = () => {
       setVideoFileExtension('');
       setIsValidQortalLink(false);
       setIsQortalLinkEmpty(true);
-      
+
       // Reset download-related states
       processedVideoRef.current = null;
       setIsDownloading(false);
@@ -102,11 +102,26 @@ export const FileLoader: React.FC = () => {
       setCurrentPercent(undefined);
       setShowDownloadComplete(false);
       setIsVideoDownloading(false);
-      
+
       // Update the previous publish method
       previousPublishMethod.current = publishMethod;
     }
-  }, [publishMethod, setFiles, setVideoDurations, setImageExtracts, setVideoReference, setFetchedVideoData, setVideoTitle, setVideoReferenceDescription, setVideoReferenceCoverImage, setVideoFileExtension, setIsValidQortalLink, setIsQortalLinkEmpty, setIsVideoDownloading]);
+  }, [
+    publishMethod,
+    setFiles,
+    setVideoDurations,
+    setVideoFramesExtracted,
+    setImageExtracts,
+    setVideoReference,
+    setFetchedVideoData,
+    setVideoTitle,
+    setVideoReferenceDescription,
+    setVideoReferenceCoverImage,
+    setVideoFileExtension,
+    setIsValidQortalLink,
+    setIsQortalLinkEmpty,
+    setIsVideoDownloading,
+  ]);
 
   // Track download progress
   const { isReady, percentLoaded } = useResourceStatus({
@@ -202,7 +217,7 @@ export const FileLoader: React.FC = () => {
 
   return (
     <>
-      <Box sx={{ display: 'flex', marginBottom: 2 }}>
+      <Box sx={{ display: 'flex' }}>
         <RadioGroup
           value={publishMethod}
           onChange={(e) => {
@@ -224,31 +239,9 @@ export const FileLoader: React.FC = () => {
         </RadioGroup>
       </Box>
 
-      {/* Show these options only when RB1 (files) is selected */}
       {publishMethod === 'files' && (
         <>
-          <Box sx={{ marginBottom: 2 }}>
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 2,
-                marginBottom: 1,
-              }}
-            >
-              <Typography>
-                {t('core:publish.populate_titles', {
-                  postProcess: 'capitalizeFirstChar',
-                })}
-              </Typography>
-              <Checkbox
-                checked={isCheckTitleByFile}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                  setIsCheckTitleByFile(e.target.checked);
-                }}
-                inputProps={{ 'aria-label': 'controlled' }}
-              />
-            </Box>
+          <Box>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
               <Typography>
                 {t('core:publish.same_cover_images', {

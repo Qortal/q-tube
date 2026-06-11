@@ -34,15 +34,6 @@ export const VideoReferenceDataForm: React.FC = () => {
     setVideoReferenceCoverImage,
   } = workflow;
 
-  const handleRefreshDuration = () => {
-    // Force the FrameExtractor to remount by changing its key
-    setRefreshKey(prev => prev + 1);
-    // Reset the duration for this video
-    const newVideoDurations = [...videoDurations];
-    newVideoDurations[0] = 0;
-    setVideoDurations(newVideoDurations);
-  };
-
   return (
     <>
       {videoReference && (
@@ -72,6 +63,7 @@ export const VideoReferenceDataForm: React.FC = () => {
               videoDurations={videoDurations}
               setVideoDurations={setVideoDurations}
               index={0}
+              shouldProcess={true}
             />
             
             {!isCheckSameCoverImage && (
@@ -93,7 +85,6 @@ export const VideoReferenceDataForm: React.FC = () => {
             
             <VideoDurationDisplay
               duration={videoDurations[0] || 0}
-              onRefresh={handleRefreshDuration}
             />
             
             <VideoDescriptionEditor

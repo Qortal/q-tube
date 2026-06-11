@@ -17,6 +17,7 @@ export const VideoFormActionButtons: React.FC = ({}) => {
     setStep,
     files,
     videoDurations,
+    videoFramesExtracted,
     imageExtracts,
     playlistSetting,
     playlistTitle,
@@ -29,13 +30,21 @@ export const VideoFormActionButtons: React.FC = ({}) => {
     selectedSubCategoryVideos,
     coverImageForAll,
     isCheckSameCoverImage,
-    isCheckTitleByFile,
     isValidQortalLink,
     publishMethod,
     isQortalLinkEmpty,
     next: handleNext,
     publishQDNResource: handlePublishQDNResource,
   } = workflow;
+
+  // Check if all videos have both duration and frames extracted
+  const allVideosComplete =
+    files.length > 0 &&
+    files.every((_, index) => {
+      const hasDuration = videoDurations[index] > 0;
+      const hasFrames = videoFramesExtracted[index];
+      return hasDuration && hasFrames;
+    });
 
   return (
     <FormActionButtonRow>
@@ -99,7 +108,8 @@ export const VideoFormActionButtons: React.FC = ({}) => {
             disabled={
               (publishMethod === 'files' &&
                 (files?.length !== Object.keys(imageExtracts)?.length ||
-                  files?.length === 0)) ||
+                  files?.length === 0 ||
+                  !allVideosComplete)) ||
               (publishMethod === 'qortal' && isQortalLinkEmpty)
             }
             onClick={() => {
@@ -108,7 +118,6 @@ export const VideoFormActionButtons: React.FC = ({}) => {
                 isCheckSameCoverImage,
                 coverImageForAll,
                 selectedCategoryVideos,
-                isCheckTitleByFile,
                 setStep,
                 isValidQortalLink,
                 publishMethod
@@ -116,13 +125,17 @@ export const VideoFormActionButtons: React.FC = ({}) => {
             }}
           >
             {publishMethod === 'files' &&
-            files?.length !== Object.keys(imageExtracts)?.length
-              ? t('core:publish.generationg_extracts', {
+            files.length > 0 &&
+            (files?.length !== Object.keys(imageExtracts)?.length ||
+              !allVideosComplete)
+              ? t('core:publish.processing_videos', {
                   postProcess: 'capitalizeFirstChar',
                 })
               : ''}
             {publishMethod === 'files' &&
-              files?.length !== Object.keys(imageExtracts)?.length && (
+              files.length > 0 &&
+              (files?.length !== Object.keys(imageExtracts)?.length ||
+                !allVideosComplete) && (
                 <CircularProgress color="secondary" size={14} />
               )}
             {t('core:action.next', {

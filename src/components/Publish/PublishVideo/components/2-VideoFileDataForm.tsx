@@ -1,5 +1,5 @@
 import { Box } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { FrameExtractor } from '../../../common/FrameExtractor/FrameExtractor.tsx';
 import { usePublishVideo } from '../PublishVideoContext.tsx';
 import {
@@ -14,42 +14,147 @@ import {
 
 export const VideoFileDataForm: React.FC = () => {
   const workflow = usePublishVideo();
-  const [refreshKeys, setRefreshKeys] = useState<number[]>([]);
+  const [videoLoadStartTime, setVideoLoadStartTime] = useState<number[]>([]);
+  const [currentProcessingIndex, setCurrentProcessingIndex] = useState<number>(-1);
+  const currentProcessingIndexRef = useRef(currentProcessingIndex);
+  const pollingActiveRef = useRef(false);
 
   const {
     files,
     videoDurations,
+    videoFramesExtracted,
+    autoRefreshDuration,
     setVideoDurations,
+    setVideoFramesExtracted,
+    setAutoRefreshDuration,
     assembleVideoDurations,
     onFramesExtracted,
     setFiles,
     handleOnchange,
     isCheckSameCoverImage,
   } = workflow;
+  
+  // Keep refs updated
+  useEffect(() => {
+    currentProcessingIndexRef.current = currentProcessingIndex;
+  }, [currentProcessingIndex]);
 
-  // Initialize refresh keys when files change
+  // Initialize load start times and videoFramesExtracted when files change, reset when files are cleared
   useEffect(() => {
     if (files.length > 0) {
-      setRefreshKeys(new Array(files.length).fill(0));
+      setVideoLoadStartTime(new Array(files.length).fill(Date.now()));
+      // Initialize videoFramesExtracted array if it doesn't match the files length
+      if (videoFramesExtracted.length !== files.length) {
+        setVideoFramesExtracted(new Array(files.length).fill(false));
+      }
+    } else {
+      // Reset local state when files are cleared
+      setCurrentProcessingIndex(-1);
+      setVideoLoadStartTime([]);
+      pollingActiveRef.current = false;
     }
-  }, [files.length]);
+  }, [files.length, videoFramesExtracted.length, setVideoFramesExtracted]);
 
   // Call assembleVideoDurations in useEffect to avoid state update during render
   useEffect(() => {
     assembleVideoDurations();
   }, [files.length, videoDurations.length, assembleVideoDurations]);
 
-  const handleRefreshDuration = (index: number) => {
-    // Force the specific FrameExtractor to remount by changing its key
-    const newRefreshKeys = [...refreshKeys];
-    newRefreshKeys[index] = (newRefreshKeys[index] || 0) + 1;
-    setRefreshKeys(newRefreshKeys);
-    
-    // Reset the duration for this video
-    const newVideoDurations = [...videoDurations];
-    newVideoDurations[index] = 0;
-    setVideoDurations(newVideoDurations);
-  };
+  // Start processing when files are added
+  useEffect(() => {
+    if (files.length > 0 && currentProcessingIndex === -1) {
+      setCurrentProcessingIndex(0);
+    }
+  }, [files.length]);
+
+  // Move to next video when current one finishes frame extraction
+  useEffect(() => {
+    if (currentProcessingIndex >= 0 && currentProcessingIndex < files.length) {
+      const hasFrames = videoFramesExtracted[currentProcessingIndex];
+      if (hasFrames) {
+        // Move to next video
+        const nextIndex = currentProcessingIndex + 1;
+        if (nextIndex < files.length) {
+          // Add a small delay to give the video element time to properly load and render
+          setTimeout(() => {
+            // Reset load start time for the next video
+            setVideoLoadStartTime(prev => {
+              const newTimes = [...prev];
+              newTimes[nextIndex] = Date.now();
+              return newTimes;
+            });
+            setCurrentProcessingIndex(nextIndex);
+          }, 500); // 500ms delay
+        } else {
+          // All videos processed
+          setCurrentProcessingIndex(-1);
+          // Don't stop polling here - let the polling effect handle it
+        }
+      }
+    }
+  }, [currentProcessingIndex, videoFramesExtracted, files.length]);
+
+  // Polling-based auto-refresh for stuck videos only
+  useEffect(() => {
+    if (!autoRefreshDuration || files.length === 0 || pollingActiveRef.current) {
+      return;
+    }
+
+    pollingActiveRef.current = true;
+
+    const intervalId = setInterval(() => {
+      const currentTime = Date.now();
+      
+      // Only check if we have a current video to process
+      if (currentProcessingIndexRef.current === -1) {
+        // All videos processed, stop polling
+        clearInterval(intervalId);
+        pollingActiveRef.current = false;
+        setAutoRefreshDuration(false);
+        return;
+      }
+      
+      const index = currentProcessingIndexRef.current;
+      
+      // Only check the current video being processed
+      const hasDuration = videoDurations[index] > 0;
+      const hasFramesExtracted = videoFramesExtracted[index];
+      const loadStartTime = videoLoadStartTime[index] || currentTime;
+      const timeSinceLoadStart = currentTime - loadStartTime;
+      
+      // Check if current video is stuck (no duration OR no frames)
+      if (!hasDuration || !hasFramesExtracted) {
+        // Only refresh if it's been stuck for more than 10 seconds
+        if (timeSinceLoadStart > 10000) {
+          // Force video to reload by calling video.load() directly
+          const videoElement = document.querySelector(`video[data-video-index="${index}"]`) as HTMLVideoElement;
+          if (videoElement) {
+            videoElement.load();
+          }
+          
+          // Reset the load start time for this video
+          setVideoLoadStartTime(prev => {
+            const newTimes = [...prev];
+            newTimes[index] = currentTime;
+            return newTimes;
+          });
+        }
+      }
+    }, 5000); // Check every 5 seconds
+
+    // Cleanup interval when component unmounts
+    return () => {
+      clearInterval(intervalId);
+      pollingActiveRef.current = false;
+    };
+  }, [autoRefreshDuration, files.length]); // Only depend on autoRefreshDuration and files.length
+
+  // Reset auto-refresh when files are removed
+  useEffect(() => {
+    if (files.length === 0 && autoRefreshDuration) {
+      setAutoRefreshDuration(false);
+    }
+  }, [files.length, autoRefreshDuration, setAutoRefreshDuration]);
 
   return (
     <>
@@ -70,12 +175,15 @@ export const VideoFileDataForm: React.FC = () => {
           {files.map((file, index) => (
             <React.Fragment key={index}>
               <FrameExtractor
-                key={refreshKeys[index] || 0}
+                key={`video-${index}`}
                 videoFile={file.file || undefined}
-                onFramesExtracted={async (imgs) => onFramesExtracted(imgs, index)}
+                onFramesExtracted={async (imgs) => {
+                  await onFramesExtracted(imgs, index);
+                }}
                 videoDurations={videoDurations}
                 setVideoDurations={setVideoDurations}
                 index={index}
+                shouldProcess={currentProcessingIndex === index}
               />
               
               {!isCheckSameCoverImage && (
@@ -98,7 +206,6 @@ export const VideoFileDataForm: React.FC = () => {
               
               <VideoDurationDisplay
                 duration={videoDurations[index] || 0}
-                onRefresh={() => handleRefreshDuration(index)}
               />
               
               <VideoDescriptionEditor

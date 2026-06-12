@@ -442,7 +442,9 @@ export const EditVideo = () => {
         aria-labelledby="modal-title"
         aria-describedby="modal-description"
       >
-        <ModalBody sx={{ maxHeight: '98vh' }}>
+        <ModalBody
+          sx={{ maxHeight: '98vh', backgroundColor: 'background.paper' }}
+        >
           <Box
             sx={{
               display: 'flex',
@@ -659,7 +661,9 @@ export const EditVideo = () => {
                 }}
                 disabled={!!file && videoProcessingProgress < 100}
               >
-                {!!file && videoProcessingProgress > 0 && videoProcessingProgress < 100
+                {!!file &&
+                videoProcessingProgress > 0 &&
+                videoProcessingProgress < 100
                   ? `Video Processing ${videoProcessingProgress}%`
                   : 'Publish'}
               </CrowdfundActionButton>

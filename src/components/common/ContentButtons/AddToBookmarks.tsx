@@ -234,6 +234,7 @@ export const AddToBookmarks = ({ metadataReference, type = 'video' }) => {
                 }}
                 sx={{
                   marginLeft: 'auto',
+                  color: 'text.primary',
                 }}
               >
                 {t('core:bookmarks.new_list')}
@@ -308,7 +309,6 @@ export const AddToBookmarks = ({ metadataReference, type = 'video' }) => {
             left: '50%',
             top: '50%',
             transform: 'translate(-50%, -50%)',
-            color: 'white',
             borderRadius: 2,
             p: 1,
             minWidth: 225,
@@ -348,7 +348,6 @@ export const AddToBookmarks = ({ metadataReference, type = 'video' }) => {
                   '::-webkit-scrollbar-track': {
                     backgroundColor: 'transparent',
                   },
-
                   '::-webkit-scrollbar': {
                     width: '16px',
                     height: '10px',

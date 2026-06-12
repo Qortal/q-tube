@@ -32,7 +32,40 @@ export const VideoReferenceDataForm: React.FC = () => {
     setVideoReferenceDescription,
     videoReferenceCoverImage,
     setVideoReferenceCoverImage,
+    imageExtracts,
+    videoProcessingProgress,
+    framesExtractedCount,
+    setVideoProcessingProgress,
+    setFramesExtractedCount,
   } = workflow;
+
+  // Calculate overall video processing progress for reference-based publishing
+  useEffect(() => {
+    if (!videoReference) {
+      setVideoProcessingProgress(0);
+      return;
+    }
+
+    // Total points = 5 (4 frames + 1 duration for single video)
+    const totalPoints = 5;
+    
+    // Calculate completed points
+    let completedPoints = 0;
+    
+    // Count frames extracted (non-empty strings in imageExtracts)
+    const extracts = imageExtracts[0] || [];
+    const nonEmptyExtracts = extracts.filter((extract: string) => extract && extract.length > 0);
+    completedPoints += nonEmptyExtracts.length;
+    
+    // Add 1 point for duration if it's defined and greater than 0
+    if (videoDurations[0] > 0) {
+      completedPoints += 1;
+    }
+    
+    // Calculate percentage and truncate to nearest whole number
+    const progressPercentage = Math.floor((completedPoints / totalPoints) * 100);
+    setVideoProcessingProgress(progressPercentage);
+  }, [videoReference, imageExtracts, videoDurations, setVideoProcessingProgress]);
 
   return (
     <>
@@ -60,6 +93,13 @@ export const VideoReferenceDataForm: React.FC = () => {
                 identifier: videoReference.identifier,
               }}
               onFramesExtracted={async (imgs) => onFramesExtracted(imgs, 0)}
+              onFrameProgress={(frameIndex, frameCount) => {
+                setFramesExtractedCount(prev => {
+                  const newCounts = [...prev];
+                  newCounts[frameIndex] = frameCount;
+                  return newCounts;
+                });
+              }}
               videoDurations={videoDurations}
               setVideoDurations={setVideoDurations}
               index={0}

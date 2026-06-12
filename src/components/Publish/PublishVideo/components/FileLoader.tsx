@@ -12,7 +12,7 @@ import { QortalGetMetadata, useResourceStatus } from 'qapp-core';
 import React, { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as mime from 'mime-types';
-import { fontSizeLarge } from '../../../../constants/Misc.ts';
+import { fontSizeLarge, fontSizeMedium } from '../../../../constants/Misc.ts';
 import { PublishSearch } from '../../../common/PublishSearch/PublishSearch.tsx';
 import { CustomInputField } from '../PublishVideo-styles.tsx';
 import { usePublishVideo } from '../PublishVideoContext.tsx';
@@ -32,6 +32,7 @@ export const FileLoader: React.FC = () => {
     videoReference,
     setVideoReference,
     setIsVideoDownloading,
+    setVideoDownloadProgress,
     setVideoFileExtension,
     isCheckSameCoverImage,
     setIsCheckSameCoverImage,
@@ -47,6 +48,8 @@ export const FileLoader: React.FC = () => {
     files,
     videoDurations,
     videoFramesExtracted,
+    setVideoProcessingProgress,
+    setFramesExtractedCount,
   } = workflow;
 
   const [isDownloading, setIsDownloading] = useState(false);
@@ -117,6 +120,10 @@ export const FileLoader: React.FC = () => {
       setIsValidQortalLink(false);
       setIsQortalLinkEmpty(true);
 
+      // Reset progress-related states
+      setVideoProcessingProgress(0);
+      setFramesExtractedCount([]);
+
       // Reset download-related states
       processedVideoRef.current = null;
       setIsDownloading(false);
@@ -124,6 +131,7 @@ export const FileLoader: React.FC = () => {
       setCurrentPercent(undefined);
       setShowDownloadComplete(false);
       setIsVideoDownloading(false);
+      setVideoDownloadProgress(undefined);
 
       // Update the previous publish method
       previousPublishMethod.current = publishMethod;
@@ -143,6 +151,8 @@ export const FileLoader: React.FC = () => {
     setIsValidQortalLink,
     setIsQortalLinkEmpty,
     setIsVideoDownloading,
+    setVideoProcessingProgress,
+    setFramesExtractedCount,
   ]);
 
   // Track download progress
@@ -156,15 +166,18 @@ export const FileLoader: React.FC = () => {
   // Update current percent only when percentLoaded is valid and greater than 0
   React.useEffect(() => {
     if (percentLoaded !== undefined && percentLoaded > 0) {
-      setCurrentPercent(Math.floor(percentLoaded));
+      const percent = Math.floor(percentLoaded);
+      setCurrentPercent(percent);
+      setVideoDownloadProgress(percent);
     }
-  }, [percentLoaded]);
+  }, [percentLoaded, setVideoDownloadProgress]);
   // Handle video selection from PublishSearch
   const handleVideoSelect = async (selectedVideo) => {
     try {
       setIsDownloading(true);
       setCurrentPercent(undefined); // Reset percent for new download
       setShowDownloadComplete(false); // Reset download complete message
+      setVideoDownloadProgress(undefined); // Reset download progress
 
       // Notify parent component that download is starting
       setIsVideoDownloading(true);
@@ -214,6 +227,7 @@ export const FileLoader: React.FC = () => {
       setIsDownloading(false);
       setCurrentPercent(undefined);
       setShowDownloadComplete(false);
+      setVideoDownloadProgress(undefined);
       processedVideoRef.current = null; // Reset on error to allow retry
 
       // Notify parent component that download has stopped
@@ -230,6 +244,7 @@ export const FileLoader: React.FC = () => {
       setIsDownloading(false);
       setShowDownloadComplete(true);
       setCurrentPercent(undefined);
+      setVideoDownloadProgress(100); // Set to 100% when complete
       processedVideoRef.current = null; // Reset to allow re-selection if needed
 
       // Notify parent component that download has completed
@@ -250,6 +265,13 @@ export const FileLoader: React.FC = () => {
           }
           disableHoverListener={!isInProcessing}
           arrow
+          slotProps={{
+            tooltip: {
+              sx: {
+                fontSize: fontSizeMedium,
+              },
+            },
+          }}
         >
           <RadioGroup
             value={publishMethod}
@@ -308,23 +330,37 @@ export const FileLoader: React.FC = () => {
       )}
 
       {publishMethod === 'files' ? (
-        <Box
-          {...getRootProps()}
-          sx={{
-            border: '1px dashed gray',
-            padding: 2,
-            textAlign: 'center',
-            marginBottom: 2,
-            cursor: 'pointer',
+        <Tooltip
+          title="Cannot add files while videos are processing"
+          disableHoverListener={!isInProcessing}
+          arrow
+          slotProps={{
+            tooltip: {
+              sx: {
+                fontSize: fontSizeMedium,
+              },
+            },
           }}
         >
-          <input {...getInputProps()} />
-          <Typography>
-            {t('core:publish.drag_drop_videos', {
-              postProcess: 'capitalizeFirstChar',
-            })}
-          </Typography>
-        </Box>
+          <Box
+            {...getRootProps()}
+            sx={{
+              border: '1px dashed gray',
+              padding: 2,
+              textAlign: 'center',
+              marginBottom: 2,
+              cursor: 'pointer',
+              opacity: isInProcessing ? 0.5 : 1,
+            }}
+          >
+            <input {...getInputProps()} disabled={isInProcessing} />
+            <Typography>
+              {t('core:publish.drag_drop_videos', {
+                postProcess: 'capitalizeFirstChar',
+              })}
+            </Typography>
+          </Box>
+        </Tooltip>
       ) : (
         <Box sx={{ marginBottom: 2 }}>
           <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>

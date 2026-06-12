@@ -60,7 +60,7 @@ export const useVideoContentState = () => {
       ...resource.data,
     };
     console.log('Video Data: ', result);
-    return result as VideoMetadata;
+    return result as VideoMetadata & QortalMetadata;
   }, [resource]);
 
   const isVideoLoaded = useMemo(() => {

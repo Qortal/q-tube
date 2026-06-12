@@ -28,9 +28,9 @@ export interface VideoPlayerProps {
   autoPlay?: boolean;
   style?: CSS.Properties;
   duration?: number;
-  filename: string;
+  filename: string | undefined;
   parentStyles?: CSS.Properties;
-  created: number;
+  created: number | undefined;
 }
 
 export const VideoPlayer = ({ ...props }: VideoPlayerProps) => {

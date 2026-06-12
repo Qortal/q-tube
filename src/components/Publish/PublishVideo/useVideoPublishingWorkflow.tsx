@@ -76,6 +76,8 @@ export interface UseVideoPublishingWorkflowReturn {
   currentProcessingIndex: number;
   autoRefreshDuration: boolean;
   imageExtracts: any;
+  videoProcessingProgress: number;
+  framesExtractedCount: number[];
 
   // Form state
   titlesPrefix: string;
@@ -90,6 +92,7 @@ export interface UseVideoPublishingWorkflowReturn {
   videoTitle: string;
   videoReference: any;
   isVideoDownloading: boolean;
+  videoDownloadProgress: number | undefined;
   videoFileExtension: string;
   videoReferenceDescription: string;
   videoReferenceCoverImage: string;
@@ -128,6 +131,8 @@ export interface UseVideoPublishingWorkflowReturn {
   setCurrentProcessingIndex: React.Dispatch<React.SetStateAction<number>>;
   setAutoRefreshDuration: React.Dispatch<React.SetStateAction<boolean>>;
   setImageExtracts: React.Dispatch<React.SetStateAction<any>>;
+  setVideoProcessingProgress: React.Dispatch<React.SetStateAction<number>>;
+  setFramesExtractedCount: React.Dispatch<React.SetStateAction<number[]>>;
   assembleVideoDurations: () => void;
   onFramesExtracted: (imgs: any[], index: number) => Promise<void>;
 
@@ -144,6 +149,9 @@ export interface UseVideoPublishingWorkflowReturn {
   setVideoTitle: React.Dispatch<React.SetStateAction<string>>;
   setVideoReference: React.Dispatch<React.SetStateAction<any>>;
   setIsVideoDownloading: React.Dispatch<React.SetStateAction<boolean>>;
+  setVideoDownloadProgress: React.Dispatch<
+    React.SetStateAction<number | undefined>
+  >;
   setVideoFileExtension: React.Dispatch<React.SetStateAction<string>>;
   setVideoReferenceDescription: React.Dispatch<React.SetStateAction<string>>;
   setVideoReferenceCoverImage: React.Dispatch<React.SetStateAction<string>>;
@@ -223,6 +231,11 @@ export const useVideoPublishingWorkflow = (
   const [autoRefreshDuration, setAutoRefreshDuration] =
     useState<boolean>(false);
   const [imageExtracts, setImageExtracts] = useState<any>({});
+  const [videoProcessingProgress, setVideoProcessingProgress] =
+    useState<number>(0);
+  const [framesExtractedCount, setFramesExtractedCount] = useState<number[]>(
+    []
+  );
 
   // Form state
   const [titlesPrefix, setTitlesPrefix] = useState('');
@@ -239,6 +252,9 @@ export const useVideoPublishingWorkflow = (
   const [videoTitle, setVideoTitle] = useState('');
   const [videoReference, setVideoReference] = useState<any>(null);
   const [isVideoDownloading, setIsVideoDownloading] = useState<boolean>(false);
+  const [videoDownloadProgress, setVideoDownloadProgress] = useState<
+    number | undefined
+  >(undefined);
   const [videoFileExtension, setVideoFileExtension] = useState<string>('');
   const [videoReferenceDescription, setVideoReferenceDescription] =
     useState<string>('');
@@ -282,6 +298,8 @@ export const useVideoPublishingWorkflow = (
   const resetWorkflow = () => {
     setStep('videos');
     setIsOpen(false);
+    setVideoProcessingProgress(0);
+    setFramesExtractedCount([]);
   };
 
   // Video upload actions
@@ -345,7 +363,14 @@ export const useVideoPublishingWorkflow = (
         });
       }
 
-      setFiles((prev) => [...prev, ...formattedFiles]);
+      setFiles((prev) => {
+        // Reset progress if this is the first batch of files
+        if (prev.length === 0) {
+          setVideoProcessingProgress(0);
+          setFramesExtractedCount([]);
+        }
+        return [...prev, ...formattedFiles];
+      });
 
       let errorString: string | null = null;
       for (const { file, errors } of rejectedFiles) {
@@ -968,6 +993,8 @@ export const useVideoPublishingWorkflow = (
     currentProcessingIndex,
     autoRefreshDuration,
     imageExtracts,
+    videoProcessingProgress,
+    framesExtractedCount,
 
     // Form state
     titlesPrefix,
@@ -985,6 +1012,7 @@ export const useVideoPublishingWorkflow = (
     videoFileExtension,
     videoReferenceDescription,
     videoReferenceCoverImage,
+    videoDownloadProgress,
 
     // Playlist state
     playlistSetting,
@@ -1018,6 +1046,8 @@ export const useVideoPublishingWorkflow = (
     setCurrentProcessingIndex,
     setAutoRefreshDuration,
     setImageExtracts,
+    setVideoProcessingProgress,
+    setFramesExtractedCount,
     assembleVideoDurations,
     onFramesExtracted,
 
@@ -1034,6 +1064,7 @@ export const useVideoPublishingWorkflow = (
     setVideoTitle,
     setVideoReference,
     setIsVideoDownloading,
+    setVideoDownloadProgress,
     setVideoFileExtension,
     setVideoReferenceDescription,
     setVideoReferenceCoverImage,

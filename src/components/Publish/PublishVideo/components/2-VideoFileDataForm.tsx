@@ -32,6 +32,11 @@ export const VideoFileDataForm: React.FC = () => {
     setFiles,
     handleOnchange,
     isCheckSameCoverImage,
+    imageExtracts,
+    videoProcessingProgress,
+    framesExtractedCount,
+    setVideoProcessingProgress,
+    setFramesExtractedCount,
   } = workflow;
   
   // Keep refs updated
@@ -47,13 +52,19 @@ export const VideoFileDataForm: React.FC = () => {
       if (videoFramesExtracted.length !== files.length) {
         setVideoFramesExtracted(new Array(files.length).fill(false));
       }
+      // Initialize framesExtractedCount array if it doesn't match the files length
+      if (framesExtractedCount.length !== files.length) {
+        setFramesExtractedCount(new Array(files.length).fill(0));
+      }
     } else {
       // Reset local state when files are cleared
       setCurrentProcessingIndex(-1);
       setVideoLoadStartTime([]);
       pollingActiveRef.current = false;
+      setVideoProcessingProgress(0);
+      setFramesExtractedCount([]);
     }
-  }, [files.length, videoFramesExtracted.length, setVideoFramesExtracted]);
+  }, [files.length, videoFramesExtracted.length, framesExtractedCount.length, setVideoFramesExtracted, setVideoProcessingProgress, setFramesExtractedCount]);
 
   // Call assembleVideoDurations in useEffect to avoid state update during render
   useEffect(() => {
@@ -156,6 +167,36 @@ export const VideoFileDataForm: React.FC = () => {
     }
   }, [files.length, autoRefreshDuration, setAutoRefreshDuration]);
 
+  // Calculate overall video processing progress
+  useEffect(() => {
+    if (files.length === 0) {
+      setVideoProcessingProgress(0);
+      return;
+    }
+
+    // Total points = files.length * 5 (4 frames + 1 duration per video)
+    const totalPoints = files.length * 5;
+    
+    // Calculate completed points
+    let completedPoints = 0;
+    
+    for (let i = 0; i < files.length; i++) {
+      // Count frames extracted (non-empty strings in imageExtracts)
+      const extracts = imageExtracts[i] || [];
+      const nonEmptyExtracts = extracts.filter((extract: string) => extract && extract.length > 0);
+      completedPoints += nonEmptyExtracts.length;
+      
+      // Add 1 point for duration if it's defined and greater than 0
+      if (videoDurations[i] > 0) {
+        completedPoints += 1;
+      }
+    }
+    
+    // Calculate percentage and truncate to nearest whole number
+    const progressPercentage = Math.floor((completedPoints / totalPoints) * 100);
+    setVideoProcessingProgress(progressPercentage);
+  }, [files.length, imageExtracts, videoDurations, setVideoProcessingProgress]);
+
   return (
     <>
       {files?.length > 0 && (
@@ -179,6 +220,13 @@ export const VideoFileDataForm: React.FC = () => {
                 videoFile={file.file || undefined}
                 onFramesExtracted={async (imgs) => {
                   await onFramesExtracted(imgs, index);
+                }}
+                onFrameProgress={(frameIndex, frameCount) => {
+                  setFramesExtractedCount(prev => {
+                    const newCounts = [...prev];
+                    newCounts[frameIndex] = frameCount;
+                    return newCounts;
+                  });
                 }}
                 videoDurations={videoDurations}
                 setVideoDurations={setVideoDurations}

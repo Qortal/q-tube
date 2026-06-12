@@ -6,6 +6,7 @@ export interface FrameExtractorProps {
   videoFile?: File;
   fileReference?: QortalGetMetadata;
   onFramesExtracted: (imgs, index?: number) => Promise<void>;
+  onFrameProgress?: (index: number, frameCount: number) => void;
   videoDurations: number[];
   index: number;
   setVideoDurations: (durations: number[]) => void;
@@ -16,6 +17,7 @@ export const FrameExtractor = ({
   videoFile,
   fileReference,
   onFramesExtracted,
+  onFrameProgress,
   videoDurations,
   index,
   setVideoDurations,
@@ -167,6 +169,10 @@ export const FrameExtractor = ({
             canvas.toBlob((blob) => {
               if (blob) {
                 frameData.push(blob);
+                // Report progress after each successful frame extraction
+                if (onFrameProgress) {
+                  onFrameProgress(index, frameData.length);
+                }
               }
               resolve();
             }, 'image/png');

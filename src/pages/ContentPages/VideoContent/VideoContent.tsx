@@ -237,7 +237,7 @@ export const VideoContent = () => {
               </Typography>
             )}
             <Divider orientation="vertical" flexItem />
-            {videoData?.fileSize > minFileSize && (
+            {videoData?.fileSize && videoData?.fileSize > minFileSize && (
               <Typography
                 sx={{
                   fontSize: '14px',

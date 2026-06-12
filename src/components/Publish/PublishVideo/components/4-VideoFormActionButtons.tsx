@@ -35,6 +35,9 @@ export const VideoFormActionButtons: React.FC = ({}) => {
     isQortalLinkEmpty,
     next: handleNext,
     publishQDNResource: handlePublishQDNResource,
+    videoProcessingProgress,
+    isVideoDownloading,
+    videoDownloadProgress,
   } = workflow;
 
   // Check if all videos have both duration and frames extracted
@@ -110,7 +113,10 @@ export const VideoFormActionButtons: React.FC = ({}) => {
                 (files?.length !== Object.keys(imageExtracts)?.length ||
                   files?.length === 0 ||
                   !allVideosComplete)) ||
-              (publishMethod === 'qortal' && isQortalLinkEmpty)
+              (publishMethod === 'qortal' &&
+                (isQortalLinkEmpty ||
+                  isVideoDownloading ||
+                  videoProcessingProgress < 100))
             }
             onClick={() => {
               handleNext(
@@ -125,22 +131,31 @@ export const VideoFormActionButtons: React.FC = ({}) => {
             }}
           >
             {publishMethod === 'files' &&
-            files.length > 0 &&
-            (files?.length !== Object.keys(imageExtracts)?.length ||
-              !allVideosComplete)
-              ? t('core:publish.processing_videos', {
+              files.length > 0 &&
+              (files?.length !== Object.keys(imageExtracts)?.length ||
+                !allVideosComplete)
+              ? `Video Processing ${videoProcessingProgress}%`
+              : ''}
+            {publishMethod === 'qortal' && isVideoDownloading
+              ? `Downloading ${videoDownloadProgress || 0}%`
+              : ''}
+            {publishMethod === 'qortal' &&
+              !isVideoDownloading &&
+              videoProcessingProgress > 0 &&
+              videoProcessingProgress < 100
+              ? `Video Processing ${videoProcessingProgress}%`
+              : ''}
+            {((publishMethod === 'files' &&
+              (files?.length === 0 ||
+                files?.length === Object.keys(imageExtracts)?.length ||
+                allVideosComplete)) ||
+              (publishMethod === 'qortal' &&
+                !isVideoDownloading &&
+                (videoProcessingProgress === 0 || videoProcessingProgress === 100)))
+              ? t('core:action.next', {
                   postProcess: 'capitalizeFirstChar',
                 })
               : ''}
-            {publishMethod === 'files' &&
-              files.length > 0 &&
-              (files?.length !== Object.keys(imageExtracts)?.length ||
-                !allVideosComplete) && (
-                <CircularProgress color="secondary" size={14} />
-              )}
-            {t('core:action.next', {
-              postProcess: 'capitalizeFirstChar',
-            })}
           </FormActionButton>
         )}
       </Box>

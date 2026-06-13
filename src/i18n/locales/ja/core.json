@@ -79,8 +79,7 @@
     "subscriptions": "購読中",
     "watched_videos": "視聴済み動画",
     "bookmarks": "ブックマーク",
-    "your_playlists": "自分の再生リスト",
-    "your_videos": "自分の動画"
+    "your_channel": "自分のチャンネル"
   },
   "filters": {
     "most_recent": "最新",

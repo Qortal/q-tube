@@ -75,12 +75,11 @@
     "blocked_names": "заблокированные имена"
   },
   "sidenav": {
-    "home": "главная",
-    "subscriptions": "подписки",
-    "watched_videos": "просмотренные видео",
-    "bookmarks": "закладки",
-    "your_playlists": "ваши плейлисты",
-    "your_videos": "ваши видео"
+    "home": "Главная",
+    "subscriptions": "Подписки",
+    "watched_videos": "Просмотренные Видео",
+    "bookmarks": "Закладки",
+    "your_channel": "Ваш Канал"
   },
   "filters": {
     "most_recent": "самые новые",

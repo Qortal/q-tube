@@ -79,12 +79,11 @@
     "blocked_names": "blocked names"
   },
   "sidenav": {
-    "home": "home",
-    "subscriptions": "subscriptions",
-    "watched_videos": "watched videos",
-    "bookmarks": "bookmarks",
-    "your_playlists": "your playlists",
-    "your_videos": "your videos"
+    "home": "Home",
+    "subscriptions": "Subscriptions",
+    "watched_videos": "Watched Videos",
+    "bookmarks": "Bookmarks",
+    "your_channel": "Your Channel"
   },
   "filters": {
     "most_recent": "most recent",

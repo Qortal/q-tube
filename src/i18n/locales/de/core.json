@@ -79,8 +79,7 @@
     "subscriptions": "Abonnements",
     "watched_videos": "Angesehene Videos",
     "bookmarks": "Lesezeichen",
-    "your_playlists": "Deine Wiedergabelisten",
-    "your_videos": "Deine Videos"
+    "your_channel": "Dein Kanal"
   },
   "filters": {
     "most_recent": "neueste",

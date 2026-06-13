@@ -79,8 +79,7 @@
     "subscriptions": "订阅",
     "watched_videos": "已观看视频",
     "bookmarks": "收藏",
-    "your_playlists": "你的播放列表",
-    "your_videos": "你的视频"
+    "your_channel": "你的频道"
   },
   "filters": {
     "most_recent": "最新",

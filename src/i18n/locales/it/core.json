@@ -75,12 +75,11 @@
     "blocked_names": "nomi bloccati"
   },
   "sidenav": {
-    "home": "home",
-    "subscriptions": "iscrizioni",
-    "watched_videos": "video visti",
-    "bookmarks": "segnalibri",
-    "your_playlists": "le tue playlist",
-    "your_videos": "i tuoi video"
+    "home": "Home",
+    "subscriptions": "Iscrizioni",
+    "watched_videos": "Video Visti",
+    "bookmarks": "Segnalibri",
+    "your_channel": "Il Tuo Canale"
   },
   "filters": {
     "most_recent": "più recenti",

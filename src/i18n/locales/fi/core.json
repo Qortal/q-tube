@@ -1,0 +1,140 @@
+{
+  "action": {
+    "back": "takaisin",
+    "next": "seuraava",
+    "cancel": "peruuta",
+    "delete": "poista",
+    "close": "sulje",
+    "save": "tallenna",
+    "subscribe": "tilaa",
+    "unsubscribe": "peru tilaus",
+    "follow": "seuraa",
+    "unfollow": "lopeta seuraaminen",
+    "create": "luo",
+    "edit": "muokkaa",
+    "comment": "kommentoi",
+    "reply": "vastaa",
+    "bookmark_video": "tallenna video",
+    "bookmark_playlist": "tallenna soittolista"
+  },
+  "navbar": {
+    "search": "haku"
+  },
+  "publish": {
+    "publish_action": "julkaise",
+    "video": "video",
+    "playlist": "soittolista",
+    "downloads": "lataukset",
+    "update_video": "päivitä video",
+    "publish_videos": "julkaise videot",
+    "populate_titles": "Täytä otsikot tiedostonimien perusteella (kun tiedostot on valittu)",
+    "same_cover_images": "Kaikki videot käyttävät samaa kansikuvaa",
+    "populate_description": "Täytä kuvaukset otsikon perusteella",
+    "drag_drop_videos": "Vedä ja pudota videot tähän tai napsauta valitaksesi tiedostot",
+    "supported_containers": "Tuetut tiedostoformaatit",
+    "audio_codecs": "äänikoodekit",
+    "video_codecs": "videokoodekit",
+    "select_category": "Valitse kategoria",
+    "select_subcategory": "Valitse alakategoria",
+    "add_cover_image": "lisää kansikuva",
+    "description_video": "videon kuvaus",
+    "add_vids_playlist": "Haluatko lisätä nämä videot soittolistaan?",
+    "add_vids_playlist_optional": "soittolistaan lisääminen on VAPAAEHTOISTA",
+    "no_playlist": "ei soittolistaa",
+    "new_playlist": "uusi soittolista",
+    "existing_playlist": "olemassa oleva soittolista",
+    "select_existing_playlist": "valitse olemassa oleva soittolista",
+    "playlist_search_by_title": "etsi otsikon perusteella",
+    "title_playlist": "soittolistan nimi",
+    "description_playlist": "soittolistan kuvaus",
+    "generationg_extracts": "luodaan kuvakaappauksia",
+    "create_new_playlist": "luo uusi soittolista",
+    "update_playlist_properties": "päivitä soittolistan asetuksia",
+    "add_videos_playlist": "lisää videoita soittolistaan",
+    "my_videos": "omat videot",
+    "all_videos": "kaikki videot",
+    "search_by_title": "etsi otsikon mukaan",
+    "edit_playlist": "muokkaa soittolistaa",
+    "block_user_content": "estä käyttäjän sisältö",
+    "edit_video": "muokkaa videon tietoja",
+    "delete_video": "poista video",
+    "remove_video_list": "poista video listalta",
+    "playlist_not_exist": "tätä soittolistaa ei ole olemassa"
+  },
+  "notification": {
+    "no_new_notification": "ei uusia ilmoituksia",
+    "from_user": "käyttäjältä {{user}}"
+  },
+  "likes": {
+    "super_like": "supertykkäys",
+    "recent_super_likes": "viimeisimmät supertykkäykset",
+    "like_dislike": "Tykkää tai ei-tykkää videosta"
+  },
+  "blocked": {
+    "blocked_names": "estätyt nimet"
+  },
+  "sidenav": {
+    "home": "etusivu",
+    "subscriptions": "tilaukset",
+    "watched_videos": "katsotut videot",
+    "bookmarks": "kirjanmerkit",
+    "your_playlists": "sinun soittolistasi",
+    "your_videos": "sinun videosi"
+  },
+  "filters": {
+    "most_recent": "uusimmat",
+    "all": "kaikki",
+    "videos": "videot",
+    "playlists": "soittolistat",
+    "more_filters": "lisää suodattimia",
+    "more": "lisää",
+    "user_name": "Käyttäjän nimi (tarkka)",
+    "category": "kategoria",
+    "sub_category": "alakategoria",
+    "reset": "nollaa",
+    "filters": "suodattimet"
+  },
+  "lists": {
+    "no_results": "ei tuloksia"
+  },
+  "bookmarks": {
+    "select_list": "valitse lista",
+    "all_bookmarks": "kaikki tallennetut videot",
+    "bookmark_list": "kirjanmerkkilista",
+    "bookmark_lists": "kirjanmerkkilistat",
+    "no_bookmarks_lists": "ei kirjanmerkkilistoja",
+    "new_list": "uusi lista",
+    "new_folder": "uusi kansio",
+    "delete_folder": "poista kansio"
+  },
+  "video": {
+    "show_more": "näytä lisää",
+    "show_less": "näytä vähemmän",
+    "copy_link_video": "kopioi videolinkki",
+    "subscribe_description": "Kun tilaat jonkun, näet hänen sisältönsä Etusivun Tilaukset-välilehdellä. Tämä ei lataa mitään tiedostoja laitteellesi.",
+    "follow_description": "Kun alat seurata jotakuta, kaikki hänen sisältönsä ladataan automaattisesti solmuusi. Mitä enemmän seuraajia nimellä on, sitä nopeammin sen sisältö latautuu kaikille.",
+    "currentSize": "{{followerName}}:n nykyinen latauskoko: {{followingSize}}",
+    "itemCount": "tiedostojen määrä: {{followingItemCount}}"
+  },
+  "payments": {
+    "amount": "summa"
+  },
+  "comments": {
+    "comment_here": "kirjoita kommentti tähän",
+    "load_more_comments": "näytä lisää kommentteja",
+    "submit_reply": "lähetä vastaus",
+    "hide_replies": "piilota kaikki vastaukset",
+    "view_replies": "näytä kaikki vastaukset",
+    "your_comment": "sinun kommenttisi"
+  },
+  "download": {
+    "ready": "valmis tallennettavaksi: klikkaa tästä",
+    "start": "aloita lataus: klikkaa tästä"
+  },
+  "index": {
+    "index_video": "videoindeksi"
+  },
+  "search": {
+    "clear_search": "tyhjennä hakuhistoria"
+  }
+}

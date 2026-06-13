@@ -13,8 +13,10 @@ import ResponsiveImage from '../../../components/ResponsiveImage';
 import { fontSizeSmall, minDuration } from '../../../constants/Misc';
 import { useIsMobile } from '../../../hooks/useIsMobile';
 import { editPlaylistAtom } from '../../../state/publish/playlist';
+import { usePersistedState } from '../../../state/persist/persist';
 import { formatTime, formatBytes } from '../../../utils/numberFunctions';
 import { formatDate } from '../../../utils/time';
+import { addToWatchHistory } from '../../../utils/watchHistory';
 import { VideoCardImageContainer } from './VideoCardImageContainer';
 import {
   BlockIconContainer,
@@ -58,11 +60,31 @@ export const VideoListItem = ({
   const [showIcons, setShowIcons] = useState<boolean>(false);
   const theme = useTheme();
   const { lists } = useGlobal();
+  const [watchedHistory, setWatchedHistory, isHydratedWatchedHistory] =
+    usePersistedState<any[]>('watched-v1', []);
 
   const { deleteResource } = lists;
   const setEditPlaylist = useSetAtom(editPlaylistAtom);
 
   const isPlaylist = qortalMetadata?.service === 'PLAYLIST';
+
+  const handleVideoClick = () => {
+    if (!isHydratedWatchedHistory) return;
+
+    const videoHistoryEntry = {
+      identifier: qortalMetadata.identifier,
+      name: qortalMetadata.name,
+      service: qortalMetadata.service,
+      created: qortalMetadata.created || Date.now(),
+      watchedAt: Date.now(),
+    };
+
+    addToWatchHistory(videoHistoryEntry, watchedHistory, setWatchedHistory, lists);
+
+    navigate(
+      `/video/${encodeURIComponent(qortalMetadata?.name)}/${qortalMetadata?.identifier}`
+    );
+  };
 
   if (isPlaylist) {
     return (
@@ -397,11 +419,7 @@ export const VideoListItem = ({
         )}
       </IconsBox>
       <VideoCard
-        onClick={() => {
-          navigate(
-            `/video/${encodeURIComponent(qortalMetadata?.name)}/${qortalMetadata?.identifier}`
-          );
-        }}
+        onClick={handleVideoClick}
       >
         <Box
           sx={{

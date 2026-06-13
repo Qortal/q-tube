@@ -6,7 +6,7 @@ import { CopyLinkButton } from '../../../components/common/ContentButtons/CopyLi
 import { IndexButton } from '../../../components/common/ContentButtons/IndexButton.tsx';
 import { LikeAndDislike } from '../../../components/common/ContentButtons/LikeAndDislike.tsx';
 import { SuperLike } from '../../../components/common/ContentButtons/SuperLike.tsx';
-import FileElement from '../../../components/common/FileElement.tsx';
+import { VideoFileElement } from '../../../components/common/VideoFileElement.tsx';
 import { titleFormatterOnSave } from '../../../constants/Misc.ts';
 import { ChannelActions } from './ChannelActions.tsx';
 
@@ -133,7 +133,8 @@ export const VideoActionsBar = ({
         />
       </Box>
       {videoData && (
-        <FileElement
+        <VideoFileElement
+          videoReference={videoReference}
           fileInfo={{
             ...videoReference,
             filename: saveAsFilename,

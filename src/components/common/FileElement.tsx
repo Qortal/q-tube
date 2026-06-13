@@ -55,6 +55,7 @@ interface IAudioElement {
   mode?: string;
   otherUser?: string;
   customStyles?: any;
+  onDownloadStart?: () => void;
 }
 
 export default function FileElement({
@@ -65,6 +66,7 @@ export default function FileElement({
   mimeType,
   disable,
   customStyles,
+  onDownloadStart,
 }: IAudioElement) {
   const { t } = useTranslation(['core']);
 
@@ -84,6 +86,12 @@ export default function FileElement({
   });
   const handlePlay = async () => {
     if (disable) return;
+    
+    // Call onDownloadStart callback if provided
+    if (onDownloadStart) {
+      onDownloadStart();
+    }
+    
     setStartedDownload(true);
     if (resourceStatus?.isReady) {
       if (downloadLoader) return;

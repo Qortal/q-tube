@@ -479,7 +479,6 @@ export const FilterOptions = () => {
               };
             }}
           />
-          {/* <ListSuperLikeContainer /> */}
         </Box>
       )}
 

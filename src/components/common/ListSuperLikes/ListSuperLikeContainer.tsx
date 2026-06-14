@@ -1,5 +1,6 @@
+import CloseIcon from '@mui/icons-material/Close';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
-import { Box, Typography, useTheme } from '@mui/material';
+import { Box, IconButton, Typography, useTheme } from '@mui/material';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useAtom } from 'jotai';
 import { Spacer } from 'qapp-core';
@@ -12,7 +13,15 @@ import { CustomChip } from '../CustomChip.tsx';
 import { PopMenu, PopMenuRefType } from '../PopMenu.tsx';
 import ListSuperLikes from './ListSuperLikes';
 
-export const ListSuperLikeContainer = ({ from }) => {
+interface ListSuperLikeContainerProps {
+  from: string;
+  onClose?: () => void;
+}
+
+export const ListSuperLikeContainer = ({ from, onClose }: ListSuperLikeContainerProps) => {
+  const handleClose = () => {
+    if (onClose) onClose();
+  };
   const { t } = useTranslation(['core']);
 
   const [superlikelist] = useAtom(superlikesAtom);
@@ -53,11 +62,33 @@ export const ListSuperLikeContainer = ({ from }) => {
                   overflow: 'hidden',
                 }}
               >
-                <Typography sx={headerSX}>
-                  {t('core:likes.recent_super_likes', {
-                    postProcess: 'capitalizeEachFirstChar',
-                  })}
-                </Typography>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                  }}
+                >
+                  <Typography sx={headerSX}>
+                    {t('core:likes.recent_super_likes', {
+                      postProcess: 'capitalizeEachFirstChar',
+                    })}
+                  </Typography>
+                  {onClose && (
+                    <IconButton
+                      onClick={handleClose}
+                      sx={{
+                        color: 'white',
+                        padding: '4px',
+                        '&:hover': {
+                          backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                        },
+                      }}
+                    >
+                      <CloseIcon fontSize="small" />
+                    </IconButton>
+                  )}
+                </Box>
                 <Spacer height="10px" />
                 <ListSuperLikes superlikes={superlikelist} />
               </motion.div>

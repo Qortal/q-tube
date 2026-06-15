@@ -48,7 +48,7 @@
     "playlist_search_by_title": "Nach Titel suchen",
     "title_playlist": "Titel der Wiedergabeliste",
     "description_playlist": "Beschreibung der Wiedergabeliste",
-    "generationg_extracts": "Bilder werden generiert",
+    "processing_videos": "Bilder werden generiert",
     "create_new_playlist": "Neue Wiedergabeliste erstellen",
     "update_playlist_properties": "Eigenschaften der Wiedergabeliste aktualisieren",
     "add_videos_playlist": "Videos zur Wiedergabeliste hinzufügen",
@@ -79,8 +79,7 @@
     "subscriptions": "Abonnements",
     "watched_videos": "Angesehene Videos",
     "bookmarks": "Lesezeichen",
-    "your_playlists": "Deine Wiedergabelisten",
-    "your_videos": "Deine Videos"
+    "your_channel": "Dein Kanal"
   },
   "filters": {
     "most_recent": "neueste",

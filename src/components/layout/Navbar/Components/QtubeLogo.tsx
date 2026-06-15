@@ -1,8 +1,8 @@
+import { useMediaQuery } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import Logo from '../../../../assets/img/logo.webp';
 
 import { LogoContainer, ThemeSelectRow } from '../Navbar-styles.tsx';
-import { useMediaQuery } from '@mui/material';
 
 export const QtubeLogo = () => {
   const navigate = useNavigate();

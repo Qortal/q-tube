@@ -1,23 +1,24 @@
-import { useEffect, useState } from 'react';
-import ShortUniqueId from 'short-unique-id';
-import { hashWordWithoutPublicSalt, useAuth } from 'qapp-core';
+import { Box, Button } from '@mui/material';
+import { useSetAtom } from 'jotai';
 
 import localforage from 'localforage';
+import { hashWordWithoutPublicSalt, useAuth } from 'qapp-core';
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import ShortUniqueId from 'short-unique-id';
+
+import { COMMENT_BASE } from '../../../constants/Identifiers.ts';
+import { useIsSmall } from '../../../hooks/useIsSmall.tsx';
+import {
+  AltertObject,
+  setNotificationAtom,
+} from '../../../state/global/notifications.ts';
 import {
   CommentInput,
   CommentInputContainer,
   SubmitCommentButton,
 } from './Comments-styles';
 
-import { COMMENT_BASE } from '../../../constants/Identifiers.ts';
-import { useSetAtom } from 'jotai';
-import {
-  AltertObject,
-  setNotificationAtom,
-} from '../../../state/global/notifications.ts';
-import { Box, Button } from '@mui/material';
-import { useIsSmall } from '../../../hooks/useIsSmall.tsx';
-import { useTranslation } from 'react-i18next';
 const uid = new ShortUniqueId({ length: 7 });
 
 const notification = localforage.createInstance({
@@ -33,7 +34,7 @@ export interface Item {
   postName: string;
 }
 
-export async function addItem(item: Item): Promise<void> {
+async function addItem(item: Item): Promise<void> {
   // Get all items
   const notificationComments: Item[] =
     (await notification.getItem('comments')) || [];
@@ -60,7 +61,7 @@ export async function addItem(item: Item): Promise<void> {
   // Store the items back into localForage
   await notification.setItem('comments', notificationComments);
 }
-export async function updateItemDate(item: any): Promise<void> {
+async function updateItemDate(item: any): Promise<void> {
   // Get all items
   const notificationComments: Item[] =
     (await notification.getItem('comments')) || [];

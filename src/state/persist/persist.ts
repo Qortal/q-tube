@@ -1,8 +1,13 @@
 // usePersistAtom.ts
-import { atom, useAtom, useAtomValue, WritableAtom } from 'jotai';
-import { useMemo } from 'react';
+import {
+  atom,
+  getDefaultStore,
+  useAtom,
+  useAtomValue,
+  WritableAtom,
+} from 'jotai';
 import { useAuth } from 'qapp-core';
-import { getDefaultStore } from 'jotai';
+import { useMemo } from 'react';
 import { jotaiIndexedDBStorage } from './indexedDBSelectors';
 
 const atomCache = new Map<string, WritableAtom<any, [any], any>>();
@@ -11,7 +16,7 @@ const hydrationStatusCache = new Map<
   WritableAtom<boolean, [boolean], void>
 >();
 
-export function usePersistAtom<T>(key: string, initialValue: T) {
+function usePersistAtom<T>(key: string, initialValue: T) {
   const { address: authAddress } = useAuth();
   const address = authAddress || 'anonymous';
   const scopedKey = `${address}/${key}`;
@@ -55,7 +60,7 @@ export function usePersistAtom<T>(key: string, initialValue: T) {
   }, [scopedKey]);
 }
 
-export function useHydrationAtom(key: string) {
+function useHydrationAtom(key: string) {
   const { address: authAddress } = useAuth();
   const address = authAddress || 'anonymous';
   const scopedKey = `${address}/${key}`;

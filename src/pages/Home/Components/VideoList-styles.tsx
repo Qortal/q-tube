@@ -1,17 +1,15 @@
-import { styled } from '@mui/system';
 import {
   Box,
-  Grid,
-  Typography,
   Checkbox,
-  TextField,
+  Grid,
   InputLabel,
-  Autocomplete,
   Radio,
+  Typography,
 } from '@mui/material';
-import { fontSizeMedium, fontSizeSmall } from '../../../constants/Misc.ts';
+import { styled } from '@mui/system';
+import { fontSizeSmall } from '../../../constants/Misc.ts';
 
-export const VideoContainer = styled(Grid)(({ theme }) => ({
+const VideoContainer = styled(Grid)(({ theme }) => ({
   position: 'relative',
   display: 'flex',
   padding: '15px',
@@ -116,7 +114,7 @@ export const VideoManagerRow = styled(Box)(({ theme }) => ({
   width: '100%',
 }));
 
-export const FiltersCol = styled(Grid)(({ theme }) => ({
+const FiltersCol = styled(Grid)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   height: '100%',
@@ -140,7 +138,7 @@ export const FiltersRow = styled(Box)(({ theme }) => ({
   userSelect: 'none',
 }));
 
-export const FiltersCheckbox = styled(Checkbox)(({ theme }) => ({
+const FiltersCheckbox = styled(Checkbox)(({ theme }) => ({
   color: '#c0d4ff',
   '&.Mui-checked': {
     color: '#6596ff',
@@ -161,7 +159,7 @@ export const FiltersSubContainer = styled(Box)(({ theme }) => ({
   gap: '5px',
 }));
 
-export const FilterDropdownLabel = styled(InputLabel)(({ theme }) => ({
+const FilterDropdownLabel = styled(InputLabel)(({ theme }) => ({
   fontSize: '16px',
   color: theme.palette.text.primary,
 }));

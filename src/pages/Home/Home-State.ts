@@ -1,8 +1,7 @@
 import { useAuth } from 'qapp-core';
 import { usePersistedState } from '../../state/persist/persist.ts';
-import { VideoListType } from '../../types/video.ts';
-import { useSearchParams } from 'react-router-dom';
 import { Subscription } from '../../types/subscription.ts';
+import { VideoListType } from '../../types/video.ts';
 
 export const useHomeState = () => {
   const { isLoadingUser } = useAuth();
@@ -29,6 +28,11 @@ export const useHomeState = () => {
     usePersistedState<any>('filterCategory', '');
   const [filterSubCategory, setFilterSubCategory, isHydratedFilterSubCategory] =
     usePersistedState<any>('filterSubCategory', '');
+  const [
+    showRecentSuperLikes,
+    setShowRecentSuperLikes,
+    isHydratedShowRecentSuperLikes,
+  ] = usePersistedState('showRecentSuperLikes', true);
 
   const isHydrated =
     isHydratedFilterState &&
@@ -37,6 +41,7 @@ export const useHomeState = () => {
     isHydratedFilterSubCategory &&
     isHydratedFilterCategory &&
     isHydratedFilterMode &&
+    isHydratedShowRecentSuperLikes &&
     !isLoadingUser;
 
   const changeTab = (e: React.SyntheticEvent, newValue: VideoListType) => {
@@ -57,5 +62,7 @@ export const useHomeState = () => {
     isHydrated,
     setFilterMode,
     setFilterCategory,
+    showRecentSuperLikes,
+    setShowRecentSuperLikes,
   };
 };

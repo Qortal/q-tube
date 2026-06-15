@@ -1,20 +1,9 @@
-import { styled } from '@mui/system';
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  Box,
-  Button,
-  Grid,
-  Rating,
-  TextField,
-  Typography,
-  Select,
-} from '@mui/material';
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
+import { Box, Button, TextField, Typography } from '@mui/material';
+import { styled } from '@mui/system';
 import { TimesSVG } from '../../../assets/svgs/TimesSVG.tsx';
 
-export const DoubleLine = styled(Typography)`
+const DoubleLine = styled(Typography)`
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
@@ -28,9 +17,9 @@ export const ModalBody = styled(Box)(({ theme }) => ({
   position: 'absolute',
   backgroundColor: theme.palette.background.default,
   borderRadius: '4px',
-  top: '50%',
+  top: '10%',
   left: '50%',
-  transform: 'translate(-50%, -50%)',
+  transform: 'translate(-50%, 0)',
   width: '75%',
   maxWidth: '900px',
   padding: '15px 35px',
@@ -38,7 +27,7 @@ export const ModalBody = styled(Box)(({ theme }) => ({
   flexDirection: 'column',
   gap: '17px',
   overflowY: 'auto',
-  maxHeight: '95vh',
+  maxHeight: '90vh',
   boxShadow:
     theme.palette.mode === 'dark'
       ? '0px 4px 5px 0px hsla(0,0%,0%,0.14),  0px 1px 10px 0px hsla(0,0%,0%,0.12),  0px 2px 4px -1px hsla(0,0%,0%,0.2)'
@@ -184,14 +173,14 @@ export const AddCoverImageButton = styled(Button)(({ theme }) => ({
   gap: '5px',
 }));
 
-export const CrowdfundActionButtonRow = styled(Box)({
+export const FormActionButtonRow = styled(Box)({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',
   width: '100%',
 });
 
-export const CrowdfundActionButton = styled(Button)(({ theme }) => ({
+export const FormActionButton = styled(Button)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   fontSize: '16px',

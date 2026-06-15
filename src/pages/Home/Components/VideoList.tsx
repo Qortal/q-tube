@@ -1,6 +1,5 @@
-import { useCallback } from 'react';
-
-import { VideoCardContainer } from './VideoList-styles.tsx';
+import { Box, Typography } from '@mui/material';
+import { useAtomValue, useSetAtom } from 'jotai';
 import {
   LoaderListStatus,
   QortalSearchParams,
@@ -8,20 +7,21 @@ import {
   useAuth,
   useBlockedNames,
 } from 'qapp-core';
+import { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useIsMobile } from '../../../hooks/useIsMobile.tsx';
+import { scrollRefAtom } from '../../../state/global/navbar.ts';
+import { editVideoAtom } from '../../../state/publish/video.ts';
+
+import { VideoCardContainer } from './VideoList-styles.tsx';
 import { VideoListItem } from './VideoListItem.tsx';
 import { VideoLoaderItem } from './VideoLoaderItem.tsx';
-import { useAtomValue, useSetAtom } from 'jotai';
-import { editVideoAtom } from '../../../state/publish/video.ts';
-import { scrollRefAtom } from '../../../state/global/navbar.ts';
-import { Box, Typography } from '@mui/material';
-import { useIsMobile } from '../../../hooks/useIsMobile.tsx';
-import { useTranslation } from 'react-i18next';
 
 interface VideoListProps {
   searchParameters: QortalSearchParams;
   listName: string;
 }
-export const VideoList = ({ searchParameters, listName }: VideoListProps) => {
+const VideoList = ({ searchParameters, listName }: VideoListProps) => {
   const { t } = useTranslation(['core']);
 
   const { name: username } = useAuth();

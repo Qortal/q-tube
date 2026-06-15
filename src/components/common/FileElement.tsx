@@ -1,20 +1,19 @@
-import * as React from 'react';
-import { styled } from '@mui/material/styles';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import { ButtonBase, CircularProgress, Popover } from '@mui/material';
-import AttachFileIcon from '@mui/icons-material/AttachFile';
-import { useResourceStatus } from 'qapp-core';
-import { useLocation } from 'react-router-dom';
-import { useSetAtom } from 'jotai';
-import SaveIcon from '@mui/icons-material/Save';
 import DownloadIcon from '@mui/icons-material/Download';
+import SaveIcon from '@mui/icons-material/Save';
+import { ButtonBase, CircularProgress, Popover } from '@mui/material';
+import Box from '@mui/material/Box';
+import { styled } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
+import { useSetAtom } from 'jotai';
+import { useResourceStatus } from 'qapp-core';
+import * as React from 'react';
+import { useTranslation } from 'react-i18next';
+import { useLocation } from 'react-router-dom';
 
 import {
   AltertObject,
   setNotificationAtom,
 } from '../../state/global/notifications';
-import { useTranslation } from 'react-i18next';
 
 const Widget = styled('div')(({ theme }) => ({
   padding: 8,
@@ -56,6 +55,7 @@ interface IAudioElement {
   mode?: string;
   otherUser?: string;
   customStyles?: any;
+  onDownloadStart?: () => void;
 }
 
 export default function FileElement({
@@ -66,6 +66,7 @@ export default function FileElement({
   mimeType,
   disable,
   customStyles,
+  onDownloadStart,
 }: IAudioElement) {
   const { t } = useTranslation(['core']);
 
@@ -85,6 +86,12 @@ export default function FileElement({
   });
   const handlePlay = async () => {
     if (disable) return;
+    
+    // Call onDownloadStart callback if provided
+    if (onDownloadStart) {
+      onDownloadStart();
+    }
+    
     setStartedDownload(true);
     if (resourceStatus?.isReady) {
       if (downloadLoader) return;

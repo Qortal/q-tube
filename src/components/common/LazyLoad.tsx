@@ -1,29 +1,29 @@
-import React, { useState, useEffect, useRef } from 'react'
-import { useInView } from 'react-intersection-observer'
-import CircularProgress from '@mui/material/CircularProgress'
+import CircularProgress from '@mui/material/CircularProgress';
+import React, { useEffect, useRef, useState } from 'react';
+import { useInView } from 'react-intersection-observer';
 
 interface Props {
-  onLoadMore: () => Promise<void>
-  isLoading?: boolean
+  onLoadMore: () => Promise<void>;
+  isLoading?: boolean;
 }
 
 const LazyLoad: React.FC<Props> = ({ onLoadMore, isLoading }) => {
-  const [isFetching, setIsFetching] = useState<boolean>(false)
+  const [isFetching, setIsFetching] = useState<boolean>(false);
 
-  const firstLoad = useRef(false)
+  const firstLoad = useRef(false);
   const [ref, inView] = useInView({
-    threshold: 0.7
-  })
+    threshold: 0.7,
+  });
 
   useEffect(() => {
     if (inView) {
-      setIsFetching(true)
+      setIsFetching(true);
       onLoadMore().finally(() => {
-        setIsFetching(false)
-        firstLoad.current = true
-      })
+        setIsFetching(false);
+        firstLoad.current = true;
+      });
     }
-  }, [inView])
+  }, [inView]);
 
   return (
     <div
@@ -31,18 +31,18 @@ const LazyLoad: React.FC<Props> = ({ onLoadMore, isLoading }) => {
       style={{
         display: 'flex',
         justifyContent: 'center',
-        minHeight: '25px'
+        minHeight: '25px',
       }}
     >
       <div
         style={{
-          visibility: (isFetching || isLoading) ? 'visible' : 'hidden'
+          visibility: isFetching || isLoading ? 'visible' : 'hidden',
         }}
       >
         <CircularProgress />
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default LazyLoad
+export default LazyLoad;

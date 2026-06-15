@@ -48,7 +48,7 @@
     "playlist_search_by_title": "按标题搜索",
     "title_playlist": "播放列表标题",
     "description_playlist": "播放列表描述",
-    "generationg_extracts": "正在生成图像预览",
+    "processing_videos": "正在生成图像预览",
     "create_new_playlist": "创建新播放列表",
     "update_playlist_properties": "更新播放列表属性",
     "add_videos_playlist": "将视频添加到播放列表",
@@ -79,8 +79,7 @@
     "subscriptions": "订阅",
     "watched_videos": "已观看视频",
     "bookmarks": "收藏",
-    "your_playlists": "你的播放列表",
-    "your_videos": "你的视频"
+    "your_channel": "你的频道"
   },
   "filters": {
     "most_recent": "最新",

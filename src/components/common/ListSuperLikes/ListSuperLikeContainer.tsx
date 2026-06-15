@@ -1,23 +1,27 @@
-import {
-  Box,
-  Tooltip,
-  Typography,
-  useMediaQuery,
-  useTheme,
-} from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+import { Box, IconButton, Typography, useTheme } from '@mui/material';
+import { AnimatePresence, motion } from 'framer-motion';
+import { useAtom } from 'jotai';
+import { Spacer } from 'qapp-core';
 import { useRef } from 'react';
-import { CrowdfundActionButton } from '../../Publish/PublishVideo/PublishVideo-styles.tsx';
+import { useTranslation } from 'react-i18next';
+import { useIsSmall } from '../../../hooks/useIsSmall.tsx';
+import { superlikesAtom } from '../../../state/global/superlikes.ts';
+import { FormActionButton } from '../../Publish/PublishVideo/PublishVideo-styles.tsx';
+import { CustomChip } from '../CustomChip.tsx';
 import { PopMenu, PopMenuRefType } from '../PopMenu.tsx';
 import ListSuperLikes from './ListSuperLikes';
-import ThumbUpIcon from '@mui/icons-material/ThumbUp';
-import { useAtom } from 'jotai';
-import { superlikesAtom } from '../../../state/global/superlikes.ts';
-import { Spacer } from 'qapp-core';
-import { AnimatePresence, motion } from 'framer-motion';
-import { CustomChip } from '../../../pages/Home/FilterOptions.tsx';
-import { useIsSmall } from '../../../hooks/useIsSmall.tsx';
-import { useTranslation } from 'react-i18next';
-export const ListSuperLikeContainer = ({ from }) => {
+
+interface ListSuperLikeContainerProps {
+  from: string;
+  onClose?: () => void;
+}
+
+export const ListSuperLikeContainer = ({ from, onClose }: ListSuperLikeContainerProps) => {
+  const handleClose = () => {
+    if (onClose) onClose();
+  };
   const { t } = useTranslation(['core']);
 
   const [superlikelist] = useAtom(superlikesAtom);
@@ -58,11 +62,33 @@ export const ListSuperLikeContainer = ({ from }) => {
                   overflow: 'hidden',
                 }}
               >
-                <Typography sx={headerSX}>
-                  {t('core:likes.recent_super_likes', {
-                    postProcess: 'capitalizeEachFirstChar',
-                  })}
-                </Typography>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                  }}
+                >
+                  <Typography sx={headerSX}>
+                    {t('core:likes.recent_super_likes', {
+                      postProcess: 'capitalizeEachFirstChar',
+                    })}
+                  </Typography>
+                  {onClose && (
+                    <IconButton
+                      onClick={handleClose}
+                      sx={{
+                        color: 'white',
+                        padding: '4px',
+                        '&:hover': {
+                          backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                        },
+                      }}
+                    >
+                      <CloseIcon fontSize="small" />
+                    </IconButton>
+                  )}
+                </Box>
                 <Spacer height="10px" />
                 <ListSuperLikes superlikes={superlikelist} />
               </motion.div>
@@ -128,7 +154,7 @@ export const ListSuperLikeContainer = ({ from }) => {
                 postProcess: 'capitalizeEachFirstChar',
               })}
             </Typography>
-            <CrowdfundActionButton
+            <FormActionButton
               variant="contained"
               color="error"
               size="small"
@@ -139,7 +165,7 @@ export const ListSuperLikeContainer = ({ from }) => {
               {t('core:action.close', {
                 postProcess: 'capitalizeFirstWord',
               })}
-            </CrowdfundActionButton>
+            </FormActionButton>
           </Box>
           <ListSuperLikes superlikes={superlikelist} />
         </PopMenu>

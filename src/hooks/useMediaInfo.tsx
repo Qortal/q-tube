@@ -1,9 +1,9 @@
 // hooks/useMediaInfo.ts
-import { useRef, useEffect } from 'react';
 import mediaInfoFactory, {
   type MediaInfo,
   type ReadChunkFunc,
 } from 'mediainfo.js';
+import { useEffect, useRef } from 'react';
 
 function makeReadChunk(file: File): ReadChunkFunc {
   return async (chunkSize: number, offset: number) =>

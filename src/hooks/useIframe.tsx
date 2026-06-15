@@ -1,7 +1,7 @@
-import { useEffect } from 'react';
-import { To, useNavigate } from 'react-router-dom';
 import { useSetAtom } from 'jotai';
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { To, useNavigate } from 'react-router-dom';
 import { supportedLanguages } from '../i18n/i18n';
 import { EnumTheme, themeAtom } from '../state/global/theme';
 

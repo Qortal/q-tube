@@ -5,11 +5,13 @@ import {
   InputAdornment,
   InputLabel,
   Modal,
-  Tooltip,
   useMediaQuery,
   useTheme,
 } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import { useSetAtom } from 'jotai';
+import { hashWordWithoutPublicSalt, useAuth, useQortBalance } from 'qapp-core';
+import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import ShortUniqueId from 'short-unique-id';
 import qortImg from '../../../assets/img/qort.png';
 import {
@@ -22,27 +24,23 @@ import {
   fontSizeMedium,
   minPriceSuperLike,
 } from '../../../constants/Misc.ts';
-import BoundedNumericTextField from '../../../utils/BoundedNumericTextField.tsx';
+import {
+  AltertObject,
+  setNotificationAtom,
+} from '../../../state/global/notifications.ts';
 import { numberToInt, truncateNumber } from '../../../utils/numberFunctions.ts';
 import { objectToBase64 } from '../../../utils/PublishFormatter.ts';
-import { getUserBalance } from '../../../utils/qortalRequestFunctions.ts';
 import { MultiplePublish } from '../../Publish/MultiplePublish/MultiplePublishAll.tsx';
 import {
-  CrowdfundActionButton,
-  CrowdfundActionButtonRow,
+  FormActionButton,
+  FormActionButtonRow,
   ModalBody,
   NewCrowdfundTitle,
   Spacer,
 } from '../../Publish/PublishVideo/PublishVideo-styles.tsx';
 import { CommentInput } from '../Comments/Comments-styles.tsx';
-import { hashWordWithoutPublicSalt, useAuth, useQortBalance } from 'qapp-core';
+import BoundedNumericTextfield from '../Textfields/BoundedNumericTextfield.tsx';
 import { CustomTooltip } from './CustomTooltip.tsx';
-import { useSetAtom } from 'jotai';
-import {
-  AltertObject,
-  setNotificationAtom,
-} from '../../../state/global/notifications.ts';
-import { useTranslation } from 'react-i18next';
 
 const uid = new ShortUniqueId({ length: 7 });
 
@@ -83,7 +81,8 @@ export const SuperLike = ({
       if (!name) throw new Error("Could not retrieve content creator's name");
       const estimatedTransactionFees = 0.1;
       const donationExceedsBalance =
-        superlikeDonationAmount + estimatedTransactionFees >= +currentBalance;
+        superlikeDonationAmount + estimatedTransactionFees >=
+        (currentBalance || 0);
       if (donationExceedsBalance) {
         throw new Error('Total donations exceeds current balance');
       }
@@ -107,7 +106,7 @@ export const SuperLike = ({
           `The amount is ${superlikeDonationAmount}, but it needs to be at least ${minPriceSuperLike} QORT`
         );
 
-      const listOfPublishes = [];
+      const listOfPublishes: QortalRequestOptions[] = [];
 
       const res = await qortalRequest({
         action: 'SEND_COIN',
@@ -139,7 +138,7 @@ export const SuperLike = ({
       // Description is obtained from raw data
       //   const base64 = utf8ToBase64(comment);
 
-      const requestBodyJson: any = {
+      const requestBodyJson: QortalRequestOptions = {
         action: 'PUBLISH_QDN_RESOURCE',
         name: username,
         service: 'BLOG_COMMENT',
@@ -289,11 +288,11 @@ export const SuperLike = ({
                   postProcess: 'capitalizeFirstChar',
                 })}
               </InputLabel>
-              <BoundedNumericTextField
+              <BoundedNumericTextfield
                 addIconButtons={!isScreenSmall}
                 minValue={+minPriceSuperLike}
                 initialValue={minPriceSuperLike.toString()}
-                maxValue={numberToInt(+currentBalance)}
+                maxValue={numberToInt(currentBalance || 0)}
                 allowDecimals={false}
                 allowNegatives={false}
                 id="standard-adornment-amount"
@@ -355,7 +354,7 @@ export const SuperLike = ({
               />
             </Box>
           </DialogContent>
-          <CrowdfundActionButtonRow>
+          <FormActionButtonRow>
             <Box
               sx={{
                 display: 'flex',
@@ -365,7 +364,7 @@ export const SuperLike = ({
                 width: '100%',
               }}
             >
-              <CrowdfundActionButton
+              <FormActionButton
                 onClick={() => {
                   setIsOpen(false);
                   resetValues();
@@ -377,9 +376,9 @@ export const SuperLike = ({
                 {t('core:action.cancel', {
                   postProcess: 'capitalizeFirstChar',
                 })}
-              </CrowdfundActionButton>
+              </FormActionButton>
 
-              <CrowdfundActionButton
+              <FormActionButton
                 variant="contained"
                 onClick={() => {
                   publishSuperLike();
@@ -388,9 +387,9 @@ export const SuperLike = ({
                 {t('core:publish.publish_action', {
                   postProcess: 'capitalizeFirstChar',
                 })}
-              </CrowdfundActionButton>
+              </FormActionButton>
             </Box>
-          </CrowdfundActionButtonRow>
+          </FormActionButtonRow>
         </ModalBody>
       </Modal>
       {isOpenMultiplePublish && (

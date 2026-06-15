@@ -1,12 +1,12 @@
 import ShareIcon from '@mui/icons-material/Share';
 import { Box, ButtonBase } from '@mui/material';
-import { CustomTooltip } from './CustomTooltip.tsx';
+import { useSetAtom } from 'jotai';
 
 import {
   AltertObject,
   setNotificationAtom,
 } from '../../../state/global/notifications.ts';
-import { useSetAtom } from 'jotai';
+import { CustomTooltip } from './CustomTooltip.tsx';
 
 export interface CopyLinkButtonProps {
   link: string;

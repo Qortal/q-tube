@@ -1,9 +1,9 @@
 import SavedSearchIcon from '@mui/icons-material/SavedSearch';
-import { IconButton, Tooltip } from '@mui/material';
+import { IconButton } from '@mui/material';
 import { createQortalLink, IndexCategory, useGlobal } from 'qapp-core';
-import { CustomTooltip } from './CustomTooltip.tsx';
-import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useLocation } from 'react-router-dom';
+import { CustomTooltip } from './CustomTooltip.tsx';
 
 export interface IndexButtonProps {
   channelName: string;

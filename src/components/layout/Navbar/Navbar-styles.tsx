@@ -1,7 +1,7 @@
-import { AppBar, Button, Typography, Box } from '@mui/material';
+import { AppBar, Box, Button, Typography } from '@mui/material';
 import { styled } from '@mui/system';
-import { LightModeSVG } from '../../../assets/svgs/LightModeSVG';
 import { DarkModeSVG } from '../../../assets/svgs/DarkModeSVG';
+import { LightModeSVG } from '../../../assets/svgs/LightModeSVG';
 import { fontSizeSmall } from '../../../constants/Misc.ts';
 
 export const CustomAppBar = styled(AppBar)(({ theme }) => ({
@@ -22,12 +22,12 @@ export const LogoContainer = styled('div')({
   alignItems: 'center',
 });
 
-export const CustomTitle = styled(Typography)({
+const CustomTitle = styled(Typography)({
   fontWeight: 600,
   color: '#000000',
 });
 
-export const AuthenticateButton = styled(Button)(({ theme }) => ({
+const AuthenticateButton = styled(Button)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'row',
   alignItems: 'center',
@@ -78,7 +78,7 @@ export const DropdownText = styled(Typography)(({ theme }) => ({
   userSelect: 'none',
 }));
 
-export const NavbarName = styled(Typography)(({ theme }) => ({
+const NavbarName = styled(Typography)(({ theme }) => ({
   fontSize: fontSizeSmall,
   color: theme.palette.text.primary,
   marginRight: '10px',
@@ -91,7 +91,7 @@ export const ThemeSelectRow = styled(Box)({
   height: '100%',
 });
 
-export const LightModeIcon = styled(LightModeSVG)(({ theme }) => ({
+const LightModeIcon = styled(LightModeSVG)(({ theme }) => ({
   transition: 'all 0.1s ease-in-out',
   '&:hover': {
     cursor: 'pointer',
@@ -102,7 +102,7 @@ export const LightModeIcon = styled(LightModeSVG)(({ theme }) => ({
   },
 }));
 
-export const DarkModeIcon = styled(DarkModeSVG)(({ theme }) => ({
+const DarkModeIcon = styled(DarkModeSVG)(({ theme }) => ({
   transition: 'all 0.1s ease-in-out',
   '&:hover': {
     cursor: 'pointer',

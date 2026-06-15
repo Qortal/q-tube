@@ -1,9 +1,9 @@
+import { useAtom } from 'jotai';
 import { FollowButton } from '../../../components/common/ContentButtons/FollowButton.tsx';
 import { SubscribeButton } from '../../../components/common/ContentButtons/SubscribeButton.tsx';
+import { namesAtom } from '../../../state/global/names';
 import { ChannelParams } from './ChannelName.tsx';
 import { StyledCardColComment } from './VideoContent-styles.tsx';
-import { namesAtom } from '../../../state/global/names';
-import { useAtom } from 'jotai';
 
 export const ChannelButtons = ({ channelName, sx }: ChannelParams) => {
   const [names] = useAtom(namesAtom);

@@ -1,6 +1,5 @@
-import { useCallback } from 'react';
-
-import { VideoCardContainer } from './VideoList-styles.tsx';
+import { Box, Typography } from '@mui/material';
+import { useAtomValue, useSetAtom } from 'jotai';
 import {
   LoaderListStatus,
   QortalMetadata,
@@ -8,13 +7,14 @@ import {
   useAuth,
   useBlockedNames,
 } from 'qapp-core';
+import { useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
+import { scrollRefAtom } from '../../../state/global/navbar.ts';
+import { editVideoAtom } from '../../../state/publish/video.ts';
+
+import { VideoCardContainer } from './VideoList-styles.tsx';
 import { VideoListItem } from './VideoListItem.tsx';
 import { VideoLoaderItem } from './VideoLoaderItem.tsx';
-import { useAtomValue, useSetAtom } from 'jotai';
-import { editVideoAtom } from '../../../state/publish/video.ts';
-import { scrollRefAtom } from '../../../state/global/navbar.ts';
-import { Box, Typography } from '@mui/material';
-import { useTranslation } from 'react-i18next';
 
 interface VideoListProps {
   listName: string;

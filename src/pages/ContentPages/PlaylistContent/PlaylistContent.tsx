@@ -6,30 +6,28 @@ import {
   Typography,
   useMediaQuery,
 } from '@mui/material';
+import { Service } from 'qapp-core';
+import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useNavigate, useParams } from 'react-router-dom';
 import { CommentSection } from '../../../components/common/Comments/CommentSection.tsx';
+import { PageTransition } from '../../../components/common/PageTransition.tsx';
 import { SuperLikesSection } from '../../../components/common/SuperLikesList/SuperLikesSection.tsx';
-import { DisplayHtml } from '../../../components/common/TextEditor/DisplayHtml.tsx';
 import { VideoPlayer } from '../../../components/common/VideoPlayer/VideoPlayer.tsx';
 import { Playlists } from '../../../components/Playlists/Playlists.tsx';
-import { fontSizeSmall, minFileSize } from '../../../constants/Misc.ts';
+import { minFileSize } from '../../../constants/Misc.ts';
+import { useIsSmall } from '../../../hooks/useIsSmall.tsx';
 import { formatBytes } from '../../../utils/numberFunctions.ts';
 import { formatDate } from '../../../utils/time.ts';
 import { VideoActionsBar } from '../VideoContent/VideoActionsBar.tsx';
+import { VideoContentContainer } from '../VideoContent/VideoContent-styles.tsx';
+import { CollapsibleDescription } from '../VideoContent/VideoContent.tsx';
 import { usePlaylistContentState } from './PlaylistContent-State.ts';
 import {
   Spacer,
-  VideoDescription,
   VideoPlayerContainer,
   VideoTitle,
 } from './PlaylistContent-styles.tsx';
-import { Navigate, useNavigate, useParams } from 'react-router-dom';
-import { useEffect } from 'react';
-import { Service } from 'qapp-core';
-import { PageTransition } from '../../../components/common/PageTransition.tsx';
-import { useIsSmall } from '../../../hooks/useIsSmall.tsx';
-import { VideoContentContainer } from '../VideoContent/VideoContent-styles.tsx';
-import { CollapsibleDescription } from '../VideoContent/VideoContent.tsx';
-import { useTranslation } from 'react-i18next';
 
 export const PlaylistContent = () => {
   const {
@@ -41,16 +39,11 @@ export const PlaylistContent = () => {
     videoReference,
     videoCover,
     theme,
-    descriptionHeight,
     nextVideo,
     onEndVideo,
     doAutoPlay,
     playlistData,
     setSuperLikeList,
-    isExpandedDescription,
-    setIsExpandedDescription,
-    contentRef,
-    descriptionThreshold,
     loadingSuperLikes,
   } = usePlaylistContentState();
   const { t, i18n } = useTranslation(['core']);

@@ -48,7 +48,7 @@
     "playlist_search_by_title": "rechercher par titre",
     "title_playlist": "titre de la playlist",
     "description_playlist": "description de la playlist",
-    "generationg_extracts": "génération d'extraits d'images",
+    "processing_videos": "génération d'extraits d'images",
     "create_new_playlist": "créer une nouvelle playlist",
     "update_playlist_properties": "mettre à jour les propriétés de la playlist",
     "add_videos_playlist": "ajouter des vidéos à la playlist",
@@ -75,12 +75,11 @@
     "blocked_names": "noms bloqués"
   },
   "sidenav": {
-    "home": "accueil",
-    "subscriptions": "abonnements",
-    "watched_videos": "vidéos regardées",
-    "bookmarks": "favoris",
-    "your_playlists": "vos playlists",
-    "your_videos": "vos vidéos"
+    "home": "Accueil",
+    "subscriptions": "Abonnements",
+    "watched_videos": "Vidéos Regardées",
+    "bookmarks": "Favoris",
+    "your_channel": "Votre Chaîne"
   },
   "filters": {
     "most_recent": "les plus récents",

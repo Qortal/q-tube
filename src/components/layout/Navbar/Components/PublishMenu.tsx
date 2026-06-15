@@ -1,25 +1,20 @@
-import { headerIconSize, menuIconSize } from '../../../../constants/Misc.ts';
+import AddIcon from '@mui/icons-material/Add';
+import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
+import { Button, ButtonBase, useTheme } from '@mui/material';
+import { useSetAtom } from 'jotai';
+import { useRef } from 'react';
+import { useTranslation } from 'react-i18next';
+import { menuIconSize } from '../../../../constants/Misc.ts';
+import { useIsSmall } from '../../../../hooks/useIsSmall.tsx';
+import { editPlaylistAtom } from '../../../../state/publish/playlist.ts';
+import { PopMenu, PopMenuRefType } from '../../../common/PopMenu.tsx';
 import { StyledButton } from '../../../Publish/PublishVideo/PublishVideo-styles.tsx';
 import { PublishVideo } from '../../../Publish/PublishVideo/PublishVideo.tsx';
-import {
-  AvatarContainer,
-  DropdownContainer,
-  DropdownText,
-  NavbarName,
-} from '../Navbar-styles.tsx';
-import AddBoxIcon from '@mui/icons-material/AddBox';
-import { PopMenu, PopMenuRefType } from '../../../common/PopMenu.tsx';
-import { useRef } from 'react';
-import { Button, ButtonBase, useMediaQuery, useTheme } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
+import { DropdownContainer } from '../Navbar-styles.tsx';
+
 export interface PublishButtonsProps {
   isDisplayed: boolean;
 }
-import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
-import { editPlaylistAtom } from '../../../../state/publish/playlist.ts';
-import { useSetAtom } from 'jotai';
-import { useIsSmall } from '../../../../hooks/useIsSmall.tsx';
-import { useTranslation } from 'react-i18next';
 
 export const PublishMenu = ({ isDisplayed }: PublishButtonsProps) => {
   const { t } = useTranslation(['core']);
@@ -40,6 +35,7 @@ export const PublishMenu = ({ isDisplayed }: PublishButtonsProps) => {
                   startIcon={<AddIcon />}
                   color="info"
                   variant="contained"
+                  sx={{ color: 'white' }}
                 >
                   {t('core:publish.publish_action', {
                     postProcess: 'capitalizeFirstChar',

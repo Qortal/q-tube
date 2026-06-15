@@ -1,20 +1,11 @@
+import { Button, List, ListItem, Typography, useTheme } from '@mui/material';
+import { useBlockedNames } from 'qapp-core';
 import React, { useState } from 'react';
 import {
-  Box,
-  Button,
-  Modal,
-  Typography,
-  SelectChangeEvent,
-  ListItem,
-  List,
-  useTheme,
-} from '@mui/material';
-import {
-  StyledModal,
   ModalContent,
   ModalText,
+  StyledModal,
 } from './BlockedNamesModal-styles';
-import { useBlockedNames } from 'qapp-core';
 
 interface PostModalProps {
   open: boolean;

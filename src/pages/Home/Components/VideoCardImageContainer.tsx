@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState } from 'react';
 import ResponsiveImage from '../../../components/ResponsiveImage.tsx';
 
 export const VideoCardImageContainer = ({

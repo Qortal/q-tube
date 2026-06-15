@@ -1,3 +1,5 @@
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {
   Avatar,
   Box,
@@ -11,32 +13,25 @@ import {
   Typography,
   useTheme,
 } from '@mui/material';
+import { createAvatarLink, Spacer, useAuth } from 'qapp-core';
 import { useCallback, useState } from 'react';
-import { CommentEditor } from './CommentEditor';
-import {
-  CardContentContainerComment,
-  CommentActionButtonRow,
-  CommentDateText,
-  CreatedTextComment,
-  EditReplyButton,
-  StyledCardComment,
-} from './Comments-styles';
-import { StyledCardHeaderComment } from './Comments-styles';
-import { StyledCardColComment } from './Comments-styles';
-import { AuthorTextComment } from './Comments-styles';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import ExpandLessIcon from '@mui/icons-material/ExpandLess';
-import {
-  StyledCardContentComment,
-  LoadMoreCommentsButton as CommentActionButton,
-} from './Comments-styles';
+import { useTranslation } from 'react-i18next';
+import { useIsSmall } from '../../../hooks/useIsSmall';
+import { formatDate } from '../../../utils/time';
 
 import Portal from '../Portal';
-import { formatDate } from '../../../utils/time';
-import { createAvatarLink, Spacer, useAuth } from 'qapp-core';
-import { useIsSmall } from '../../../hooks/useIsSmall';
-import { useTranslation } from 'react-i18next';
-import i18n from '../../../i18n/i18n';
+import { CommentEditor } from './CommentEditor';
+import {
+  AuthorTextComment,
+  CardContentContainerComment,
+  CommentActionButtonRow,
+  CreatedTextComment,
+  StyledCardColComment,
+  StyledCardComment,
+  StyledCardContentComment,
+  StyledCardHeaderComment,
+} from './Comments-styles';
+
 interface CommentProps {
   comment: any;
   postId: string;
@@ -222,7 +217,7 @@ export const Comment = ({
   );
 };
 
-export const CommentCard = ({
+const CommentCard = ({
   message,
   created,
   name,

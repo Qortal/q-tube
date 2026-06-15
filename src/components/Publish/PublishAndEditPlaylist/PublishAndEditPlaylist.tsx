@@ -1,16 +1,3 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import {
-  AddCoverImageButton,
-  AddLogoIcon,
-  CoverImagePreview,
-  CrowdfundActionButton,
-  CrowdfundActionButtonRow,
-  CustomInputField,
-  ModalBody,
-  LogoPreviewRow,
-  NewCrowdfundTitle,
-  TimesIcon,
-} from './Upload-styles.tsx';
 import {
   Box,
   FormControl,
@@ -23,32 +10,44 @@ import {
   Typography,
   useTheme,
 } from '@mui/material';
+import { useAtom, useSetAtom } from 'jotai';
+import { useAuth, useGlobal } from 'qapp-core';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import ShortUniqueId from 'short-unique-id';
-
-import { objectToBase64 } from '../../../utils/PublishFormatter.ts';
-import ImageUploader from '../../common/ImageUploader.tsx';
 import { categories, subCategories } from '../../../constants/Categories.ts';
-import { Playlists } from '../../Playlists/Playlists.tsx';
-import { PlaylistListEdit } from '../PlaylistListEdit/PlaylistListEdit.tsx';
-import { TextEditor } from '../../common/TextEditor/TextEditor.tsx';
-import { extractTextFromHTML } from '../../common/TextEditor/utils.ts';
 import {
   QTUBE_PLAYLIST_BASE,
   QTUBE_VIDEO_BASE,
 } from '../../../constants/Identifiers.ts';
-import { useAuth, useGlobal } from 'qapp-core';
 import {
   AltertObject,
   setNotificationAtom,
 } from '../../../state/global/notifications.ts';
-import { useAtom, useSetAtom } from 'jotai';
 import { editPlaylistAtom } from '../../../state/publish/playlist.ts';
-import { useTranslation } from 'react-i18next';
+
+import { objectToBase64 } from '../../../utils/PublishFormatter.ts';
+import ImageUploader from '../../common/ImageUploader.tsx';
+import { TextEditor } from '../../common/TextEditor/TextEditor.tsx';
+import { extractTextFromHTML } from '../../common/TextEditor/utils.ts';
+import { PlaylistListEdit } from '../PlaylistListEdit/PlaylistListEdit.tsx';
+import {
+  AddCoverImageButton,
+  AddLogoIcon,
+  CoverImagePreview,
+  CrowdfundActionButton,
+  CrowdfundActionButtonRow,
+  CustomInputField,
+  LogoPreviewRow,
+  ModalBody,
+  NewCrowdfundTitle,
+  TimesIcon,
+} from './Upload-styles.tsx';
 
 const uid = new ShortUniqueId();
 const shortuid = new ShortUniqueId({ length: 5 });
 
-export const EditPlaylist = () => {
+export const PublishAndEditPlaylist = () => {
   const { t } = useTranslation(['core', 'category']);
 
   const theme = useTheme();
@@ -67,6 +66,8 @@ export const EditPlaylist = () => {
     useState<any>(null);
   const [selectedSubCategoryVideos, setSelectedSubCategoryVideos] =
     useState<any>(null);
+  const [hasCharacterRemovalError, setHasCharacterRemovalError] =
+    useState(false);
 
   const isNew = useMemo(() => {
     return editVideoProperties?.mode === 'new';
@@ -98,6 +99,10 @@ export const EditPlaylist = () => {
           if (responseDataSearchVid?.length > 0) {
             const resourceData2 = responseDataSearchVid[0];
             if (resourceData2) {
+              // Preserve playlistTitle if it exists in the original video data
+              if (vid.playlistTitle) {
+                resourceData2.playlistTitle = vid.playlistTitle;
+              }
               videos.push(resourceData2);
             }
           }
@@ -216,6 +221,7 @@ export const EditPlaylist = () => {
           name: item.name,
           service: item.service,
           code: codeValue,
+          playlistTitle: item.playlistTitle || item?.metadata?.title || '', // Use playlistTitle first, then fallback to metadata title
         };
       });
       const id = uid.rnd();
@@ -261,6 +267,8 @@ export const EditPlaylist = () => {
           30
         )}_${id}`;
       }
+
+      console.log('Publishing Playlist Data: ', playlistObject);
       const requestBodyJson: any = {
         action: 'PUBLISH_QDN_RESOURCE',
         name: username,
@@ -346,16 +354,49 @@ export const EditPlaylist = () => {
     setPlaylistData(copyData);
   };
 
-  const addVideo = (data) => {
-    const copyData = structuredClone(playlistData);
-    copyData.videos = [...copyData.videos, { ...data }];
-    setPlaylistData(copyData);
+  const addVideo = async (data) => {
+    // Fetch the full title for the new video
+    try {
+      const response = await qortalRequest({
+        action: 'FETCH_QDN_RESOURCE',
+        name: data.name,
+        service: data.service,
+        identifier: data.identifier,
+      });
+
+      if (response && !response.error && response.title) {
+        // Add the video with the fetched full title as playlistTitle
+        const copyData = structuredClone(playlistData);
+        copyData.videos = [
+          ...copyData.videos,
+          {
+            ...data,
+            playlistTitle: response.title,
+          },
+        ];
+        setPlaylistData(copyData);
+      } else {
+        // Fallback to original behavior if fetch fails
+        const copyData = structuredClone(playlistData);
+        copyData.videos = [...copyData.videos, { ...data }];
+        setPlaylistData(copyData);
+      }
+    } catch (error) {
+      // Fallback to original behavior if fetch fails
+      const copyData = structuredClone(playlistData);
+      copyData.videos = [...copyData.videos, { ...data }];
+      setPlaylistData(copyData);
+    }
   };
 
   const updateVideoList = (list) => {
     const copyData = structuredClone(playlistData);
     copyData.videos = [...list];
     setPlaylistData(copyData);
+  };
+
+  const handleCharacterRemovalError = (hasError) => {
+    setHasCharacterRemovalError(hasError);
   };
 
   return (
@@ -537,6 +578,7 @@ export const EditPlaylist = () => {
               updateVideoList={updateVideoList}
               removeVideo={removeVideo}
               addVideo={addVideo}
+              onCharacterRemovalError={handleCharacterRemovalError}
             />
           </>
 
@@ -564,6 +606,7 @@ export const EditPlaylist = () => {
                 onClick={() => {
                   publishQDNResource();
                 }}
+                disabled={hasCharacterRemovalError}
               >
                 {t('core:publish.publish_action', {
                   postProcess: 'capitalizeFirstChar',

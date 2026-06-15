@@ -9,7 +9,9 @@ import {
   useMediaQuery,
   useTheme,
 } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import { useSetAtom } from 'jotai';
+import { hashWordWithoutPublicSalt, useAuth, useQortBalance } from 'qapp-core';
+import React, { useState } from 'react';
 import ShortUniqueId from 'short-unique-id';
 import qortImg from '../../../assets/img/qort.png';
 import {
@@ -22,29 +24,22 @@ import {
   fontSizeMedium,
   minPriceSuperDislike,
 } from '../../../constants/Misc.ts';
-import BoundedNumericTextField from '../../../utils/BoundedNumericTextField.tsx';
+import {
+  AltertObject,
+  setNotificationAtom,
+} from '../../../state/global/notifications.ts';
 import { numberToInt, truncateNumber } from '../../../utils/numberFunctions.ts';
 import { objectToBase64 } from '../../../utils/PublishFormatter.ts';
 import { MultiplePublish } from '../../Publish/MultiplePublish/MultiplePublishAll.tsx';
 import {
-  CrowdfundActionButton,
-  CrowdfundActionButtonRow,
+  FormActionButton,
+  FormActionButtonRow,
   ModalBody,
   NewCrowdfundTitle,
   Spacer,
 } from '../../Publish/PublishVideo/PublishVideo-styles.tsx';
 import { CommentInput } from '../Comments/Comments-styles.tsx';
-import {
-  hashWordWithoutPublicSalt,
-  useAuth,
-  useQortBalance,
-  useQortBalance,
-} from 'qapp-core';
-import { useSetAtom } from 'jotai';
-import {
-  AltertObject,
-  setNotificationAtom,
-} from '../../../state/global/notifications.ts';
+import BoundedNumericTextfield from '../Textfields/BoundedNumericTextfield.tsx';
 
 const uid = new ShortUniqueId({ length: 4 });
 
@@ -86,7 +81,7 @@ export const SuperDislike = ({
       const estimatedTransactionFees = 0.1;
       const donationExceedsBalance =
         superDislikeDonationAmount + estimatedTransactionFees >=
-        +currentBalance;
+        (currentBalance || 0);
       if (donationExceedsBalance) {
         throw new Error('Total donations exceeds current balance');
       }
@@ -292,11 +287,11 @@ export const SuperDislike = ({
               >
                 Amount
               </InputLabel>
-              <BoundedNumericTextField
+              <BoundedNumericTextfield
                 addIconButtons={!isScreenSmall}
                 minValue={+minPriceSuperDislike}
                 initialValue={minPriceSuperDislike.toString()}
-                maxValue={numberToInt(+currentBalance)}
+                maxValue={numberToInt(currentBalance || 0)}
                 allowDecimals={false}
                 allowNegatives={false}
                 id="standard-adornment-amount"
@@ -356,7 +351,7 @@ export const SuperDislike = ({
               />
             </Box>
           </DialogContent>
-          <CrowdfundActionButtonRow>
+          <FormActionButtonRow>
             <Box
               sx={{
                 display: 'flex',
@@ -366,7 +361,7 @@ export const SuperDislike = ({
                 width: '100%',
               }}
             >
-              <CrowdfundActionButton
+              <FormActionButton
                 onClick={() => {
                   setIsOpen(false);
                   resetValues();
@@ -376,18 +371,18 @@ export const SuperDislike = ({
                 color="error"
               >
                 Cancel
-              </CrowdfundActionButton>
+              </FormActionButton>
 
-              <CrowdfundActionButton
+              <FormActionButton
                 variant="contained"
                 onClick={() => {
                   publishSuperDislike();
                 }}
               >
                 Publish
-              </CrowdfundActionButton>
+              </FormActionButton>
             </Box>
-          </CrowdfundActionButtonRow>
+          </FormActionButtonRow>
         </ModalBody>
       </Modal>
       {isOpenMultiplePublish && (

@@ -5,17 +5,16 @@ import Avatar from '@mui/material/Avatar';
 import Divider from '@mui/material/Divider';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
-import ListItemAvatar from '@mui/material/ListItemAvatar';
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
+import { useAtomValue } from 'jotai';
+import { Spacer } from 'qapp-core';
 import * as React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { fontSizeSmall } from '../../../constants/Misc.ts';
-import { formatDate } from '../../../utils/time.ts';
-import { useAtomValue } from 'jotai';
 import { hashMapSuperlikesAtom } from '../../../state/global/superlikes.ts';
-import { Spacer } from 'qapp-core';
-import { useTranslation } from 'react-i18next';
+import { formatDate } from '../../../utils/time.ts';
 
 const truncateMessage = (message) => {
   return message.length > 40 ? message.slice(0, 40) + '...' : message;

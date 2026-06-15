@@ -1,16 +1,16 @@
-import { styled } from "@mui/system";
-import { Box, Grid, Typography, Checkbox } from "@mui/material";
+import { Box } from '@mui/material';
+import { styled } from '@mui/system';
 
 export const ProfileContainer = styled(Box)(({ theme }) => ({
-  position: "relative",
-  display: "flex",
-  width: "100%",
-  flexDirection: "column"
+  position: 'relative',
+  display: 'flex',
+  width: '100%',
+  flexDirection: 'column',
 }));
 
 export const HeaderContainer = styled(Box)(({ theme }) => ({
-  position: "relative",
-  display: "flex",
-  width: "100%",
- justifyContent: "center"
+  position: 'relative',
+  display: 'flex',
+  width: '100%',
+  justifyContent: 'center',
 }));

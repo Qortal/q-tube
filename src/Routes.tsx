@@ -1,14 +1,13 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import App from './App';
 import { AppWrapper } from './AppWrapper';
-import { Home } from './pages/Home/Home';
-import { VideoContent } from './pages/ContentPages/VideoContent/VideoContent';
-import { PlaylistContent } from './pages/ContentPages/PlaylistContent/PlaylistContent';
+import { Bookmarks } from './pages/Bookmarks/Bookmarks';
 import { IndividualProfile } from './pages/ContentPages/IndividualProfile/IndividualProfile';
+import { PlaylistContent } from './pages/ContentPages/PlaylistContent/PlaylistContent';
+import { VideoContent } from './pages/ContentPages/VideoContent/VideoContent';
+import { History } from './pages/History/History';
+import { Home } from './pages/Home/Home';
 import { Search } from './pages/Search/Search';
 import { Subscriptions } from './pages/Subscriptions/Subscriptions';
-import { Bookmarks } from './pages/Bookmarks/Bookmarks';
-import { History } from './pages/History/History';
 
 interface CustomWindow extends Window {
   _qdnBase: string;

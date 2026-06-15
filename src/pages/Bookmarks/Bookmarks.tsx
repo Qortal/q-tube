@@ -1,7 +1,10 @@
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import EditIcon from '@mui/icons-material/Edit';
+import FolderIcon from '@mui/icons-material/Folder';
+import ListIcon from '@mui/icons-material/List';
 import {
   Box,
   Button,
-  ButtonBase,
   Card,
   CardContent,
   Dialog,
@@ -9,27 +12,19 @@ import {
   DialogContent,
   DialogTitle,
   Divider,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
   TextField,
   Typography,
 } from '@mui/material';
-import FolderIcon from '@mui/icons-material/Folder';
-import ListIcon from '@mui/icons-material/List';
-import { useEffect, useMemo, useRef, useState } from 'react';
-import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import { Spacer, useGlobal } from 'qapp-core';
-
-import { VideoListPreloaded } from '../Home/Components/VideoListPreloaded.tsx';
-import { usePersistedState } from '../../state/persist/persist.ts';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { PageSubTitle } from '../../components/common/General/GeneralStyles.tsx';
-import EditIcon from '@mui/icons-material/Edit';
 import { PageTransition } from '../../components/common/PageTransition.tsx';
 import { useIsSmall } from '../../hooks/useIsSmall.tsx';
-import { useTranslation } from 'react-i18next';
+import { usePersistedState } from '../../state/persist/persist.ts';
 import { BookmarkList } from '../../types/bookmark.ts';
+
+import { VideoListPreloaded } from '../Home/Components/VideoListPreloaded.tsx';
 
 export const Bookmarks = () => {
   const { t } = useTranslation(['core']);

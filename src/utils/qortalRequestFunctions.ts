@@ -8,26 +8,23 @@ import {
   TransactionSearchParams,
 } from './qortalRequestTypes.ts';
 
-export const getBalance = async (address: string) => {
+const getBalance = async (address: string) => {
   return (await qortalRequest({
     action: 'GET_BALANCE',
     address,
   })) as number;
 };
 
-export const getUserAccount = async () => {
+const getUserAccount = async () => {
   return (await qortalRequest({
     action: 'GET_USER_ACCOUNT',
   })) as AccountInfo;
 };
-export const getUserBalance = async () => {
+const getUserBalance = async () => {
   const accountInfo = await getUserAccount();
   return (await getBalance(accountInfo.address)) as number;
 };
-export const getAccountNames = async (
-  address: string,
-  params?: GetRequestData
-) => {
+const getAccountNames = async (address: string, params?: GetRequestData) => {
   const names = (await qortalRequest({
     action: 'GET_ACCOUNT_NAMES',
     address,
@@ -42,7 +39,7 @@ export const getAccountNames = async (
   return emptyNamesFilled.length > 0 ? emptyNamesFilled : [namelessAddress];
 };
 
-export const getPrimaryAccountName = async (address: string) => {
+const getPrimaryAccountName = async (address: string) => {
   const primaryName = (await qortalRequest({
     action: 'GET_PRIMARY_NAME',
     address,
@@ -50,7 +47,7 @@ export const getPrimaryAccountName = async (address: string) => {
   return primaryName ?? '';
 };
 
-export const searchTransactions = async (params: TransactionSearchParams) => {
+const searchTransactions = async (params: TransactionSearchParams) => {
   return (await qortalRequest({
     action: 'SEARCH_TRANSACTIONS',
     ...params,

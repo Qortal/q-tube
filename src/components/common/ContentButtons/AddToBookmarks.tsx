@@ -1,25 +1,26 @@
-import React, { useEffect, useRef, useState } from 'react';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import BookmarksIcon from '@mui/icons-material/Bookmarks';
+import CloseIcon from '@mui/icons-material/Close';
+import FolderIcon from '@mui/icons-material/Folder';
+import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
 import {
   Box,
   Button,
   ButtonBase,
+  Checkbox,
   Divider,
   TextField,
   Typography,
   useTheme,
-  Checkbox,
 } from '@mui/material';
-import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
-import CloseIcon from '@mui/icons-material/Close';
-import { usePersistedState } from '../../../state/persist/persist';
-import ShortUniqueId from 'short-unique-id';
-import { Service, useGlobal } from 'qapp-core';
+import { useGlobal } from 'qapp-core';
+import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { CustomTooltip } from './CustomTooltip';
+import ShortUniqueId from 'short-unique-id';
+import { usePersistedState } from '../../../state/persist/persist';
 import { BookmarkList } from '../../../types/bookmark';
-import FolderIcon from '@mui/icons-material/Folder';
-import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
+import { CustomTooltip } from './CustomTooltip';
+
 const uid = new ShortUniqueId({ length: 15, dictionary: 'alphanum' });
 const MAX_NESTING_LEVEL = 1;
 
@@ -233,6 +234,7 @@ export const AddToBookmarks = ({ metadataReference, type = 'video' }) => {
                 }}
                 sx={{
                   marginLeft: 'auto',
+                  color: 'text.primary',
                 }}
               >
                 {t('core:bookmarks.new_list')}
@@ -307,7 +309,6 @@ export const AddToBookmarks = ({ metadataReference, type = 'video' }) => {
             left: '50%',
             top: '50%',
             transform: 'translate(-50%, -50%)',
-            color: 'white',
             borderRadius: 2,
             p: 1,
             minWidth: 225,
@@ -347,7 +348,6 @@ export const AddToBookmarks = ({ metadataReference, type = 'video' }) => {
                   '::-webkit-scrollbar-track': {
                     backgroundColor: 'transparent',
                   },
-
                   '::-webkit-scrollbar': {
                     width: '16px',
                     height: '10px',

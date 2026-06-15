@@ -1,4 +1,10 @@
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import BookmarksIcon from '@mui/icons-material/Bookmarks';
+import HomeIcon from '@mui/icons-material/Home';
+import StarIcon from '@mui/icons-material/Star';
 import {
+  Box,
+  ClickAwayListener,
   Divider,
   Drawer,
   List,
@@ -6,27 +12,20 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  Box,
-  ClickAwayListener,
   Typography,
 } from '@mui/material';
 import { useAtom } from 'jotai';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
-import { isSideBarExpandedAtom } from '../../../state/global/navbar';
-import HomeIcon from '@mui/icons-material/Home';
-import StarIcon from '@mui/icons-material/Star';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import PlaylistPlayIcon from '@mui/icons-material/PlaylistPlay';
-import BookmarksIcon from '@mui/icons-material/Bookmarks';
-import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { useMemo } from 'react';
 import { Spacer, useAuth } from 'qapp-core';
-import { useIsSmall } from '../../../hooks/useIsSmall';
-import { UserMenu } from '../Navbar/Components/UserMenu';
-import { DownloadTaskManager } from '../../common/DownloadTaskManager';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useIsSmall } from '../../../hooks/useIsSmall';
+import { isSideBarExpandedAtom } from '../../../state/global/navbar';
+import { jotaiIndexedDBStorage } from '../../../state/persist/indexedDBSelectors';
+import { DownloadTaskManager } from '../../common/DownloadTaskManager';
+import { UserMenu } from '../Navbar/Components/UserMenu';
+import { AvatarIcon } from './AvatarIcon';
+
 const DRAWER_WIDTH = 240;
 export const COLLAPSED_WIDTH = 68;
 
@@ -36,12 +35,26 @@ export const Sidenav = ({ allNames }) => {
   const isSmall = useIsSmall();
   const navigate = useNavigate();
   const location = useLocation();
-  const { name, avatarUrl } = useAuth();
+  const { name, avatarUrl, address: authAddress } = useAuth();
   const [isSideBarExpanded, setIsSideBarExpanded] = useAtom(
     isSideBarExpandedAtom
   );
+  const [channelTab, setChannelTab] = useState<number>(0);
 
   const isSecure = !!name;
+  const address = authAddress || 'anonymous';
+
+  const handleChannelClick = async () => {
+    const scopedKey = `${address}/channelTab`;
+    const persistedTab = await jotaiIndexedDBStorage.getItem<number>(scopedKey);
+    const tab = persistedTab ?? 0; // default to videos
+    const path = tab === 0 ? `/channel/${name}/videos` : `/channel/${name}/playlists`;
+    navigate(path);
+    if (isSideBarExpanded) {
+      setIsSideBarExpanded(false);
+    }
+  };
+
   const drawerItems = useMemo(() => {
     return [
       {
@@ -73,20 +86,13 @@ export const Sidenav = ({ allNames }) => {
         path: '/bookmarks',
       },
       {
-        name: t('core:sidenav.your_playlists', {
+        name: t('core:sidenav.your_channel', {
           postProcess: 'capitalizeFirstChar',
         }),
-        icon: PlaylistPlayIcon,
-        path: `/channel/${name}/playlists`,
+        icon: AvatarIcon,
+        path: `/channel/${name}`,
         disabled: !name,
-      },
-      {
-        name: t('core:sidenav.your_videos', {
-          postProcess: 'capitalizeFirstChar',
-        }),
-        icon: PlayCircleOutlineIcon,
-        path: `/channel/${name}/videos`,
-        disabled: !name,
+        isChannelButton: true,
       },
     ];
   }, [name, t]);
@@ -133,7 +139,11 @@ export const Sidenav = ({ allNames }) => {
                   disabled={item.disabled}
                   selected={isSelected}
                   onClick={() => {
-                    navigate(item.path);
+                    if (item.isChannelButton) {
+                      handleChannelClick();
+                    } else {
+                      navigate(item.path);
+                    }
                   }}
                   sx={{
                     minHeight: 48,
@@ -155,11 +165,15 @@ export const Sidenav = ({ allNames }) => {
                       justifyContent: 'center',
                     }}
                   >
-                    <item.icon
-                      sx={{
-                        color: isSelected ? 'text.primary' : 'action.active',
-                      }}
-                    />
+                    {item.isChannelButton ? (
+                      <item.icon />
+                    ) : (
+                      <item.icon
+                        sx={{
+                          color: isSelected ? 'text.primary' : 'action.active',
+                        }}
+                      />
+                    )}
                   </ListItemIcon>
                   <ListItemText
                     primary={item.name}
@@ -298,8 +312,12 @@ export const Sidenav = ({ allNames }) => {
                   >
                     <ListItemButton
                       onClick={() => {
-                        setIsSideBarExpanded(false);
-                        navigate(item.path);
+                        if (item.isChannelButton) {
+                          handleChannelClick();
+                        } else {
+                          setIsSideBarExpanded(false);
+                          navigate(item.path);
+                        }
                       }}
                       selected={isSelected}
                       sx={{
@@ -324,13 +342,17 @@ export const Sidenav = ({ allNames }) => {
                           justifyContent: 'center',
                         }}
                       >
-                        <item.icon
-                          sx={{
-                            color: isSelected
-                              ? 'text.primary'
-                              : 'action.active',
-                          }}
-                        />
+                        {item.isChannelButton ? (
+                          <item.icon />
+                        ) : (
+                          <item.icon
+                            sx={{
+                              color: isSelected
+                                ? 'text.primary'
+                                : 'action.active',
+                            }}
+                          />
+                        )}
                       </ListItemIcon>
                       <ListItemText
                         primary={item.name}

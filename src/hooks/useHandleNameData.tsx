@@ -1,8 +1,8 @@
 import { useSetAtom } from 'jotai';
-import { namesAtom } from '../state/global/names';
-import { useCallback, useEffect } from 'react';
 
 import { useAuth } from 'qapp-core';
+import { useCallback, useEffect } from 'react';
+import { namesAtom } from '../state/global/names';
 
 export const useHandleNameData = () => {
   const setNames = useSetAtom(namesAtom);

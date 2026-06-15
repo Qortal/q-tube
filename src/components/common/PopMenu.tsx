@@ -1,12 +1,12 @@
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { Box, Popover, PopoverProps, SxProps, Theme } from "@mui/material";
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { Box, Popover, PopoverProps, SxProps, Theme } from '@mui/material';
 import {
   forwardRef,
   PropsWithChildren,
   useImperativeHandle,
   useState,
-} from "react";
-import { AvatarContainer } from "../layout/Navbar/Navbar-styles.tsx";
+} from 'react';
+import { AvatarContainer } from '../layout/Navbar/Navbar-styles.tsx';
 
 export interface PopMenuProps {
   MenuHeader: React.ReactNode;
@@ -57,19 +57,19 @@ export const PopMenu = forwardRef<
       <>
         <AvatarContainer sx={containerSX} onClick={openPopover}>
           {MenuHeader}
-          {showExpandIcon && <ExpandMoreIcon sx={{ color: "#ACB6BF" }} />}
+          {showExpandIcon && <ExpandMoreIcon sx={{ color: '#ACB6BF' }} />}
         </AvatarContainer>
         <Popover
           anchorOrigin={{
-            vertical: "bottom",
-            horizontal: "left",
+            vertical: 'bottom',
+            horizontal: 'left',
           }}
           {...popoverProps}
           open={isOpenUserDropdown}
           anchorEl={anchorEl}
           onClose={closePopover}
         >
-          <Box sx={{ display: "contents" }}>{children}</Box>
+          <Box sx={{ display: 'contents' }}>{children}</Box>
         </Popover>
       </>
     );

@@ -1,20 +1,17 @@
 import { Box, Divider } from '@mui/material';
+import { useAtomValue } from 'jotai';
+import { QortalSearchParams, Spacer } from 'qapp-core';
 import { useMemo } from 'react';
-
-import {
-  QTUBE_PLAYLIST_BASE,
-  QTUBE_VIDEO_BASE,
-} from '../../constants/Identifiers.ts';
-import { QortalSearchParams, Spacer, useAuth } from 'qapp-core';
+import { useTranslation } from 'react-i18next';
 import { useSearchParams } from 'react-router-dom';
-import { ScrollToTopButton } from '../../components/common/ScrollToTopButton.tsx';
-import { useAtomValue, useSetAtom } from 'jotai';
-import { scrollRefAtom } from '../../state/global/navbar.ts';
-import { useHomeState } from '../Home/Home-State.ts';
-import VideoList from '../Home/Components/VideoList.tsx';
 import { PageSubTitle } from '../../components/common/General/GeneralStyles.tsx';
 import { PageTransition } from '../../components/common/PageTransition.tsx';
-import { useTranslation } from 'react-i18next';
+import { ScrollToTopButton } from '../../components/common/ScrollToTopButton.tsx';
+
+import { QTUBE_VIDEO_BASE } from '../../constants/Identifiers.ts';
+import { scrollRefAtom } from '../../state/global/navbar.ts';
+import VideoList from '../Home/Components/VideoList.tsx';
+import { useHomeState } from '../Home/Home-State.ts';
 
 export const Subscriptions = () => {
   const { t } = useTranslation(['core']);

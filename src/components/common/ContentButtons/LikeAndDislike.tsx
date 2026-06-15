@@ -1,14 +1,21 @@
-import { useCallback, useEffect, useState } from 'react';
-import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
-import ThumbUpOffAltOutlinedIcon from '@mui/icons-material/ThumbUpOffAltOutlined';
 import ThumbDownOffAltOutlinedIcon from '@mui/icons-material/ThumbDownOffAltOutlined';
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+import ThumbUpOffAltOutlinedIcon from '@mui/icons-material/ThumbUpOffAltOutlined';
 import { Box } from '@mui/material';
-import { objectToBase64 } from '../../../utils/PublishFormatter.ts';
+import { useSetAtom } from 'jotai';
+import { hashWordWithoutPublicSalt, useAuth } from 'qapp-core';
+import { useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   LIKE_BASE,
   trigger_like_identifier,
 } from '../../../constants/Identifiers.ts';
+import {
+  AltertObject,
+  setNotificationAtom,
+} from '../../../state/global/notifications.ts';
+import { objectToBase64 } from '../../../utils/PublishFormatter.ts';
 import { CustomTooltip } from './CustomTooltip.tsx';
 import {
   formatLikeCount,
@@ -16,27 +23,18 @@ import {
   getCurrentLikeType,
   LikesAndDislikes,
 } from './LikeAndDislike-functions.ts';
-import { hashWordWithoutPublicSalt, useAuth } from 'qapp-core';
-import { useSetAtom } from 'jotai';
 import {
-  AltertObject,
-  setNotificationAtom,
-} from '../../../state/global/notifications.ts';
-import { useTranslation } from 'react-i18next';
+  DISLIKE,
+  LIKE,
+  type LikeType,
+  NEUTRAL,
+} from './LikeAndDislike-types.ts';
 
 interface LikeAndDislikeProps {
   name: string;
   identifier: string;
   created: number;
 }
-export enum LikeType {
-  Like = 1,
-  Neutral = 0,
-  Dislike = -1,
-}
-export const LIKE = LikeType.Like;
-export const DISLIKE = LikeType.Dislike;
-export const NEUTRAL = LikeType.Neutral;
 export const LikeAndDislike = ({
   name,
   identifier,

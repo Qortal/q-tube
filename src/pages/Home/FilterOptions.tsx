@@ -1,41 +1,41 @@
+import AddIcon from '@mui/icons-material/Add';
+import CloseIcon from '@mui/icons-material/Close';
+import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
+import PlaylistPlayIcon from '@mui/icons-material/PlaylistPlay';
 import {
   Box,
+  Button,
   Chip,
   darken,
-  Divider,
-  ListItem,
-  styled,
   Dialog,
   DialogContent,
   DialogTitle,
-  IconButton,
-  useTheme,
-  Input,
+  Divider,
   FormControl,
+  IconButton,
+  Input,
   InputLabel,
-  Select,
-  OutlinedInput,
+  ListItem,
   MenuItem,
-  Button,
-  Tabs,
+  OutlinedInput,
+  Select,
+  styled,
   Tab,
+  Tabs,
+  useTheme,
 } from '@mui/material';
 import React, { useMemo, useRef, useState } from 'react';
-import { Navigate, useNavigate } from 'react-router-dom';
-import { useHomeState } from './Home-State';
-import PlaylistPlayIcon from '@mui/icons-material/PlaylistPlay';
-import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
-import AddIcon from '@mui/icons-material/Add';
-import CloseIcon from '@mui/icons-material/Close';
+import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
+import { ListSuperLikeContainer } from '../../components/common/ListSuperLikes/ListSuperLikeContainer';
+import { categories, subCategories } from '../../constants/Categories';
+import { useIsSmall } from '../../hooks/useIsSmall';
+import { useSidebarState } from './Components/SearchSidebar-State';
 import {
   FiltersContainer,
   FiltersSubContainer,
 } from './Components/VideoList-styles';
-import { useSidebarState } from './Components/SearchSidebar-State';
-import { categories, subCategories } from '../../constants/Categories';
-import { useIsSmall } from '../../hooks/useIsSmall';
-import { ListSuperLikeContainer } from '../../components/common/ListSuperLikes/ListSuperLikeContainer';
-import { useTranslation } from 'react-i18next';
+import { useHomeState } from './Home-State';
 
 export const CustomChip = styled(Chip)(({ theme }) => ({
   backgroundColor: theme.palette.background.unSelected, // dark background
@@ -479,7 +479,6 @@ export const FilterOptions = () => {
               };
             }}
           />
-          {/* <ListSuperLikeContainer /> */}
         </Box>
       )}
 

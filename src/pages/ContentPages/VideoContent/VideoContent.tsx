@@ -1,21 +1,22 @@
 import { Box, Button, Divider, Typography, useMediaQuery } from '@mui/material';
+import DOMPurify from 'dompurify';
+import { handleClickText, processText } from 'qapp-core';
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { CommentSection } from '../../../components/common/Comments/CommentSection.tsx';
+import { PageTransition } from '../../../components/common/PageTransition.tsx';
 import { SuperLikesSection } from '../../../components/common/SuperLikesList/SuperLikesSection.tsx';
 import { VideoPlayer } from '../../../components/common/VideoPlayer/VideoPlayer.tsx';
-import { motion } from 'framer-motion';
 
-import {
-  fontSizeSmall,
-  minFileSize,
-  smallVideoSize,
-} from '../../../constants/Misc.ts';
+import { minFileSize, smallVideoSize } from '../../../constants/Misc.ts';
+import { useIsMobile } from '../../../hooks/useIsMobile.tsx';
+import { useIsSmall } from '../../../hooks/useIsSmall.tsx';
+import { useScrollToTop } from '../../../hooks/useScrollToTop.tsx';
 import { formatBytes } from '../../../utils/numberFunctions.ts';
 import { formatDate } from '../../../utils/time.ts';
 import { VideoActionsBar } from './VideoActionsBar.tsx';
 import { useVideoContentState } from './VideoContent-State.ts';
-import DOMPurify from 'dompurify';
 
 import {
   Spacer,
@@ -23,12 +24,6 @@ import {
   VideoPlayerContainer,
   VideoTitle,
 } from './VideoContent-styles.tsx';
-import { useScrollToTop } from '../../../hooks/useScrollToTop.tsx';
-import { handleClickText, processText } from 'qapp-core';
-import { PageTransition } from '../../../components/common/PageTransition.tsx';
-import { useIsMobile } from '../../../hooks/useIsMobile.tsx';
-import { useIsSmall } from '../../../hooks/useIsSmall.tsx';
-import { useTranslation } from 'react-i18next';
 
 function flattenHtml(html: string): string {
   const sanitize: string = DOMPurify.sanitize(html, {
@@ -132,14 +127,8 @@ export const VideoContent = () => {
     channelName,
     id,
     videoCover,
-    isVideoLoaded,
     theme,
     videoData,
-    descriptionHeight,
-    isExpandedDescription,
-    setIsExpandedDescription,
-    contentRef,
-    descriptionThreshold,
     loadingSuperLikes,
     superLikeList,
     setSuperLikeList,
@@ -248,7 +237,7 @@ export const VideoContent = () => {
               </Typography>
             )}
             <Divider orientation="vertical" flexItem />
-            {videoData?.fileSize > minFileSize && (
+            {videoData?.fileSize && videoData?.fileSize > minFileSize && (
               <Typography
                 sx={{
                   fontSize: '14px',

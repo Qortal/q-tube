@@ -8,31 +8,45 @@ import {
   OutlinedInput,
   Select,
   SelectChangeEvent,
+  Tooltip,
   Typography,
   useTheme,
 } from '@mui/material';
 import Compressor from 'compressorjs';
+import { useAtom, useSetAtom } from 'jotai';
+import { showError, useAuth, useGlobal, usePublish } from 'qapp-core';
 import React, { useEffect, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { categories, subCategories } from '../../../constants/Categories.ts';
 import { QTUBE_VIDEO_BASE } from '../../../constants/Identifiers.ts';
 import {
+  fontSizeMedium,
   maxSize,
   titleFormatter,
   videoMaxSize,
 } from '../../../constants/Misc.ts';
-
-import BoundedNumericTextField from '../../../utils/BoundedNumericTextField.tsx';
+import { useMediaInfo } from '../../../hooks/useMediaInfo.tsx';
+import {
+  AltertObject,
+  setNotificationAtom,
+} from '../../../state/global/notifications.ts';
+import { editVideoAtom } from '../../../state/publish/video.ts';
 import { objectToBase64 } from '../../../utils/PublishFormatter.ts';
 import {
   getFileExtension,
-  getFileExtensionIndex,
+  getFileName,
+  processFilename,
 } from '../../../utils/stringFunctions.ts';
 import { FrameExtractor } from '../../common/FrameExtractor/FrameExtractor.tsx';
 import ImageUploader from '../../common/ImageUploader.tsx';
 import { TextEditor } from '../../common/TextEditor/TextEditor.tsx';
 import { extractTextFromHTML } from '../../common/TextEditor/utils.ts';
-import { toBase64 } from '../PublishVideo/PublishVideo.tsx';
+
+import { toBase64 } from '../PublishVideo/useVideoPublishingWorkflow.tsx';
+import {
+  VideoFilenameDisplay,
+  VideoDurationDisplay,
+} from '../PublishVideo/components/VideoFormElements.tsx';
 
 import {
   AddCoverImageButton,
@@ -46,14 +60,7 @@ import {
   NewCrowdfundTitle,
   TimesIcon,
 } from './EditVideo-styles.tsx';
-import { showError, useAuth, useGlobal, usePublish } from 'qapp-core';
-import { useAtom, useSetAtom } from 'jotai';
-import {
-  AltertObject,
-  setNotificationAtom,
-} from '../../../state/global/notifications.ts';
-import { editVideoAtom } from '../../../state/publish/video.ts';
-import { useMediaInfo } from '../../../hooks/useMediaInfo.tsx';
+
 export const EditVideo = () => {
   const theme = useTheme();
   const setNotification = useSetAtom(setNotificationAtom);
@@ -73,16 +80,54 @@ export const EditVideo = () => {
   const [selectedSubCategoryVideos, setSelectedSubCategoryVideos] =
     useState<any>(null);
   const [imageExtracts, setImageExtracts] = useState<any>([]);
+  const [videoProcessingProgress, setVideoProcessingProgress] =
+    useState<number>(0);
+  const [framesExtractedCount, setFramesExtractedCount] = useState<number[]>([
+    0, 0, 0, 0,
+  ]);
   const [videoDurations, setVideoDurations] = useState<number[]>([
     editVideoProperties?.duration || 0,
   ]);
   const { isHEVC } = useMediaInfo();
 
   useEffect(() => {
-    if (editVideoProperties?.duration) {
-      setVideoDurations([Math.floor(editVideoProperties?.duration || 0)]);
-    }
+    // Handle undefined duration by displaying as 0
+    const duration =
+      editVideoProperties?.duration !== undefined
+        ? editVideoProperties.duration
+        : 0;
+    setVideoDurations([Math.floor(duration)]);
   }, [editVideoProperties?.duration]);
+
+  // Calculate video processing progress
+  useEffect(() => {
+    if (!file && !editVideoProperties?.videoReference) {
+      setVideoProcessingProgress(0);
+      return;
+    }
+
+    const totalPoints = 5; // 4 frames + 1 duration
+    let completedPoints = 0;
+
+    // Count successful frame extractions (non-empty strings)
+    const successfulFrames = imageExtracts.filter(
+      (extract) => extract && extract.length > 0
+    ).length;
+    completedPoints += successfulFrames;
+
+    // Add duration point if duration is available
+    if (videoDurations[0] > 0) {
+      completedPoints += 1;
+    }
+
+    const progress = Math.floor((completedPoints / totalPoints) * 100);
+    setVideoProcessingProgress(progress);
+  }, [
+    imageExtracts,
+    videoDurations,
+    file,
+    editVideoProperties?.videoReference,
+  ]);
 
   const { getRootProps, getInputProps } = useDropzone({
     accept: {
@@ -105,7 +150,25 @@ export const EditVideo = () => {
           showError(
             `${firstFile.name} uses the unsupported file container: MKV`
           );
-      } else setFile(firstFile);
+      } else {
+        setFile(firstFile);
+        // Reset progress when a new file is selected
+        setVideoProcessingProgress(0);
+        setFramesExtractedCount([0, 0, 0, 0]);
+        setImageExtracts([]);
+        // Update title based on filename (same as PublishVideo)
+        const fileName = getFileName(firstFile?.name || '');
+        const filteredTitle = fileName.replace(titleFormatter, '');
+        setTitle(filteredTitle || '');
+        // Auto-refresh duration when a new file is selected
+        const video = document.createElement('video');
+        video.preload = 'metadata';
+        video.onloadedmetadata = () => {
+          setVideoDurations([Math.floor(video.duration)]);
+          URL.revokeObjectURL(video.src);
+        };
+        video.src = URL.createObjectURL(firstFile);
+      }
 
       let errorString: null | string = null;
 
@@ -165,6 +228,11 @@ export const EditVideo = () => {
     setImageExtracts([]);
     setDescription('');
     setCoverImage('');
+    setVideoProcessingProgress(0);
+    setFramesExtractedCount([0, 0, 0, 0]);
+    setVideoDurations([0]);
+    setSelectedCategoryVideos(null);
+    setSelectedSubCategoryVideos(null);
   };
 
   async function publishQDNResource() {
@@ -176,6 +244,12 @@ export const EditVideo = () => {
       if (!selectedCategoryVideos) throw new Error('Please select a category');
       if (!editVideoProperties) return;
       if (!userAddress) throw new Error('Unable to locate user address');
+
+      // Check if video duration is still loading
+      if (videoDurations[0] === 0) {
+        showError('Video duration is still loading');
+        return;
+      }
       let errorMsg = '';
       let name = '';
       if (username) {
@@ -209,17 +283,8 @@ export const EditVideo = () => {
         fileExtension = fileExtensionSplit?.pop() || 'mp4';
       }
 
-      const filename = title.slice(0, 15);
-      // Step 1: Replace all white spaces with underscores
-
-      // Replace all forms of whitespace (including non-standard ones) with underscores
-      const stringWithUnderscores = filename.replace(/[\s\uFEFF\xA0]+/g, '_');
-
-      // Remove all non-alphanumeric characters (except underscores)
-      const alphanumericString = stringWithUnderscores.replace(
-        /[^a-zA-Z0-9_]/g,
-        ''
-      );
+      const filename = title;
+      const alphanumericString = processFilename(filename);
 
       const videoObject: any = {
         title,
@@ -238,6 +303,7 @@ export const EditVideo = () => {
         fileSize: file?.size || editVideoProperties?.fileSize || 0,
         duration: videoDurations[0] || editVideoProperties?.duration || 0,
       };
+      console.log('Edited Video Metadata: ', videoObject);
       const metadescription =
         `**category:${category};subcategory:${subcategory};code:${editVideoProperties.code}**` +
         description.slice(0, 150);
@@ -369,7 +435,6 @@ export const EditVideo = () => {
       console.error(error);
     }
   };
-
   return (
     <>
       <Modal
@@ -377,7 +442,9 @@ export const EditVideo = () => {
         aria-labelledby="modal-title"
         aria-describedby="modal-description"
       >
-        <ModalBody sx={{ maxHeight: '98vh' }}>
+        <ModalBody
+          sx={{ maxHeight: '98vh', backgroundColor: 'background.paper' }}
+        >
           <Box
             sx={{
               display: 'flex',
@@ -388,26 +455,43 @@ export const EditVideo = () => {
             <NewCrowdfundTitle>Update Video properties</NewCrowdfundTitle>
           </Box>
           <>
-            <Box
-              {...getRootProps()}
-              sx={{
-                border: '1px dashed gray',
-                padding: 2,
-                textAlign: 'center',
-                marginBottom: 2,
-                cursor: 'pointer',
+            <Tooltip
+              title="Cannot add files while videos are processing"
+              arrow
+              disableHoverListener={
+                videoProcessingProgress <= 0 || videoProcessingProgress >= 100
+              }
+              slotProps={{
+                tooltip: {
+                  sx: {
+                    fontSize: fontSizeMedium,
+                  },
+                },
               }}
             >
-              <input {...getInputProps()} />
-              <Typography>Click to update video file - optional</Typography>
-            </Box>
-            <Typography
-              sx={{
-                marginBottom: '10px',
-              }}
-            >
-              {file?.name}
-            </Typography>
+              <Box
+                {...getRootProps()}
+                sx={{
+                  border: '1px dashed gray',
+                  padding: 2,
+                  textAlign: 'center',
+                  marginBottom: 2,
+                  cursor: 'pointer',
+                  opacity:
+                    videoProcessingProgress > 0 && videoProcessingProgress < 100
+                      ? 0.5
+                      : 1,
+                }}
+              >
+                <input
+                  {...getInputProps()}
+                  disabled={
+                    videoProcessingProgress > 0 && videoProcessingProgress < 100
+                  }
+                />
+                <Typography>Click to update video file - optional</Typography>
+              </Box>
+            </Tooltip>
             <Box
               sx={{
                 display: 'flex',
@@ -456,13 +540,31 @@ export const EditVideo = () => {
                   </FormControl>
                 )}
             </Box>
-            {file && (
+            {(file || editVideoProperties?.videoReference) && (
               <FrameExtractor
-                videoFile={file}
+                videoFile={file || undefined}
+                fileReference={
+                  file
+                    ? undefined
+                    : {
+                        name: editVideoProperties?.videoReference?.name,
+                        service: editVideoProperties?.videoReference?.service,
+                        identifier:
+                          editVideoProperties?.videoReference?.identifier,
+                      }
+                }
                 onFramesExtracted={(imgs) => onFramesExtracted(imgs)}
+                onFrameProgress={(frameIndex, frameCount) => {
+                  setFramesExtractedCount((prev) => {
+                    const newCount = [...prev];
+                    newCount[frameIndex] = frameCount;
+                    return newCount;
+                  });
+                }}
                 videoDurations={videoDurations}
                 setVideoDurations={setVideoDurations}
                 index={0}
+                shouldProcess={true}
               />
             )}
             <React.Fragment>
@@ -489,18 +591,6 @@ export const EditVideo = () => {
                   ></TimesIcon>
                 </LogoPreviewRow>
               )}
-              <BoundedNumericTextField
-                minValue={1}
-                maxValue={Number.MAX_SAFE_INTEGER}
-                label="Video Duration in Seconds"
-                addIconButtons={false}
-                allowDecimals={false}
-                initialValue={videoDurations[0].toString()}
-                afterChange={(s) => {
-                  const newS = +s;
-                  setVideoDurations([newS]);
-                }}
-              />
               <CustomInputField
                 name="title"
                 label="Title of video"
@@ -514,6 +604,23 @@ export const EditVideo = () => {
                 inputProps={{ maxLength: 180 }}
                 required
               />
+              {/* Show filename when EditVideo opens or when file is updated */}
+              <VideoFilenameDisplay
+                filename={
+                  file
+                    ? file.name
+                    : editVideoProperties?.filename || 'No file selected'
+                }
+                fileExtension={
+                  file
+                    ? file.name.includes('.')
+                      ? ''
+                      : `.${file.type.split('/')[1]}`
+                    : ''
+                }
+              />
+              {/* Show duration display when EditVideo opens or when file is updated */}
+              <VideoDurationDisplay duration={videoDurations[0]} />
               <Typography
                 sx={{
                   fontSize: '18px',
@@ -552,12 +659,13 @@ export const EditVideo = () => {
                 onClick={() => {
                   publishQDNResource();
                 }}
-                disabled={!!file && imageExtracts?.length === 0}
+                disabled={!!file && videoProcessingProgress < 100}
               >
-                {file && imageExtracts.length === 0 && (
-                  <CircularProgress color="secondary" size={14} />
-                )}
-                Publish
+                {!!file &&
+                videoProcessingProgress > 0 &&
+                videoProcessingProgress < 100
+                  ? `Video Processing ${videoProcessingProgress}%`
+                  : 'Publish'}
               </CrowdfundActionButton>
             </Box>
           </CrowdfundActionButtonRow>

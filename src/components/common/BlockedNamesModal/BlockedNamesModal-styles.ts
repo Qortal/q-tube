@@ -1,5 +1,5 @@
-import { styled } from '@mui/system';
 import { Box, Modal, Typography } from '@mui/material';
+import { styled } from '@mui/system';
 
 export const StyledModal = styled(Modal)(({ theme }) => ({
   display: 'flex',

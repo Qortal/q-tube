@@ -1,21 +1,21 @@
-import { useMediaQuery, useTheme, Avatar, Typography } from '@mui/material';
+import PersonOffIcon from '@mui/icons-material/PersonOff';
+import { Avatar, useTheme } from '@mui/material';
+import { useAuth } from 'qapp-core';
+import { useCallback, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { menuIconSize } from '../../../../constants/Misc.ts';
+import { useIsSmall } from '../../../../hooks/useIsSmall.tsx';
+import { Names } from '../../../../state/global/names.ts';
 import { BlockedNamesModal } from '../../../common/BlockedNamesModal/BlockedNamesModal.tsx';
+import { PopMenu, PopMenuRefType } from '../../../common/PopMenu.tsx';
+import { UserDropDown } from '../../../UserDropDown.tsx';
 import {
   AvatarContainer,
   DropdownContainer,
   DropdownText,
-  NavbarName,
 } from '../Navbar-styles.tsx';
-import { useCallback, useRef, useState } from 'react';
-import PersonOffIcon from '@mui/icons-material/PersonOff';
-import { useNavigate } from 'react-router-dom';
-import { PopMenu, PopMenuRefType } from '../../../common/PopMenu.tsx';
-import { UserDropDown } from '../../../UserDropDown.tsx';
-import { Names } from '../../../../state/global/names.ts';
-import { useAuth } from 'qapp-core';
-import { useIsSmall } from '../../../../hooks/useIsSmall.tsx';
-import { useTranslation } from 'react-i18next';
+
 export interface NavBarMenuProps {
   isShowMenu: boolean;
   userAvatar: string | null;

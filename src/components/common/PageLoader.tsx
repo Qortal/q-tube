@@ -1,7 +1,7 @@
-import React from 'react';
+import { useTheme } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/system/Box';
-import { useTheme } from '@mui/material';
+import React from 'react';
 
 interface PageLoaderProps {
   size?: number;

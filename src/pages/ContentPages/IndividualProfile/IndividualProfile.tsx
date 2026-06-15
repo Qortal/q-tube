@@ -1,20 +1,24 @@
-import { Box, Tabs, Tab } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import { Box, Tab, Tabs } from '@mui/material';
+import React, { useEffect } from 'react';
+import { useAuth } from 'qapp-core';
+import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
-import { VideoListComponentLevel } from '../../Home/Components/VideoListComponentLevel.tsx';
+import { PageTransition } from '../../../components/common/PageTransition.tsx';
 import { PlayListComponentLevel } from '../../Home/Components/PlayListComponentLevel.tsx';
+import { VideoListComponentLevel } from '../../Home/Components/VideoListComponentLevel.tsx';
 import { ChannelActions } from '../VideoContent/ChannelActions.tsx';
 import { StyledCardHeaderComment } from '../VideoContent/VideoContent-styles.tsx';
 import { HeaderContainer, ProfileContainer } from './Profile-styles.tsx';
-import { PageTransition } from '../../../components/common/PageTransition.tsx';
-import { useTranslation } from 'react-i18next';
+import { useIndividualProfileState } from './IndividualProfile-State.ts';
 
 export const IndividualProfile = () => {
   const { t } = useTranslation(['core']);
+  const { name } = useAuth();
 
-  const { name: channelName } = useParams();
-  const [selectedTab, setSelectedTab] = useState(0);
-  const { name, section } = useParams();
+  const { name: channelName, section } = useParams();
+  const isOwnChannel = channelName === name;
+  const { channelTab: selectedTab, setChannelTab: setSelectedTab } =
+    useIndividualProfileState(isOwnChannel);
 
   const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setSelectedTab(newValue);
@@ -27,7 +31,7 @@ export const IndividualProfile = () => {
     if (section === 'playlists') {
       setSelectedTab(1);
     }
-  }, [section]);
+  }, [section, setSelectedTab]);
 
   return (
     <PageTransition>

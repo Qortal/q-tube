@@ -1,21 +1,21 @@
+import { useSetAtom } from 'jotai';
 import localforage from 'localforage';
+import { hashWordWithoutPublicSalt, useAuth } from 'qapp-core';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import ShortUniqueId from 'short-unique-id';
 import { COMMENT_BASE } from '../../../constants/Identifiers.ts';
+import {
+  AltertObject,
+  setNotificationAtom,
+} from '../../../state/global/notifications.ts';
+import { addToHashMapSuperlikesAtom } from '../../../state/global/superlikes.ts';
 import { objectToBase64 } from '../../../utils/PublishFormatter.ts';
 import {
   CommentInput,
   CommentInputContainer,
   SubmitCommentButton,
 } from './Comments-styles';
-import { hashWordWithoutPublicSalt, useAuth } from 'qapp-core';
-import { useSetAtom } from 'jotai';
-import {
-  AltertObject,
-  setNotificationAtom,
-} from '../../../state/global/notifications.ts';
-import { addToHashMapSuperlikesAtom } from '../../../state/global/superlikes.ts';
-import { useTranslation } from 'react-i18next';
 
 const uid = new ShortUniqueId({ length: 7 });
 
@@ -32,7 +32,7 @@ export interface Item {
   postName: string;
 }
 
-export async function addItem(item: Item): Promise<void> {
+async function addItem(item: Item): Promise<void> {
   // Get all items
   const notificationComments: Item[] =
     (await notification.getItem('comments')) || [];
@@ -59,7 +59,7 @@ export async function addItem(item: Item): Promise<void> {
   // Store the items back into localForage
   await notification.setItem('comments', notificationComments);
 }
-export async function updateItemDate(item: any): Promise<void> {
+async function updateItemDate(item: any): Promise<void> {
   // Get all items
   const notificationComments: Item[] =
     (await notification.getItem('comments')) || [];
@@ -95,7 +95,7 @@ interface CommentEditorProps {
   hasHash?: boolean;
 }
 
-export function utf8ToBase64(inputString: string): string {
+function utf8ToBase64(inputString: string): string {
   // Encode the string as UTF-8
   const utf8String = encodeURIComponent(inputString).replace(
     /%([0-9A-F]{2})/g,
@@ -117,7 +117,6 @@ export const CommentEditor = ({
   commentMessage,
   isSuperLike,
   comment,
-  hasHash,
 }: CommentEditorProps) => {
   const { t } = useTranslation(['core']);
 
@@ -160,7 +159,7 @@ export const CommentEditor = ({
     }
 
     try {
-      let dataFile: string = null;
+      let dataFile: string | null = null;
       let description = '';
       let tag1 = '';
       let superObj = {};
@@ -217,7 +216,7 @@ export const CommentEditor = ({
       }
 
       return resourceResponse;
-    } catch (error: any) {
+    } catch (error) {
       const isError = error instanceof Error;
       const message = isError ? error?.message : 'Failed to publish Comment';
       const notificationObj: AltertObject = {

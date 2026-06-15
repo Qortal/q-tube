@@ -1,7 +1,8 @@
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import {
   Badge,
   Box,
-  Button,
   ButtonBase,
   List,
   ListItem,
@@ -9,6 +10,9 @@ import {
   Popover,
   Typography,
 } from '@mui/material';
+import localForage from 'localforage';
+import moment from 'moment';
+import { useAuth } from 'qapp-core';
 import React, {
   useCallback,
   useEffect,
@@ -16,30 +20,25 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import {
-  extractSigValue,
-  getPaymentInfo,
-  isTimestampWithinRange,
-} from '../../../pages/ContentPages/VideoContent/VideoContent-State.ts';
-import NotificationsIcon from '@mui/icons-material/Notifications';
-import { formatDate } from '../../../utils/time';
-import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import localForage from 'localforage';
-import moment from 'moment';
 import {
   FOR,
   FOR_SUPER_LIKE,
   SUPER_LIKE_BASE,
 } from '../../../constants/Identifiers.ts';
 import { minPriceSuperLike } from '../../../constants/Misc.ts';
-import { useAuth } from 'qapp-core';
-import { useTranslation } from 'react-i18next';
+import {
+  extractSigValue,
+  getPaymentInfo,
+  isTimestampWithinRange,
+} from '../../../pages/ContentPages/VideoContent/VideoContent-State.ts';
+import { formatDate } from '../../../utils/time';
 
 const generalLocal = localForage.createInstance({
   name: 'q-tube-general',
 });
-export function extractIdValue(metadescription) {
+function extractIdValue(metadescription) {
   // Function to extract the substring within double asterisks
   function extractSubstring(str) {
     const match = str.match(/\*\*(.*?)\*\*/);

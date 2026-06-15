@@ -1,23 +1,28 @@
-import { Box } from '@mui/material';
+import { Box, IconButton, useTheme } from '@mui/material';
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+import { useAtomValue } from 'jotai';
+import { QortalSearchParams } from 'qapp-core';
 import { useMemo } from 'react';
-
-import VideoList from './Components/VideoList.tsx';
-import { useHomeState } from './Home-State.ts';
+import { useTranslation } from 'react-i18next';
+import { ListSuperLikeContainer } from '../../components/common/ListSuperLikes/ListSuperLikeContainer.tsx';
+import { PageTransition } from '../../components/common/PageTransition.tsx';
+import { ScrollToTopButton } from '../../components/common/ScrollToTopButton.tsx';
+import { useIsSmall } from '../../hooks/useIsSmall.tsx';
 import {
   QTUBE_PLAYLIST_BASE,
   QTUBE_VIDEO_BASE,
 } from '../../constants/Identifiers.ts';
-import { QortalSearchParams, useAuth } from 'qapp-core';
-import { useSearchParams } from 'react-router-dom';
-import { FilterOptions } from './FilterOptions.tsx';
-import { ScrollToTopButton } from '../../components/common/ScrollToTopButton.tsx';
-import { useAtomValue, useSetAtom } from 'jotai';
 import { scrollRefAtom } from '../../state/global/navbar.ts';
-import { PageTransition } from '../../components/common/PageTransition.tsx';
-import { ListSuperLikeContainer } from '../../components/common/ListSuperLikes/ListSuperLikeContainer.tsx';
+
+import VideoList from './Components/VideoList.tsx';
+import { FilterOptions } from './FilterOptions.tsx';
+import { useHomeState } from './Home-State.ts';
 
 export const Home = () => {
   const scrollRef = useAtomValue(scrollRefAtom);
+  const { t } = useTranslation(['core']);
+  const theme = useTheme();
+  const isSmall = useIsSmall();
 
   const {
     tabValue,
@@ -29,6 +34,8 @@ export const Home = () => {
     filterSubCategory,
     isHydrated,
     filterMode,
+    showRecentSuperLikes,
+    setShowRecentSuperLikes,
   } = useHomeState();
 
   const searchParameters: QortalSearchParams | null = useMemo(() => {
@@ -102,7 +109,38 @@ export const Home = () => {
                 searchParameters={searchParameters}
               />
             )}
-            {searchParameters && <ListSuperLikeContainer from="home" />}
+            {searchParameters && showRecentSuperLikes && (
+              <ListSuperLikeContainer
+                from="home"
+                onClose={() => setShowRecentSuperLikes(false)}
+              />
+            )}
+            {!showRecentSuperLikes && !isSmall && (
+              <Box
+                sx={{
+                  position: 'fixed',
+                  right: '20px',
+                  top: '100px',
+                  zIndex: 1000,
+                }}
+              >
+                <IconButton
+                  onClick={() => setShowRecentSuperLikes(true)}
+                  sx={{
+                    color: 'gold',
+                    padding: '8px',
+                    backgroundColor: theme.palette.background.paper,
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+                    '&:hover': {
+                      backgroundColor: theme.palette.background.default,
+                    },
+                  }}
+                  title="Show Recent Super Likes"
+                >
+                  <ThumbUpIcon />
+                </IconButton>
+              </Box>
+            )}
           </Box>
         </Box>
       </Box>

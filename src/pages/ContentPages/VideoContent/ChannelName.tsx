@@ -1,9 +1,9 @@
 import { Avatar, Box, SxProps, Theme, useTheme } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 import {
   AuthorTextComment,
   StyledCardHeaderComment,
 } from './VideoContent-styles.tsx';
-import { useNavigate } from 'react-router-dom';
 
 export interface ChannelParams {
   channelName: string;

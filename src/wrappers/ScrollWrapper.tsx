@@ -1,5 +1,5 @@
-import { useLayoutEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLayoutEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 
 export const ScrollWrapper = ({ children }) => {
   const location = useLocation();

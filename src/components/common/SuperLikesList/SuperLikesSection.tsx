@@ -1,21 +1,20 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Comment } from './Comment';
 import { CircularProgress } from '@mui/material';
 import { styled } from '@mui/system';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useAtomValue } from 'jotai';
+import { hashWordWithoutPublicSalt } from 'qapp-core';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+
+import { COMMENT_BASE } from '../../../constants/Identifiers.ts';
+import { hashMapSuperlikesAtom } from '../../../state/global/superlikes.ts';
+import { Comment } from './Comment';
 import {
   CommentContainer,
-  CommentEditorContainer,
   CommentsContainer,
   LoadMoreCommentsButton,
   LoadMoreCommentsButtonRow,
   NoCommentsRow,
 } from './Comments-styles';
-
-import { COMMENT_BASE } from '../../../constants/Identifiers.ts';
-import { hashWordWithoutPublicSalt } from 'qapp-core';
-import { useAtomValue } from 'jotai';
-import { hashMapSuperlikesAtom } from '../../../state/global/superlikes.ts';
 
 interface CommentSectionProps {
   postId: string;
@@ -60,7 +59,7 @@ export const SuperLikesSection = ({
   const location = useLocation();
   const [listComments, setListComments] = useState<any[]>([]);
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [loadingComments, setLoadingComments] = useState<boolean>(null);
+  const [loadingComments, setLoadingComments] = useState<boolean>(false);
 
   const hashMapSuperlikes = useAtomValue(hashMapSuperlikesAtom);
 

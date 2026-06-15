@@ -1,7 +1,7 @@
-import { useVideoContentState } from '../VideoContent/VideoContent-State.ts';
+import { useAuth } from 'qapp-core';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from 'qapp-core';
+import { useVideoContentState } from '../VideoContent/VideoContent-State.ts';
 
 export const usePlaylistContentState = () => {
   const {
@@ -84,7 +84,7 @@ export const usePlaylistContentState = () => {
             ...resourceData,
             ...responseData,
           };
-          const videos = [];
+          const videos: any[] = [];
           if (combinedData?.videos) {
             for (const vid of combinedData.videos) {
               const url = `/arbitrary/resources/search?mode=ALL&service=DOCUMENT&identifier=${vid.identifier}&limit=1&includemetadata=true&reverse=true&name=${vid.name}&exactmatchnames=true&offset=0`;
@@ -98,11 +98,26 @@ export const usePlaylistContentState = () => {
 
               if (responseDataSearchVid?.length > 0) {
                 const resourceData2 = responseDataSearchVid[0];
+
+                // Check if playlistTitle exists in the playlist data
+                const playlistVideo = combinedData.videos.find(
+                  (v) => v.identifier === vid.identifier
+                );
+
+                // If playlistTitle exists, use it, otherwise use metadata title
+                if (playlistVideo?.playlistTitle) {
+                  resourceData2.metadata = {
+                    ...resourceData2.metadata,
+                    title: playlistVideo.playlistTitle,
+                  };
+                }
+
                 videos.push(resourceData2);
               }
             }
           }
           combinedData.videos = videos;
+          console.log('playlistData: ', combinedData);
           setPlaylistData(combinedData);
           if (combinedData?.videos?.length > 0) {
             const vid = combinedData?.videos[0];

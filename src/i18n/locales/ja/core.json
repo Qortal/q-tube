@@ -48,7 +48,7 @@
     "playlist_search_by_title": "タイトルで検索",
     "title_playlist": "再生リストのタイトル",
     "description_playlist": "再生リストの説明",
-    "generationg_extracts": "画像を抽出中",
+    "processing_videos": "画像を抽出中",
     "create_new_playlist": "新しい再生リストを作成",
     "update_playlist_properties": "再生リストの設定を更新",
     "add_videos_playlist": "再生リストに動画を追加",
@@ -79,8 +79,7 @@
     "subscriptions": "購読中",
     "watched_videos": "視聴済み動画",
     "bookmarks": "ブックマーク",
-    "your_playlists": "自分の再生リスト",
-    "your_videos": "自分の動画"
+    "your_channel": "自分のチャンネル"
   },
   "filters": {
     "most_recent": "最新",

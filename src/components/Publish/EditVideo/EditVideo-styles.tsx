@@ -1,20 +1,9 @@
-import { styled } from '@mui/system';
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  Box,
-  Button,
-  Grid,
-  Rating,
-  TextField,
-  Typography,
-  Select,
-} from '@mui/material';
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
+import { Box, Button, TextField, Typography } from '@mui/material';
+import { styled } from '@mui/system';
 import { TimesSVG } from '../../../assets/svgs/TimesSVG.tsx';
 
-export const DoubleLine = styled(Typography)`
+const DoubleLine = styled(Typography)`
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;

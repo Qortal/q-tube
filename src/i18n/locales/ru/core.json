@@ -136,5 +136,14 @@
   },
   "search": {
     "clear_search": "очистить историю поиска"
+  },
+  "channel": {
+    "add_description": "добавить описание канала",
+    "edit_description": "редактировать описание канала",
+    "publish_description": "опубликовать",
+    "description_published": "описание канала опубликовано",
+    "publish_failed": "не удалось опубликовать описание канала",
+    "description_deleted": "описание канала удалено",
+    "delete_failed": "не удалось удалить описание канала"
   }
 }

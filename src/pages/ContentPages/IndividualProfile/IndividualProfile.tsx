@@ -8,6 +8,7 @@ import { PlayListComponentLevel } from '../../Home/Components/PlayListComponentL
 import { VideoListComponentLevel } from '../../Home/Components/VideoListComponentLevel.tsx';
 import { ChannelActions } from '../VideoContent/ChannelActions.tsx';
 import { StyledCardHeaderComment } from '../VideoContent/VideoContent-styles.tsx';
+import { ChannelDescription } from './ChannelDescription.tsx';
 import { HeaderContainer, ProfileContainer } from './Profile-styles.tsx';
 import { useIndividualProfileState } from './IndividualProfile-State.ts';
 
@@ -53,6 +54,7 @@ export const IndividualProfile = () => {
             </StyledCardHeaderComment>
           </Box>
         </HeaderContainer>
+        {channelName && <ChannelDescription channelName={channelName} />}
 
         {/* Tabs Bar */}
         <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}>

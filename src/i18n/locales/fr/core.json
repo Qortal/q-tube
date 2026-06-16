@@ -136,5 +136,14 @@
   },
   "search": {
     "clear_search": "effacer l'historique des recherches"
+  },
+  "channel": {
+    "add_description": "ajouter une description de chaîne",
+    "edit_description": "modifier la description de la chaîne",
+    "publish_description": "publier",
+    "description_published": "description de la chaîne publiée",
+    "publish_failed": "échec de la publication de la description de la chaîne",
+    "description_deleted": "description de la chaîne supprimée",
+    "delete_failed": "échec de la suppression de la description de la chaîne"
   }
 }

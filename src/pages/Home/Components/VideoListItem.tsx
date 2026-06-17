@@ -254,7 +254,7 @@ export const VideoListItem = ({
               onClick={(e) => {
                 e.stopPropagation();
                 navigate(
-                  `/channel/${encodeURIComponent(qortalMetadata?.name)}`
+                  `/channel/${encodeURIComponent(qortalMetadata?.name)}/videos`
                 );
               }}
             >
@@ -471,7 +471,7 @@ export const VideoListItem = ({
               onClick={(e) => {
                 e.stopPropagation();
                 navigate(
-                  `/channel/${encodeURIComponent(qortalMetadata?.name)}`
+                  `/channel/${encodeURIComponent(qortalMetadata?.name)}/videos`
                 );
               }}
             />
@@ -499,7 +499,7 @@ export const VideoListItem = ({
                   onClick={(e) => {
                     e.stopPropagation();
                     navigate(
-                      `/channel/${encodeURIComponent(qortalMetadata?.name)}`
+                      `/channel/${encodeURIComponent(qortalMetadata?.name)}/videos`
                     );
                   }}
                 >

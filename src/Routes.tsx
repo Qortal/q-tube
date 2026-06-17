@@ -55,10 +55,6 @@ export function Routes() {
             element: <PlaylistContent />,
           },
           {
-            path: 'channel/:name',
-            element: <ChannelPage />,
-          },
-          {
             path: 'channel/:name/:section',
             element: <ChannelPage />,
           },

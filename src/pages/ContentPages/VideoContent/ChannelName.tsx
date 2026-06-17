@@ -31,7 +31,7 @@ export const ChannelName = ({ channelName }: ChannelParams) => {
           minWidth: '125px',
         }}
         onClick={() => {
-          navigate(`/channel/${encodeURIComponent(channelName)}`);
+          navigate(`/channel/${encodeURIComponent(channelName)}/videos`);
         }}
       >
         <Avatar

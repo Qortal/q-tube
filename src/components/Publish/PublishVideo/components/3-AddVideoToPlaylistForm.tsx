@@ -1,9 +1,11 @@
 import AddIcon from '@mui/icons-material/Add';
 import { Box, Button, Input, Typography, useTheme } from '@mui/material';
+import { useAtom } from 'jotai';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { CardContentContainerComment } from '../../../common/Comments/Comments-styles.tsx';
 import ImageUploader from '../../../common/ImageUploader.tsx';
+import { NameSelector } from '../../../common/NameSelector/NameSelector.tsx';
 import { TextEditor } from '../../../common/TextEditor/TextEditor.tsx';
 import {
   CrowdfundSubTitle,
@@ -20,11 +22,13 @@ import {
 } from '../PublishVideo-styles.tsx';
 import { usePublishVideo } from '../PublishVideoContext.tsx';
 import { CategorySelect } from './CategorySelect.tsx';
+import { namesAtom } from '../../../../state/global/names.ts';
 
 export const AddVideoToPlaylistForm: React.FC = () => {
   const { t } = useTranslation(['core']);
   const theme = useTheme();
   const workflow = usePublishVideo();
+  const [allNames] = useAtom(namesAtom);
 
   const {
     playlistSetting,
@@ -54,13 +58,12 @@ export const AddVideoToPlaylistForm: React.FC = () => {
           width: '100%',
           justifyContent: 'center',
           display: 'flex',
+          gap: '10px',
+          alignItems: 'center',
         }}
       >
-        <Typography>
-          {t('core:publish.playlist', {
-            postProcess: 'capitalizeFirstChar',
-          })}
-        </Typography>
+        <Typography>Publish Name:</Typography>
+        <NameSelector allNames={allNames} isShowCurrentName={true} />
       </Box>
       <Box
         sx={{

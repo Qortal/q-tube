@@ -3,7 +3,6 @@ import { Avatar, useTheme } from '@mui/material';
 import { useAuth } from 'qapp-core';
 import { useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
 import { menuIconSize } from '../../../../constants/Misc.ts';
 import { useIsSmall } from '../../../../hooks/useIsSmall.tsx';
 import { Names } from '../../../../state/global/names.ts';
@@ -37,14 +36,13 @@ export const UserMenu = ({
   const [isOpenBlockedNamesModal, setIsOpenBlockedNamesModal] =
     useState<boolean>(false);
   const popMenuRef = useRef<PopMenuRefType>(null);
-  const navigate = useNavigate();
+  const constructedAvatarUrl = `/arbitrary/THUMBNAIL/${encodeURIComponent(userName || '')}/qortal_avatar`;
 
   const handleMyChannelLink = useCallback(
     (switchToName: string) => {
       switchName(switchToName);
-      navigate(`/channel/${encodeURIComponent(switchToName)}`);
     },
-    [navigate]
+    []
   );
 
   const onCloseBlockedNames = () => {
@@ -68,7 +66,7 @@ export const UserMenu = ({
                     height: isSmall ? '35px' : '40px',
                     width: isSmall ? '35px' : '40px',
                   }}
-                  src={userAvatar || ''}
+                  src={userAvatar || constructedAvatarUrl}
                 >
                   {userName?.charAt(0).toUpperCase()}
                 </Avatar>
@@ -80,14 +78,14 @@ export const UserMenu = ({
                 key={name.name}
                 userName={name.name}
                 handleMyChannelLink={handleMyChannelLink}
-                popMenuRef={popMenuRef}
+                popMenuRef={popMenuRef as React.RefObject<{ closePopover: () => void }>}
               />
             ))}
 
             <DropdownContainer
               onClick={() => {
                 setIsOpenBlockedNamesModal(true);
-                popMenuRef.current.closePopover();
+                popMenuRef.current?.closePopover();
               }}
             >
               <PersonOffIcon

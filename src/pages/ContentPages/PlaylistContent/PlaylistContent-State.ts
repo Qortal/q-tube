@@ -1,5 +1,5 @@
 import { useAuth } from 'qapp-core';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useVideoContentState } from '../VideoContent/VideoContent-State.ts';
 
@@ -26,6 +26,7 @@ export const usePlaylistContentState = () => {
   const userName = name;
   const [doAutoPlay, setDoAutoPlay] = useState(false);
   const [isLoadingPlaylist, setIsLoadingPlaylist] = useState(false);
+  const abortControllerRef = useRef<AbortController | null>(null);
   const calculateAmountSuperlike = useMemo(() => {
     const totalQort = superLikeList?.reduce((acc, curr) => {
       if (curr?.amount && !isNaN(parseFloat(curr.amount)))
@@ -47,12 +48,17 @@ export const usePlaylistContentState = () => {
 
       if (!name || !id) return;
 
+      // Create new AbortController for this request
+      const abortController = new AbortController();
+      abortControllerRef.current = abortController;
+
       const url = `/arbitrary/resources/search?mode=ALL&service=PLAYLIST&identifier=${id}&limit=1&includemetadata=true&reverse=true&excludeblocked=true&name=${name}&exactmatchnames=true&offset=0`;
       const response = await fetch(url, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
+        signal: abortController.signal,
       });
       const responseDataSearch = await response.json();
 
@@ -87,12 +93,18 @@ export const usePlaylistContentState = () => {
           const videos: any[] = [];
           if (combinedData?.videos) {
             for (const vid of combinedData.videos) {
+              // Check if request was aborted
+              if (abortController.signal.aborted) {
+                return;
+              }
+              
               const url = `/arbitrary/resources/search?mode=ALL&service=DOCUMENT&identifier=${vid.identifier}&limit=1&includemetadata=true&reverse=true&name=${vid.name}&exactmatchnames=true&offset=0`;
               const response = await fetch(url, {
                 method: 'GET',
                 headers: {
                   'Content-Type': 'application/json',
                 },
+                signal: abortController.signal,
               });
               const responseDataSearchVid = await response.json();
 
@@ -130,7 +142,9 @@ export const usePlaylistContentState = () => {
         }
       }
     } catch (error) {
-      console.error(error);
+      if (error instanceof Error && error.name !== 'AbortError') {
+        console.error(error);
+      }
     } finally {
       setIsLoadingPlaylist(false);
     }
@@ -140,11 +154,18 @@ export const usePlaylistContentState = () => {
     if (channelName && id) {
       checkforPlaylist(channelName, id);
     }
-  }, [id, channelName]);
+
+    // Cleanup function to abort pending requests
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, [id, channelName, checkforPlaylist]);
 
   const nextVideo = useMemo(() => {
     const currentVideoIndex = playlistData?.videos?.findIndex(
-      (item) => item?.identifier === videoData?.id
+      (item) => item?.identifier === videoData?.identifier
     );
     if (currentVideoIndex !== -1) {
       const nextVideoIndex = currentVideoIndex + 1;
@@ -165,7 +186,7 @@ export const usePlaylistContentState = () => {
 
   const onEndVideo = useCallback(() => {
     const currentVideoIndex = playlistData?.videos?.findIndex(
-      (item) => item?.identifier === videoData?.id
+      (item) => item?.identifier === videoData?.identifier
     );
     if (currentVideoIndex !== -1) {
       const nextVideoIndex = currentVideoIndex + 1;

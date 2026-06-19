@@ -2,7 +2,7 @@ import { Box } from '@mui/material';
 import CSS from 'csstype';
 
 import { Service, VideoPlayer as QappVideoPlayer } from 'qapp-core';
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useIsSmall } from '../../../hooks/useIsSmall';
 
@@ -36,6 +36,26 @@ export const VideoPlayer = ({ ...props }: VideoPlayerProps) => {
   const isSmall = useIsSmall();
   const videoRef = useRef(null);
   const location = useLocation();
+
+  // Cleanup video player on unmount
+  useEffect(() => {
+    return () => {
+      // Cleanup video player resources
+      if (videoRef.current) {
+        const videoElement = videoRef.current as any;
+        if (videoElement.pause) {
+          videoElement.pause();
+        }
+        if (videoElement.src) {
+          videoElement.src = '';
+        }
+        if (videoElement.load) {
+          videoElement.load();
+        }
+      }
+    };
+  }, []);
+
   return (
     <Box
       sx={{

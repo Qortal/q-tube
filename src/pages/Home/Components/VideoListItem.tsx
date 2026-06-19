@@ -151,20 +151,7 @@ export const VideoListItem = ({
                   <DeleteIcon
                     onClick={async () => {
                       try {
-                        const metadataReference = {
-                          ...qortalMetadata,
-                          identifier: qortalMetadata.identifier + '_metadata',
-                        };
-
-                        const playlistReference = {
-                          ...qortalMetadata,
-                          identifier: qortalMetadata.identifier,
-                        };
-
-                        await deleteResource([
-                          metadataReference,
-                          playlistReference,
-                        ]);
+                        await deleteResource([qortalMetadata]);
                       } catch (error) {
                         console.error('Error deleting playlist:', error);
                       }

@@ -140,5 +140,14 @@
   },
   "search": {
     "clear_search": "clear search history"
+  },
+  "channel": {
+    "add_description": "add channel description",
+    "edit_description": "edit channel description",
+    "publish_description": "publish",
+    "description_published": "channel description published",
+    "publish_failed": "failed to publish channel description",
+    "description_deleted": "channel description deleted",
+    "delete_failed": "failed to delete channel description"
   }
 }

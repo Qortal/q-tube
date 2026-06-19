@@ -136,5 +136,14 @@
   },
   "search": {
     "clear_search": "borrar historial de búsqueda"
+  },
+  "channel": {
+    "add_description": "añadir descripción del canal",
+    "edit_description": "editar descripción del canal",
+    "publish_description": "publicar",
+    "description_published": "descripción del canal publicada",
+    "publish_failed": "error al publicar la descripción del canal",
+    "description_deleted": "descripción del canal eliminada",
+    "delete_failed": "error al eliminar la descripción del canal"
   }
 }

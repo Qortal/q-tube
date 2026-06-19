@@ -136,5 +136,14 @@
   },
   "search": {
     "clear_search": "清除搜索记录"
+  },
+  "channel": {
+    "add_description": "添加频道描述",
+    "edit_description": "编辑频道描述",
+    "publish_description": "发布",
+    "description_published": "频道描述已发布",
+    "publish_failed": "频道描述发布失败",
+    "description_deleted": "频道描述已删除",
+    "delete_failed": "频道描述删除失败"
   }
 }

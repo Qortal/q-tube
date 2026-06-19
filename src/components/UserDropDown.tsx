@@ -13,16 +13,26 @@ export const UserDropDown = ({
   popMenuRef,
 }: UserDropDownProps) => {
   const theme = useTheme();
-  const userAvatar = `/arbitrary/THUMBNAIL/${encodeURIComponent(userName)}/avatar?async=true`;
+  const userAvatar = `/arbitrary/THUMBNAIL/${encodeURIComponent(userName)}/qortal_avatar`;
 
   return (
     <DropdownContainer
       onClick={() => {
         handleMyChannelLink(userName);
-        popMenuRef.current.closePopover();
+        popMenuRef.current?.closePopover();
       }}
     >
-      <Avatar src={userAvatar}>{userName?.charAt(0).toUpperCase()}</Avatar>
+      <Avatar
+        src={userAvatar}
+        alt={`${userName}'s avatar`}
+        imgProps={{
+          onError: (e) => {
+            e.currentTarget.src = '';
+          },
+        }}
+      >
+        {userName?.charAt(0).toUpperCase()}
+      </Avatar>
       <DropdownText>{userName}</DropdownText>
     </DropdownContainer>
   );

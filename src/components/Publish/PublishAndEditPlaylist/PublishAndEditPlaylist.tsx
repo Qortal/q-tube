@@ -12,7 +12,7 @@ import {
 } from '@mui/material';
 import { useAtom, useSetAtom } from 'jotai';
 import { useAuth, useGlobal } from 'qapp-core';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import ShortUniqueId from 'short-unique-id';
 import { categories, subCategories } from '../../../constants/Categories.ts';
@@ -68,6 +68,10 @@ export const PublishAndEditPlaylist = () => {
     useState<any>(null);
   const [hasCharacterRemovalError, setHasCharacterRemovalError] =
     useState(false);
+  
+  // Refs for cleanup
+  const checkforPlaylistAbortControllerRef = useRef<AbortController | null>(null);
+  const addVideoAbortControllerRef = useRef<AbortController | null>(null);
 
   const isNew = useMemo(() => {
     return editVideoProperties?.mode === 'new';
@@ -81,18 +85,22 @@ export const PublishAndEditPlaylist = () => {
     }
   }, [isNew]);
 
-  const checkforPlaylist = React.useCallback(async (videoList) => {
+  const checkforPlaylist = React.useCallback(async (videoList, signal?: AbortSignal) => {
     try {
       const combinedData: any = {};
       const videos: any[] = [];
       if (videoList) {
         for (const vid of videoList) {
+          // Check if request was aborted
+          if (signal?.aborted) return;
+          
           const url = `/arbitrary/resources/search?mode=ALL&service=DOCUMENT&identifier=${vid.identifier}&limit=1&includemetadata=true&reverse=true&name=${vid.name}&exactmatchnames=true&offset=0`;
           const response = await fetch(url, {
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
             },
+            signal,
           });
           const responseDataSearchVid = await response.json();
 
@@ -111,7 +119,9 @@ export const PublishAndEditPlaylist = () => {
       combinedData.videos = videos;
       setPlaylistData(combinedData);
     } catch (error) {
-      console.error(error);
+      if (error instanceof Error && error.name !== 'AbortError') {
+        console.error(error);
+      }
     }
   }, []);
 
@@ -147,12 +157,30 @@ export const PublishAndEditPlaylist = () => {
       }
 
       if (editVideoProperties?.videos) {
-        checkforPlaylist(editVideoProperties?.videos);
+        const abortController = new AbortController();
+        checkforPlaylistAbortControllerRef.current = abortController;
+        checkforPlaylist(editVideoProperties?.videos, abortController.signal);
       }
     }
-  }, [editVideoProperties]);
+
+    // Cleanup function to abort pending requests
+    return () => {
+      if (checkforPlaylistAbortControllerRef.current) {
+        checkforPlaylistAbortControllerRef.current.abort();
+      }
+    };
+  }, [editVideoProperties, checkforPlaylist]);
 
   const onClose = () => {
+    // Abort any pending requests
+    if (checkforPlaylistAbortControllerRef.current) {
+      checkforPlaylistAbortControllerRef.current.abort();
+    }
+    if (addVideoAbortControllerRef.current) {
+      addVideoAbortControllerRef.current.abort();
+    }
+    
+    // Clear all state
     setTitle('');
     setDescription('');
     setVideos([]);
@@ -354,15 +382,20 @@ export const PublishAndEditPlaylist = () => {
     setPlaylistData(copyData);
   };
 
-  const addVideo = async (data) => {
+  const addVideo = useCallback(async (data) => {
     // Fetch the full title for the new video
     try {
+      const abortController = new AbortController();
+      addVideoAbortControllerRef.current = abortController;
+      
       const response = await qortalRequest({
         action: 'FETCH_QDN_RESOURCE',
         name: data.name,
         service: data.service,
         identifier: data.identifier,
       });
+
+      if (abortController.signal.aborted) return;
 
       if (response && !response.error && response.title) {
         // Add the video with the fetched full title as playlistTitle
@@ -382,12 +415,14 @@ export const PublishAndEditPlaylist = () => {
         setPlaylistData(copyData);
       }
     } catch (error) {
-      // Fallback to original behavior if fetch fails
-      const copyData = structuredClone(playlistData);
-      copyData.videos = [...copyData.videos, { ...data }];
-      setPlaylistData(copyData);
+      if (error instanceof Error && error.name !== 'AbortError') {
+        // Fallback to original behavior if fetch fails
+        const copyData = structuredClone(playlistData);
+        copyData.videos = [...copyData.videos, { ...data }];
+        setPlaylistData(copyData);
+      }
     }
-  };
+  }, [playlistData]);
 
   const updateVideoList = (list) => {
     const copyData = structuredClone(playlistData);

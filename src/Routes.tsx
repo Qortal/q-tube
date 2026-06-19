@@ -1,7 +1,7 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { AppWrapper } from './AppWrapper';
 import { Bookmarks } from './pages/Bookmarks/Bookmarks';
-import { IndividualProfile } from './pages/ContentPages/IndividualProfile/IndividualProfile';
+import { ChannelPage } from './pages/ContentPages/IndividualProfile/ChannelPage.tsx';
 import { PlaylistContent } from './pages/ContentPages/PlaylistContent/PlaylistContent';
 import { VideoContent } from './pages/ContentPages/VideoContent/VideoContent';
 import { History } from './pages/History/History';
@@ -55,16 +55,8 @@ export function Routes() {
             element: <PlaylistContent />,
           },
           {
-            path: 'channel/:name',
-            element: <IndividualProfile />,
-          },
-          {
             path: 'channel/:name/:section',
-            element: <IndividualProfile />,
-          },
-          {
-            path: 'channel/:name/:section',
-            element: <IndividualProfile />,
+            element: <ChannelPage />,
           },
         ],
       },

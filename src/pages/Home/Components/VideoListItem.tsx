@@ -151,20 +151,7 @@ export const VideoListItem = ({
                   <DeleteIcon
                     onClick={async () => {
                       try {
-                        const metadataReference = {
-                          ...qortalMetadata,
-                          identifier: qortalMetadata.identifier + '_metadata',
-                        };
-
-                        const playlistReference = {
-                          ...qortalMetadata,
-                          identifier: qortalMetadata.identifier,
-                        };
-
-                        await deleteResource([
-                          metadataReference,
-                          playlistReference,
-                        ]);
+                        await deleteResource([qortalMetadata]);
                       } catch (error) {
                         console.error('Error deleting playlist:', error);
                       }
@@ -254,7 +241,7 @@ export const VideoListItem = ({
               onClick={(e) => {
                 e.stopPropagation();
                 navigate(
-                  `/channel/${encodeURIComponent(qortalMetadata?.name)}`
+                  `/channel/${encodeURIComponent(qortalMetadata?.name)}/videos`
                 );
               }}
             >
@@ -471,7 +458,7 @@ export const VideoListItem = ({
               onClick={(e) => {
                 e.stopPropagation();
                 navigate(
-                  `/channel/${encodeURIComponent(qortalMetadata?.name)}`
+                  `/channel/${encodeURIComponent(qortalMetadata?.name)}/videos`
                 );
               }}
             />
@@ -499,7 +486,7 @@ export const VideoListItem = ({
                   onClick={(e) => {
                     e.stopPropagation();
                     navigate(
-                      `/channel/${encodeURIComponent(qortalMetadata?.name)}`
+                      `/channel/${encodeURIComponent(qortalMetadata?.name)}/videos`
                     );
                   }}
                 >

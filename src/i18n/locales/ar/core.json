@@ -136,5 +136,14 @@
   },
   "search": {
     "clear_search": "مسح سجل البحث"
+  },
+  "channel": {
+    "add_description": "إضافة وصف القناة",
+    "edit_description": "تعديل وصف القناة",
+    "publish_description": "نشر",
+    "description_published": "تم نشر وصف القناة",
+    "publish_failed": "فشل نشر وصف القناة",
+    "description_deleted": "تم حذف وصف القناة",
+    "delete_failed": "فشل حذف وصف القناة"
   }
 }

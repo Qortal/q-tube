@@ -810,7 +810,7 @@ export const useVideoPublishingWorkflow = (
           data64: await objectToBase64(playlistObject),
           title: (title || '').slice(0, 50),
           description: metadescription,
-          identifier: identifier + '_metadata',
+          identifier: identifier,
           tag1: QTUBE_VIDEO_BASE,
         };
 

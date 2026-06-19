@@ -1,37 +1,38 @@
 import { Box, Tab, Tabs } from '@mui/material';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useAuth } from 'qapp-core';
 import { useTranslation } from 'react-i18next';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { PageTransition } from '../../../components/common/PageTransition.tsx';
 import { PlayListComponentLevel } from '../../Home/Components/PlayListComponentLevel.tsx';
 import { VideoListComponentLevel } from '../../Home/Components/VideoListComponentLevel.tsx';
 import { ChannelActions } from '../VideoContent/ChannelActions.tsx';
 import { StyledCardHeaderComment } from '../VideoContent/VideoContent-styles.tsx';
+import { ChannelDescription } from './ChannelDescription.tsx';
 import { HeaderContainer, ProfileContainer } from './Profile-styles.tsx';
 import { useIndividualProfileState } from './IndividualProfile-State.ts';
 
-export const IndividualProfile = () => {
+export const ChannelPage = () => {
   const { t } = useTranslation(['core']);
   const { name } = useAuth();
+  const navigate = useNavigate();
 
   const { name: channelName, section } = useParams();
   const isOwnChannel = channelName === name;
-  const { channelTab: selectedTab, setChannelTab: setSelectedTab } =
-    useIndividualProfileState(isOwnChannel);
+  const { setChannelTab: setSelectedTab } = useIndividualProfileState(isOwnChannel);
+
+  // Derive selectedTab from URL section parameter
+  const selectedTab = section === 'playlists' ? 1 : 0;
 
   const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
-    setSelectedTab(newValue);
+    const newSection = newValue === 0 ? 'videos' : 'playlists';
+    navigate(`/channel/${channelName}/${newSection}`);
+    
+    // Update persisted state for owned channels (for sidebar button)
+    if (isOwnChannel) {
+      setSelectedTab(newValue);
+    }
   };
-
-  useEffect(() => {
-    if (section === 'videos') {
-      setSelectedTab(0);
-    }
-    if (section === 'playlists') {
-      setSelectedTab(1);
-    }
-  }, [section, setSelectedTab]);
 
   return (
     <PageTransition>
@@ -53,6 +54,7 @@ export const IndividualProfile = () => {
             </StyledCardHeaderComment>
           </Box>
         </HeaderContainer>
+        {channelName && <ChannelDescription channelName={channelName} />}
 
         {/* Tabs Bar */}
         <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}>

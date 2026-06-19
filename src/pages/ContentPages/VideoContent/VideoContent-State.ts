@@ -39,6 +39,10 @@ export const useVideoContentState = () => {
   const [loadingSuperLikes, setLoadingSuperLikes] = useState<boolean>(false);
   const [superLikeList, setSuperLikeList] = useState<any[]>([]);
   const { addSuperlikeRawDataGetToList } = useFetchSuperLikes();
+  
+  // Refs for cleanup
+  const getAddressNameAbortControllerRef = useRef<AbortController | null>(null);
+  const getCommentsAbortControllerRef = useRef<AbortController | null>(null);
   const videoData = useMemo(() => {
     if (!resource?.data) return null;
 
@@ -69,21 +73,37 @@ export const useVideoContentState = () => {
   }, [resource?.data]);
   const contentRef = useRef<HTMLDivElement>(null);
 
-  const getAddressName = async (name) => {
-    const response = await qortalRequest({
-      action: 'GET_NAME_DATA',
-      name: name,
-    });
+  const getAddressName = async (name, signal?: AbortSignal) => {
+    try {
+      const response = await qortalRequest({
+        action: 'GET_NAME_DATA',
+        name: name,
+      });
 
-    if (response?.owner) {
-      setNameAddress(response.owner);
+      if (signal?.aborted) return;
+
+      if (response?.owner) {
+        setNameAddress(response.owner);
+      }
+    } catch (error) {
+      if (error instanceof Error && error.name !== 'AbortError') {
+        console.error(error);
+      }
     }
   };
 
   useEffect(() => {
     if (channelName) {
-      getAddressName(channelName);
+      const abortController = new AbortController();
+      getAddressNameAbortControllerRef.current = abortController;
+      getAddressName(channelName, abortController.signal);
     }
+
+    return () => {
+      if (getAddressNameAbortControllerRef.current) {
+        getAddressNameAbortControllerRef.current.abort();
+      }
+    };
   }, [channelName]);
 
   const navigate = useNavigate();
@@ -126,7 +146,7 @@ export const useVideoContentState = () => {
   }, [videoData]);
 
   const getComments = useCallback(
-    async (id, nameAddressParam, superLikeVersion) => {
+    async (id, nameAddressParam, superLikeVersion, signal?: AbortSignal) => {
       if (!id) return;
       try {
         setLoadingSuperLikes(true);
@@ -137,10 +157,14 @@ export const useVideoContentState = () => {
           headers: {
             'Content-Type': 'application/json',
           },
+          signal,
         });
         let responseData: QortalMetadata[] = [];
         responseData = await response.json();
         if (superLikeVersion === 1) {
+          // Check if request was aborted
+          if (signal?.aborted) return;
+          
           const urlV1 = `/arbitrary/resources/search?mode=ALL&service=BLOG_COMMENT&query=${SUPER_LIKE_BASE}${id.slice(
             0,
             39
@@ -150,6 +174,7 @@ export const useVideoContentState = () => {
             headers: {
               'Content-Type': 'application/json',
             },
+            signal,
           });
 
           const responseDataV1 = await responseV1.json();
@@ -158,6 +183,9 @@ export const useVideoContentState = () => {
 
         let comments: any[] = [];
         for (const comment of responseData) {
+          // Check if request was aborted
+          if (signal?.aborted) return;
+          
           if (
             comment.identifier &&
             comment.name &&
@@ -195,7 +223,9 @@ export const useVideoContentState = () => {
 
         setSuperLikeList(comments);
       } catch (error) {
-        console.error(error);
+        if (error instanceof Error && error.name !== 'AbortError') {
+          console.error(error);
+        }
       } finally {
         setLoadingSuperLikes(false);
       }
@@ -205,7 +235,15 @@ export const useVideoContentState = () => {
 
   useEffect(() => {
     if (!nameAddress || !id || !superLikeversion) return;
-    getComments(id, nameAddress, superLikeversion);
+    const abortController = new AbortController();
+    getCommentsAbortControllerRef.current = abortController;
+    getComments(id, nameAddress, superLikeversion, abortController.signal);
+
+    return () => {
+      if (getCommentsAbortControllerRef.current) {
+        getCommentsAbortControllerRef.current.abort();
+      }
+    };
   }, [getComments, id, nameAddress, superLikeversion]);
 
   return {

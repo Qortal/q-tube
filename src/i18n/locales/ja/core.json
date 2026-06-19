@@ -136,5 +136,14 @@
   },
   "search": {
     "clear_search": "検索履歴をクリア"
+  },
+  "channel": {
+    "add_description": "チャンネルの説明を追加",
+    "edit_description": "チャンネルの説明を編集",
+    "publish_description": "公開",
+    "description_published": "チャンネルの説明が公開されました",
+    "publish_failed": "チャンネルの説明の公開に失敗しました",
+    "description_deleted": "チャンネルの説明が削除されました",
+    "delete_failed": "チャンネルの説明の削除に失敗しました"
   }
 }

@@ -92,6 +92,9 @@ const lightTheme = createTheme({
     secondary: {
       main: '#757575',
     },
+    superlike: {
+      main: '#B8860B', // dark goldenrod for better contrast in light mode
+    },
     background: {
       default: '#f5f7fa', // soft off-white background
       paper: '#ffffff', // card/dialog base
@@ -143,6 +146,9 @@ const darkTheme = createTheme({
     },
     secondary: {
       main: '#757575',
+    },
+    superlike: {
+      main: '#FFD700', // gold color in hex format for dark mode
     },
     background: {
       default: '#0C0C10',

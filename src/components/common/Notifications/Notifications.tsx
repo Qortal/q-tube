@@ -9,6 +9,7 @@ import {
   ListItemText,
   Popover,
   Typography,
+  useTheme,
 } from '@mui/material';
 import localForage from 'localforage';
 import moment from 'moment';
@@ -65,6 +66,7 @@ function extractIdValue(metadescription) {
 
 export const Notifications = () => {
   const { t, i18n } = useTranslation(['core']);
+  const theme = useTheme();
 
   const [anchorElNotification, setAnchorElNotification] =
     useState<HTMLButtonElement | null>(null);
@@ -315,7 +317,7 @@ export const Notifications = () => {
                       </Typography>
                       <ThumbUpIcon
                         style={{
-                          color: 'gold',
+                          color: theme.palette.superlike.main,
                         }}
                       />
                     </Box>

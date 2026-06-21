@@ -216,7 +216,7 @@ export const SuperLike = ({
           >
             <ThumbUpIcon
               style={{
-                color: 'gold',
+                color: theme.palette.superlike.main,
               }}
             />
 

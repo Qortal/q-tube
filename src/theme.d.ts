@@ -8,4 +8,14 @@ declare module '@mui/material/styles' {
   interface TypeText {
     tertiary: string;
   }
+  interface Palette {
+    superlike: {
+      main: string;
+    };
+  }
+  interface PaletteOptions {
+    superlike?: {
+      main?: string;
+    };
+  }
 }

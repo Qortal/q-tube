@@ -127,7 +127,7 @@ export const Home = () => {
                 <IconButton
                   onClick={() => setShowRecentSuperLikes(true)}
                   sx={{
-                    color: 'gold',
+                    color: theme.palette.superlike.main,
                     padding: '8px',
                     backgroundColor: theme.palette.background.paper,
                     boxShadow: '0 2px 8px rgba(0,0,0,0.3)',

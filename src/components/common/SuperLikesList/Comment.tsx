@@ -277,8 +277,8 @@ const CommentCard = ({
           >
             {!isReply && (
               <ThumbUpIcon
-                style={{
-                  color: 'gold',
+                sx={{
+                  color: (theme) => theme.palette.superlike.main,
                   cursor: 'pointer',
                   marginRight: '10px',
                 }}
@@ -286,10 +286,10 @@ const CommentCard = ({
             )}
             {amount && (
               <Typography
-                sx={{
+                sx={(theme) => ({
                   fontSize: fontSizeSmall,
-                  color: 'gold',
-                }}
+                  color: theme.palette.superlike.main,
+                })}
               >
                 {parseFloat(amount)?.toFixed(2)} QORT
               </Typography>

@@ -48,7 +48,7 @@ export default function ListSuperLikes({ superlikes }) {
         },
 
         '::-webkit-scrollbar-thumb': {
-          backgroundColor: 'gold',
+          backgroundColor: theme.palette.superlike.main,
           borderRadius: '8px',
           backgroundClip: 'content-box',
           border: '4px solid transparent',
@@ -135,7 +135,7 @@ export default function ListSuperLikes({ superlikes }) {
                       >
                         <ThumbUpIcon
                           style={{
-                            color: 'gold',
+                            color: theme.palette.superlike.main,
                           }}
                         />
                         <Typography

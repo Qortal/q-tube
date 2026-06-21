@@ -18,7 +18,10 @@ interface ListSuperLikeContainerProps {
   onClose?: () => void;
 }
 
-export const ListSuperLikeContainer = ({ from, onClose }: ListSuperLikeContainerProps) => {
+export const ListSuperLikeContainer = ({
+  from,
+  onClose,
+}: ListSuperLikeContainerProps) => {
   const handleClose = () => {
     if (onClose) onClose();
   };
@@ -26,8 +29,8 @@ export const ListSuperLikeContainer = ({ from, onClose }: ListSuperLikeContainer
 
   const [superlikelist] = useAtom(superlikesAtom);
   const isSmall = useIsSmall();
-  const headerSX = { color: 'gold' };
   const theme = useTheme();
+  const headerSX = { color: theme.palette.superlike.main };
   const popoverRef = useRef<PopMenuRefType>(null);
   return (
     <Box>
@@ -36,7 +39,7 @@ export const ListSuperLikeContainer = ({ from, onClose }: ListSuperLikeContainer
           sx={{
             paddingLeft: '5px',
             maxHeight: '55vh',
-            outline: '1px solid gold',
+            outline: `1px solid ${theme.palette.superlike.main}`,
             padding: '5px',
             overflow: 'hidden',
             width: 300,
@@ -78,7 +81,7 @@ export const ListSuperLikeContainer = ({ from, onClose }: ListSuperLikeContainer
                     <IconButton
                       onClick={handleClose}
                       sx={{
-                        color: 'white',
+                        color: theme.palette.superlike.main,
                         padding: '4px',
                         '&:hover': {
                           backgroundColor: 'rgba(255, 255, 255, 0.1)',
@@ -126,7 +129,7 @@ export const ListSuperLikeContainer = ({ from, onClose }: ListSuperLikeContainer
                 <ThumbUpIcon
                   fontSize="small"
                   style={{
-                    color: 'gold',
+                    color: theme.palette.superlike.main,
                   }}
                 />
               }

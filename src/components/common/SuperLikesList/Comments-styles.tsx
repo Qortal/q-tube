@@ -26,7 +26,7 @@ const CardContentContainer = styled(Box)(({ theme }) => ({
 
 export const CardContentContainerComment = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'light' ? '#a9d9d038' : '#c3abe414',
-  border: `1px solid gold`,
+  border: `1px solid ${theme.palette.superlike.main}`,
   margin: '0px',
   padding: '8px 15px',
   borderRadius: '8px',

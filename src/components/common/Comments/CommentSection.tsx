@@ -19,6 +19,7 @@ import {
 interface CommentSectionProps {
   postId: string;
   postName: string;
+  commentID?: string;
 }
 
 const Panel = styled('div')`
@@ -45,7 +46,7 @@ const Panel = styled('div')`
     background-color: #555;
   }
 `;
-export const CommentSection = ({ postId, postName }: CommentSectionProps) => {
+export const CommentSection = ({ postId, postName, commentID }: CommentSectionProps) => {
   const { t } = useTranslation(['core']);
 
   const navigate = useNavigate();
@@ -80,13 +81,18 @@ export const CommentSection = ({ postId, postName }: CommentSectionProps) => {
   useEffect(() => {
     const query = new URLSearchParams(location.search);
     let commentVar = query?.get('comment');
-    if (commentVar) {
-      if (commentVar && commentVar.endsWith('/')) {
-        commentVar = commentVar.slice(0, -1);
+    
+    // Check for commentID prop first, then fall back to query parameter
+    const targetCommentID = commentID || commentVar;
+    
+    if (targetCommentID) {
+      let commentIdentifier = targetCommentID;
+      if (commentIdentifier && commentIdentifier.endsWith('/')) {
+        commentIdentifier = commentIdentifier.slice(0, -1);
       }
       setIsOpen(true);
       if (listComments.length > 0) {
-        const el = document.getElementById(commentVar);
+        const el = document.getElementById(commentIdentifier);
         if (el) {
           el.scrollIntoView();
           el.classList.add('glow');
@@ -94,10 +100,13 @@ export const CommentSection = ({ postId, postName }: CommentSectionProps) => {
             el.classList.remove('glow');
           }, 2000);
         }
-        navigate(location.pathname, { replace: true });
+        // Only navigate if we came from a query parameter
+        if (commentVar) {
+          navigate(location.pathname, { replace: true });
+        }
       }
     }
-  }, [navigate, location, listComments]);
+  }, [navigate, location, listComments, commentID]);
 
   const getReplies = useCallback(
     async (commentId, postId) => {
@@ -242,6 +251,7 @@ export const CommentSection = ({ postId, postName }: CommentSectionProps) => {
                     onSubmit={onSubmit}
                     postId={postId}
                     postName={postName}
+                    commentID={commentID}
                   />
                 );
               })}

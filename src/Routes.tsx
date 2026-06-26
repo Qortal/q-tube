@@ -47,6 +47,10 @@ export function Routes() {
             element: <VideoContent />,
           },
           {
+            path: 'video/:name/:id/:commentID',
+            element: <VideoContent />,
+          },
+          {
             path: 'playlist/:name/:id',
             element: <PlaylistContent />,
           },

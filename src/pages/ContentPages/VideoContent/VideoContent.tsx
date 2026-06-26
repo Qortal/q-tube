@@ -3,6 +3,7 @@ import DOMPurify from 'dompurify';
 import { handleClickText, processText } from 'qapp-core';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useParams } from 'react-router-dom';
 
 import { CommentSection } from '../../../components/common/Comments/CommentSection.tsx';
 import { PageTransition } from '../../../components/common/PageTransition.tsx';
@@ -122,6 +123,7 @@ export const CollapsibleDescription = ({
 
 export const VideoContent = () => {
   useScrollToTop();
+  const { commentID } = useParams<{ commentID?: string }>();
   const {
     videoReference,
     channelName,
@@ -274,8 +276,9 @@ export const VideoContent = () => {
                 superlikes={superLikeList}
                 postId={id || ''}
                 postName={channelName || ''}
+                commentID={commentID}
               />
-              <CommentSection postId={id || ''} postName={channelName || ''} />
+              <CommentSection postId={id || ''} postName={channelName || ''} commentID={commentID} />
             </>
           )}
         </VideoContentContainer>

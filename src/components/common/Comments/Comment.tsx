@@ -16,10 +16,13 @@ import {
 import { createAvatarLink, Spacer, useAuth } from 'qapp-core';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useIsSmall } from '../../../hooks/useIsSmall';
 import { formatDate } from '../../../utils/time';
 
 import Portal from '../Portal';
+
+import { CopyLinkButton } from '../ContentButtons/CopyLinkButton';
 import { CommentEditor } from './CommentEditor';
 import {
   AuthorTextComment,
@@ -37,12 +40,14 @@ interface CommentProps {
   postId: string;
   postName: string;
   onSubmit: (obj?: any, isEdit?: boolean) => void;
+  commentID?: string;
 }
 export const Comment = ({
   comment,
   postId,
   postName,
   onSubmit,
+  commentID,
 }: CommentProps) => {
   const { t } = useTranslation(['core']);
 
@@ -113,6 +118,8 @@ export const Comment = ({
         setCurrentEdit={setCurrentEdit}
         created={comment?.created}
         isOpenReplies={isOpenReplies}
+        commentIdentifier={comment?.identifier}
+        commentID={commentID}
       >
         <Box
           sx={{
@@ -226,12 +233,29 @@ const CommentCard = ({
   setCurrentEdit,
   isOpenReplies,
   isReply,
+  commentIdentifier,
+  commentID,
 }: any) => {
   const { i18n } = useTranslation(['core']);
 
   const isSmall = useIsSmall();
   const { name: username } = useAuth();
   const avatarUrl = createAvatarLink(name);
+  const location = useLocation();
+  const navigate = useNavigate();
+  
+  // Generate the comment link
+  const commentLink = (() => {
+    if (!commentIdentifier) return '';
+    const pathParts = location.pathname.split('/');
+    // Current path should be video/:name/:id or video/:name/:id/:commentID
+    // We want to construct qortal://APP/Q-Tube/video/:name/:id/:commentIdentifier
+    if (pathParts.length >= 3) {
+      const basePath = pathParts.slice(0, 4).join('/');
+      return `qortal://APP/Q-Tube${basePath}/${commentIdentifier}`;
+    }
+    return '';
+  })();
 
   return (
     <CardContentContainerComment>
@@ -262,12 +286,22 @@ const CommentCard = ({
             sx={{
               flexDirection: 'row',
               gap: '10px',
+              justifyContent: 'space-between',
+              alignItems: 'center',
             }}
           >
-            <AuthorTextComment>{name}</AuthorTextComment>
-            <CreatedTextComment>
-              {formatDate(+created, i18n.language)}
-            </CreatedTextComment>
+            <Box sx={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+              <AuthorTextComment>{name}</AuthorTextComment>
+              <CreatedTextComment>
+                {formatDate(+created, i18n.language)}
+              </CreatedTextComment>
+            </Box>
+            {commentLink && (
+              <CopyLinkButton
+                link={commentLink}
+                tooltipTitle="Copy link to comment"
+              />
+            )}
           </StyledCardColComment>
           <Spacer height="10px" />
           <StyledCardContentComment>
@@ -306,6 +340,8 @@ const CommentCard = ({
                   setCurrentEdit={setCurrentEdit}
                   created={reply?.created}
                   isReply
+                  commentIdentifier={reply?.identifier}
+                  commentID={commentID}
                 >
                   <Box
                     sx={{

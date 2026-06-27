@@ -22,6 +22,7 @@ interface CommentSectionProps {
   superlikes: any[];
   getMore?: () => void;
   loadingSuperLikes: boolean;
+  commentID?: string;
 }
 
 const Panel = styled('div')`
@@ -54,6 +55,7 @@ export const SuperLikesSection = ({
   postId,
   postName,
   getMore,
+  commentID,
 }: CommentSectionProps) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -89,13 +91,18 @@ export const SuperLikesSection = ({
   useEffect(() => {
     const query = new URLSearchParams(location.search);
     let commentVar = query?.get('comment');
-    if (commentVar) {
-      if (commentVar && commentVar.endsWith('/')) {
-        commentVar = commentVar.slice(0, -1);
+    
+    // Check for commentID prop first, then fall back to query parameter
+    const targetCommentID = commentID || commentVar;
+    
+    if (targetCommentID) {
+      let commentIdentifier = targetCommentID;
+      if (commentIdentifier && commentIdentifier.endsWith('/')) {
+        commentIdentifier = commentIdentifier.slice(0, -1);
       }
       setIsOpen(true);
       if (listComments.length > 0) {
-        const el = document.getElementById(commentVar);
+        const el = document.getElementById(commentIdentifier);
         if (el) {
           el.scrollIntoView();
           el.classList.add('glow');
@@ -103,10 +110,13 @@ export const SuperLikesSection = ({
             el.classList.remove('glow');
           }, 2000);
         }
-        navigate(location.pathname, { replace: true });
+        // Only navigate if we came from a query parameter
+        if (commentVar) {
+          navigate(location.pathname, { replace: true });
+        }
       }
     }
-  }, [navigate, location, listComments]);
+  }, [navigate, location, listComments, commentID]);
 
   const getReplies = useCallback(
     async (commentId, postId) => {
@@ -222,6 +232,7 @@ export const SuperLikesSection = ({
                     amount={comment?.amount || null}
                     isSuperLike
                     hasHash={hasHash}
+                    commentID={commentID}
                   />
                 );
               })}

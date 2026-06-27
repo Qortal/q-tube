@@ -14,6 +14,7 @@ import {
 import { createAvatarLink, useAuth } from 'qapp-core';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useLocation, useNavigate } from 'react-router-dom';
 import {
   fontSizeSmall,
   smallScreenSizeString,
@@ -22,6 +23,7 @@ import { formatDate } from '../../../utils/time';
 
 import Portal from '../Portal';
 
+import { CopyLinkButton } from '../ContentButtons/CopyLinkButton';
 import { CommentEditor } from './CommentEditor';
 import {
   AuthorTextComment,
@@ -44,6 +46,7 @@ interface CommentProps {
   amount?: null | number;
   isSuperLike?: boolean;
   hasHash?: boolean;
+  commentID?: string;
 }
 export const Comment = ({
   comment,
@@ -53,6 +56,7 @@ export const Comment = ({
   amount,
   isSuperLike,
   hasHash,
+  commentID,
 }: CommentProps) => {
   const { t, i18n } = useTranslation(['core']);
 
@@ -123,6 +127,8 @@ export const Comment = ({
         replies={comment?.replies || []}
         setCurrentEdit={setCurrentEdit}
         amount={amount}
+        commentIdentifier={comment?.identifier}
+        commentID={commentID}
       >
         <Box
           sx={{
@@ -216,12 +222,29 @@ const CommentCard = ({
   setCurrentEdit,
   isReply,
   amount,
+  commentIdentifier,
+  commentID,
 }: any) => {
   const { t, i18n } = useTranslation(['core']);
 
   const [avatarUrl, setAvatarUrl] = React.useState<string>('');
 
   const { name: username } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
+  
+  // Generate the comment link
+  const commentLink = (() => {
+    if (!commentIdentifier) return '';
+    const pathParts = location.pathname.split('/');
+    // Current path should be video/:name/:id or video/:name/:id/:commentID
+    // We want to construct qortal://APP/Q-Tube/video/:name/:id/:commentIdentifier
+    if (pathParts.length >= 3) {
+      const basePath = pathParts.slice(0, 4).join('/');
+      return `qortal://APP/Q-Tube${basePath}/${commentIdentifier}`;
+    }
+    return '';
+  })();
   const getAvatar = React.useCallback(async (author: string) => {
     try {
       const url = createAvatarLink(author);
@@ -269,32 +292,48 @@ const CommentCard = ({
               {name}
             </AuthorTextComment>
           </Box>
-          <StyledCardColComment
+          <Box
             sx={{
+              display: 'flex',
+              gap: '10px',
+              alignItems: 'center',
               marginTop: isScreenSmall ? '10px' : '0px',
               marginLeft: isScreenSmall ? '0px' : '10px',
             }}
           >
-            {!isReply && (
-              <ThumbUpIcon
-                sx={{
-                  color: (theme) => theme.palette.superlike.main,
-                  cursor: 'pointer',
-                  marginRight: '10px',
-                }}
+            <StyledCardColComment
+              sx={{
+                display: 'flex',
+                gap: '10px',
+                alignItems: 'center',
+              }}
+            >
+              {!isReply && (
+                <ThumbUpIcon
+                  sx={{
+                    color: (theme) => theme.palette.superlike.main,
+                    cursor: 'pointer',
+                  }}
+                />
+              )}
+              {amount && (
+                <Typography
+                  sx={(theme) => ({
+                    fontSize: fontSizeSmall,
+                    color: theme.palette.superlike.main,
+                  })}
+                >
+                  {parseFloat(amount)?.toFixed(2)} QORT
+                </Typography>
+              )}
+            </StyledCardColComment>
+            {commentLink && (
+              <CopyLinkButton
+                link={commentLink}
+                tooltipTitle="Copy link to comment"
               />
             )}
-            {amount && (
-              <Typography
-                sx={(theme) => ({
-                  fontSize: fontSizeSmall,
-                  color: theme.palette.superlike.main,
-                })}
-              >
-                {parseFloat(amount)?.toFixed(2)} QORT
-              </Typography>
-            )}
-          </StyledCardColComment>
+          </Box>
         </Box>
       </StyledCardHeaderComment>
       <StyledCardContentComment>
@@ -324,6 +363,8 @@ const CommentCard = ({
                 message={reply?.message}
                 setCurrentEdit={setCurrentEdit}
                 isReply
+                commentIdentifier={reply?.identifier}
+                commentID={commentID}
               >
                 <Box
                   sx={{

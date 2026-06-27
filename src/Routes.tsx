@@ -1,4 +1,4 @@
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom';
 import { AppWrapper } from './AppWrapper';
 import { Bookmarks } from './pages/Bookmarks/Bookmarks';
 import { ChannelPage } from './pages/ContentPages/IndividualProfile/ChannelPage.tsx';
@@ -47,12 +47,20 @@ export function Routes() {
             element: <VideoContent />,
           },
           {
+            path: 'video/:name/:id/:commentID',
+            element: <VideoContent />,
+          },
+          {
             path: 'playlist/:name/:id',
             element: <PlaylistContent />,
           },
           {
             path: 'playlist/:name/:id/:s/:n/:i',
             element: <PlaylistContent />,
+          },
+          {
+            path: 'channel/:name',
+            element: <Navigate to="videos" replace />,
           },
           {
             path: 'channel/:name/:section',

@@ -35,18 +35,24 @@ export const VideoFileElement = ({
   const [hasAddedToHistory, setHasAddedToHistory] = useState(false);
 
   const handleDownloadStart = () => {
-    if (!isHydratedWatchedHistory || hasAddedToHistory || !videoReference) return;
+    if (!isHydratedWatchedHistory || hasAddedToHistory || !videoReference)
+      return;
 
     // Add to history when download is initiated
     const videoHistoryEntry = {
-      identifier: videoReference.identifier,
+      identifier: videoReference.identifier + '_metadata',
       name: videoReference.name,
-      service: videoReference.service,
+      service: 'DOCUMENT',
       created: videoReference.created || Date.now(),
       watchedAt: Date.now(),
     };
 
-    addToWatchHistory(videoHistoryEntry, watchedHistory, setWatchedHistory, lists);
+    addToWatchHistory(
+      videoHistoryEntry,
+      watchedHistory,
+      setWatchedHistory,
+      lists
+    );
     setHasAddedToHistory(true);
   };
 

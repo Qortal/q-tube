@@ -1,10 +1,11 @@
 import { Box } from '@mui/material';
 import CSS from 'csstype';
 
-import { Service, VideoPlayer as QappVideoPlayer } from 'qapp-core';
-import { useEffect, useRef } from 'react';
+import { Service, VideoPlayer as QappVideoPlayer, useGlobal } from 'qapp-core';
+import { useCallback, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useIsSmall } from '../../../hooks/useIsSmall';
+import { usePersistedState } from '../../../state/persist/persist.ts';
 
 export interface VideoStyles {
   videoContainer?: CSS.Properties;
@@ -36,6 +37,34 @@ export const VideoPlayer = ({ ...props }: VideoPlayerProps) => {
   const isSmall = useIsSmall();
   const videoRef = useRef(null);
   const location = useLocation();
+  const { lists } = useGlobal();
+  const [watchedHistory, setWatchedHistory, isHydratedWatchedHistory] =
+    usePersistedState<any[]>('watched-v1', []);
+
+  const onPlay = useCallback(() => {
+    if (!isHydratedWatchedHistory) return;
+    const videoReference = {
+      identifier: props?.jsonId,
+      name: props?.user,
+      service: 'DOCUMENT',
+      created: props?.created || Date.now(),
+      watchedAt: Date.now(),
+    };
+
+    setWatchedHistory((prev) => {
+      const exists = prev.some(
+        (v) =>
+          v.identifier === videoReference.identifier &&
+          v.name === videoReference.name &&
+          v.service === videoReference.service
+      );
+
+      if (exists) return prev; // Already watched, don't add again
+      lists.deleteList(`watched-history`);
+      // Add to beginning, then keep only latest 200
+      return [videoReference, ...prev].slice(0, 200);
+    });
+  }, [props?.jsonId, props?.user, isHydratedWatchedHistory]);
 
   // Cleanup video player on unmount
   useEffect(() => {
@@ -68,6 +97,7 @@ export const VideoPlayer = ({ ...props }: VideoPlayerProps) => {
         flexDirection: 'column',
         ...(props?.parentStyles || {}),
       }}
+      onClick={onPlay}
     >
       <QappVideoPlayer
         poster={props.poster}
@@ -79,6 +109,7 @@ export const VideoPlayer = ({ ...props }: VideoPlayerProps) => {
         }}
         autoPlay={props?.autoPlay}
         onEnded={props?.onEnd}
+        onPlay={onPlay}
         filename={props?.filename}
         path={location.pathname}
         styling={{

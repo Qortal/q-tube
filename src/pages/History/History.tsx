@@ -1,6 +1,7 @@
 import ClearAllIcon from '@mui/icons-material/ClearAll';
 import { Box, Button, Divider } from '@mui/material';
 import { Spacer, useGlobal } from 'qapp-core';
+import { useEffect } from 'react';
 import { PageSubTitle } from '../../components/common/General/GeneralStyles.tsx';
 import { PageTransition } from '../../components/common/PageTransition.tsx';
 import { useIsSmall } from '../../hooks/useIsSmall.tsx';
@@ -12,6 +13,12 @@ export const History = () => {
   const isSmall = useIsSmall();
   const [watchedHistory, setWatchedHistory, isHydratedWatchedHistory] =
     usePersistedState('watched-v1', []);
+
+  // useEffect(() => {  // print statement for debugging
+  //   if (isHydratedWatchedHistory && watchedHistory?.length > 0) {
+  //     console.log(`Video History: `, watchedHistory);
+  //   }
+  // }, [isHydratedWatchedHistory, watchedHistory]);
 
   if (!isHydratedWatchedHistory) {
     return null;

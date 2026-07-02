@@ -8,6 +8,24 @@ import {
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { VideoMetadata } from '../../../components/Publish/PublishVideo/useVideoPublishingWorkflow.tsx';
+
+// Runtime shape of `videoData` returned by this hook. The base cast
+// `VideoMetadata & QortalMetadata` omits fields that the resource data
+// actually carries at runtime (user, id, created, updated, videos,
+// fullDescription, htmlDescription, fileSize). Declaring them here lets
+// consumers (VideoContent, PlaylistContent) access them without per-file
+// casts or `any`.
+export type VideoContentData = VideoMetadata &
+  QortalMetadata & {
+    user?: string;
+    id?: string;
+    created?: number;
+    updated?: number;
+    videos?: unknown[];
+    fullDescription?: string;
+    htmlDescription?: string;
+    fileSize?: number;
+  };
 import { SUPER_LIKE_BASE } from '../../../constants/Identifiers.ts';
 import { minPriceSuperLike } from '../../../constants/Misc.ts';
 import { useFetchSuperLikes } from '../../../hooks/useFetchSuperLikes.tsx';
@@ -64,7 +82,7 @@ export const useVideoContentState = () => {
       ...resource.data,
     };
     console.log('Video Data: ', result);
-    return result as VideoMetadata & QortalMetadata;
+    return result as VideoContentData;
   }, [resource]);
 
   const isVideoLoaded = useMemo(() => {

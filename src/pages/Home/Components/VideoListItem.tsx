@@ -3,7 +3,12 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { Avatar, Box, Tooltip, Typography, useTheme } from '@mui/material';
 import { useSetAtom } from 'jotai';
-import { QortalMetadata, showError, useGlobal } from 'qapp-core';
+import {
+  QortalMetadata,
+  showError,
+  useGlobal,
+  useProgressStore,
+} from 'qapp-core';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -58,11 +63,29 @@ export const VideoListItem = ({
   const [showIcons, setShowIcons] = useState<boolean>(false);
   const theme = useTheme();
   const { lists } = useGlobal();
+  const { getProgress, progressMap } = useProgressStore();
 
   const { deleteResource } = lists;
   const setEditPlaylist = useSetAtom(editPlaylistAtom);
 
   const isPlaylist = qortalMetadata?.service === 'PLAYLIST';
+
+  // Calculate video progress for progress bar
+  // Use progressMap directly to avoid hydration race condition
+  // Key format: VIDEO-name-identifier
+  // For reference videos, use video.videoReference; otherwise use qortalMetadata
+  // VideoPlayer stores progress with VIDEO service, not DOCUMENT
+  const progressRef = video?.videoReference || {
+    service: 'VIDEO',
+    name: qortalMetadata?.name,
+    identifier: qortalMetadata?.identifier?.replace('_metadata', ''),
+  };
+  const progressKey = `${progressRef.service}-${progressRef.name}-${progressRef.identifier}`;
+  const savedTime = progressMap[progressKey] ?? 0;
+  const hasProgress = Boolean(video?.duration) && savedTime > 0;
+  const progressPercent = hasProgress
+    ? Math.min((savedTime / video.duration) * 100, 100)
+    : 0;
 
   const handleVideoClick = () => {
     navigate(
@@ -389,9 +412,7 @@ export const VideoListItem = ({
           </Tooltip>
         )}
       </IconsBox>
-      <VideoCard
-        onClick={handleVideoClick}
-      >
+      <VideoCard onClick={handleVideoClick}>
         <Box
           sx={{
             position: 'relative',
@@ -403,7 +424,7 @@ export const VideoListItem = ({
             videoImage={video.videoImage}
             frameImages={video?.extracts || []}
           />
-          {video?.duration && video?.duration > minDuration && (
+          {Boolean(video?.duration) && video?.duration > minDuration && (
             <Box
               position="absolute"
               right={5}
@@ -418,6 +439,27 @@ export const VideoListItem = ({
               <Typography variant="body2">
                 {formatTime(video.duration)}
               </Typography>
+            </Box>
+          )}
+          {hasProgress && (
+            <Box
+              sx={{
+                position: 'absolute',
+                bottom: 0,
+                left: 0,
+                right: 0,
+                height: '4px',
+                backgroundColor: '#73859F80',
+                zIndex: 10,
+              }}
+            >
+              <Box
+                sx={{
+                  height: '100%',
+                  width: `${progressPercent}%`,
+                  backgroundColor: '#00ABFF',
+                }}
+              />
             </Box>
           )}
         </Box>

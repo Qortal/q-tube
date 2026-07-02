@@ -26,6 +26,7 @@ export interface VideoPlayerProps {
   nextVideo?: any;
   onEnd?: () => void;
   autoPlay?: boolean;
+  onStart?: () => void;
   style?: CSS.Properties;
   duration?: number;
   filename: string | undefined;
@@ -42,6 +43,9 @@ export const VideoPlayer = ({ ...props }: VideoPlayerProps) => {
     usePersistedState<any[]>('watched-v1', []);
 
   const onPlay = useCallback(() => {
+    // Notify parent that playback has started (fires on first click/play).
+    // Called before the hydration guard so it always signals the start.
+    props?.onStart?.();
     if (!isHydratedWatchedHistory) return;
     const videoReference = {
       identifier: props?.jsonId,

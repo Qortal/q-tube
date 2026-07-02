@@ -69,3 +69,10 @@ The state of a QDN resource as tracked by qapp-core's `useResourceStatus` hook, 
 - `status`: Current state (e.g., 'READY', 'DOWNLOADING')
 - `percentLoaded`: Download progress percentage
 - `isReady`: Boolean indicating if the resource is fully downloaded and ready for use
+
+### Video Progress
+The playback position of a video, stored as time in seconds. Managed by qapp-core's `useProgressStore` with:
+- Key format: `${service}-${name}-${identifier}` (e.g., 'DOCUMENT-username-qtube_vid_abc123')
+- Storage: IndexedDB with 7-day expiry
+- Used to resume video playback where the user left off
+- Displayed as a progress bar overlay on video thumbnails in VideoListItem

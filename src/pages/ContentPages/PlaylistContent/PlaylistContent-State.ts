@@ -1,6 +1,7 @@
 import { useAuth } from 'qapp-core';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { isValidVideoReference } from '../../../utils/checkStructure.ts';
 import { useVideoContentState } from '../VideoContent/VideoContent-State.ts';
 
 export const usePlaylistContentState = () => {
@@ -97,7 +98,7 @@ export const usePlaylistContentState = () => {
               if (abortController.signal.aborted) {
                 return;
               }
-              
+
               const url = `/arbitrary/resources/search?mode=ALL&service=DOCUMENT&identifier=${vid.identifier}&limit=1&includemetadata=true&reverse=true&name=${vid.name}&exactmatchnames=true&offset=0`;
               const response = await fetch(url, {
                 method: 'GET',
@@ -111,6 +112,17 @@ export const usePlaylistContentState = () => {
               if (responseDataSearchVid?.length > 0) {
                 const resourceData2 = responseDataSearchVid[0];
 
+                // Validate the member's video reference (name +
+                // identifier + service) directly from the playlist
+                // data. No extra QDN fetch needed — an empty/garbage
+                // reference means the playlist entry is broken.
+                const isValid = isValidVideoReference(vid);
+                const isOwn = resourceData2?.name === userName;
+
+                // Drop invalid members that aren't owned by the user.
+                // Keep owned invalid members so the owner can edit/delete.
+                if (!isValid && !isOwn) continue;
+
                 // Check if playlistTitle exists in the playlist data
                 const playlistVideo = combinedData.videos.find(
                   (v) => v.identifier === vid.identifier
@@ -123,6 +135,10 @@ export const usePlaylistContentState = () => {
                     title: playlistVideo.playlistTitle,
                   };
                 }
+
+                // Tag the member so the UI can render the invalid
+                // state (red strikethrough + tooltip) when owned.
+                resourceData2.isInvalid = !isValid;
 
                 videos.push(resourceData2);
               }

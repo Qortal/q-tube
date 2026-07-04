@@ -6,12 +6,17 @@ import {
   ResourceListDisplay,
   useAuth,
   useBlockedNames,
+  useCacheStore,
 } from 'qapp-core';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useIsMobile } from '../../../hooks/useIsMobile.tsx';
 import { scrollRefAtom } from '../../../state/global/navbar.ts';
 import { editVideoAtom } from '../../../state/publish/video.ts';
+import {
+  isValidPlaylistMetadata,
+  isValidVideoMetadata,
+} from '../../../utils/checkStructure.ts';
 
 import { VideoCardContainer } from './VideoList-styles.tsx';
 import { VideoListItem } from './VideoListItem.tsx';
@@ -27,6 +32,7 @@ const VideoList = ({ searchParameters, listName }: VideoListProps) => {
   const { name: username } = useAuth();
   const setEditVideo = useSetAtom(editVideoAtom);
   const { addToBlockedList } = useBlockedNames();
+  const markResourceAsDeleted = useCacheStore((s) => s.markResourceAsDeleted);
   const isMobile = useIsMobile();
   const scrollRef = useAtomValue(scrollRefAtom);
 
@@ -74,6 +80,24 @@ const VideoList = ({ searchParameters, listName }: VideoListProps) => {
     (item, index) => {
       const { qortalMetadata, data: video } = item;
 
+      const isPlaylist = qortalMetadata?.service === 'PLAYLIST';
+      const isValid = isPlaylist
+        ? isValidPlaylistMetadata(video)
+        : isValidVideoMetadata(video);
+      const isOwn = qortalMetadata?.name === username;
+
+      // Drop spam/empty publishes. Marking the resource deleted via
+      // qapp-core's cache store removes it from this list (and all
+      // other lists) entirely so the slot collapses and the next item
+      // takes its place — returning null would leave an empty slot
+      // because ListItemWrapper still renders a Fragment wrapper.
+      // Only keep invalid publishes when the current user owns them,
+      // so they can edit/delete to fix.
+      if (!isValid && !isOwn) {
+        markResourceAsDeleted(qortalMetadata);
+        return null;
+      }
+
       return (
         <VideoListItem
           key={`${qortalMetadata?.name}-${qortalMetadata?.identifier}-${qortalMetadata?.service}`}
@@ -82,10 +106,11 @@ const VideoList = ({ searchParameters, listName }: VideoListProps) => {
           blockUserFunc={blockUserFunc}
           username={username}
           setEditVideo={setEditVideo}
+          isInvalid={!isValid}
         />
       );
     },
-    [username]
+    [username, markResourceAsDeleted]
   );
 
   return (

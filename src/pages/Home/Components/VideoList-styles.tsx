@@ -70,6 +70,16 @@ export const VideoCardTitle = styled(DoubleLine)(({ theme }) => ({
   color: theme.palette.text.primary,
   marginBottom: 'auto',
 }));
+
+// Title style for an invalid (but still rendered) video/playlist card
+// owned by the current user. Red strikethrough signals the publish is
+// broken and should be edited or deleted. Color matches BlockIconContainer.
+export const InvalidVideoCardTitle = styled(VideoCardTitle)({
+  textDecoration: 'line-through',
+  textDecorationColor: '#c25252',
+  textDecorationThickness: '2px',
+  color: '#c25252',
+});
 export const VideoCardName = styled(Typography)(({ theme }) => ({
   fontSize: '16px',
   letterSpacing: '0.4px',

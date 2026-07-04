@@ -26,6 +26,7 @@ import {
   BottomParent,
   IconsBox,
   InlineName,
+  InvalidVideoCardTitle,
   NameContainer,
   VideoCard,
   VideoCardCol,
@@ -43,7 +44,14 @@ interface VideoListItemProps {
   isBookmarks?: boolean;
   disableActions?: boolean;
   handleRemoveVideoFromList?: (data: any[]) => void;
+  // When true, the card is rendered with a red strikethrough title and a
+  // hover tooltip telling the owner the publish is invalid and needs
+  // editing. Navigation is disabled so the owner can't open a broken
+  // video/playlist, but edit/delete actions stay enabled.
+  isInvalid?: boolean;
 }
+
+const INVALID_TOOLTIP = 'This video is invalid, please edit it';
 
 export const VideoListItem = ({
   qortalMetadata,
@@ -54,6 +62,7 @@ export const VideoListItem = ({
   isBookmarks,
   disableActions,
   handleRemoveVideoFromList,
+  isInvalid,
 }: VideoListItemProps) => {
   const { t, i18n } = useTranslation(['core']);
 
@@ -88,6 +97,7 @@ export const VideoListItem = ({
     : 0;
 
   const handleVideoClick = () => {
+    if (isInvalid) return;
     navigate(
       `/video/${encodeURIComponent(qortalMetadata?.name)}/${qortalMetadata?.identifier}`
     );
@@ -209,12 +219,14 @@ export const VideoListItem = ({
 
         <VideoCard
           onClick={() => {
+            if (isInvalid) return;
             navigate(
               `/playlist/${encodeURIComponent(qortalMetadata?.name)}/${qortalMetadata?.identifier}`
             );
           }}
           sx={{
             height: '100%',
+            cursor: isInvalid ? 'not-allowed' : 'pointer',
           }}
         >
           <Box
@@ -238,7 +250,13 @@ export const VideoListItem = ({
               }}
             />
           </Box>
-          <VideoCardTitle>{video?.title}</VideoCardTitle>
+          {isInvalid ? (
+            <Tooltip title={INVALID_TOOLTIP} placement="top">
+              <InvalidVideoCardTitle>{video?.title}</InvalidVideoCardTitle>
+            </Tooltip>
+          ) : (
+            <VideoCardTitle>{video?.title}</VideoCardTitle>
+          )}
           <BottomParent
             sx={{
               padding: isMobile ? '0px 5px' : '0px',
@@ -412,7 +430,10 @@ export const VideoListItem = ({
           </Tooltip>
         )}
       </IconsBox>
-      <VideoCard onClick={handleVideoClick}>
+      <VideoCard
+        onClick={handleVideoClick}
+        sx={{ cursor: isInvalid ? 'not-allowed' : 'pointer' }}
+      >
         <Box
           sx={{
             position: 'relative',
@@ -489,11 +510,17 @@ export const VideoListItem = ({
               }}
             />
             <Tooltip
-              title={video.title}
+              title={isInvalid ? INVALID_TOOLTIP : video.title}
               placement="top"
               slotProps={{ tooltip: { sx: { fontSize: fontSizeSmall } } }}
             >
-              <VideoCardTitle variant="body2">{video.title}</VideoCardTitle>
+              {isInvalid ? (
+                <InvalidVideoCardTitle variant="body2">
+                  {video.title}
+                </InvalidVideoCardTitle>
+              ) : (
+                <VideoCardTitle variant="body2">{video.title}</VideoCardTitle>
+              )}
             </Tooltip>
           </NameContainer>
           {qortalMetadata?.created && (

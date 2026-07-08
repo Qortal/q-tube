@@ -6,11 +6,16 @@ import {
   ResourceListPreloadedDisplay,
   useAuth,
   useBlockedNames,
+  useCacheStore,
 } from 'qapp-core';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { scrollRefAtom } from '../../../state/global/navbar.ts';
 import { editVideoAtom } from '../../../state/publish/video.ts';
+import {
+  isValidPlaylistMetadata,
+  isValidVideoMetadata,
+} from '../../../utils/checkStructure.ts';
 
 import { VideoCardContainer } from './VideoList-styles.tsx';
 import { VideoListItem } from './VideoListItem.tsx';
@@ -44,6 +49,7 @@ export const VideoListPreloaded = ({
   const { name: username } = useAuth();
   const setEditVideo = useSetAtom(editVideoAtom);
   const { addToBlockedList } = useBlockedNames();
+  const markResourceAsDeleted = useCacheStore((s) => s.markResourceAsDeleted);
 
   const scrollRef = useAtomValue(scrollRefAtom);
 
@@ -87,6 +93,24 @@ export const VideoListPreloaded = ({
     (item, index) => {
       const { qortalMetadata, data: video } = item;
 
+      const isPlaylist = qortalMetadata?.service === 'PLAYLIST';
+      const isValid = isPlaylist
+        ? isValidPlaylistMetadata(video)
+        : isValidVideoMetadata(video);
+      const isOwn = qortalMetadata?.name === username;
+
+      // Drop spam/empty publishes. Marking the resource deleted via
+      // qapp-core's cache store removes it from this list (and all
+      // other lists) entirely so the slot collapses and the next item
+      // takes its place — returning null would leave an empty slot
+      // because ListItemWrapper still renders a Fragment wrapper.
+      // Only keep invalid publishes when the current user owns them,
+      // so they can edit/delete to fix.
+      if (!isValid && !isOwn) {
+        markResourceAsDeleted(qortalMetadata);
+        return null;
+      }
+
       return (
         <VideoListItem
           key={`${qortalMetadata?.name}-${qortalMetadata?.identifier}-${qortalMetadata?.service}`}
@@ -97,6 +121,7 @@ export const VideoListPreloaded = ({
           setEditVideo={setEditVideo}
           isBookmarks
           disableActions={disableActions}
+          isInvalid={!isValid}
           handleRemoveVideoFromList={() => {
             if (!listId || !handleRemoveVideoFromList) return;
             handleRemoveVideoFromList(listId, qortalMetadata);
@@ -111,6 +136,7 @@ export const VideoListPreloaded = ({
       videoList,
       disableActions,
       listId,
+      markResourceAsDeleted,
     ]
   );
 

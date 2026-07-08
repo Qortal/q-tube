@@ -6,8 +6,8 @@ import {
   Typography,
   useMediaQuery,
 } from '@mui/material';
-import { Service } from 'qapp-core';
-import { useEffect } from 'react';
+import { Service, useProgressStore } from 'qapp-core';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import { CommentSection } from '../../../components/common/Comments/CommentSection.tsx';
@@ -15,9 +15,9 @@ import { PageTransition } from '../../../components/common/PageTransition.tsx';
 import { SuperLikesSection } from '../../../components/common/SuperLikesList/SuperLikesSection.tsx';
 import { VideoPlayer } from '../../../components/common/VideoPlayer/VideoPlayer.tsx';
 import { Playlists } from '../../../components/Playlists/Playlists.tsx';
-import { minFileSize } from '../../../constants/Misc.ts';
+import { minDuration, minFileSize } from '../../../constants/Misc.ts';
 import { useIsSmall } from '../../../hooks/useIsSmall.tsx';
-import { formatBytes } from '../../../utils/numberFunctions.ts';
+import { formatBytes, formatTime } from '../../../utils/numberFunctions.ts';
 import { formatDate } from '../../../utils/time.ts';
 import { VideoActionsBar } from '../VideoContent/VideoActionsBar.tsx';
 import { VideoContentContainer } from '../VideoContent/VideoContent-styles.tsx';
@@ -47,6 +47,29 @@ export const PlaylistContent = () => {
     loadingSuperLikes,
   } = usePlaylistContentState();
   const { t, i18n } = useTranslation(['core']);
+
+  // Saved playback progress - blue bar at bottom of player, initial state only
+  // (before video clicked/started). Key matches qapp-core player store:
+  // `${service}-${name}-${identifier}` (VIDEO service reference).
+  const { progressMap } = useProgressStore();
+  // Track which video was started by key (not a boolean). This auto-resets
+  // when the current video changes (different key), so the bar reappears for
+  // each new playlist video without an effect or remount.
+  const [startedVideoKey, setStartedVideoKey] = useState<string | null>(null);
+
+  const progressKey = videoReference
+    ? `${videoReference.service}-${videoReference.name}-${videoReference.identifier}`
+    : '';
+  const hasStarted = !!progressKey && startedVideoKey === progressKey;
+  const savedTime = progressKey ? progressMap[progressKey] ?? 0 : 0;
+  const videoDuration = videoData?.duration;
+  // Match VideoListItem gating: duration present + saved time > 0.
+  // No upper-bound check (Math.min clamps percent); avoids hiding bar on
+  // fully-watched or rounding-edge videos.
+  const hasProgress = !hasStarted && !!videoDuration && savedTime > 0;
+  const progressPercent = hasProgress
+    ? Math.min((savedTime / videoDuration) * 100, 100)
+    : 0;
 
   const navigate = useNavigate();
   const isSmall = useIsSmall();
@@ -107,11 +130,12 @@ export const PlaylistContent = () => {
                   display: 'flex',
                   flexGrow: 1,
                   flexBasis: '75%',
+                  position: 'relative',
                 }}
               >
                 {videoReference && (
                   <VideoPlayer
-                    created={videoReference?.created}
+                    created={videoData?.created}
                     name={videoReference?.name}
                     service={videoReference?.service}
                     identifier={videoReference?.identifier}
@@ -126,7 +150,47 @@ export const PlaylistContent = () => {
                     }}
                     duration={videoData?.duration}
                     filename={videoData?.filename}
+                    onStart={() => setStartedVideoKey(progressKey)}
                   />
+                )}
+                {hasProgress && (
+                  <Box
+                    sx={{
+                      position: 'absolute',
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      height: '4px',
+                      backgroundColor: '#73859F80',
+                      zIndex: 10,
+                      pointerEvents: 'none',
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        height: '100%',
+                        width: `${progressPercent}%`,
+                        backgroundColor: '#00ABFF',
+                      }}
+                    />
+                  </Box>
+                )}
+                {!hasStarted && videoDuration && videoDuration > minDuration && (
+                  <Box
+                    position="absolute"
+                    right={5}
+                    bottom={5}
+                    zIndex={999}
+                    bgcolor="background.paper2"
+                    sx={{
+                      padding: '5px',
+                      borderRadius: '5px',
+                    }}
+                  >
+                    <Typography variant="body2">
+                      {formatTime(videoDuration)}
+                    </Typography>
+                  </Box>
                 )}
               </Box>
               {!isSmall && (
@@ -256,7 +320,7 @@ export const PlaylistContent = () => {
                   </Typography>
                 )}
                 <Divider orientation="vertical" flexItem />
-                {videoData?.fileSize > minFileSize && (
+                {!!videoData?.fileSize && videoData.fileSize > minFileSize && (
                   <Typography
                     sx={{
                       fontSize: '14px',

@@ -146,7 +146,7 @@ export const SuperLike = ({
         title: '',
         description: metadescription,
         identifier: identifierSuperLike,
-        tag1: SUPER_LIKE_BASE,
+        tags: [SUPER_LIKE_BASE],
         filename: `superlike_metadata.json`,
       };
 
@@ -257,7 +257,6 @@ export const SuperLike = ({
         <ModalBody
           sx={{
             width: '90%',
-            backgroundColor: '#A58700',
             boxShadow: 'none',
             gap: '0px',
             padding: '0px',
@@ -319,16 +318,16 @@ export const SuperLike = ({
                 }}
               />
 
-              <Box sx={{ display: 'flex', gap: '5px', alignItems: 'center' }}>
-                <img
-                  style={{
-                    height: '25px',
-                    width: '25px',
-                  }}
-                  src={qortImg}
-                  alt={'Qort Icon'}
-                />
-                Balance: {currentBalance}
+              <Box
+                sx={{
+                  display: 'flex',
+                  gap: '5px',
+                  alignItems: 'center',
+                  marginTop: '10px',
+                }}
+              >
+                Balance:{' '}
+                <span style={{ fontWeight: 'bold' }}>{currentBalance}</span>
               </Box>
               <Spacer height="25px" />
 
@@ -343,7 +342,7 @@ export const SuperLike = ({
                 variant="filled"
                 value={comment}
                 InputLabelProps={{
-                  style: { fontSize: fontSizeMedium, color: 'white' },
+                  style: { fontSize: fontSizeMedium, color: theme.palette.text.primary },
                 }}
                 inputProps={{
                   maxLength: 500,

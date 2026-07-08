@@ -3,7 +3,12 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { Avatar, Box, Tooltip, Typography, useTheme } from '@mui/material';
 import { useSetAtom } from 'jotai';
-import { QortalMetadata, showError, useGlobal } from 'qapp-core';
+import {
+  QortalMetadata,
+  showError,
+  useGlobal,
+  useProgressStore,
+} from 'qapp-core';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -21,6 +26,7 @@ import {
   BottomParent,
   IconsBox,
   InlineName,
+  InvalidVideoCardTitle,
   NameContainer,
   VideoCard,
   VideoCardCol,
@@ -38,7 +44,14 @@ interface VideoListItemProps {
   isBookmarks?: boolean;
   disableActions?: boolean;
   handleRemoveVideoFromList?: (data: any[]) => void;
+  // When true, the card is rendered with a red strikethrough title and a
+  // hover tooltip telling the owner the publish is invalid and needs
+  // editing. Navigation is disabled so the owner can't open a broken
+  // video/playlist, but edit/delete actions stay enabled.
+  isInvalid?: boolean;
 }
+
+const INVALID_TOOLTIP = 'This video is invalid, please edit it';
 
 export const VideoListItem = ({
   qortalMetadata,
@@ -49,6 +62,7 @@ export const VideoListItem = ({
   isBookmarks,
   disableActions,
   handleRemoveVideoFromList,
+  isInvalid,
 }: VideoListItemProps) => {
   const { t, i18n } = useTranslation(['core']);
 
@@ -58,13 +72,32 @@ export const VideoListItem = ({
   const [showIcons, setShowIcons] = useState<boolean>(false);
   const theme = useTheme();
   const { lists } = useGlobal();
+  const { getProgress, progressMap } = useProgressStore();
 
   const { deleteResource } = lists;
   const setEditPlaylist = useSetAtom(editPlaylistAtom);
 
   const isPlaylist = qortalMetadata?.service === 'PLAYLIST';
 
+  // Calculate video progress for progress bar
+  // Use progressMap directly to avoid hydration race condition
+  // Key format: VIDEO-name-identifier
+  // For reference videos, use video.videoReference; otherwise use qortalMetadata
+  // VideoPlayer stores progress with VIDEO service, not DOCUMENT
+  const progressRef = video?.videoReference || {
+    service: 'VIDEO',
+    name: qortalMetadata?.name,
+    identifier: qortalMetadata?.identifier?.replace('_metadata', ''),
+  };
+  const progressKey = `${progressRef.service}-${progressRef.name}-${progressRef.identifier}`;
+  const savedTime = progressMap[progressKey] ?? 0;
+  const hasProgress = Boolean(video?.duration) && savedTime > 0;
+  const progressPercent = hasProgress
+    ? Math.min((savedTime / video.duration) * 100, 100)
+    : 0;
+
   const handleVideoClick = () => {
+    if (isInvalid) return;
     navigate(
       `/video/${encodeURIComponent(qortalMetadata?.name)}/${qortalMetadata?.identifier}`
     );
@@ -186,12 +219,14 @@ export const VideoListItem = ({
 
         <VideoCard
           onClick={() => {
+            if (isInvalid) return;
             navigate(
               `/playlist/${encodeURIComponent(qortalMetadata?.name)}/${qortalMetadata?.identifier}`
             );
           }}
           sx={{
             height: '100%',
+            cursor: isInvalid ? 'not-allowed' : 'pointer',
           }}
         >
           <Box
@@ -215,7 +250,13 @@ export const VideoListItem = ({
               }}
             />
           </Box>
-          <VideoCardTitle>{video?.title}</VideoCardTitle>
+          {isInvalid ? (
+            <Tooltip title={INVALID_TOOLTIP} placement="top">
+              <InvalidVideoCardTitle>{video?.title}</InvalidVideoCardTitle>
+            </Tooltip>
+          ) : (
+            <VideoCardTitle>{video?.title}</VideoCardTitle>
+          )}
           <BottomParent
             sx={{
               padding: isMobile ? '0px 5px' : '0px',
@@ -391,6 +432,7 @@ export const VideoListItem = ({
       </IconsBox>
       <VideoCard
         onClick={handleVideoClick}
+        sx={{ cursor: isInvalid ? 'not-allowed' : 'pointer' }}
       >
         <Box
           sx={{
@@ -403,7 +445,7 @@ export const VideoListItem = ({
             videoImage={video.videoImage}
             frameImages={video?.extracts || []}
           />
-          {video?.duration && video?.duration > minDuration && (
+          {Boolean(video?.duration) && video?.duration > minDuration && (
             <Box
               position="absolute"
               right={5}
@@ -418,6 +460,27 @@ export const VideoListItem = ({
               <Typography variant="body2">
                 {formatTime(video.duration)}
               </Typography>
+            </Box>
+          )}
+          {hasProgress && (
+            <Box
+              sx={{
+                position: 'absolute',
+                bottom: 0,
+                left: 0,
+                right: 0,
+                height: '4px',
+                backgroundColor: '#73859F80',
+                zIndex: 10,
+              }}
+            >
+              <Box
+                sx={{
+                  height: '100%',
+                  width: `${progressPercent}%`,
+                  backgroundColor: '#00ABFF',
+                }}
+              />
             </Box>
           )}
         </Box>
@@ -447,11 +510,17 @@ export const VideoListItem = ({
               }}
             />
             <Tooltip
-              title={video.title}
+              title={isInvalid ? INVALID_TOOLTIP : video.title}
               placement="top"
               slotProps={{ tooltip: { sx: { fontSize: fontSizeSmall } } }}
             >
-              <VideoCardTitle variant="body2">{video.title}</VideoCardTitle>
+              {isInvalid ? (
+                <InvalidVideoCardTitle variant="body2">
+                  {video.title}
+                </InvalidVideoCardTitle>
+              ) : (
+                <VideoCardTitle variant="body2">{video.title}</VideoCardTitle>
+              )}
             </Tooltip>
           </NameContainer>
           {qortalMetadata?.created && (

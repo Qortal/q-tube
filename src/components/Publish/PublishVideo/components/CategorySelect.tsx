@@ -1,4 +1,5 @@
 import {
+  Box,
   FormControl,
   InputLabel,
   MenuItem,
@@ -70,7 +71,7 @@ export const CategorySelect: React.FC<CategorySelectProps> = ({
         </Select>
       </FormControl>
       {selectedCategory && subCategories[selectedCategory?.id] && (
-        <FormControl fullWidth sx={{ marginBottom: 2 }}>
+        <FormControl fullWidth sx={{ marginBottom: 2, marginTop: 2 }}>
           <InputLabel id="Category">
             {t('core:publish.select_subcategory', {
               postProcess: 'capitalizeFirstChar',

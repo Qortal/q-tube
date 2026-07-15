@@ -10,7 +10,11 @@ import { PageTransition } from '../../../components/common/PageTransition.tsx';
 import { SuperLikesSection } from '../../../components/common/SuperLikesList/SuperLikesSection.tsx';
 import { VideoPlayer } from '../../../components/common/VideoPlayer/VideoPlayer.tsx';
 
-import { minDuration, minFileSize, smallVideoSize } from '../../../constants/Misc.ts';
+import {
+  minDuration,
+  minFileSize,
+  smallVideoSize,
+} from '../../../constants/Misc.ts';
 import { useIsMobile } from '../../../hooks/useIsMobile.tsx';
 import { useIsSmall } from '../../../hooks/useIsSmall.tsx';
 import { useScrollToTop } from '../../../hooks/useScrollToTop.tsx';
@@ -72,16 +76,18 @@ export const CollapsibleDescription = ({
   }, [text, html]);
 
   return (
-    <Box sx={{ maxWidth: '1200px' }}>
+    <Box sx={{ maxWidth: '1200px', width: '100%' }}>
       {text && (
         <Typography
           ref={textRef}
           sx={{
             display: '-webkit-box',
-            WebkitLineClamp: expanded ? 'none' : 2,
+            WebkitLineClamp: expanded ? 'none' : 4,
             WebkitBoxOrient: 'vertical',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
+            wordBreak: 'break-word',
+            overflowWrap: 'anywhere',
           }}
         >
           {text}
@@ -93,11 +99,13 @@ export const CollapsibleDescription = ({
           ref={textRef}
           sx={{
             display: expanded ? 'block' : '-webkit-box',
-            WebkitLineClamp: expanded ? 'none' : 2,
+            WebkitLineClamp: expanded ? 'none' : 4,
             WebkitBoxOrient: 'vertical',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
             lineHeight: 1.2,
+            wordBreak: 'break-word',
+            overflowWrap: 'anywhere',
           }}
           dangerouslySetInnerHTML={{ __html: flattenHtml(html) }}
         />
@@ -152,7 +160,7 @@ export const VideoContent = () => {
     ? `${videoReference.service}-${videoReference.name}-${videoReference.identifier}`
     : '';
   const hasStarted = !!progressKey && startedVideoKey === progressKey;
-  const savedTime = progressKey ? progressMap[progressKey] ?? 0 : 0;
+  const savedTime = progressKey ? (progressMap[progressKey] ?? 0) : 0;
   const videoDuration = videoData?.duration;
   // Match VideoListItem gating: duration present + saved time > 0.
   // No upper-bound check (Math.min clamps percent); avoids hiding bar on
@@ -343,7 +351,11 @@ export const VideoContent = () => {
                 postName={channelName || ''}
                 commentID={commentID}
               />
-              <CommentSection postId={id || ''} postName={channelName || ''} commentID={commentID} />
+              <CommentSection
+                postId={id || ''}
+                postName={channelName || ''}
+                commentID={commentID}
+              />
             </>
           )}
         </VideoContentContainer>

@@ -14,6 +14,8 @@ import { useIsMobile } from '../../../hooks/useIsMobile.tsx';
 import { scrollRefAtom } from '../../../state/global/navbar.ts';
 import { editVideoAtom } from '../../../state/publish/video.ts';
 import {
+  getInvalidPlaylistFields,
+  getInvalidVideoFields,
   isValidPlaylistMetadata,
   isValidVideoMetadata,
 } from '../../../utils/checkStructure.ts';
@@ -98,6 +100,12 @@ const VideoList = ({ searchParameters, listName }: VideoListProps) => {
         return null;
       }
 
+      const invalidFields = !isValid
+        ? isPlaylist
+          ? getInvalidPlaylistFields(video)
+          : getInvalidVideoFields(video)
+        : [];
+
       return (
         <VideoListItem
           key={`${qortalMetadata?.name}-${qortalMetadata?.identifier}-${qortalMetadata?.service}`}
@@ -107,6 +115,7 @@ const VideoList = ({ searchParameters, listName }: VideoListProps) => {
           username={username}
           setEditVideo={setEditVideo}
           isInvalid={!isValid}
+          invalidFields={invalidFields}
         />
       );
     },

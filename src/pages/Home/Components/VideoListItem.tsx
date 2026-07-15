@@ -3,12 +3,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { Avatar, Box, Tooltip, Typography, useTheme } from '@mui/material';
 import { useSetAtom } from 'jotai';
-import {
-  QortalMetadata,
-  showError,
-  useGlobal,
-  useProgressStore,
-} from 'qapp-core';
+import { QortalMetadata, useGlobal, useProgressStore } from 'qapp-core';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -49,9 +44,21 @@ interface VideoListItemProps {
   // editing. Navigation is disabled so the owner can't open a broken
   // video/playlist, but edit/delete actions stay enabled.
   isInvalid?: boolean;
+  // List of field names that are missing or invalid, shown in tooltip
+  // when isInvalid is true.
+  invalidFields?: string[];
 }
 
-const INVALID_TOOLTIP = 'This video is invalid, please edit it';
+const INVALID_TOOLTIP =
+  'This video is invalid, and will not appear on searches to other users. Please fix these values: ';
+
+const formatInvalidFieldsTooltip = (
+  baseMessage: string,
+  invalidFields: string[]
+): string => {
+  if (invalidFields.length === 0) return baseMessage;
+  return baseMessage + invalidFields.join(', ');
+};
 
 export const VideoListItem = ({
   qortalMetadata,
@@ -63,6 +70,7 @@ export const VideoListItem = ({
   disableActions,
   handleRemoveVideoFromList,
   isInvalid,
+  invalidFields = [],
 }: VideoListItemProps) => {
   const { t, i18n } = useTranslation(['core']);
 
@@ -251,7 +259,10 @@ export const VideoListItem = ({
             />
           </Box>
           {isInvalid ? (
-            <Tooltip title={INVALID_TOOLTIP} placement="top">
+            <Tooltip
+              title={formatInvalidFieldsTooltip(INVALID_TOOLTIP, invalidFields)}
+              placement="top"
+            >
               <InvalidVideoCardTitle>{video?.title}</InvalidVideoCardTitle>
             </Tooltip>
           ) : (
@@ -397,13 +408,18 @@ export const VideoListItem = ({
             >
               <BlockIconContainer>
                 <DeleteIcon
-                  onClick={() => {
-                    if (video?.videoReference)
-                      deleteResource([qortalMetadata, video.videoReference]);
-                    else {
-                      showError(
-                        "Can\'t delete video. VideoReference is undefined"
-                      );
+                  onClick={async () => {
+                    try {
+                      if (video?.videoReference) {
+                        await deleteResource([
+                          qortalMetadata,
+                          video.videoReference,
+                        ]);
+                      } else {
+                        await deleteResource([qortalMetadata]);
+                      }
+                    } catch (error) {
+                      console.error('Error deleting video:', error);
                     }
                   }}
                 />
@@ -510,7 +526,11 @@ export const VideoListItem = ({
               }}
             />
             <Tooltip
-              title={isInvalid ? INVALID_TOOLTIP : video.title}
+              title={
+                isInvalid
+                  ? formatInvalidFieldsTooltip(INVALID_TOOLTIP, invalidFields)
+                  : video.title
+              }
               placement="top"
               slotProps={{ tooltip: { sx: { fontSize: fontSizeSmall } } }}
             >

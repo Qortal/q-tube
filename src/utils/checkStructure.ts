@@ -165,6 +165,76 @@ export const isValidPlaylistMetadata = (playlist: any): boolean => {
 };
 
 /**
+ * Returns an array of field names that are missing or invalid in a video
+ * metadata object. Used to provide detailed feedback to publishers about
+ * why their video is invalid.
+ */
+export const getInvalidVideoFields = (video: any): string[] => {
+  const invalidFields: string[] = [];
+
+  if (!video || typeof video !== 'object') {
+    return ['metadata'];
+  }
+
+  if (!isNonEmptyString(video.title)) {
+    invalidFields.push('title');
+  }
+
+  if (!isValidVideoReference(video.videoReference)) {
+    invalidFields.push('videoReference');
+  }
+
+  if (!isNonEmptyString(video.filename)) {
+    invalidFields.push('filename');
+  }
+
+  if (!isPositiveNumber(video.fileSize)) {
+    invalidFields.push('fileSize');
+  }
+
+  if (
+    video.duration !== undefined &&
+    video.duration !== null &&
+    (typeof video.duration !== 'number' ||
+      Number.isNaN(video.duration) ||
+      video.duration < 0)
+  ) {
+    invalidFields.push('duration');
+  }
+
+  return invalidFields;
+};
+
+/**
+ * Returns an array of field names that are missing or invalid in a playlist
+ * metadata object. Used to provide detailed feedback to publishers about
+ * why their playlist is invalid.
+ */
+export const getInvalidPlaylistFields = (playlist: any): string[] => {
+  const invalidFields: string[] = [];
+
+  if (!playlist || typeof playlist !== 'object') {
+    return ['metadata'];
+  }
+
+  if (!isNonEmptyString(playlist.title)) {
+    invalidFields.push('title');
+  }
+
+  if (!Array.isArray(playlist.videos)) {
+    invalidFields.push('videos');
+  } else {
+    for (let i = 0; i < playlist.videos.length; i++) {
+      if (!isValidVideoReference(playlist.videos[i])) {
+        invalidFields.push(`videos[${i}]`);
+      }
+    }
+  }
+
+  return invalidFields;
+};
+
+/**
  * Legacy alias kept for backward compatibility. Previously a stub that
  * always returned `true`; now delegates to {@link isValidVideoMetadata}
  * so any existing callers get real validation for free.

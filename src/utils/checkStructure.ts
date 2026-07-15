@@ -70,12 +70,7 @@ const VALID_SERVICES: ReadonlySet<string> = new Set<Service>([
  * `duration` is intentionally omitted: many videos were published
  * before that field existed, so it must stay optional.
  */
-const REQUIRED_VIDEO_FIELDS = [
-  'title',
-  'videoReference',
-  'filename',
-  'fileSize',
-] as const;
+const REQUIRED_VIDEO_FIELDS = ['title', 'videoReference', 'filename'] as const;
 
 /**
  * Required fields on a published Q-Tube playlist metadata document.
@@ -111,10 +106,10 @@ export const isValidVideoReference = (ref: any): boolean => {
 /**
  * Validates a fetched Q-Tube video metadata document.
  *
- * Required: `title`, `videoReference` (valid reference), `filename`,
- * `fileSize` (positive number). `duration` is optional because legacy
- * videos predate it. Silently returns `false` for any missing/empty
- * field so callers can drop spam publishes without console noise.
+ * Required: `title`, `videoReference` (valid reference), `filename`.
+ * `duration` and `fileSize` are optional because legacy videos predate
+ * them. Silently returns `false` for any missing/empty field so callers
+ * can drop spam publishes without console noise.
  */
 export const isValidVideoMetadata = (video: any): boolean => {
   if (!video || typeof video !== 'object') return false;
@@ -125,12 +120,15 @@ export const isValidVideoMetadata = (video: any): boolean => {
 
   if (!isNonEmptyString(video.title)) return false;
   if (!isNonEmptyString(video.filename)) return false;
-  if (!isPositiveNumber(video.fileSize)) return false;
   if (!isValidVideoReference(video.videoReference)) return false;
 
   // duration optional, but if present must be a non-negative number
   if (video.duration !== undefined && video.duration !== null) {
-    if (typeof video.duration !== 'number' || Number.isNaN(video.duration) || video.duration < 0) {
+    if (
+      typeof video.duration !== 'number' ||
+      Number.isNaN(video.duration) ||
+      video.duration < 0
+    ) {
       return false;
     }
   }
@@ -162,6 +160,72 @@ export const isValidPlaylistMetadata = (playlist: any): boolean => {
   }
 
   return true;
+};
+
+/**
+ * Returns an array of field names that are missing or invalid in a video
+ * metadata object. Used to provide detailed feedback to publishers about
+ * why their video is invalid.
+ */
+export const getInvalidVideoFields = (video: any): string[] => {
+  const invalidFields: string[] = [];
+
+  if (!video || typeof video !== 'object') {
+    return ['metadata'];
+  }
+
+  if (!isNonEmptyString(video.title)) {
+    invalidFields.push('title');
+  }
+
+  if (!isValidVideoReference(video.videoReference)) {
+    invalidFields.push('videoReference');
+  }
+
+  if (!isNonEmptyString(video.filename)) {
+    invalidFields.push('filename');
+  }
+
+  if (
+    video.duration !== undefined &&
+    video.duration !== null &&
+    (typeof video.duration !== 'number' ||
+      Number.isNaN(video.duration) ||
+      video.duration < 0)
+  ) {
+    invalidFields.push('duration');
+  }
+
+  return invalidFields;
+};
+
+/**
+ * Returns an array of field names that are missing or invalid in a playlist
+ * metadata object. Used to provide detailed feedback to publishers about
+ * why their playlist is invalid.
+ */
+export const getInvalidPlaylistFields = (playlist: any): string[] => {
+  const invalidFields: string[] = [];
+
+  if (!playlist || typeof playlist !== 'object') {
+    return ['metadata'];
+  }
+
+  if (!isNonEmptyString(playlist.title)) {
+    invalidFields.push('title');
+  }
+
+  if (!Array.isArray(playlist.videos)) {
+    invalidFields.push('videos');
+  } else {
+    for (let i = 0; i < playlist.videos.length; i++) {
+      if (!isValidVideoReference(playlist.videos[i])) {
+        invalidFields.push(`videos[${i}]`);
+      }
+    }
+  }
+
+  return invalidFields;
 };
 
 /**

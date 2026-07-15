@@ -13,6 +13,8 @@ import { useTranslation } from 'react-i18next';
 import { scrollRefAtom } from '../../../state/global/navbar.ts';
 import { editVideoAtom } from '../../../state/publish/video.ts';
 import {
+  getInvalidPlaylistFields,
+  getInvalidVideoFields,
   isValidPlaylistMetadata,
   isValidVideoMetadata,
 } from '../../../utils/checkStructure.ts';
@@ -111,6 +113,12 @@ export const VideoListPreloaded = ({
         return null;
       }
 
+      const invalidFields = !isValid
+        ? isPlaylist
+          ? getInvalidPlaylistFields(video)
+          : getInvalidVideoFields(video)
+        : [];
+
       return (
         <VideoListItem
           key={`${qortalMetadata?.name}-${qortalMetadata?.identifier}-${qortalMetadata?.service}`}
@@ -122,6 +130,7 @@ export const VideoListPreloaded = ({
           isBookmarks
           disableActions={disableActions}
           isInvalid={!isValid}
+          invalidFields={invalidFields}
           handleRemoveVideoFromList={() => {
             if (!listId || !handleRemoveVideoFromList) return;
             handleRemoveVideoFromList(listId, qortalMetadata);

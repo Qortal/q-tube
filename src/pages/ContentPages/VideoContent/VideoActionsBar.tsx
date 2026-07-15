@@ -130,6 +130,10 @@ export const VideoActionsBar = ({
           tooltipTitle={t('core:video.copy_link_video', {
             postProcess: 'capitalizeFirstChar',
           })}
+          videoData={{
+            title: videoData?.title,
+            description: videoData?.description || videoData?.fullDescription,
+          }}
         />
       </Box>
       {videoData && (
